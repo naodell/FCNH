@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<MethodSetup Method="Fisher::Fisher">
+  <GeneralInfo>
+    <Info name="TMVA Release" value="4.1.3 [262403]"/>
+    <Info name="ROOT Release" value="5.34/01 [336385]"/>
+    <Info name="Creator" value="naodell"/>
+    <Info name="Date" value="Mon Apr 15 18:06:56 2013"/>
+    <Info name="Host" value="Linux naodell-P55-USB3 3.2.0-29-generic #46-Ubuntu SMP Fri Jul 27 17:03:23 UTC 2012 x86_64 x86_64 x86_64 GNU/Linux"/>
+    <Info name="Dir" value="/home/naodell/work/FCNCAnalysis"/>
+    <Info name="Training events" value="20"/>
+    <Info name="TrainingTime" value="1.41859055e-04"/>
+    <Info name="AnalysisType" value="Classification"/>
+  </GeneralInfo>
+  <Options>
+    <Option name="V" modified="Yes">False</Option>
+    <Option name="VerbosityLevel" modified="No">Default</Option>
+    <Option name="VarTransform" modified="No">None</Option>
+    <Option name="H" modified="Yes">True</Option>
+    <Option name="CreateMVAPdfs" modified="Yes">True</Option>
+    <Option name="IgnoreNegWeightsInTraining" modified="No">False</Option>
+    <Option name="Method" modified="Yes">Fisher</Option>
+  </Options>
+  <Variables NVar="2">
+    <Variable VarIndex="0" Expression="met" Label="met" Title="met" Unit="GeV" Internal="met" Type="F" Min="9.98464584e+00" Max="1.77665436e+02"/>
+    <Variable VarIndex="1" Expression="HT" Label="HT" Title="HT" Unit="GeV" Internal="HT" Type="F" Min="7.80476379e+01" Max="3.72419403e+02"/>
+  </Variables>
+  <Spectators NSpec="0"/>
+  <Classes NClass="2">
+    <Class Name="Signal" Index="0"/>
+    <Class Name="Background" Index="1"/>
+  </Classes>
+  <Transformations NTransformations="0"/>
+  <MVAPdfs>
+    <PDF Name="Fisher_PDFSig" MinNSmooth="10" MaxNSmooth="10" InterpolMethod="2" KDE_type="1" KDE_iter="1" KDE_border="1" KDE_finefactor="1.0000000000000000e+00">
+      <Histogram Name="Fisher_tr_S_original" NBins="50" XMin="-3.8617748022079468e-01" XMax="3.8006752729415894e-01" HasEquidistantBins="1">
+        0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 7.25036444e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 7.25036444e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 1.45007289e+01 0.00000000e+00 1.45007289e+01 0.00000000e+00 0.00000000e+00 7.25036444e+00 7.25036444e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 7.25036444e+00 
+      </Histogram>
+    </PDF>
+    <PDF Name="Fisher_PDFBkg" MinNSmooth="10" MaxNSmooth="10" InterpolMethod="2" KDE_type="1" KDE_iter="1" KDE_border="1" KDE_finefactor="1.0000000000000000e+00">
+      <Histogram Name="Fisher_tr_B_original" NBins="50" XMin="-3.8617748022079468e-01" XMax="3.8006752729415894e-01" HasEquidistantBins="1">
+        6.52532800e+00 0.00000000e+00 6.52532800e+00 6.52532800e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 6.52532800e+00 0.00000000e+00 0.00000000e+00 6.52532800e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 6.52532800e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 6.52532800e+00 6.52532800e+00 0.00000000e+00 0.00000000e+00 6.52532800e+00 6.52532800e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 
+      </Histogram>
+    </PDF>
+  </MVAPdfs>
+  <Weights NCoeff="3">
+    <Coefficient Index="0" Value="6.2162661713658895e-01"/>
+    <Coefficient Index="1" Value="-3.9168135300075707e-03"/>
+    <Coefficient Index="2" Value="-1.9964689051822138e-03"/>
+  </Weights>
+</MethodSetup>

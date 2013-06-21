@@ -1,0 +1,1 @@
+dcap://cmsdca1.fnal.gov:24140/pnfs/fnal.gov/usr/cms/WAX/11/store/user/naodell/nuTuples_v5_5_8TeV/DoubleMu_Run2012D_v2/nuTuple_122_1_uoE.root
