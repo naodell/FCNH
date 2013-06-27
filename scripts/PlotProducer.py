@@ -145,7 +145,7 @@ class PlotProducer(AnalysisTools):
         for data in dataList:
 
             self.set_hist_style(hist, data)
-            print hist.GetFillColor()
+            print self._styleDict[data]
             legend.AddEntry(hist, self._styleDict[data][4])
         hist.Delete()
 

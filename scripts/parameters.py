@@ -22,6 +22,7 @@ styleDict['WbbToLNu']           = (2, r.kCyan-2, 1, 1, 'W+bb')
 styleDict['WG']                 = (0, r.kAzure, 1, 1, 'WG')
 
 # Madgraph diboson
+styleDict['Diboson']            = (0, r.kGray+1, 1, 1, 'Diboson')
 styleDict['ZZJets2L2Nu']        = (2, r.kGreen+3, 1, 1, 'ZZ#rightarrow2l2#nu')
 styleDict['ZZJets2L2Q']         = (2, r.kBlue-7, 1, 1, 'ZZ#rightarrow2l2q')
 styleDict['ZZJets4L']           = (2, r.kBlue+2, 1, 1, 'ZZ#rightarrow4l')
@@ -47,13 +48,13 @@ styleDict['t_t-channel']        = (2, r.kBlue-3, 1, 1, 't (t-channel)')
 styleDict['tbar_t-channel']     = (2, r.kBlue-4, 1, 1, '#bar{t} (t-channel)')
 
 # tt+V
-#styleDict['ttZ']                = (0, r.kGreen+1, 1, 1, 't#bar{t}V')
+styleDict['ttV']                = (0, r.kGreen+1, 1, 1, 't#bar{t}V')
 styleDict['ttZ']                = (0, r.kGreen+1, 1, 1, 't#bar{t}Z')
 styleDict['ttW']                = (0, r.kGreen+2, 1, 1, 't#bar{t}W')
 styleDict['ttG']                = (0, r.kGreen+3, 1, 1, 't#bar{t}G')
 
 #triboson
-#styleDict['WWW']                = (0, r.kCyan+0, 1, 1, 'triboson')
+styleDict['Triboson']           = (0, r.kCyan+0, 1, 1, 'triboson')
 styleDict['WWW']                = (0, r.kCyan+0, 1, 1, 'WWW')
 styleDict['WWZ']                = (0, r.kCyan+1, 1, 1, 'WWZ')
 styleDict['WZZ']                = (0, r.kCyan+2, 1, 1, 'WZZ')
@@ -61,7 +62,7 @@ styleDict['ZZZ']                = (0, r.kCyan+3, 1, 1, 'ZZZ')
 styleDict['WWG']                = (0, r.kCyan+4, 1, 1, 'WWG')
 
 #QCD
-styleDict['QCD_20_MU']          = (2, r.kOrange, 1, 1, 'QCD')
+styleDict['QCD']                = (2, r.kOrange, 1, 1, 'QCD')
 
 #Alternative MC
 styleDict['PhotonJets']         = (2, r.kRed, 0, 1, 'Z+jets (data)')
@@ -81,7 +82,7 @@ styleDict['ZGToNuNu']           = (2, r.kBlue+3, 0, 1, 'ZG->#nu#nu')
 styleDict['GJets_15to30']       = (2, r.kYellow+2, 0, 1, 'gamma+jets') 
 
 #Higgs
-styleDict['ggHToZZ4L_M-125']    = (2, r.kBlue+3, 0, 1, 'higgs')
+styleDict['higgs']              = (2, r.kBlue+3, 0, 1, 'higgs')
 
 #Misc
 styleDict['BGERROR']            = (0, r.kBlack, 3018, 0, 'BG error')
@@ -203,23 +204,17 @@ scaleDict['2012']['DATA_MUEG']          = 1.
 scaleDict['2012']['fakes']              = 1.
 
 combineDict = {}
-combineDict['ZJets']            = ['ZJets_M-10To50', 'WJets']
-combineDict['ttbar']            = ['tW', 'tbarW', 't_t-channel', 'tbar_t-channel']
-combineDict['tW']               = ['tbarW', 't_t-channel', 'tbar_t-channel']
-#combineDict['ttZ']              = ['ttW', 'ttG']
-#combineDict['WWW']              = ['WWZ', 'WZZ', 'ZZZ', 'WWG']
 combineDict['FCNC_M125_t']      = ['FCNC_M125_tbar']
-combineDict['WW']               = ['GluGluWW']
-#combineDict['WWJets2L2Nu']      = ['ZZJets2L2Nu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'WZJets3LNu']
-#combineDict['WZJets3LNu']       = ['WZJets2L2Q']
-combineDict['ZZ4mu']            = ['ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
-combineDict['QCD_20_MU']        = ['QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_EM', 'QCD_170-250_EM', 'QCD_250-350_EM', 'QCD_350_EM']
-combineDict['ggHToZZ4L_M-125']  = ['WHToWWW3L_M-125']#, 'ggHToWW2L2Nu_M-125']
 combineDict['GJets_15to30']     = ['GJets_30to50', 'GJets_50to80', 'GJets_80to120', 'GJets_120to170', 'GJets_170to300', 'GJets_300to470', 'GJets_470to800']  
 
 combineDict['DATA']             = ['DATA_MUON', 'DATA_ELECTRON', 'DATA_MUEG']
 combineDict['VJets']            = ['ZJets', 'ZJets_M-10To50', 'WJets']
 combineDict['top']              = ['ttbar', 'tW', 'tbarW', 't_t-channel', 'tbar_t-channel']
+combineDict['Diboson']          = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'WZJets3LNu', 'WWJets2L2Nu', 'ZZJets2L2Nu']
+combineDict['ttV']              = ['ttZ', 'ttW', 'ttG']
+combineDict['Triboson']         = ['WWW', 'WWZ', 'WZZ', 'ZZZ', 'WWG']
+combineDict['QCD']              = ['QCD_20_MU', 'QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_EM', 'QCD_170-250_EM', 'QCD_250-350_EM', 'QCD_350_EM']
+combineDict['higgs']            = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125'] #, 'ggHToWW2L2Nu_M-125']
 
 categoryDict = {'inclusive':'inclusive',
                 'ss_inclusive':'ss inclusive', 'ss_mumu':'#mu^{#pm}#mu^{#pm}', 'ss_ee':'e^{#pm}e^{#pm}', 'ss_emu':'e^{#pm}#mu^{#pm}',

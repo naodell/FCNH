@@ -15,7 +15,7 @@ def plotter_wrapper(plotter, category, inputPath, outputPath, do1D, do2D):
     plotter._category = category
 
     if do1D:
-        plotter.make_overlays_1D(logScale = True, doRatio = False, doEff = False)
+        plotter.make_overlays_1D(logScale = True, doRatio = True, doEff = False)
     if do2D:
         plotter.make_overlays_2D(logScale = True, doProjection = False)
 
@@ -40,7 +40,7 @@ cutList     = ['1_preselection']
 #cutList.extend(['2_Z_veto', '3_MET', '4_bjet_cut', '5_BDT'])
 
 period      = '2012'
-LUMIDATA    = 5.3
+LUMIDATA    = 19.5
 
 doPlots     = True
 doYields    = False
@@ -59,10 +59,14 @@ cat3l.extend(['3l_eee', '3l_eemu', '3l_emumu', '3l_mumumu'])
 
 ### Samples to be included in stacks ###
 samples     = []
+samples.append('higgs')
+samples.append('Triboson')
+samples.append('ttV')
+samples.append('Diboson')
 samples.append('top')
+samples.append('QCD')
 samples.append('VJets')
-#samples.append('ggHToZZ4L_M-125')
-#samples.append('WWW')
+
 #samples.append('WWZ')
 #samples.append('WZZ')
 #samples.append('ZZZ')
@@ -94,8 +98,8 @@ if doPlots:
     plotter._overlayList.extend(['DATA'])
     #plotter._overlayList.extend(['FCNC_M125_t'])
 
-    #plotter.get_scale_factors(['FCNC_M125_t'])
-    plotter.get_scale_factors()
+    plotter.get_scale_factors(['FCNC_M125_t'])
+    #plotter.get_scale_factors()
 
     ### VARIABLES ###
     ### First specify the directories in which your
@@ -217,7 +221,7 @@ print '\n'
 
 if doYields:
     doPresel        = True
-    outFile         = file('yields/yields_tmp.tex', 'w')
+    outFile         = file('yields/.yields_tmp.tex', 'w')
     samples         = samples 
     categoryNames   = []
     yieldTable      = TableMaker('fcncAnalysis/combined_histos/' + selection + '_cut1_' + period + batch + '.root', outFile, scale = LUMIDATA, delimiter = '&', doSumBG = True)
