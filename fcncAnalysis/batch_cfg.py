@@ -45,25 +45,25 @@ if period == '2012':
     data.extend([
         cfg('muon_2012A', dCache+'/devildog/nuTuples_v6_8TeV/DoubleMu_Run2012A_13Jul', 20, 'DATA_MUON muon 2012'),
         cfg('muon_2012B', dCache+'/devildog/nuTuples_v6_8TeV/DoubleMu_Run2012B_13Jul', 20, 'DATA_MUON muon 2012'),
-        #cfg('muon_2012C_prompt', dCache+'/devildog/nuTuples_v6_8TeV/DoubleMu_Run2012C_Prompt', 20, 'DATA_MUON muon 2012'),
-        #cfg('muon_2012C_recover', dCache+'/devildog/nuTuples_v6_8TeV/DoubleMu_Run2012C_Recover', 5, 'DATA_MUON muon 2012'),
-        #cfg('muon_2012C_24Aug', dCache+'/devildog/nuTuples_v6_8TeV/DoubleMu_Run2012C_24Aug', 10, 'DATA_MUON muon 2012'),
-        #cfg('muon_2012D', dCache+'/devildog/nuTuples_v6_8TeV/DoubleMu_Run2012D', 20, 'DATA_MUON muon 2012'),
+        cfg('muon_2012C_prompt', dCache+'/naodell/nuTuples_v6_8TeV/DoubleMu_Run2012C_Prompt', 20, 'DATA_MUON muon 2012'),
+        cfg('muon_2012C_recover', dCache+'/naodell/nuTuples_v6_8TeV/DoubleMu_Run2012C_Recover', 5, 'DATA_MUON muon 2012'),
+        cfg('muon_2012C_24Aug', dCache+'/naodell/nuTuples_v6_8TeV/DoubleMu_Run2012C_24Aug', 10, 'DATA_MUON muon 2012'),
+        cfg('muon_2012D', dCache+'/naodell/nuTuples_v6_8TeV/DoubleMu_Run2012D_Prompt', 20, 'DATA_MUON muon 2012'),
 
         cfg('electron_2012A', dCache+'/devildog/nuTuples_v6_8TeV/DoubleElectron_Run2012A_13Jul', 20, 'DATA_ELECTRON electron 2012'),
         cfg('electron_2012B', dCache+'/devildog/nuTuples_v6_8TeV/DoubleElectron_Run2012B_13Jul', 20, 'DATA_ELECTRON electron 2012'),
-        #cfg('electron_2012C_prompt', dCache+'/devildog/nuTuples_v6_8TeV/DoubleElectron_Run2012C_Prompt', 20, 'DATA_ELECTRON electron 2012'),
-        #cfg('electron_2012C_recover', dCache+'/devildog/nuTuples_v6_8TeV/DoubleElectron_Run2012C_Recover', 5, 'DATA_ELECTRON electron 2012'),
-        #cfg('electron_2012C_24Aug', dCache+'/devildog/nuTuples_v6_8TeV/DoubleElectron_Run2012C_24Aug', 10, 'DATA_ELECTRON electron 2012'),
-        #cfg('electron_2012D', dCache+'/devildog/nuTuples_v6_8TeV/DoubleElectron_Run2012D_Prompt', 20, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012C_prompt', dCache+'/naodell/nuTuples_v6_8TeV/DoubleElectron_Run2012C_Prompt', 20, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012C_recover', dCache+'/naodell/nuTuples_v6_8TeV/DoubleElectron_Run2012C_Recover', 5, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012C_24Aug', dCache+'/naodell/nuTuples_v6_8TeV/DoubleElectron_Run2012C_24Aug', 10, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012D', dCache+'/naodell/nuTuples_v6_8TeV/DoubleElectron_Run2012D_Prompt', 20, 'DATA_ELECTRON electron 2012'),
 
         cfg('muEG_2012A', dCache+'/devildog/nuTuples_v6_8TeV/MuEG_Run2012A', 20, 'DATA_MUEG muEG 2012'),
         #cfg('muEG_2012A_recover', dCache+'/devildog/nuTuples_v6_8TeV/MuEG_Run2012A_Recover', 20, 'DATA_MUEG muEG 2012'),
-        cfg('muEG_2012B', dCache+'/devildog/nuTuples_v6_8TeV/MuEG_Run2012B', 20, 'DATA_MUEG muEG 2012')#,
-        #cfg('muEG_2012C_prompt', dCache+'/devildog/nuTuples_v6_8TeV/MuEG_Run2012C_Prompt', 20, 'DATA_MUEG muEG 2012'),
-        #cfg('muEG_2012C_recover', dCache+'/devildog/nuTuples_v6_8TeV/MuEG_Run2012C_Recover', 5, 'DATA_MUEG muEG 2012'),
-        #cfg('muEG_2012C_24Aug', dCache+'/devildog/nuTuples_v6_8TeV/MuEG_Run2012C_24Aug', 10, 'DATA_MUEG muEG 2012'),
-        #cfg('muEG_2012D', dCache+'/devildog/nuTuples_v6_8TeV/MuEG_Run2012D_Prompt', 20, 'DATA_MUEG muEG 2012')
+        cfg('muEG_2012B', dCache+'/devildog/nuTuples_v6_8TeV/MuEG_Run2012B', 20, 'DATA_MUEG muEG 2012'),
+        cfg('muEG_2012C_prompt', dCache+'/naodell/nuTuples_v6_8TeV/MuEG_Run2012C_Prompt', 20, 'DATA_MUEG muEG 2012'),
+        cfg('muEG_2012C_recover', dCache+'/naodell/nuTuples_v6_8TeV/MuEG_Run2012C_Recover', 5, 'DATA_MUEG muEG 2012'),
+        cfg('muEG_2012C_24Aug', dCache+'/naodell/nuTuples_v6_8TeV/MuEG_Run2012C_24Aug', 10, 'DATA_MUEG muEG 2012'),
+        cfg('muEG_2012D', dCache+'/naodell/nuTuples_v6_8TeV/MuEG_Run2012D_Prompt', 20, 'DATA_MUEG muEG 2012')
         ])
 
     bg.extend([

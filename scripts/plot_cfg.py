@@ -71,7 +71,14 @@ samples.append('WWG')
 samples.append('ttW')
 samples.append('ttZ')
 samples.append('ttG')
-samples.extend(['ttbar', 'WWJets2L2Nu', 'QCD_20_MU', 'ZJets'])
+samples.append('WWJets2L2Nu')
+samples.append('ZZ4mu')
+samples.append('ZZ4e')
+samples.append('ZZ4tau')
+samples.append('ZZ2mu2tau')
+samples.append('ZZ2e2tau')
+samples.append('ZZ2mu2tau')
+samples.extend(['ttbar', 'QCD_20_MU', 'ZJets'])
 
 p_plot = []
 

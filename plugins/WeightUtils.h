@@ -49,7 +49,6 @@ class WeightUtils: public TObject {
         float   PUWeight();
         float   RecoWeight();
         float   ZZWeight(vector<TLorentzVector>);
-        float   GluGluHiggsWeight(float, int);
         float   VBFHiggsWeight(float, int);
         float   GetTotalWeight();
         float   FakeWeight(TCPhysObject);
@@ -85,12 +84,10 @@ class WeightUtils: public TObject {
         TH2D    *h2_EleFakes;
         TH2D    *h2_MuFakes;
 
-        TH1D    *h1_Higgs[8];
 
         //weights
         float _puWeight;
         float _zzWeight;
-        float _glugluWeight;
         float _vbfWeight;
         float _recoWeight;
         float _triggerWeight;

@@ -1,5 +1,36 @@
 from AnalysisTools import *
 
+### Some generally useful plotting functions
+
+def FormatAxis(axis, offset, title, color):
+    axis.SetLineColor(color)
+    axis.SetLabelColor(color)
+    axis.SetTextColor(color)
+    axis.SetTitleSize(0.1)
+    axis.SetLabelSize(0.08)
+    axis.SetTitle(title)
+    axis.SetTitleOffset(offset)
+    axis.CenterTitle()
+    axis.Draw()
+
+def make_index_afs(filePath):
+    '''
+    For making index for displaying plots on afs
+    '''
+
+    if not os.path.isfile(filePath+'/../writeIndexHTML.py'):
+        os.system('cp ~/afs/public_html/writeIndexHTML.py '+filePath+'/..')
+
+    os.system('cd '+filePath+'/..; ./writeIndexHTML.py')
+
+def ScaleToPad(histogram):
+    histMax = histogram.GetMaximum()
+    scale   = r.gPad.GetUymax()/(histMax)
+    histogram.Scale(scale)
+
+    return histMax
+
+
 class PlotProducer(AnalysisTools):
     '''For manipulating histograms'''
     def __init__(self, inputFile, scale = 1., savePath = '', isAFS = False):
@@ -9,35 +40,6 @@ class PlotProducer(AnalysisTools):
         self._directoryList1D   = []
         self._directoryList2D   = []
         self._variableDict      = {}
-
-
-    def make_index_afs(self, filePath):
-        '''
-        For making index for displaying plots on afs
-        '''
-
-        if not os.path.isfile(filePath+'/../writeIndexHTML.py'):
-            os.system('cp ~/afs/public_html/writeIndexHTML.py '+filePath+'/..')
-
-        os.system('cd '+filePath+'/..; ./writeIndexHTML.py')
-
-
-    def ScaleToPad(self, histogram):
-        histMax = histogram.GetMaximum()
-        scale   = r.gPad.GetUymax()/(histMax)
-        histogram.Scale(scale)
-        return histMax
-
-    def FormatAxis(self, axis, offset, title, color):
-        axis.SetLineColor(color)
-        axis.SetLabelColor(color)
-        axis.SetTextColor(color)
-        axis.SetTitleSize(0.1)
-        axis.SetLabelSize(0.08)
-        axis.SetTitle(title)
-        axis.SetTitleOffset(offset)
-        axis.CenterTitle()
-        axis.Draw()
 
 
     def get_hist_dict(self, directory, histType = '1D'):
@@ -364,17 +366,17 @@ class PlotProducer(AnalysisTools):
 
                     hEffBG  = self.get_cut_efficiency(sums[var], 'SUM_EFF')
                     canvas.Update()
-                    self.ScaleToPad(hEffBG)
+                    ScaleToPad(hEffBG)
                     hEffBG.Draw("E3 SAME")
 
                     axisEff = r.TGaxis(r.gPad.GetUxmax(), r.gPad.GetUymin(), r.gPad.GetUxmax(), r.gPad.GetUymax(), 0.0, 1.10, 510, '+L')
-                    self.FormatAxis(axisEff, 0.5, '#varepsilon_{cut}', r.kBlack)
+                    FormatAxis(axisEff, 0.5, '#varepsilon_{cut}', r.kBlack)
 
                     for hist in hists[var]:
                         if hist[1] in ['SIGNAL', 'FCNC_M125_t']:
                             hEffSig = self.get_cut_efficiency(hist[0], 'SIG_EFF')
                             canvas.Update()
-                            self.ScaleToPad(hEffSig)
+                            ScaleToPad(hEffSig)
                             hEffSig.Draw("E3 SAME")
                             break
 
@@ -388,7 +390,8 @@ class PlotProducer(AnalysisTools):
                     hEffSig.Delete()
                 
 
-        if self._makeIndex: self.make_index_afs(self._savePath)
+        if self._makeIndex: 
+            make_index_afs(self._savePath)
 
 
     def make_overlays_2D(self, logScale = False, doProjection = False):

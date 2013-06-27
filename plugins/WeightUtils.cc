@@ -25,15 +25,6 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
     puReweight["2011"]  = (TH1D*)f_puFile->Get("h1_PU");
     puReweight["2012"]  = (TH1D*)f_puFile->Get("h1_PU");
 
-    // higgs pt weights
-    for (int i = 0; i < 8; ++i) {
-        int higgsMass = 250+50*i;
-        TFile *higgsFile = new TFile(Form("../data/kfactors/Kfactors_%i_AllScales.root", higgsMass), "OPEN");
-        TH1D *h1_tmp = (TH1D*)higgsFile->GetDirectory("kfactors")->Get(Form("kfact_mh%i_ren%i_fac%i", higgsMass, higgsMass, higgsMass));
-        h1_Higgs[i] = (TH1D*)h1_tmp->Clone();
-        //higgsFile->Close();
-    }
-
     // weights for fake background
     TFile* f_fakeFile = new TFile("../data/fakeRates_jetCuts.root", "OPEN");
     h2_EleFakes = (TH2D*)f_fakeFile->Get("h2_Fakes_ele_v1");
@@ -44,7 +35,6 @@ void WeightUtils::Initialize()
 {
     _puWeight = 1.;
     _zzWeight = 1.;
-    _glugluWeight = 1.;
     _vbfWeight = 1.;
     _recoWeight = 1.;
     _triggerWeight = 1.;
@@ -138,12 +128,6 @@ float WeightUtils::ZZWeight(vector<TLorentzVector> leptons)
     return _zzWeight;
 }
 
-float WeightUtils::GluGluHiggsWeight(float higgsPt, int higgsMass) 
-{
-    int iMass = (higgsMass - 250)/50;
-    _glugluWeight = h1_Higgs[iMass]->GetBinContent(h1_Higgs[iMass]->FindBin(higgsPt));
-    return _glugluWeight;
-}
 
 float WeightUtils::VBFHiggsWeight(float genMass, int higgsMass)
 {
