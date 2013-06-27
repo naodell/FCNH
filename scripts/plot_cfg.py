@@ -15,7 +15,7 @@ def plotter_wrapper(plotter, category, inputPath, outputPath, do1D, do2D):
     plotter._category = category
 
     if do1D:
-        plotter.make_overlays_1D(logScale = True, doRatio = True, doEff = True)
+        plotter.make_overlays_1D(logScale = True, doRatio = False, doEff = False)
     if do2D:
         plotter.make_overlays_2D(logScale = True, doProjection = False)
 
@@ -29,9 +29,6 @@ if len(sys.argv) > 1:
 else:
     batch = ''
 
-### Make sure plotting configuration parameters are up-to-date
-subprocess.call('python scripts/parameters.py', shell=True)
-
 ### This is the config file for manipulating 
 ### histograms using the PlotProducer class.  
 
@@ -40,19 +37,19 @@ suffix      = sys.argv[1]
 #suffix      = 'TEST'
 
 cutList     = ['1_preselection']
-cutList.extend(['2_Z_veto', '3_MET', '4_bjet_cut', '5_BDT'])
+#cutList.extend(['2_Z_veto', '3_MET', '4_bjet_cut', '5_BDT'])
 
 period      = '2012'
 LUMIDATA    = 5.3
 
 doPlots     = True
-doYields    = True
+doYields    = False
 
-doOS        = True
-doSS        = True
-do3l        = True
+doOS        = False
+doSS        = False
+do3l        = False
 do1D        = True
-do2D        = True
+do2D        = False
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive', 'ss_mumu', 'ss_ee', 'ss_emu'] 
@@ -62,23 +59,21 @@ cat3l.extend(['3l_eee', '3l_eemu', '3l_emumu', '3l_mumumu'])
 
 ### Samples to be included in stacks ###
 samples     = []
-samples.append('ggHToZZ4L_M-125')
-samples.append('WWW')
-samples.append('WWZ')
-samples.append('WZZ')
-samples.append('ZZZ')
-samples.append('WWG')
-samples.append('ttW')
-samples.append('ttZ')
-samples.append('ttG')
-samples.append('WWJets2L2Nu')
-samples.append('ZZ4mu')
-samples.append('ZZ4e')
-samples.append('ZZ4tau')
-samples.append('ZZ2mu2tau')
-samples.append('ZZ2e2tau')
-samples.append('ZZ2mu2tau')
-samples.extend(['ttbar', 'QCD_20_MU', 'ZJets'])
+samples.append('top')
+samples.append('VJets')
+#samples.append('ggHToZZ4L_M-125')
+#samples.append('WWW')
+#samples.append('WWZ')
+#samples.append('WZZ')
+#samples.append('ZZZ')
+#samples.append('WWG')
+#samples.append('ttW')
+#samples.append('ttZ')
+#samples.append('ttG')
+#samples.append('WWJets2L2Nu')
+#samples.append('WZJets3LNu')
+#samples.append('ZZ4mu')
+#samples.extend(['ttbar', 'QCD_20_MU', 'ZJets'])
 
 p_plot = []
 
@@ -96,11 +91,11 @@ if doPlots:
     ### and overlay accordingly. 
 
     plotter.add_datasets(samples)
-    plotter._overlayList.extend(['DATA_MUON'])
-    plotter._overlayList.extend(['FCNC_M125_t'])
+    plotter._overlayList.extend(['DATA'])
+    #plotter._overlayList.extend(['FCNC_M125_t'])
 
-    plotter.get_scale_factors(['FCNC_M125_t'])
-    #plotter.get_scale_factors()
+    #plotter.get_scale_factors(['FCNC_M125_t'])
+    plotter.get_scale_factors()
 
     ### VARIABLES ###
     ### First specify the directories in which your
@@ -201,8 +196,11 @@ if doPlots:
             if category in catOS and i is not 0:
                 continue
 
-            p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(plotter, category, inFile, outFile, do1D, do2D)))
+            print '{0}: Testing new sample combiner on {1}'.format(i,category)
+            plotter_wrapper(plotter, category, inFile, outFile, True, False)
+            #p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(plotter, category, inFile, outFile, do1D, do2D)))
 
+exit()
 
 for process in p_plot:
     print 'Plotting {0}'.format(process.name)

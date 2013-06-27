@@ -1,36 +1,5 @@
 from AnalysisTools import *
 
-### Some generally useful plotting functions
-
-def FormatAxis(axis, offset, title, color):
-    axis.SetLineColor(color)
-    axis.SetLabelColor(color)
-    axis.SetTextColor(color)
-    axis.SetTitleSize(0.1)
-    axis.SetLabelSize(0.08)
-    axis.SetTitle(title)
-    axis.SetTitleOffset(offset)
-    axis.CenterTitle()
-    axis.Draw()
-
-def make_index_afs(filePath):
-    '''
-    For making index for displaying plots on afs
-    '''
-
-    if not os.path.isfile(filePath+'/../writeIndexHTML.py'):
-        os.system('cp ~/afs/public_html/writeIndexHTML.py '+filePath+'/..')
-
-    os.system('cd '+filePath+'/..; ./writeIndexHTML.py')
-
-def ScaleToPad(histogram):
-    histMax = histogram.GetMaximum()
-    scale   = r.gPad.GetUymax()/(histMax)
-    histogram.Scale(scale)
-
-    return histMax
-
-
 class PlotProducer(AnalysisTools):
     '''For manipulating histograms'''
     def __init__(self, inputFile, scale = 1., savePath = '', isAFS = False):
@@ -40,6 +9,35 @@ class PlotProducer(AnalysisTools):
         self._directoryList1D   = []
         self._directoryList2D   = []
         self._variableDict      = {}
+
+
+    def make_index_afs(self, filePath):
+        '''
+        For making index for displaying plots on afs
+        '''
+
+        if not os.path.isfile(filePath+'/../writeIndexHTML.py'):
+            os.system('cp ~/afs/public_html/writeIndexHTML.py '+filePath+'/..')
+
+        os.system('cd '+filePath+'/..; ./writeIndexHTML.py')
+
+
+    def ScaleToPad(self, histogram):
+        histMax = histogram.GetMaximum()
+        scale   = r.gPad.GetUymax()/(histMax)
+        histogram.Scale(scale)
+        return histMax
+
+    def FormatAxis(self, axis, offset, title, color):
+        axis.SetLineColor(color)
+        axis.SetLabelColor(color)
+        axis.SetTextColor(color)
+        axis.SetTitleSize(0.1)
+        axis.SetLabelSize(0.08)
+        axis.SetTitle(title)
+        axis.SetTitleOffset(offset)
+        axis.CenterTitle()
+        axis.Draw()
 
 
     def get_hist_dict(self, directory, histType = '1D'):
@@ -53,10 +51,10 @@ class PlotProducer(AnalysisTools):
             histList = []
 
             for data in self._overlayList:
-                hist = self.get_hist(var, data, histType)
-
                 if data in self._combineDict:
-                    hist = self.combine_samples(hist, var, data, histType)
+                    hist = self.combine_samples(var, data, histType)
+                else:
+                    hist =  self.get_hist(var, data, histType)
 
                 if hist is None: continue
 
@@ -82,15 +80,13 @@ class PlotProducer(AnalysisTools):
             histList = []
 
             for data in self._datasets:
-                hist =  self.get_hist(var, data, histType)
                 if data in self._combineDict:
-                    hist = self.combine_samples(hist, var, data, histType)
+                    hist = self.combine_samples(var, data, histType)
+                else:
+                    hist =  self.get_hist(var, data, histType)
+
 
                 if hist is None: continue
-
-                #if var == '4lMass':
-                #    print data,
-                #    hist.Print()
 
                 self.set_hist_style(hist, data, histType)
 
@@ -144,13 +140,14 @@ class PlotProducer(AnalysisTools):
         legend.SetLineColor(0)
         legend.SetTextSize(0.045)
 
-        histList = []
+        hist = r.TH1D('h_tmp', 'tmp;;', 1, 0, 1)
+        hist.Fill(1)
         for data in dataList:
-            hist = self.get_hist(var, data, '1D', doScale = False) 
-            if hist is None: continue
 
             self.set_hist_style(hist, data)
+            print hist.GetFillColor()
             legend.AddEntry(hist, self._styleDict[data][4])
+        hist.Delete()
 
         return legend
 
@@ -366,17 +363,17 @@ class PlotProducer(AnalysisTools):
 
                     hEffBG  = self.get_cut_efficiency(sums[var], 'SUM_EFF')
                     canvas.Update()
-                    ScaleToPad(hEffBG)
+                    self.ScaleToPad(hEffBG)
                     hEffBG.Draw("E3 SAME")
 
                     axisEff = r.TGaxis(r.gPad.GetUxmax(), r.gPad.GetUymin(), r.gPad.GetUxmax(), r.gPad.GetUymax(), 0.0, 1.10, 510, '+L')
-                    FormatAxis(axisEff, 0.5, '#varepsilon_{cut}', r.kBlack)
+                    self.FormatAxis(axisEff, 0.5, '#varepsilon_{cut}', r.kBlack)
 
                     for hist in hists[var]:
                         if hist[1] in ['SIGNAL', 'FCNC_M125_t']:
                             hEffSig = self.get_cut_efficiency(hist[0], 'SIG_EFF')
                             canvas.Update()
-                            ScaleToPad(hEffSig)
+                            self.ScaleToPad(hEffSig)
                             hEffSig.Draw("E3 SAME")
                             break
 
@@ -390,8 +387,7 @@ class PlotProducer(AnalysisTools):
                     hEffSig.Delete()
                 
 
-        if self._makeIndex: 
-            make_index_afs(self._savePath)
+        if self._makeIndex: self.make_index_afs(self._savePath)
 
 
     def make_overlays_2D(self, logScale = False, doProjection = False):
@@ -486,7 +482,7 @@ class PlotProducer(AnalysisTools):
                         hist.GetXaxis().SetLabelSize(0.)
                         hist.Draw('COLZ')
 
-                    if data in ['DATA_MUON','DATA_ELECTRON', 'DATA_MUEG']:
+                    if data in ['DATA', 'DATA_MUON','DATA_ELECTRON', 'DATA_MUEG']:
                         pad2.cd()
                         hist.GetYaxis().CenterTitle()
                         hist.GetYaxis().SetTitleSize(0.09)

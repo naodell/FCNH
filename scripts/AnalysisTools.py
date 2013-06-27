@@ -64,7 +64,7 @@ class AnalysisTools():
         if not os.path.exists(filePath):
             os.system('mkdir -p '+filePath)
         elif len(os.listdir(filePath)) is not 0 and clean:
-            os.system('rm '+filePath+'/*.png')
+            os.system('rm -r {0}'.format(filePath))
 
 
     def binomial_error(self, efficiency, N0):
@@ -85,16 +85,17 @@ class AnalysisTools():
         for dataName in (self._datasets + addData):
             if dataName[:4] == 'DATA': continue
 
-            if dataName in self._scaleDict[self._period]:
-                self._scaleDict[self._period][dataName] = 1e3*self._scaleDict[self._period][dataName]/self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCut').GetBinContent(1)
-            else:
-                print '{0} not found in scale dictionary; setting to 0'
-                self._scaleDict[self._period][dataName] = 0.
-                continue
-
             if dataName in self._combineDict:
                 for data in self._combineDict[dataName]:
                     self._scaleDict[self._period][data] = 1e3*self._scaleDict[self._period][data]/self._histFile.GetDirectory('inclusive/' + data).Get('h1_YieldByCut').GetBinContent(1)
+            else:
+                if dataName in self._scaleDict[self._period]:
+                    self._scaleDict[self._period][dataName] = 1e3*self._scaleDict[self._period][dataName]/self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCut').GetBinContent(1)
+                else:
+                    print '{0} not found in scale dictionary; setting to 0'.format(dataName)
+                    self._scaleDict[self._period][dataName] = 0.
+                    continue
+
 
 
     def get_hist(self, var, dataName, histType, doScale = True):
@@ -121,19 +122,19 @@ class AnalysisTools():
 
         return hist
 
-    def combine_samples(self, inHist, var, dataName, histType = '1D'):
+    def combine_samples(self, var, dataName, histType = '1D'):
         '''
         Combines histograms from different samples into one histogram
         '''
 
-        if dataName in self._combineDict.keys():
-            for data in self._combineDict[dataName]:
-                if inHist is None:
-                    inHist = self.get_hist(var, data, histType)
-                else:
-                    hist = self.get_hist(var, data, histType)
+        outHist = None
+        for data in self._combineDict[dataName]:
 
-                    if hist is not None:
-                        inHist.Add(hist)
+            hist = self.get_hist(var, data, histType)
 
-        return inHist
+            if outHist is None and hist is not None:
+                outHist = hist
+            elif hist is not None:
+                outHist.Add(hist)
+
+        return outHist
