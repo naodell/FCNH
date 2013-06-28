@@ -37,7 +37,7 @@ suffix      = sys.argv[1]
 #suffix      = 'TEST'
 
 cutList     = ['1_preselection']
-#cutList.extend(['2_Z_veto', '3_MET', '4_bjet_cut', '5_BDT'])
+cutList.extend(['2_Z_veto', '3_MET', '4_bjet_cut', '5_BDT'])
 
 period      = '2012'
 LUMIDATA    = 19.5
@@ -45,9 +45,9 @@ LUMIDATA    = 19.5
 doPlots     = True
 doYields    = False
 
-doOS        = False
-doSS        = False
-do3l        = False
+doOS        = True
+doSS        = True
+do3l        = True
 do1D        = True
 do2D        = False
 
@@ -96,9 +96,9 @@ if doPlots:
 
     plotter.add_datasets(samples)
     plotter._overlayList.extend(['DATA'])
-    #plotter._overlayList.extend(['FCNC_M125_t'])
+    plotter._overlayList.extend(['FCNH'])
 
-    plotter.get_scale_factors(['FCNC_M125_t'])
+    plotter.get_scale_factors(['FCNC_M125_t', 'FCNC_M125_tbar'])
     #plotter.get_scale_factors()
 
     ### VARIABLES ###
@@ -200,11 +200,10 @@ if doPlots:
             if category in catOS and i is not 0:
                 continue
 
-            print '{0}: Testing new sample combiner on {1}'.format(i,category)
-            plotter_wrapper(plotter, category, inFile, outFile, True, False)
-            #p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(plotter, category, inFile, outFile, do1D, do2D)))
+            #print '{0}: Testing new sample combiner on {1}'.format(i,category)
+            #plotter_wrapper(plotter, category, inFile, outFile, True, False)
 
-exit()
+            p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(plotter, category, inFile, outFile, do1D, do2D)))
 
 for process in p_plot:
     print 'Plotting {0}'.format(process.name)
@@ -274,4 +273,3 @@ if doYields:
 
     outFile.close()
     subprocess.call('pdflatex -output-dir=yields yields/yields.tex', shell = True)
-    os.system('cp yields/yields.pdf plots/' + currentDate + '/' + selection + '_' + suffix + '/.')

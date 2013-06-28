@@ -12,8 +12,8 @@ styleDict['DATA_ELECTRON']      = (2, r.kGray+1, 0, 21, 'Observed (ee)')
 styleDict['DATA_MUEG']          = (2, r.kGray+2, 0, 21, 'Observed (e#mu)')
 
 #V+jets
-styleDict['VJets']              = (0, r.kSpring-7, 1, 1, 'V+jets') # Vector boson combination
-styleDict['ZJets']              = (0, r.kRed, 1, 1, 'Z+jets (M_{Z/#gamma*} > 50)')
+styleDict['VJets']              = (0, r.kRed, 1, 1, 'V+jets') # Vector boson combination
+styleDict['ZJets']              = (0, r.kRed+1, 1, 1, 'Z+jets (M_{Z/#gamma*} > 50)')
 styleDict['ZJets_M-10To50']     = (0, r.kRed+2, 1, 1, 'Z+jets (M_{Z/#gamma*} < 50)')
 styleDict['ZbbToLL']            = (2, r.kRed-8, 1, 1, 'Z+bb')
 styleDict['ZG']                 = (0, r.kRed-9, 1, 1, 'Z#gamma')
@@ -86,7 +86,7 @@ styleDict['higgs']              = (2, r.kBlue+3, 0, 1, 'higgs')
 
 #Misc
 styleDict['BGERROR']            = (0, r.kBlack, 3018, 0, 'BG error')
-styleDict['FCNC_M125_t']        = (3, r.kPink+3, 2, 22, 'Signal')
+styleDict['FCNH']               = (3, r.kPink+3, 2, 22, 'FCNH')
 styleDict['SUM_EFF']            = (1, r.kBlue, 3018, 21, 'BG')
 styleDict['SIG_EFF']            = (1, r.kRed, 3018, 21, 'Signal')
 styleDict['RATIO']              = (0, r.kBlack, 3002, 21, 'Ratio')
@@ -204,7 +204,7 @@ scaleDict['2012']['DATA_MUEG']          = 1.
 scaleDict['2012']['fakes']              = 1.
 
 combineDict = {}
-combineDict['FCNC_M125_t']      = ['FCNC_M125_tbar']
+combineDict['FCNH']             = ['FCNC_M125_t', 'FCNC_M125_tbar']
 combineDict['GJets_15to30']     = ['GJets_30to50', 'GJets_50to80', 'GJets_80to120', 'GJets_120to170', 'GJets_170to300', 'GJets_300to470', 'GJets_470to800']  
 
 combineDict['DATA']             = ['DATA_MUON', 'DATA_ELECTRON', 'DATA_MUEG']

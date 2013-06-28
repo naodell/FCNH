@@ -132,7 +132,8 @@ class PlotProducer(AnalysisTools):
         return hStack
 
 
-    def build_legend(self, dataList, var):
+    def build_legend(self, hists, dataList, var):
+
         legend = r.TLegend(0.91,0.45,1.0,0.89)
         legend.SetFillColor(0)
         legend.SetFillStyle(3001)
@@ -140,14 +141,8 @@ class PlotProducer(AnalysisTools):
         legend.SetLineColor(0)
         legend.SetTextSize(0.045)
 
-        hist = r.TH1D('h_tmp', 'tmp;;', 1, 0, 1)
-        hist.Fill(1)
-        for data in dataList:
-
-            self.set_hist_style(hist, data)
-            print self._styleDict[data]
-            legend.AddEntry(hist, self._styleDict[data][4])
-        hist.Delete()
+        for data in dataList[::-1]:
+            legend.AddEntry(hists[data], self._styleDict[data][4])
 
         return legend
 
@@ -230,7 +225,14 @@ class PlotProducer(AnalysisTools):
         if logScale:
             canvas.SetLogy()
 
-        legend = self.build_legend(self._datasets, 'YieldByCut')
+        ### Build the legend from the list of samples
+        tmpHists = {}
+        for data in self._datasets + self._overlayList:
+            tmpHists[data] = r.TH1D('h1_tmp_' + data, ';;', 1, 0, 1)
+            tmpHists[data].Fill(1)
+            self.set_hist_style(tmpHists[data], data)
+
+        legend = self.build_legend(tmpHists, self._datasets, 'YieldByCut')
 
         for directory in self._directoryList1D:
             stacks, sums = self.get_stack_dict(directory)
@@ -280,7 +282,16 @@ class PlotProducer(AnalysisTools):
             pad1.SetLogy()
 
         ### Build the legend from the list of samples
-        legend = self.build_legend(self._datasets + self._overlayList, 'YieldByCut')
+        tmpHists = {}
+        for data in self._datasets + self._overlayList:
+            tmpHists[data] = r.TH1D('h1_tmp_' + data, ';;', 1, 0, 1)
+            tmpHists[data].Fill(1)
+            self.set_hist_style(tmpHists[data], data)
+
+        legend = self.build_legend(tmpHists, self._datasets, 'YieldByCut')
+
+        for data in self._overlayList:
+            legend.AddEntry(tmpHists[data], self._styleDict[data][4])
 
         ### Starting loop over directories in histogram file
         for directory in self._directoryList1D:
