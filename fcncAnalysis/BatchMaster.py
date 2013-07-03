@@ -164,7 +164,7 @@ class BatchMaster():
         self.make_directory(self._stageDir, clear=False)
 
         ## Creating tarball of current workspace
-        os.system('tar czf {0}/source.tar.gz ../../analysis 2> /dev/null'.format(self._stageDir))
+        os.system('tar czf {0}/source.tar.gz ../../Analysis_CMS 2> /dev/null'.format(self._stageDir))
 
         subprocess.call('cp {0} {1}'.format(self._executable, self._stageDir), shell=True)
         os.chdir(self._stageDir)

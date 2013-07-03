@@ -20,7 +20,7 @@ cmsenv
 
 cp ../../source.tar.gz .
 tar -xzf source.tar.gz
-cd analysis/fcncAnalysis
+cd Analysis_CMS/fcncAnalysis
 cp ../../../../input_${dataName}_${count}.txt input.txt
 rm histos/*root
 

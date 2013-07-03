@@ -81,6 +81,7 @@ class WeightUtils: public TObject {
         TGraphErrors *_muSF2012[4];
         map<string, TH1D*>  puReweight;
 
+        TH2D    *h2_EleMVASF;
         TH2D    *h2_EleFakes;
         TH2D    *h2_MuFakes;
 

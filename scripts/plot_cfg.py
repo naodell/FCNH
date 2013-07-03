@@ -62,22 +62,16 @@ samples     = []
 samples.append('higgs')
 samples.append('Triboson')
 samples.append('ttV')
+#samples.append('WGStar')
 samples.append('Diboson')
 samples.append('top')
 samples.append('QCD')
 samples.append('VJets')
 
-#samples.append('WWZ')
-#samples.append('WZZ')
-#samples.append('ZZZ')
-#samples.append('WWG')
-#samples.append('ttW')
-#samples.append('ttZ')
-#samples.append('ttG')
+#samples.extend(['WWZ', 'WZZ', 'ZZZ', 'WWG'])
+#samples.append(['ttW', 'ttZ', 'ttG'])
 #samples.append('WWJets2L2Nu')
 #samples.append('WZJets3LNu')
-#samples.append('ZZ4mu')
-#samples.extend(['ttbar', 'QCD_20_MU', 'ZJets'])
 
 p_plot = []
 

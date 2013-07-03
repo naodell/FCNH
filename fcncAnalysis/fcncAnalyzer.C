@@ -459,7 +459,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
         MakePlots(leptons, jets, bJets, *recoMET, selectedVtx, evtWeight, evtCategory, 2);
         SetYields(7, evtCategory, evtWeight);
 
-        //!! top-veto !!//
+        //!! select on top decay !!//
         if (bJets.size() != 0) return kTRUE;
         if (jets.size() > 0)
             if (jets[0].Pt() > 40)
@@ -541,14 +541,8 @@ bool fcncAnalyzer::Process(Long64_t entry)
         SetYields(7, evtCategory, evtWeight);
 
         //!! Require at least one b-jet !!//
-        //if (bJets.size() == 0) return kTRUE;
+        if (bJets.size() == 0) return kTRUE;
         //if (jets.size() == 0) return kTRUE;
-
-        if (
-                (bJets.size() == 0 && sumBDiscrJet < 0.3)
-                || (bJets.size() > 0 && sumBDiscrJet < 0.02)
-           )
-            return kTRUE;
 
         MakePlots(leptons, jets, bJets, *recoMET, selectedVtx, evtWeight, evtCategory, 3);
         SetYields(8, evtCategory, evtWeight);

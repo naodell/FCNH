@@ -18,7 +18,9 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
     _muSF2012[2] = (TGraphErrors*)f_muRecoSF2012->Get("DATA_over_MC_combRelIsoPF04dBeta<02_Tight_pt_abseta1.2-2.1_2012ABCD");
     _muSF2012[3] = (TGraphErrors*)f_muRecoSF2012->Get("DATA_over_MC_HighPt_pt_abseta2.1-2.4_2012ABCD");
 
-    //_elRecoFile2012 = new TFile("../data/Muon_ID_iso_Efficiencies_Run_2012ABCD_53X.root.root", "OPEN");
+    // Electron reco (MVA) efficiencies
+    TFile* f_elRecoFile2012 = new TFile("../data/CombinedMethod_ScaleFactors_IdIsoSip.root", "OPEN");
+    h2_EleMVASF = (TH2D*)f_elRecoFile2012->Get("h_electronScaleFactor_IdIsoSip");
 
     // PU weights
     TFile* f_puFile = new TFile("../data/puReweight.root", "OPEN");
@@ -80,7 +82,7 @@ float WeightUtils::GetTotalWeight()
 
     if (!_isRealData) {
         weight *= PUWeight();
-        //weight *= RecoWeight();
+        weight *= RecoWeight();
         //if (_sampleName.compare(0,2,"ZZ") == 0) weight *= ZZWeight(leptons);
     } 
     //cout << _nPU << ", " << weight << endl;
@@ -162,6 +164,7 @@ float WeightUtils::GetMuTriggerEff(TLorentzVector lep) const
 
 float WeightUtils::GetElectronEff(TLorentzVector lep) const
 {
+    /*
     // Scale factors based for 2012 8 TeV data (53X) for tight muon selection
     float eleScale[5][6] = {
         {0.818, 0.928, 0.973, 0.979, 0.984, 0.983},
@@ -191,6 +194,10 @@ float WeightUtils::GetElectronEff(TLorentzVector lep) const
         }
     }
     weight = eleScale[etaBin][ptBin];
+    */
+
+    float weight = 1.;
+    weight = h2_EleMVASF->GetBinContent(h2_EleMVASF->FindBin(lep.Pt(), lep.Eta()));
 
     return weight;
 }
