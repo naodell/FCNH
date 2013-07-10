@@ -32,6 +32,7 @@ else:
 ### This is the config file for manipulating 
 ### histograms using the PlotProducer class.  
 
+plotType    = '.pdf'
 selection   = 'fcnh'
 suffix      = sys.argv[1]
 #suffix      = 'TEST'
@@ -63,6 +64,7 @@ samples.append('higgs')
 samples.append('Triboson')
 samples.append('ttV')
 #samples.append('WGStar')
+samples.extend(['WGStarLNu2E', 'WGStarLNu2Mu', 'WGStarLNu2Tau'])
 samples.append('Diboson')
 samples.append('top')
 samples.append('QCD')
@@ -83,6 +85,7 @@ if doPlots:
 
     plotter = PlotProducer(inputFile = 'fcncAnalysis/combined_histos/' + selection + '_cut1_' + period + batch + '.root', savePath = '', scale = LUMIDATA, isAFS = False)
     plotter.set_period(period)
+    plotter.set_output_type(plotType)
 
     ### DATASETS ###
     ### Specify the datasets you wish to stack 

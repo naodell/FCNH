@@ -19,8 +19,10 @@ styleDict['ZbbToLL']            = (2, r.kRed-8, 1, 1, 'Z+bb')
 styleDict['ZG']                 = (0, r.kRed-9, 1, 1, 'Z#gamma')
 styleDict['WJets']              = (2, r.kAzure-3, 1, 1, 'W+jets')
 styleDict['WbbToLNu']           = (2, r.kAzure-2, 1, 1, 'W+bb')
-styleDict['WG']                 = (0, r.kAzure-1, 1, 1, 'WG')
-styleDict['WGStar']             = (0, r.kAzure, 1, 1, 'WG')
+styleDict['WG']                 = (0, r.kAzure-1, 1, 1, 'WG*')
+styleDict['WGStarLNu2E']        = (0, r.kAzure, 1, 1, 'WG*#ell#nu2e')
+styleDict['WGStarLNu2Mu']       = (0, r.kAzure, 1, 1, 'WG*#ell#nu2#mu')
+styleDict['WGStarLNu2Tau']      = (0, r.kAzure, 1, 1, 'WG*#ell#nu2#tau')
 
 # Madgraph diboson
 styleDict['Diboson']            = (0, r.kGray+1, 1, 1, 'Diboson')

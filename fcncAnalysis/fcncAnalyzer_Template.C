@@ -509,20 +509,10 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
         //!! MET+HT cut !!//
 
-        // Calculate HT and sum discriminator
+        // Calculate HT 
         float HT = 0.;
-        float sumBDiscrJet = 0;
-        float sumBDiscrBJet = 0;
-        for (unsigned i = 0; i < bJets.size(); ++i) { 
-            HT += bJets[i].Pt();
-            sumBDiscrBJet += bJets[i].BDiscriminatorMap("CSV");
-        }
-
-        for (unsigned i = 0; i < jets.size(); ++i) {
-            HT += jets[i].Pt();
-            sumBDiscrJet += jets[i].BDiscriminatorMap("CSV");
-        }
-
+        for (unsigned i = 0; i < bJets.size(); ++i) HT += bJets[i].Pt();
+        for (unsigned i = 0; i < jets.size(); ++i) HT += jets[i].Pt();
 
         if (leptons.size() == 2){
             if (leptons[0].Charge() == leptons[1].Charge()) 
@@ -546,11 +536,9 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
         MakePlots(leptons, jets, bJets, *recoMET, selectedVtx, evtWeight, evtCategory, 3);
         SetYields(8, evtCategory, evtWeight);
-
     }
 
     return kTRUE;
-
 }
 
 void fcncAnalyzer::Terminate()
@@ -679,20 +667,20 @@ void fcncAnalyzer::GetEventCategory(vObj leptons, bitset<18>& evtCategory)
 int fcncAnalyzer::GetHistCategory(bitset<18> evtCategory, unsigned shift)
 {
     /*
-       Returns an index that maps onto category names.  Categories are done
-       in groups of 4 bits so each shift switches the category type.  As of now, 
-       the standard categories go as following (in bits),
+        Returns an index that maps onto category names.  Categories are done
+        in groups of 4 bits so each shift switches the category type.  As of now, 
+        the standard categories go as following (in bits),
 
-       0 - 3:    set bit, os/ss, number of leptons
-       4 - 7:    eta categories
-       8 - 11:   flavor categories
-       12 - 15:  charge categores
+        0 - 3:    set bit, os/ss, number of leptons
+        4 - 7:    eta categories
+        8 - 11:   flavor categories
+        12 - 15:  charge categores
 
-       Additionally there is OSSF and SSSF 3 lepton categories for syncing with
-       the WH analysis.  
+        Additionally there is OSSF and SSSF 3 lepton categories for syncing with
+        the WH analysis.  
 
-16: OSSF
-17: SSSF
+        16: OSSF
+        17: SSSF
      */
 
     unsigned lepCat     = (evtCategory.to_ulong() >> 2) & 0x3;

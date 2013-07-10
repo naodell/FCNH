@@ -87,15 +87,18 @@ class AnalysisTools():
 
             if dataName in self._combineDict:
                 for data in self._combineDict[dataName]:
+                    print data,
                     self._scaleDict[self._period][data] = 1e3*self._scaleDict[self._period][data]/self._histFile.GetDirectory('inclusive/' + data).Get('h1_YieldByCut').GetBinContent(1)
             else:
                 if dataName in self._scaleDict[self._period]:
+                    print dataName,
                     self._scaleDict[self._period][dataName] = 1e3*self._scaleDict[self._period][dataName]/self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCut').GetBinContent(1)
                 else:
                     print '{0} not found in scale dictionary; setting to 0'.format(dataName)
                     self._scaleDict[self._period][dataName] = 0.
                     continue
 
+        print ''
 
 
     def get_hist(self, var, dataName, histType, doScale = True):

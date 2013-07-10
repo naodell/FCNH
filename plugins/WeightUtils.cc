@@ -117,6 +117,8 @@ float WeightUtils::RecoWeight()
         //cout << iLep->Type() << ", " << _recoWeight << "\t";
     }
 
+    if (_leptons.size() > 2) _triggerWeight = 1.;
+
     //cout << endl;
 
 
@@ -197,7 +199,11 @@ float WeightUtils::GetElectronEff(TLorentzVector lep) const
     */
 
     float weight = 1.;
-    weight = h2_EleMVASF->GetBinContent(h2_EleMVASF->FindBin(lep.Pt(), lep.Eta()));
+
+    if (lep.Pt() < 200) 
+        weight = h2_EleMVASF->GetBinContent(h2_EleMVASF->FindBin(lep.Pt(), lep.Eta()));
+    else
+        weight = h2_EleMVASF->GetBinContent(h2_EleMVASF->FindBin(199, lep.Eta()));
 
     return weight;
 }
