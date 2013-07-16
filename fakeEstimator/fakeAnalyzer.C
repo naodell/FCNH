@@ -10,7 +10,7 @@ using namespace std;
 
 const string suffix = "SUFFIX";
 
-const bool  doGen = false;
+const bool  doGenPrint  = false;
 
 const float jetPtCut[]        = {30., 15.};
 const float muPtCut[]         = {10., 3.};
@@ -60,8 +60,7 @@ void fakeAnalyzer::Begin(TTree* tree)
     TH2::SetDefaultSumw2(kTRUE);
 
     histManager = new HistManager();
-
-    histoFile   = new TFile("histos/fakeHistograms.root", "RECREATE");
+    histoFile   = new TFile("fakeHistograms.root", "RECREATE");
 
     histoFile->mkdir("inclusive", "inclusive");
     histoFile->GetDirectory("inclusive", "inclusive")->mkdir(suffix.c_str(), suffix.c_str());
@@ -90,6 +89,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
 {  
     GetEntry(entry);
     selector->PurgeObjects();
+
     histManager->SetDirectory("inclusive/" + suffix);
 
     if (eventCount[1] == 0) {
@@ -99,6 +99,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
     ++eventCount[1];
 
     if (eventCount[1] % (int)1e4 == 0) cout << eventCount[1] << " analyzed!" << endl;
+
 
     bool triggerPass = false;
     triggerPass = triggerSelector->SelectTrigger(triggerStatus, hltPrescale);
@@ -111,20 +112,20 @@ bool fakeAnalyzer::Process(Long64_t entry)
     selector->PVSelector(primaryVtx);
     if (selector->GetSelectedPVs().size() < 1) return kTRUE;
 
-
     /////////////////////////////
     // Get gen level particles //
     /////////////////////////////
 
     vector<TCGenParticle> higgs, dubyas, Zeds, gElectrons, gMuons, gTaus, gLeptons;
+    vector<TCGenJet> gJets;
 
     if (!isRealData) {
-        selector->GenParticleSelector(genParticles, 25, "Higgs");
-        selector->GenParticleSelector(genParticles, 11, "electrons");
-        selector->GenParticleSelector(genParticles, 24, "Dubya");
-        selector->GenParticleSelector(genParticles, 23, "Zeds");
-        selector->GenParticleSelector(genParticles, 13, "muons");
-        selector->GenParticleSelector(genParticles, 15, "taus");
+        selector->GenParticleSelector(genParticles, 25, 3, "Higgs");
+        selector->GenParticleSelector(genParticles, 24, 3, "Dubya");
+        selector->GenParticleSelector(genParticles, 23, 3, "Zeds");
+        selector->GenParticleSelector(genParticles, 11, 3, "electrons");
+        selector->GenParticleSelector(genParticles, 13, 3, "muons");
+        selector->GenParticleSelector(genParticles, 15, 3, "taus");
 
         higgs       = selector->GetSelectedGenParticles("Higgs");
         dubyas      = selector->GetSelectedGenParticles("Dubya");
@@ -136,27 +137,34 @@ bool fakeAnalyzer::Process(Long64_t entry)
         gLeptons.insert(gLeptons.end(), gElectrons.begin(), gElectrons.end());
         gLeptons.insert(gLeptons.end(), gMuons.begin(), gMuons.end());
         gLeptons.insert(gLeptons.end(), gTaus.begin(), gTaus.end());
+
+        selector->GenJetSelector(genJets);
+        gJets = selector->GetSelectedGenJets();
     }
 
-    if (doGen) {
+    if (doGenPrint) {
+        // Higgs
         for (unsigned i = 0; i < higgs.size(); ++i)
             if (higgs[i].GetStatus() == 3) 
                 cout << higgs[i].GetStatus() << ", " << higgs[i].M() << ", " << higgs[i].Mother() << ", higgs" << endl;
+
+        // Vector bosons
         for (unsigned i = 0; i < dubyas.size(); ++i)
             if (dubyas[i].GetStatus() == 3) 
                 cout << "\t status = " << dubyas[i].GetStatus() <<  ", mass = " << dubyas[i].M() << ", pt = " << dubyas[i].Pt() << ", mother = " << dubyas[i].Mother() << ", dubyas" << endl;
         for (unsigned i = 0; i < Zeds.size(); ++i)
             if (Zeds[i].GetStatus() == 3) 
                 cout << "\t status = " << Zeds[i].GetStatus() << ", mass = " << Zeds[i].M() << ", pt = " << Zeds[i].Pt() << ", mother = " << Zeds[i].Mother() << ", Zeds" << endl;
-        for (unsigned i = 0; i < gElectrons.size(); ++i)
-            if (gElectrons[i].GetStatus() == 3) 
-                cout << "\t\t" << gElectrons[i].GetStatus() << ", " << gElectrons[i].Pt() << ", " << gElectrons[i].Mother() << ", electrons" << endl;
-        for (unsigned i = 0; i < gMuons.size(); ++i)
-            if (gMuons[i].GetStatus() == 3) 
-                cout << "\t\t" << gMuons[i].GetStatus() << ", " << gMuons[i].Pt() << ", " << gMuons[i].Mother() << ", muons" << endl;
-        for (unsigned i = 0; i < gTaus.size(); ++i)
-            if (gTaus[i].GetStatus() == 3) 
-                cout << "\t\t" << gTaus[i].GetStatus() << ", " << gTaus[i].Pt() << ", " << gTaus[i].Mother() << ", taus" << endl;
+
+        // leptons
+        if ((gElectrons.size() + gMuons.size() + gTaus.size()) > 0) {
+            for (unsigned i = 0; i < gElectrons.size(); ++i)
+                cout << "\t\t" << gElectrons[i].GetStatus() << ", " << gElectrons[i].Pt() << ", " << gElectrons[i].Eta() << ", " << gElectrons[i].Mother() << ", " << gElectrons[i].Grandmother() << ", electrons" << endl;
+            for (unsigned i = 0; i < gMuons.size(); ++i)
+                cout << "\t\t" << gMuons[i].GetStatus() << ", " << gMuons[i].Pt() << ", " << gMuons[i].Eta() << ", " << gMuons[i].Mother() << ", " << gMuons[i].Grandmother() << ", muons" << endl;
+            for (unsigned i = 0; i < gTaus.size(); ++i)
+                cout << "\t\t" << gTaus[i].GetStatus() << ", " << gTaus[i].Pt() << ", " << gTaus[i].Eta() << ", " << gTaus[i].Mother() << ", " << gTaus[i].Grandmother() << ", taus" << endl;
+        }
 
         cout << "\n" << endl;
     }
@@ -202,6 +210,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
     vector<TCJet> jets      = selector->GetSelectedJets("tight");
     vector<TCJet> bJets     = selector->GetSelectedJets("bJets");
     vector<TCJet> fwdJets   = selector->GetSelectedJets("forward");
+
     jets.insert(jets.end(), fwdJets.begin(), fwdJets.end());
     allJets.insert(allJets.end(), jets.begin(), jets.end());
     allJets.insert(allJets.end(), bJets.begin(), bJets.end());

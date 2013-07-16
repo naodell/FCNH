@@ -25,7 +25,7 @@ styleDict['WGStarLNu2Mu']       = (0, r.kAzure, 1, 1, 'WG*#ell#nu2#mu')
 styleDict['WGStarLNu2Tau']      = (0, r.kAzure, 1, 1, 'WG*#ell#nu2#tau')
 
 # Madgraph diboson
-styleDict['Diboson']            = (0, r.kGray+1, 1, 1, 'Diboson')
+styleDict['Diboson']            = (0, r.kGray+1, 1, 1, 'diboson')
 styleDict['ZZJets2L2Nu']        = (2, r.kGreen+3, 1, 1, 'ZZ#rightarrow2l2#nu')
 styleDict['ZZJets2L2Q']         = (2, r.kBlue-7, 1, 1, 'ZZ#rightarrow2l2q')
 styleDict['ZZJets4L']           = (2, r.kBlue+2, 1, 1, 'ZZ#rightarrow4l')
@@ -154,7 +154,7 @@ scaleDict['2012']['ttbar']              = 234
 scaleDict['2012']['tW']                 = 11.77
 scaleDict['2012']['tbarW']              = 11.77
 scaleDict['2012']['t_t-channel']        = 55.53
-scaleDict['2012']['tbar_t-channel']     = 30.0
+scaleDict['2012']['tbar_t-channel']     = 30.7
 scaleDict['2012']['ttW']                = 0.249
 scaleDict['2012']['ttZ']                = 0.208
 scaleDict['2012']['ttG']                = 1.44

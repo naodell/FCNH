@@ -18,11 +18,12 @@ class TableMaker(AnalysisTools):
 
         histDict = {}
         for data in self._datasets:
-            hist = self.get_hist(variable, data, histType)
+            if data in self._combineDict:
+                hist = self.combine_samples(variable, data, histType)
+            else:
+                hist =  self.get_hist(variable, data, histType)
 
             if hist is None: continue
-
-            hist = self.combine_samples(hist, variable, data, histType)
 
             if histType == '1D':
                 histDict[data] = hist
@@ -96,33 +97,40 @@ class TableMaker(AnalysisTools):
             sigErr2  = 0.
             bgErr2   = 0.
 
+
+            # Calculate total background and signal
+            for dataset in self._datasets:
+                value = histDict[dataset].GetBinContent(count)
+                error = histDict[dataset].GetBinError(count)
+                eff   = value/histDict[dataset].GetBinContent(1)
+
+                if dataset in ['DATA']:
+                    continue
+
+                if dataset in ['FCNH', 'HIGGS', 'SIGNAL']: # Add extra signal names as needed
+                    totalSig  += value
+                    sigErr2   += pow(error, 2)
+
+                else:
+                    totalBG += value
+                    bgErr2  += pow(error, 2)
+
+
             for column in self._columnList:
+
                 if column in self._datasets:
                     value = histDict[column].GetBinContent(count)
                     error = histDict[column].GetBinError(count)
                     eff   = value/histDict[column].GetBinContent(1)
 
-                    if column in ['FCNC_M125_t', 'FCNC_M145_t', 'Signal']:
-                        if doErrors:
-                            self._outFile.write(' {3} {0:.2f} $\pm$ {1:.2f} ({2:.2f} \%) '.format(value, error, eff*100, delimiter))
-                        else:
-                            self._outFile.write(' {3} {0:.2f} ({2:.2f} \%) '.format(value, error, eff*100, delimiter))
-
-                        #self._outFile.write(pStatement.format(value, error, eff*100, delimiter))
-                        totalSig  += value
-                        sigErr2   += pow(error, 2)
-
+                if column in ['FCNH', 'HIGGS', 'SIGNAL']:
+                    if doErrors:
+                        self._outFile.write(' {3} {0:.2f} $\pm$ {1:.2f} ({2:.2f} \%) '.format(value, error, eff*100, delimiter))
                     else:
-                        totalBG += value
-                        bgErr2  += pow(error, 2)
-
-                        #if not self._doSumBG:
-                        self._outFile.write(pStatement.format(value, error, eff*100, delimiter))
-
+                        self._outFile.write(' {3} {0:.2f} ({2:.2f} \%) '.format(value, error, eff*100, delimiter))
 
                 elif column is 'DATA':
-                    value = histDict['DATA_MUON'].GetBinContent(count)
-
+                    value = histDict['DATA'].GetBinContent(count)
                     self._outFile.write(' {0} {1}'.format(delimiter, int(value)))
 
                 elif column == 'BG':
@@ -132,7 +140,7 @@ class TableMaker(AnalysisTools):
                     if totalBG is not 0:
                         SB = totalSig/totalBG
                     else:
-                        pStatement = 'GAZILLIONS'
+                        pStatement = 'nan'
 
                     sbErr = SB*sqrt(pow(sqrt(sigErr2)/totalSig, 2) + pow(sqrt(bgErr2)/totalBG, 2)) 
                     self._outFile.write('{0} {1} '.format(delimiter, SB*100))
@@ -141,6 +149,10 @@ class TableMaker(AnalysisTools):
                     significance    = totalSig/sqrt(totalBG+totalSig)
                     significanceErr = pow((totalSig + totalBG), -3/2)*sqrt(pow((totalSig + totalBG),2)*sigErr2 + pow(totalSig,2)*bgErr2)
                     self._outFile.write('{0} {1} '.format(delimiter, significance*100))
+
+                else:
+                    self._outFile.write(pStatement.format(value, error, eff*100, delimiter))
+
 
             if self._delimiter == '|':
                 self._outFile.write('| \n')

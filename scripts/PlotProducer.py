@@ -59,6 +59,35 @@ def set_hist_style(hist, dataType, styleDict, histType = '1D'):
     hist.SetLineColor(styleDict[dataType][1])
 
 
+def build_legend(hists, dataList, var, styleDict):
+
+    legend = r.TLegend(0.91,0.45,1.0,0.89)
+    legend.SetFillColor(0)
+    legend.SetFillStyle(3001)
+    legend.SetLineWidth(0)
+    legend.SetLineColor(0)
+    legend.SetTextSize(0.045)
+
+    for data in dataList[::-1]:
+        legend.AddEntry(hists[data], styleDict[data][4])
+
+    return legend
+
+def plotter_wrapper(plotter, category, inputPath, outputPath, do1D, do2D):
+
+    plotter.set_input_file(inputPath)
+    plotter.set_save_path(outputPath)
+    plotter._category = category
+
+    if do1D:
+        plotter.make_overlays_1D(logScale = True, doRatio = True, doEff = False)
+    if do2D:
+        plotter.make_overlays_2D(logScale = True, doProjection = False)
+
+####                                      ####  
+#### Beginning of PlotProducer definition ####
+####                                      ####  
+
 class PlotProducer(AnalysisTools):
     '''For manipulating histograms'''
     def __init__(self, inputFile, scale = 1., savePath = '', isAFS = False):
@@ -152,21 +181,6 @@ class PlotProducer(AnalysisTools):
         return hStack
 
 
-    def build_legend(self, hists, dataList, var):
-
-        legend = r.TLegend(0.91,0.45,1.0,0.89)
-        legend.SetFillColor(0)
-        legend.SetFillStyle(3001)
-        legend.SetLineWidth(0)
-        legend.SetLineColor(0)
-        legend.SetTextSize(0.045)
-
-        for data in dataList[::-1]:
-            legend.AddEntry(hists[data], self._styleDict[data][4])
-
-        return legend
-
-
 
     def get_ratio(self, hist1, hist2):
         '''
@@ -235,7 +249,7 @@ class PlotProducer(AnalysisTools):
             tmpHists[data].Fill(1)
             set_hist_style(tmpHists[data], data, self._styleDict)
 
-        legend = self.build_legend(tmpHists, self._datasets, 'YieldByCut')
+        legend = build_legend(tmpHists, self._datasets, 'YieldByCut', self._styleDict)
 
         for directory in self._directoryList1D:
             stacks, sums = self.get_stack_dict(directory)
@@ -291,7 +305,7 @@ class PlotProducer(AnalysisTools):
             tmpHists[data].Fill(1)
             set_hist_style(tmpHists[data], data, self._styleDict)
 
-        legend = self.build_legend(tmpHists, self._datasets, 'YieldByCut')
+        legend = build_legend(tmpHists, self._datasets, 'YieldByCut', self._styleDict)
 
         for data in self._overlayList:
             legend.AddEntry(tmpHists[data], self._styleDict[data][4])
@@ -523,4 +537,19 @@ class PlotProducer(AnalysisTools):
                 canvas.SaveAs(self._savePath + '/' + self._category + '/' + directory + '/' + var + self._plotType)
 
                 #legend.Draw()
+
+####                                      ####  
+#### End of PlotProducer class definition ####
+####                                      ####  
+
+def plotter_wrapper(plotter, category, inputPath, outputPath, do1D, do2D):
+
+    plotter.set_input_file(inputPath)
+    plotter.set_save_path(outputPath)
+    plotter._category = category
+
+    if do1D:
+        plotter.make_overlays_1D(logScale = True, doRatio = True, doEff = False)
+    if do2D:
+        plotter.make_overlays_2D(logScale = True, doProjection = False)
 

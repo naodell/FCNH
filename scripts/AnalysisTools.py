@@ -86,6 +86,7 @@ class AnalysisTools():
             if dataName[:4] == 'DATA': continue
 
             if dataName in self._combineDict:
+                print dataName, ':\t',
                 for data in self._combineDict[dataName]:
                     print data,
                     self._scaleDict[self._period][data] = 1e3*self._scaleDict[self._period][data]/self._histFile.GetDirectory('inclusive/' + data).Get('h1_YieldByCut').GetBinContent(1)
@@ -98,7 +99,8 @@ class AnalysisTools():
                     self._scaleDict[self._period][dataName] = 0.
                     continue
 
-        print ''
+            print ''
+        print '\n'
 
 
     def get_hist(self, var, dataName, histType, doScale = True):

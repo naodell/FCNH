@@ -26,6 +26,7 @@ void run(Long64_t nEntries = 1e10) {
     gROOT->LoadMacro("../plugins/TriggerSelector.cc+");
     gROOT->LoadMacro("../plugins/HistManager.cc+");
     gROOT->LoadMacro("../plugins/Selector.cc+");
+    gROOT->LoadMacro("../plugins/EGammaMvaEleEstimator.cc+");
 
     TChain* fChain = new TChain("ntupleProducer/eventTree");
 

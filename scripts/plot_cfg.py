@@ -6,19 +6,6 @@ import ROOT as r
 from PlotProducer import *
 from TableMaker import *
 
-### Wrapper function for multi-threading ###
-
-def plotter_wrapper(plotter, category, inputPath, outputPath, do1D, do2D):
-
-    plotter.set_input_file(inputPath)
-    plotter.set_save_path(outputPath)
-    plotter._category = category
-
-    if do1D:
-        plotter.make_overlays_1D(logScale = True, doRatio = True, doEff = False)
-    if do2D:
-        plotter.make_overlays_2D(logScale = True, doProjection = False)
-
 now         = datetime.datetime.now()
 currentDate = '{0:02d}/{1:02d}/{2:02d}'.format(now.year, now.month, now.day)
 
@@ -32,7 +19,7 @@ else:
 ### This is the config file for manipulating 
 ### histograms using the PlotProducer class.  
 
-plotType    = '.pdf'
+plotType    = '.png'
 selection   = 'fcnh'
 suffix      = sys.argv[1]
 #suffix      = 'TEST'
@@ -44,13 +31,13 @@ period      = '2012'
 LUMIDATA    = 19.5
 
 doPlots     = True
-doYields    = False
+doYields    = True
 
 doOS        = True
 doSS        = True
 do3l        = True
 do1D        = True
-do2D        = False
+do2D        = True
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive', 'ss_mumu', 'ss_ee', 'ss_emu'] 
@@ -64,14 +51,14 @@ samples.append('higgs')
 samples.append('Triboson')
 samples.append('ttV')
 #samples.append('WGStar')
-samples.extend(['WGStarLNu2E', 'WGStarLNu2Mu', 'WGStarLNu2Tau'])
+#samples.extend(['WGStarLNu2E', 'WGStarLNu2Mu', 'WGStarLNu2Tau'])
 samples.append('Diboson')
 samples.append('top')
 samples.append('QCD')
 samples.append('VJets')
 
 #samples.extend(['WWZ', 'WZZ', 'ZZZ', 'WWG'])
-#samples.append(['ttW', 'ttZ', 'ttG'])
+#samples.extend(['ttW', 'ttZ', 'ttG'])
 #samples.append('WWJets2L2Nu')
 #samples.append('WZJets3LNu')
 
@@ -95,7 +82,7 @@ if doPlots:
     plotter._overlayList.extend(['DATA'])
     plotter._overlayList.extend(['FCNH'])
 
-    plotter.get_scale_factors(['FCNC_M125_t', 'FCNC_M125_tbar'])
+    plotter.get_scale_factors(['FCNH'])
     #plotter.get_scale_factors()
 
     ### VARIABLES ###
@@ -218,17 +205,17 @@ print '\n'
 if doYields:
     doPresel        = True
     outFile         = file('yields/.yields_tmp.tex', 'w')
-    samples         = samples 
     categoryNames   = []
     yieldTable      = TableMaker('fcncAnalysis/combined_histos/' + selection + '_cut1_' + period + batch + '.root', outFile, scale = LUMIDATA, delimiter = '&', doSumBG = True)
 
     yieldTable.set_period(period)
 
-    yieldTable._columnList  = ['ttbar', 'ttZ', 'WWJets2L2Nu', 'ZJets', 'BG', 'DATA', 'FCNC_M125_t']#, 'Significance'] 
+    #yieldTable._columnList  = ['higgs', 'Triboson', 'ttV', 'Diboson', 'top', 'QCD', 'VJets', 'BG']#, 'DATA', 'FCNH']#, 'Significance'] 
+    yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
     yieldTable.add_datasets(samples, Clear = True)
-    yieldTable.add_datasets('FCNC_M125_t')
-    yieldTable.add_datasets('DATA_MUON')
+    yieldTable.add_datasets('FCNH')
+    yieldTable.add_datasets('DATA')
 
     print '\n\n Printing yields...\n'
 
@@ -254,7 +241,7 @@ if doYields:
             #yieldTable._rowList.extend(['.', '.', '.', '.', '.', '.', 'BDT > -0.3']) 
 
         elif category[:2] == 'ss' and doSS:
-            yieldTable._rowList.extend(['ss lepton preselection', 'Z removal', 'MET > 30 \& HT > 75', '1 b-jet']) #, '1 jet'])
+            yieldTable._rowList.extend(['ss lepton preselection', '.', 'MET \& HT', '1 b-jet']) #, '1 jet'])
 
         elif category[:2] == 'os' and doOS:
             yieldTable._rowList.extend(['2 os leptons', 'MET cut', '1 b-jet/1 jet', 'Z removal'])
