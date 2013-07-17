@@ -215,7 +215,7 @@ combineDict['GJets_15to30']     = ['GJets_30to50', 'GJets_50to80', 'GJets_80to12
 
 combineDict['DATA']             = ['DATA_MUON', 'DATA_ELECTRON', 'DATA_MUEG']
 combineDict['VJets']            = ['ZJets', 'ZJets_M-10To50', 'WJets']
-combineDict['WGStar']            = ['WGStarLNu2E', 'WGStarLNu2Mu', 'WGStarLNu2Tau']
+combineDict['WGStar']           = ['WGStarLNu2E', 'WGStarLNu2Mu', 'WGStarLNu2Tau']
 combineDict['top']              = ['ttbar', 'tW', 'tbarW', 't_t-channel', 'tbar_t-channel']
 combineDict['Diboson']          = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'WZJets3LNu', 'WWJets2L2Nu', 'ZZJets2L2Nu']
 combineDict['ttV']              = ['ttZ', 'ttW', 'ttG']

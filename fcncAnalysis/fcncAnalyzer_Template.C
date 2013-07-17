@@ -16,7 +16,7 @@ const bool    doPrintout    = false;
 const bool    doGenPrint    = false;
 const bool    doWH          = false;
 const bool    doMVA         = true;
-const bool    doTrees       = true;
+const bool    doTrees       = false;
 
 
 /////////////////

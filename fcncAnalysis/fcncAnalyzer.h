@@ -120,7 +120,6 @@ class fcncAnalyzer : public TSelector {
         Float_t     DileptonMassOS;
         Float_t     TrileptonMass;
         Float_t     DileptonDROS;
-        Float_t     AvgBDiscr;
         Int_t       flavorCat;
         Int_t       BJetMult;
         Int_t       JetMult;

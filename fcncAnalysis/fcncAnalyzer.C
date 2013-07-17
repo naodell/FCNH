@@ -87,7 +87,6 @@ void fcncAnalyzer::Begin(TTree* tree)
     passTree->Branch("TrileptonMass", &TrileptonMass, "TrileptonMass/F");
     passTree->Branch("DileptonMassOS", &DileptonMassOS, "DileptonMassOS/F");
     passTree->Branch("DileptonDROS", &DileptonDROS, "DileptonDROS/F");
-    passTree->Branch("AvgBDiscr", &AvgBDiscr, "AvgBDiscr/F");
     passTree->Branch("flavorCat", &flavorCat, "flavorCat/I");
     passTree->Branch("JetMult", &JetMult, "JetMult/I");
     passTree->Branch("BJetMult", &BJetMult, "BJetMult/I");
@@ -102,7 +101,6 @@ void fcncAnalyzer::Begin(TTree* tree)
         mvaReader->AddVariable("TrileptonMass", &TrileptonMass);
         mvaReader->AddVariable("DileptonMassOS", &DileptonMassOS);
         mvaReader->AddVariable("DileptonDROS", &DileptonDROS);
-        mvaReader->AddVariable("AvgBDiscr", &AvgBDiscr);
         mvaReader->AddVariable("flavorCat", &f_flavorCat);
         mvaReader->AddVariable("JetMult", &f_JetMult);
         mvaReader->AddVariable("BJetMult", &f_BJetMult);
@@ -1364,7 +1362,6 @@ void fcncAnalyzer::SetVarsMVA(vObj leptons, vector<TCJet> bJets, vector<TCJet> j
     MET             = met.Mod();
     H_T             = HT;
     TrileptonMass   = (leptons[0] + leptons[1] + leptons[2]).M();
-    AvgBDiscr       = avgBDiscrBJet + avgBDiscrJet;
     BJetMult        = bJets.size();
     JetMult         = jets.size();
     weights         = evtWeight;

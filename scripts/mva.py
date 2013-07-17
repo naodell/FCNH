@@ -54,16 +54,18 @@ if __name__ == '__main__':
     # Samples for merging
     bgList  = []
     bgList.extend(['ZJets', 'ZJets_M-10To50', 'WJets']) # V+jets
-    bgList.extend(['WWJets2L2Nu', 'ZZJets2L2Nu', 'ZZJets2L2Q', 'WZJets2L2Q']) # Diboson to 2l + X
+    bgList.extend(['WWJets2L2Nu', 'ZZJets2L2Nu']) #, 'ZZJets2L2Q', 'WZJets2L2Q']) # Diboson to 2l + X
     bgList.extend(['WZJets3LNu']) # WZ to 3l+nu
     bgList.extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']) # ZZ to 4l
-    bgList.extend(['tW', 'ttbar', 'ttZ', 'ttW']) # Top
+    bgList.extend(['tW', 'tbarW', 't_t-channel', 't_t-channel', 'ttbar']) # Top
+    bgList.extend(['ttZ', 'ttW', 'ttG']) # Top+V
+    bgList.extend(['QCD_20_MU', 'QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_EM', 'QCD_170-250_EM', 'QCD_250-350_EM', 'QCD_350_EM']) #QCD
+    bgList.extend(['ggHToZZ4L_M-125', 'WHToWWW3L_M-125']) # Higgs
 
     sigList = ['FCNC_M125_t', 'FCNC_M125_tbar']
-    #sigList = ['FCNC_M125']
 
     # Input file and tree merging
-    inFile  = r.TFile('histos/fcnh_cut5_2012_20130422_153003.root', 'OPEN')
+    inFile  = r.TFile('fcncAnalysis/combined_histos/fcnh_cut5_2012_20130715_172332.root', 'OPEN')
 
     bgTrees     = add_scale_branch(inFile, bgList, scales)
     sigTrees    = add_scale_branch(inFile, sigList, scales)
@@ -71,9 +73,9 @@ if __name__ == '__main__':
     ### Start settting up MVA ###
 
     # Logon not automatically loaded through PyROOT (logon loads TMVA library) load also GUI
-    r.gROOT.SetMacroPath( "~/root/tmva/test/." )
-    r.gROOT.Macro       ( "~/root/tmva/test/TMVAlogon.C" )    
-    r.gROOT.LoadMacro   ( "~/root/tmva/test/TMVAGui.C" )
+    r.gROOT.SetMacroPath("${ROOTSYS}/tmva/test/.") 
+    r.gROOT.Macro       ("${ROOTSYS}/tmva/test/TMVAlogon.C")
+    r.gROOT.LoadMacro   ("${ROOTSYS}/tmva/test/TMVAGui.C")
 
     # Output file
     outputFile = r.TFile('test.root', 'RECREATE' )
@@ -93,7 +95,6 @@ if __name__ == '__main__':
     factory.AddVariable('TrileptonMass', 'TrileptonMass', 'GeV', 'F')
     factory.AddVariable('DileptonMassOS', 'DileptonMassOS', 'GeV', 'F')
     factory.AddVariable('DileptonDROS', 'DileptonDROS', 'rad', 'F')
-    factory.AddVariable('SumBDiscr', 'SumBDiscr', '', 'F')
     factory.AddVariable('JetMult', 'JetMult', '', 'I')
     factory.AddVariable('BJetMult', 'BJetMult', '', 'I')
 
