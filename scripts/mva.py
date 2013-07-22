@@ -65,7 +65,7 @@ if __name__ == '__main__':
     sigList = ['FCNC_M125_t', 'FCNC_M125_tbar']
 
     # Input file and tree merging
-    inFile  = r.TFile('fcncAnalysis/combined_histos/fcnh_cut5_2012_20130715_172332.root', 'OPEN')
+    inFile  = r.TFile('histos/fcnh_cut5_2012_20130715_172332.root', 'OPEN')
 
     bgTrees     = add_scale_branch(inFile, bgList, scales)
     sigTrees    = add_scale_branch(inFile, sigList, scales)
@@ -97,6 +97,7 @@ if __name__ == '__main__':
     factory.AddVariable('DileptonDROS', 'DileptonDROS', 'rad', 'F')
     factory.AddVariable('JetMult', 'JetMult', '', 'I')
     factory.AddVariable('BJetMult', 'BJetMult', '', 'I')
+    #factory.AddVariable('flavorCat', 'flavorCat', '', 'I')
 
     for tree in sigTrees:
         factory.AddSignalTree(tree, 1.)
