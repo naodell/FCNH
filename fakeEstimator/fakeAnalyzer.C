@@ -8,7 +8,7 @@ using namespace std;
 //Analysis cuts//
 /////////////////
 
-const string suffix = "SUFFIX";
+const string suffix = "TEST";
 
 const bool  doGenPrint  = false;
 
@@ -16,9 +16,6 @@ const float jetPtCut[]        = {30., 15.};
 const float muPtCut[]         = {10., 3.};
 const float elePtCut[]        = {10., 10.};
 const float phoPtCut[]        = {10., 10.};
-const float leptonPtCut[]     = {20., 20.};
-const float metCut[]          = {40., 30.};
-const float bJetVeto          = 1e9;
 
 float ptBins[]   = {10., 15., 20., 25., 30., 35., 50., 80., 120., 250.};
 float etaBins[]  = {0., 1., 1.479, 2., 2.5};    
@@ -208,7 +205,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
     // Get jets
     vector<TCJet> allJets;
     vector<TCJet> jets      = selector->GetSelectedJets("tight");
-    vector<TCJet> bJets     = selector->GetSelectedJets("bJets");
+    vector<TCJet> bJets     = selector->GetSelectedJets("bJetsL");
     vector<TCJet> fwdJets   = selector->GetSelectedJets("forward");
 
     jets.insert(jets.end(), fwdJets.begin(), fwdJets.end());
@@ -229,7 +226,6 @@ bool fakeAnalyzer::Process(Long64_t entry)
             "h1_jetMult", "jet multiplicity; N_{jets}; Entries / bin", 10, -0.5, 9.5);
     histManager->Fill1DHist(bJets.size(),
             "h1_bJetMult", "b-jet multiplicity; N_{b-jet}; Entries / bin", 10, -0.5, 9.5);
-
 
 
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
@@ -262,8 +258,11 @@ bool fakeAnalyzer::Process(Long64_t entry)
             || allJets.size() == 0
             ) return kTRUE;
 
+    //return kTRUE;
+
     // Do numerator/denominator counting for estimate. 
     // electrons first..
+
 
     for (unsigned i = 0; i < 4; ++i) { 
 

@@ -467,7 +467,9 @@ void Selector::JetSelector(TClonesArray* jets)
                 //else {
                 //if (corJet.BDiscriminatorMap("TCHE") > 2.1) 
                 if (corJet.BDiscriminatorMap("CSV") > 0.679) 
-                    _selJets["bJets"].push_back(corJet);
+                    _selJets["bJetsMedium"].push_back(corJet);
+                else if (corJet.BDiscriminatorMap("CSV") > 0.244) 
+                    _selJets["bJetsLoose"].push_back(corJet);
                 else if (
                         corJet.VtxNTracks() > 0
                         && corJet.VtxSumPtFrac() > 0. 

@@ -62,7 +62,7 @@ class TableMaker(AnalysisTools):
                 else:
                     self._outFile.write('& {0} '.format(data))
 
-            self._outFile.write('\\\\ \\hline \n')
+            self._outFile.write('\\\\ \\hline \\hline \n')
 
 
     def print_table(self, histDict, doErrors = False, doEff = False, startBin=0):
@@ -157,10 +157,10 @@ class TableMaker(AnalysisTools):
             if self._delimiter == '|':
                 self._outFile.write('| \n')
             elif self._delimiter == '&':
-                self._outFile.write(' \\\\ \hline \n')
+                self._outFile.write(' \\\\ \n')
 
         if self._delimiter == '&':
-            self._outFile.write('\t\\end{tabular} \n')
+            self._outFile.write('\t\\hline \n\t\\end{tabular} \n')
 
             caption = '\t\\caption{' + self._category + '} \n'
             self._outFile.write(caption.replace('_', ' '))
