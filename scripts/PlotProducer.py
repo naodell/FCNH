@@ -500,7 +500,7 @@ class PlotProducer(AnalysisTools):
                 #sigBox.SetLineColor(0)
 
                 for (hist, data) in hists[var]:
-                    if data in ['Signal', 'FCNC_M125_t']:
+                    if data in ['Signal', 'FCNH']:
                         pad1.cd()
                         hist.GetYaxis().SetTitle('')
                         hist.GetYaxis().SetLabelOffset(0.01)

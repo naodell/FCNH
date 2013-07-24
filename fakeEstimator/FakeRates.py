@@ -3,10 +3,16 @@ import subprocess
 import ROOT as r
 
 canvas  = r.TCanvas('canvas', 'canvas', 800, 600)
-inFile  = r.TFile('histos/fakeHistograms.root', 'OPEN')
-outFile = r.TFile('histos/fakeRates.root', 'RECREATE') 
+inFile  = r.TFile('fakeHistograms.root', 'OPEN')
+outFile = r.TFile('fakeRates.root', 'RECREATE') 
 
-fakeCategories = ['ele_v1', 'ele_v2', 'ele_v3', 'ele_v4']#, 'mu_v1', 'mu_v2'] 
+elCategories = ['ele_v1', 'ele_v2', 'ele_v3', 'ele_v4'] 
+muCategories = ['mu_v1']#, 'mu_v2'] 
+
+fakeCategories = []
+#fakeCategories.extend(elCategories)
+fakeCategories.extend(muCategories)
+
 
 canvas.SetGridx()
 canvas.SetGridy()

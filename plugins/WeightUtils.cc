@@ -117,7 +117,7 @@ float WeightUtils::RecoWeight()
         //cout << iLep->Type() << ", " << _recoWeight << "\t";
     }
 
-    if (_leptons.size() > 2) _triggerWeight = 1.;
+    if (_leptons.size() != 2) _triggerWeight = 1.;
 
     //cout << endl;
 

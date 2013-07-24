@@ -28,7 +28,7 @@ cutList     = ['1_preselection']
 cutList.extend(['2_Z_veto', '3_MET', '4_bjet_cut', '5_BDT'])
 
 period      = '2012'
-LUMIDATA    = 19.5
+LUMIDATA    = 19.7 #{'DATA_MUON': 20.31, 'DATA_ELECTRON': 19.7384, 'DATA_MUEG': 19.7794}
 
 doPlots     = True
 doYields    = True
@@ -210,8 +210,8 @@ if doYields:
 
     yieldTable.set_period(period)
 
-    #yieldTable._columnList  = ['higgs', 'Triboson', 'ttV', 'Diboson', 'top', 'QCD', 'VJets', 'BG']#, 'DATA', 'FCNH']#, 'Significance'] 
-    yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
+    yieldTable._columnList  = ['higgs', 'Triboson', 'ttV', 'Diboson', 'top', 'QCD', 'VJets', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
+    #yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
     yieldTable.add_datasets(samples, Clear = True)
     yieldTable.add_datasets('FCNH')
@@ -241,7 +241,7 @@ if doYields:
             #yieldTable._rowList.extend(['.', '.', '.', '.', '.', '.', 'BDT > -0.3']) 
 
         elif category[:2] == 'ss' and doSS:
-            yieldTable._rowList.extend(['ss lepton preselection', '.', 'MET \& HT', '1 b-jet']) #, '1 jet'])
+            yieldTable._rowList.extend(['ss lepton', '.', 'MET \& HT', '1 b-jet']) #, '1 jet'])
 
         elif category[:2] == 'os' and doOS:
             yieldTable._rowList.extend(['2 os leptons', 'MET cut', '1 b-jet/1 jet', 'Z removal'])
@@ -257,3 +257,5 @@ if doYields:
 
     outFile.close()
     subprocess.call('pdflatex -output-dir=yields yields/yields.tex', shell = True)
+    subprocess.call('cp yields/yields.pdf plots/{0}/{1}_{2}/.'.format(currentDate, selection, suffix), shell = True)
+    subprocess.call('cp yields/.yields_tmp.tex plots/{0}/{1}_{2}/yields.tex'.format(currentDate, selection, suffix), shell = True)
