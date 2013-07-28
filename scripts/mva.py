@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
     # Configuration parameters
     methods = ['BDT']
-    doGUI = False
+    doGUI   = False
 
     # Scale factors
     paramFile = open('scripts/fcncParams.pkl', 'rb')
@@ -95,7 +95,7 @@ if __name__ == '__main__':
     r.TMVA.gConfig().GetIONames().fWeightFileDir = weightDir
 
     # Output file
-    outputFile = r.TFile('mvaOutput_{0}.root'.format(batch), 'RECREATE' )
+    outputFile = r.TFile('mvaOutput/{0}.root'.format(batch), 'RECREATE' )
 
     # Create instance of TMVA factory (see TMVA/macros/TMVAClassification.C for more factory options)
     # All TMVA output can be suppressed by removing the "!" (not) in 
@@ -142,9 +142,10 @@ if __name__ == '__main__':
 
     outputFile.Close()
 
-    r.gROOT.ProcessLine('TMVAGui(\"mvaOutput_{0}.root\")'.format(batch))
-    r.gApplication.Run() 
+    #r.gROOT.ProcessLine('TMVAGui(\"mvaOutput_{0}.root\")'.format(batch))
+    #r.gApplication.Run() 
 
-    #if doGUI:
-    #    r.gROOT.ProcessLine('TMVAGui(\"test.root\")')
-    #    r.gApplication.Run() 
+    if doGUI:
+        r.gROOT.ProcessLine('TMVAGui(\"test.root\")')
+        r.gApplication.Run() 
+
