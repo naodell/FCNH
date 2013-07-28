@@ -142,10 +142,7 @@ if __name__ == '__main__':
 
     outputFile.Close()
 
-    #r.gROOT.ProcessLine('TMVAGui(\"mvaOutput_{0}.root\")'.format(batch))
-    #r.gApplication.Run() 
-
     if doGUI:
-        r.gROOT.ProcessLine('TMVAGui(\"test.root\")')
+        r.gROOT.ProcessLine('TMVAGui(\"mvaOutput/{0}.root\")')
         r.gApplication.Run() 
 
