@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-import subprocess, shlex, time, pickle, math
+import subprocess, shlex, time, pickle, math, sys, os
 from array import array
 import ROOT as r
 
@@ -43,9 +43,17 @@ def add_scale_branch(inputFile, sampleList, scales):
 
 if __name__ == '__main__':
 
+    ### Get command line arguements
+    if len(sys.argv) > 1:
+        batch = sys.argv[1]
+    else:
+        print 'Must provide information about input file!'
+        exit()
+
+
     # Configuration parameters
     methods = ['BDT']
-    doGUI = False
+    doGUI   = False
 
     # Scale factors
     paramFile = open('scripts/fcncParams.pkl', 'rb')
@@ -56,16 +64,16 @@ if __name__ == '__main__':
     bgList.extend(['ZJets', 'ZJets_M-10To50', 'WJets']) # V+jets
     bgList.extend(['WWJets2L2Nu', 'ZZJets2L2Nu']) #, 'ZZJets2L2Q', 'WZJets2L2Q']) # Diboson to 2l + X
     bgList.extend(['WZJets3LNu']) # WZ to 3l+nu
-    bgList.extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']) # ZZ to 4l
-    bgList.extend(['tW', 'tbarW', 't_t-channel', 't_t-channel', 'ttbar']) # Top
-    bgList.extend(['ttZ', 'ttW', 'ttG']) # Top+V
-    bgList.extend(['QCD_20_MU', 'QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_EM', 'QCD_170-250_EM', 'QCD_250-350_EM', 'QCD_350_EM']) #QCD
-    bgList.extend(['ggHToZZ4L_M-125', 'WHToWWW3L_M-125']) # Higgs
+    #bgList.extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']) # ZZ to 4l
+    #bgList.extend(['tW', 'tbarW', 't_t-channel', 't_t-channel', 'ttbar']) # Top
+    #bgList.extend(['ttZ', 'ttW', 'ttG']) # Top+V
+    #bgList.extend(['QCD_20_MU', 'QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_EM', 'QCD_170-250_EM', 'QCD_250-350_EM', 'QCD_350_EM']) #QCD
+    #bgList.extend(['ggHToZZ4L_M-125', 'WHToWWW3L_M-125']) # Higgs
 
     sigList = ['FCNC_M125_t', 'FCNC_M125_tbar']
 
     # Input file and tree merging
-    inFile  = r.TFile('fcncAnalysis/combined_histos/fcnh_cut5_2012_20130715_172332.root', 'OPEN')
+    inFile  = r.TFile('histos/fcnh_cut5_2012_{0}.root'.format(batch), 'OPEN')
 
     bgTrees     = add_scale_branch(inFile, bgList, scales)
     sigTrees    = add_scale_branch(inFile, sigList, scales)
@@ -77,8 +85,17 @@ if __name__ == '__main__':
     r.gROOT.Macro       ("${ROOTSYS}/tmva/test/TMVAlogon.C")
     r.gROOT.LoadMacro   ("${ROOTSYS}/tmva/test/TMVAGui.C")
 
+    # Change output directory for weights
+    weightDir = 'weights/{0}'.format(batch)
+    if not os.path.exists(weightDir):
+        os.system('mkdir -p {0}'.format(weightDir))
+    elif len(os.listdir(weightDir)) is not 0:
+        os.system('rm -r {0}'.format(weightDir))
+
+    r.TMVA.gConfig().GetIONames().fWeightFileDir = weightDir
+
     # Output file
-    outputFile = r.TFile('test.root', 'RECREATE' )
+    outputFile = r.TFile('mvaOutput/{0}.root'.format(batch), 'RECREATE' )
 
     # Create instance of TMVA factory (see TMVA/macros/TMVAClassification.C for more factory options)
     # All TMVA output can be suppressed by removing the "!" (not) in 
@@ -97,6 +114,7 @@ if __name__ == '__main__':
     factory.AddVariable('DileptonDROS', 'DileptonDROS', 'rad', 'F')
     factory.AddVariable('JetMult', 'JetMult', '', 'I')
     factory.AddVariable('BJetMult', 'BJetMult', '', 'I')
+    #factory.AddVariable('flavorCat', 'flavorCat', '', 'I')
 
     for tree in sigTrees:
         factory.AddSignalTree(tree, 1.)
@@ -124,9 +142,7 @@ if __name__ == '__main__':
 
     outputFile.Close()
 
-    r.gROOT.ProcessLine('TMVAGui(\"test.root\")')
-    r.gApplication.Run() 
+    if doGUI:
+        r.gROOT.ProcessLine('TMVAGui(\"mvaOutput/{0}.root\")')
+        r.gApplication.Run() 
 
-    #if doGUI:
-    #    r.gROOT.ProcessLine('TMVAGui(\"test.root\")')
-    #    r.gApplication.Run() 
