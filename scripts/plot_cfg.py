@@ -93,7 +93,7 @@ if doPlots:
     ### plot while giving a key value which is the 
     ### directory that they are located in as a key.
 
-    plotter._directoryList1D            = ['Misc', 'Lepton', 'Dilepton', 'DileptonOS', 'MET', 'Jet', 'top']
+    plotter._directoryList1D            = ['Misc', 'Lepton', 'Dilepton', 'DileptonOS', 'Lep+Jet', 'MET', 'Jet', 'top', 'GEN']
     plotter._directoryList2D            = ['2D']
 
     plotter._variableDict['Misc']       = ['PvMult', 'YieldByCut', 'EventWeight', 'TriggerStatus']
@@ -132,9 +132,8 @@ if doPlots:
     plotter._variableDict['Jet']        = ['Jet1Pt', 'Jet2Pt',# 'Jet3Pt',
                                            'Jet1Eta', 'Jet2Eta',# 'Jet3Eta',
                                            #'Jet1Phi', 'Jet2Phi', 'Jet3Phi',
-                                           'BJet1Discr', 'BJet1Pt', 'BJet1Eta', #'BJet1Phi', 
-                                           'BJet2Discr', 'BJet2Pt', 'BJet2Eta', #'BJet2Phi',
-                                           'JetAvgBDiscriminator', 'BJetAvgBDiscriminator',
+                                           'BJet1BDiscr', 'BJet1Pt', 'BJet1Eta', #'BJet1Phi', 
+                                           'BJet2BDiscr', 'BJet2Pt', 'BJet2Eta', #'BJet2Phi',
                                            'HT', 'HTs', 'EventBalance', 'Centrality',
                                            'JetMultCharge', 'JetMult', 'BJetMult']
 
@@ -210,8 +209,8 @@ if doYields:
 
     yieldTable.set_period(period)
 
-    yieldTable._columnList  = ['higgs', 'Triboson', 'ttV', 'Diboson', 'top', 'QCD', 'VJets', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
-    #yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
+    #yieldTable._columnList  = ['higgs', 'Triboson', 'ttV', 'Diboson', 'top', 'QCD', 'VJets', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
+    yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
     yieldTable.add_datasets(samples, Clear = True)
     yieldTable.add_datasets('FCNH')
@@ -253,7 +252,7 @@ if doYields:
             continue
             #yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 1)
         else:
-            yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 1)
+            yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
 
     outFile.close()
     subprocess.call('pdflatex -output-dir=yields yields/yields.tex', shell = True)

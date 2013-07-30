@@ -115,14 +115,23 @@ class fcncAnalyzer : public TSelector {
         // Simple ntuples for MVA
         TTree* passTree;
         Float_t     MET;
+        Float_t     metPhi;
         Float_t     H_T;
         Float_t     M_T;
+
         Float_t     DileptonMassOS;
         Float_t     TrileptonMass;
         Float_t     DileptonDROS;
+
+        Float_t     lep1Pt, lep2Pt, lep3Pt;
+        Float_t     lep1Eta, lep2Eta, lep3Eta;
+        Float_t     lep1Phi, lep2Phi, lep3Phi;
+        Float_t     bJetPt, bJetEta, bJetPhi;
+
         Int_t       flavorCat;
         Int_t       BJetMult;
         Int_t       JetMult;
+
         Float_t     weights;
 
         // MVA reader and modified input variables
