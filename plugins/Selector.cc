@@ -464,19 +464,18 @@ void Selector::JetSelector(TClonesArray* jets)
                     _selJets["muJets"].push_back(corJet);
                 else if (overlap[1]) 
                     _selJets["eleJets"].push_back(corJet);
-                //else {
-                //if (corJet.BDiscriminatorMap("TCHE") > 2.1) 
-                if (corJet.BDiscriminatorMap("CSV") > 0.679) 
-                    _selJets["bJetsMedium"].push_back(corJet);
-                else if (corJet.BDiscriminatorMap("CSV") > 0.244) 
-                    _selJets["bJetsLoose"].push_back(corJet);
-                else if (
-                        corJet.VtxNTracks() > 0
-                        && corJet.VtxSumPtFrac() > 0. 
-                        && ((int)corJet.VtxSumPtIndex() == 1)
-                        ) 
-                    _selJets["tight"].push_back(corJet);
-                //}
+                else {
+                    if (corJet.BDiscriminatorMap("CSV") > 0.679) 
+                        _selJets["bJetsMedium"].push_back(corJet);
+                    else if (corJet.BDiscriminatorMap("CSV") > 0.244) 
+                        _selJets["bJetsLoose"].push_back(corJet);
+                    else if (
+                            corJet.VtxNTracks() > 0
+                            && corJet.VtxSumPtFrac() > 0. 
+                            && ((int)corJet.VtxSumPtIndex() == 1)
+                            ) 
+                        _selJets["tight"].push_back(corJet);
+                }
             }
         } else if (fabs(corJet.Eta()) < 4.7) {
             if (
