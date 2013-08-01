@@ -112,12 +112,20 @@ class fcncAnalyzer : public TSelector {
         Selector    *selector;
         TriggerSelector *triggerSelector;
 
-        // Simple ntuples for MVA
-        TTree* passTree;
+        //Event variables
+
         Float_t     MET;
-        Float_t     metPhi;
-        Float_t     H_T;
-        Float_t     M_T;
+        Float_t     HT;
+        Float_t     MHT;
+        Float_t     MT;
+
+        Int_t       BJetMult;
+        Int_t       JetMult;
+
+        Float_t     weights;
+
+        // Simple ntuples for MVA
+        TTree*      mvaTree;
 
         Float_t     DileptonMassOS;
         Float_t     TrileptonMass;
@@ -129,10 +137,10 @@ class fcncAnalyzer : public TSelector {
         Float_t     bJetPt, bJetEta, bJetPhi;
 
         Int_t       flavorCat;
-        Int_t       BJetMult;
-        Int_t       JetMult;
 
-        Float_t     weights;
+
+        // Lepton MVA tree
+        TTree*      lepTree;
 
         // MVA reader and modified input variables
         TMVA::Reader* mvaReader;
@@ -238,7 +246,9 @@ class fcncAnalyzer : public TSelector {
         virtual void    MetPlots(TCMET, vObj, unsigned);
         virtual void    DileptonPlots2D(vObj, unsigned);
         virtual void    GenPlots(vector<TCGenParticle>, vObj);
+
         virtual void    SetVarsMVA(vObj, vector<TCJet>, vector<TCJet>, TCMET, std::bitset<18>, float);
+        virtual void    SetEventVariables(vobj, vobj, TCMET);
 
         // helper functions
         virtual string  str(int i) {return static_cast<ostringstream*>( &(ostringstream() << i) )->str();}

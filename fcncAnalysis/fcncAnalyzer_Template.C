@@ -16,7 +16,8 @@ const bool    doPrintout    = false;
 const bool    doGenPrint    = false;
 const bool    doPreMVA      = true;
 const bool    doPostMVA     = false;
-const bool    doTrees       = true;
+const bool    doMVATree     = true;
+const bool    doLepTree     = true;
 
 
 /////////////////
@@ -82,36 +83,36 @@ void fcncAnalyzer::Begin(TTree* tree)
     }
 
     // Initialize pass tree for MVA input //
-    if (doTrees) {
-        passTree = new TTree(("passTree_" + suffix).c_str(), "Tree for input into MVA");
+    if (doMVATree) {
+        mvaTree = new TTree(("mvaTree_" + suffix).c_str(), "Tree for input into MVA");
 
-        passTree->Branch("met", &MET, "met/F");
-        passTree->Branch("metPhi", &metPhi, "metPhi/F");
-        passTree->Branch("HT", &H_T, "HT/F");
-        passTree->Branch("MT", &M_T, "MT/F");
+        mvaTree->Branch("met", &MET, "met/F");
+        mvaTree->Branch("metPhi", &metPhi, "metPhi/F");
+        mvaTree->Branch("HT", &H_T, "HT/F");
+        mvaTree->Branch("MT", &MT, "MT/F");
 
-        passTree->Branch("TrileptonMass", &TrileptonMass, "TrileptonMass/F");
-        passTree->Branch("DileptonMassOS", &DileptonMassOS, "DileptonMassOS/F");
-        passTree->Branch("DileptonDROS", &DileptonDROS, "DileptonDROS/F");
+        mvaTree->Branch("TrileptonMass", &TrileptonMass, "TrileptonMass/F");
+        mvaTree->Branch("DileptonMassOS", &DileptonMassOS, "DileptonMassOS/F");
+        mvaTree->Branch("DileptonDROS", &DileptonDROS, "DileptonDROS/F");
 
-        passTree->Branch("lep1Pt", &lep1Pt, "lep1Pt/F");
-        passTree->Branch("lep2Pt", &lep2Pt, "lep2Pt/F");
-        passTree->Branch("lep3Pt", &lep3Pt, "lep3Pt/F");
-        passTree->Branch("lep1Eta", &lep1Eta, "lep1Eta/F");
-        passTree->Branch("lep2Eta", &lep2Eta, "lep2Eta/F");
-        passTree->Branch("lep3Eta", &lep3Eta, "lep3Eta/F");
-        passTree->Branch("lep1Phi", &lep1Phi, "lep1Phi/F");
-        passTree->Branch("lep2Phi", &lep2Phi, "lep2Phi/F");
-        passTree->Branch("lep3Phi", &lep3Phi, "lep3Phi/F");
-        passTree->Branch("bJetPt", &bJetPt, "bJetPt/F");
-        passTree->Branch("bJetEta", &bJetEta, "bJetEta/F");
-        passTree->Branch("bJetPhi", &bJetPhi, "bJetPhi/F");
+        mvaTree->Branch("lep1Pt", &lep1Pt, "lep1Pt/F");
+        mvaTree->Branch("lep2Pt", &lep2Pt, "lep2Pt/F");
+        mvaTree->Branch("lep3Pt", &lep3Pt, "lep3Pt/F");
+        mvaTree->Branch("lep1Eta", &lep1Eta, "lep1Eta/F");
+        mvaTree->Branch("lep2Eta", &lep2Eta, "lep2Eta/F");
+        mvaTree->Branch("lep3Eta", &lep3Eta, "lep3Eta/F");
+        mvaTree->Branch("lep1Phi", &lep1Phi, "lep1Phi/F");
+        mvaTree->Branch("lep2Phi", &lep2Phi, "lep2Phi/F");
+        mvaTree->Branch("lep3Phi", &lep3Phi, "lep3Phi/F");
+        mvaTree->Branch("bJetPt", &bJetPt, "bJetPt/F");
+        mvaTree->Branch("bJetEta", &bJetEta, "bJetEta/F");
+        mvaTree->Branch("bJetPhi", &bJetPhi, "bJetPhi/F");
 
-        passTree->Branch("flavorCat", &flavorCat, "flavorCat/I");
-        passTree->Branch("JetMult", &JetMult, "JetMult/I");
-        passTree->Branch("BJetMult", &BJetMult, "BJetMult/I");
+        mvaTree->Branch("flavorCat", &flavorCat, "flavorCat/I");
+        mvaTree->Branch("JetMult", &JetMult, "JetMult/I");
+        mvaTree->Branch("BJetMult", &BJetMult, "BJetMult/I");
 
-        passTree->Branch("weights", &weights, "weights/F");
+        mvaTree->Branch("weights", &weights, "weights/F");
     }
 
     if (doPreMVA || doPostMVA) {
@@ -119,7 +120,7 @@ void fcncAnalyzer::Begin(TTree* tree)
 
         mvaReader->AddVariable("met", &MET);
         mvaReader->AddVariable("HT", &H_T);
-        mvaReader->AddVariable("MT", &M_T);
+        mvaReader->AddVariable("MT", &MT);
         mvaReader->AddVariable("TrileptonMass", &TrileptonMass);
         mvaReader->AddVariable("DileptonMassOS", &DileptonMassOS);
         mvaReader->AddVariable("DileptonDROS", &DileptonDROS);
@@ -341,6 +342,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
     histManager->Fill1DHist(muJets.size() + eleJets.size(), 
             "h1_OverlapJetMult", "(e/#mu)-jet multiplicity;N_{jets};Entries / bin", 5, -0.5, 4.5);
 
+
     //!!!!!!!!!!!!!!!!!!!!!!!!//
     //                        //
     //  Event categorization  //
@@ -441,7 +443,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
         // Fill MVA ntuples //
         SetVarsMVA(leptons, bJetsM, jets, *recoMET, evtCategory, evtWeight);
-        if (doTrees) passTree->Fill();
+        if (doMVATree) mvaTree->Fill();
 
         if (mvaValue > -0.3) {
             SetYields(15, evtCategory, evtWeight);
@@ -518,7 +520,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
         histManager->Fill1DHist(mvaValue, "h1_BDT", "BDT value;Entries / bin;BDT", 36, -1., 0.2);
 
         SetVarsMVA(leptons, bJetsM, jets, *recoMET, evtCategory, evtWeight);
-        if (doTrees) passTree->Fill();
+        if (doMVATree) mvaTree->Fill();
 
         if (mvaValue > -0.3) {
             SetYields(15, evtCategory, evtWeight);
@@ -1308,8 +1310,8 @@ void fcncAnalyzer::GenPlots(vector<TCGenParticle> gen, vObj leptons)
 
 float fcncAnalyzer::CalculateTransMass(TCPhysObject lep, TCMET met)
 {
-    float MT = sqrt(2*met.Mod()*lep.Pt()*(1 - cos(met.DeltaPhi(lep.P2()))));
-    return MT;
+    float M_T = sqrt(2*met.Mod()*lep.Pt()*(1 - cos(met.DeltaPhi(lep.P2()))));
+    return M_T;
 }
 
 TLorentzVector fcncAnalyzer::CalculateNuP4(TLorentzVector lep, TCMET met)
@@ -1338,7 +1340,6 @@ bool fcncAnalyzer::CosmicMuonFilter(TCPhysObject muon1, TCPhysObject muon2)
 void fcncAnalyzer::SetVarsMVA(vObj leptons, vector<TCJet> bJets, vector<TCJet> jets, TCMET met, std::bitset<18> evtCategory, float evtWeight)
 {
     float HT = 0.;
-    float avgBDiscrJet = 0;
 
     for (unsigned i = 0; i < bJets.size(); ++i) { 
         HT += bJets[i].Pt();
@@ -1346,22 +1347,8 @@ void fcncAnalyzer::SetVarsMVA(vObj leptons, vector<TCJet> bJets, vector<TCJet> j
 
     for (unsigned i = 0; i < jets.size(); ++i) {
         HT += jets[i].Pt();
-        avgBDiscrJet += jets[i].BDiscriminatorMap("CSV")/jets.size();
     }
 
-    unsigned flCategory;
-    if (evtCategory.test(3)) {
-        flCategory = 5 + (((evtCategory.to_ulong() >> 8) & 0xF) >> 1);
-    } else {
-        flCategory = 1 + (((evtCategory.to_ulong() >> 8) & 0xF) >> 2);
-    }
-
-
-    flavorCat       = flCategory;
-    MET             = met.Mod();
-    metPhi          = met.Phi();
-    H_T             = HT;
-    TrileptonMass   = (leptons[0] + leptons[1] + leptons[2]).M();
     BJetMult        = bJets.size();
     JetMult         = jets.size();
     weights         = evtWeight;
@@ -1387,17 +1374,6 @@ void fcncAnalyzer::SetVarsMVA(vObj leptons, vector<TCJet> bJets, vector<TCJet> j
         bJetPt  = bJets[0].Pt();
         bJetEta = bJets[0].Eta();
         bJetPhi = bJets[0].Phi();
-    }
-
-    for (unsigned i = 1; i < leptons.size(); ++i) {
-        for (unsigned j = 0; j < i; ++j) {
-
-            if (leptons[i].Type() == leptons[j].Type() && leptons[i].Charge() != leptons[j].Charge()) {
-                DileptonMassOS  = (leptons[i] + leptons[j]).M();
-                DileptonDROS    = leptons[i].DeltaR(leptons[j]);
-                M_T             = CalculateTransMass(leptons[3 - (i + j)], met);
-            }
-        }
     }
 }
 
@@ -1459,3 +1435,35 @@ float fcncAnalyzer::CalculateFourLeptonMass(vObj leptons) {
 //    return chi2;
 //}
 
+void fcncAnalyzer::SetEventVariables(vobj leptons, vobj jets, vobj bJets, TCMET) 
+{
+
+    MET             = met.Mod();
+    metPhi          = met.Phi();
+    H_T             = HT;
+
+    unsigned flCategory;
+    if (evtCategory.test(3)) {
+        flCategory = 5 + (((evtCategory.to_ulong() >> 8) & 0xF) >> 1);
+    } else {
+        flCategory = 1 + (((evtCategory.to_ulong() >> 8) & 0xF) >> 2);
+    }
+
+    flavorCat       = flCategory;
+
+    if (leptons.size() == 3) 
+        TrileptonMass   = (leptons[0] + leptons[1] + leptons[2]).M();
+    else
+        TrileptonMass   = -1.;
+
+    for (unsigned i = 1; i < leptons.size(); ++i) {
+        for (unsigned j = 0; j < i; ++j) {
+
+            if (leptons[i].Type() == leptons[j].Type() && leptons[i].Charge() != leptons[j].Charge()) {
+                DileptonMassOS  = (leptons[i] + leptons[j]).M();
+                DileptonDROS    = leptons[i].DeltaR(leptons[j]);
+                MT              = CalculateTransMass(leptons[3 - (i + j)], met);
+            }
+        }
+    }
+}

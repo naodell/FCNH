@@ -10,7 +10,7 @@ using namespace std;
 
 
 const string  suffix        = "TEST";
-const string  selection     = "muon";
+const string  selection     = "mc";
 const string  period        = "2012";
 const bool    doPrintout    = false;
 const bool    doGenPrint    = false;
@@ -340,6 +340,20 @@ bool fcncAnalyzer::Process(Long64_t entry)
     histManager->SetDirectory(categoryNames[0] + "/" + suffix);
     histManager->Fill1DHist(muJets.size() + eleJets.size(), 
             "h1_OverlapJetMult", "(e/#mu)-jet multiplicity;N_{jets};Entries / bin", 5, -0.5, 4.5);
+
+    //!!!!!!!!!!!!!!!!!!!//
+    //  muon efficiency  //
+    //!!!!!!!!!!!!!!!!!!!//
+
+    vector<TCMuon> isoMuons = selector->GetSelectedMuons("iso");
+
+    for (int i = 0; i <  recoMuons->GetSize(); ++i) {
+        histManager->Fill1DHist(1, "h1_muEff", ";cut;Entries", 2, 0.5, 2.5);
+    }
+    for (int i = 0; i <  isoMuons.size(); ++i) {
+        histManager->Fill1DHist(2, "h1_muEff", ";cut;Entries", 2, 0.5, 2.5);
+    }
+
 
     //!!!!!!!!!!!!!!!!!!!!!!!!//
     //                        //
