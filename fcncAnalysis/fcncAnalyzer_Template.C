@@ -16,8 +16,8 @@ const bool    doPrintout    = false;
 const bool    doGenPrint    = false;
 const bool    doPreMVA      = true;
 const bool    doPostMVA     = false;
-const bool    doMVATree     = true;
-const bool    doLepTree     = true;
+const bool    doMVATree     = false;
+const bool    doLepTree     = false;
 
 
 /////////////////
@@ -42,20 +42,16 @@ void fcncAnalyzer::Begin(TTree* tree)
 {
     // Get trigger names from jobTree
     vector<string>* triggerNames = 0;
-    TFile   *inFile         = tree->GetCurrentFile();
-    TTree   *jobTree        = (TTree*)inFile->Get("ntupleProducer/jobTree");
+    TFile *inFile   = tree->GetCurrentFile();
+    TTree *jobTree  = (TTree*)inFile->Get("ntupleProducer/jobTree");
 
     jobTree->SetBranchAddress("triggerNames", &triggerNames);
     jobTree->GetEntry();
-
 
     // Initialize utilities and selectors here //
     selector        = new Selector(muPtCut, elePtCut, jetPtCut, phoPtCut);
     weighter        = new WeightUtils(suffix, period, selection, isRealData);
     triggerSelector = new TriggerSelector(selection, period, *triggerNames, true);
-
-    // Random numbers! //
-    //rnGenerator = new TRandom3();
 
     // Initialize histograms //
     TString option = GetOption();
@@ -130,6 +126,11 @@ void fcncAnalyzer::Begin(TTree* tree)
 
         //mvaReader->BookMVA("test", "../data/weights/TMVAClassification_BDT.weights.xml");
     }
+
+    for (unsigned i = 0; i < 16; ++i) {
+        eventCount[i] = 0;
+        eventCountWeighted[i] = 0;
+    }
 }
 
 bool fcncAnalyzer::Process(Long64_t entry)
@@ -170,8 +171,10 @@ bool fcncAnalyzer::Process(Long64_t entry)
     // Double electron workaround.  Gets rid of hopelessly prescaled events fo July 20-26, 2011
     //if (selection == "electron" && (runNumber > 171200 && runNumber < 171600)) return kTRUE;
 
-    if (!triggerPass) return kTRUE;
-    SetYields(2);
+    if (!triggerPass) 
+        return kTRUE;
+    else
+        SetYields(2);
 
     vstring passNames = triggerSelector->GetPassNames();
 
@@ -193,8 +196,10 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
     selector->PVSelector(primaryVtx);
 
-    if (selector->GetSelectedPVs().size() < 1) return kTRUE;
-    SetYields(3);
+    if (selector->GetSelectedPVs().size() < 1) 
+        return kTRUE;
+    else
+        SetYields(3);
 
     TVector3 selectedVtx = *selector->GetSelectedPVs()[0];
 
@@ -204,14 +209,16 @@ bool fcncAnalyzer::Process(Long64_t entry)
     //////////////////
 
 
-    if (isRealData && (
+    if (isRealData 
+            && (
                 NoiseFilters_isCSCTightHalo
                 || NoiseFilters_isNoiseHcalHBHE 
                 || NoiseFilters_isScraping 
                 )
        ) return kTRUE;
+    else
+        SetYields(4);
 
-    SetYields(4);
 
     /////////////////////////////
     // Get gen level particles //
@@ -374,9 +381,9 @@ bool fcncAnalyzer::Process(Long64_t entry)
     } else
         return kTRUE;
 
+
     //!! low mass resonance rejection !!//
     bool lowMassOS  = false;
-    bool highMassOS = false;
     bool isCosmics  = false;
 
     for (unsigned i = 1; i < leptons.size(); ++i) {
@@ -388,9 +395,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
                 if ((leptons[i] + leptons[j]).M() < 12)
                     lowMassOS = true;
 
-                if ((leptons[i] + leptons[j]).M() > 85)
-                    highMassOS = true;
-
                 if (isRealData && leptons[i].Type() == "muon" && leptons[j].Type() == "muon")
                     if (CosmicMuonFilter(leptons[i], leptons[j]))
                         isCosmics = true;
@@ -399,8 +403,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
     }
 
     if (lowMassOS || isCosmics) return kTRUE;
-
-    return kTRUE;
 
     SetEventCategory(leptons);
     SetEventVariables(leptons, jets, bJetsM, *recoMET); 
@@ -431,7 +433,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
         histManager->Fill1DHist(mvaValue, "h1_BDT", "BDT value;Entries / bin;BDT", 36, -1., 0.2);
 
         // Fill MVA ntuples //
-        SetVarsMVA(leptons, bJetsM, jets, *recoMET);
+        SetVarsMVA(leptons, bJetsM, jets);
         if (doMVATree) mvaTree->Fill();
 
         if (mvaValue > -0.3) {
@@ -503,7 +505,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
         histManager->SetDirectory("3l_inclusive/" + suffix);
         histManager->Fill1DHist(mvaValue, "h1_BDT", "BDT value;Entries / bin;BDT", 36, -1., 0.2);
 
-        SetVarsMVA(leptons, bJetsM, jets, *recoMET);
+        SetVarsMVA(leptons, bJetsM, jets);
         if (doMVATree) mvaTree->Fill();
 
         if (mvaValue > -0.3) {
@@ -691,8 +693,6 @@ int fcncAnalyzer::GetHistCategory(unsigned shift)
 
 void fcncAnalyzer::SetYields(unsigned cut)
 {
-    histManager->SetWeight(evtWeight);
-
     for (unsigned i = 0; i < N_CUTS; ++i) {
         histManager->SetFileNumber(i);
 
@@ -796,6 +796,7 @@ void fcncAnalyzer::MakePlots(vObj leptons, vector<TCJet> jets, vector<TCJet> bJe
         histManager->Fill1DHist(flavorCat, "h1_LeptonFlavor", "lepton flavor categories;flavor category;Entries / bin", 12, 0.5, 12.5);
         histManager->Fill2DHist(chargeCat, flavorCat, "h2_LepChargeVsFlavor", "lepton flavor vs. charge;charge category;flavor category", 12, 0.5, 12.5, 12, 0.5, 12.5);
 
+
         LeptonPlots(leptons, met, jets, bJets, PV);
         MetPlots(met, leptons);
         JetPlots(jets, bJets);
@@ -835,19 +836,6 @@ void fcncAnalyzer::LeptonPlots(vObj leptons, TCMET met, vector<TCJet> jets, vect
                 "h1_TrileptonMass", "M_{lll};M_{lll};Entries / 5 GeV", 58, 10., 300.);
         histManager->Fill1DHist(trileptonP4.Pt(),
                 "h1_TrileptonPt", "p_{T,3l};p_{T,3l};Entries / 5 GeV", 39, 10., 400.);
-
-        // Check Trilepton mass for different run ranges
-        unsigned runBin = 1;
-        float runs[] = {190456, 190782, 190949, 193621, 193833, 196531, 198022, 198913, 198934, 203746, 203768, 208686}; 
-
-        for (unsigned i = 0; i < 11; ++i) {
-            if (runNumber > runs[i] && runNumber < runs[i+1]) {
-                histManager->Fill2DHist(runBin, trileptonP4.M(),
-                        "h1_TrileptonMassVsRunNumber", "M_{lll} vs. run number;run number;M_{lll}", 11, 0, 11, 58, 10., 300.);
-                break;
-            }
-            ++runBin;
-        }
 
     }
 
@@ -1303,7 +1291,7 @@ bool fcncAnalyzer::CosmicMuonFilter(TCPhysObject muon1, TCPhysObject muon2)
         return false;
 }
 
-void fcncAnalyzer::SetVarsMVA(vObj leptons, vector<TCJet> bJets, vector<TCJet> jets, TCMET met)
+void fcncAnalyzer::SetVarsMVA(vObj leptons, vector<TCJet> bJets, vector<TCJet> jets)
 {
     bJetMult        = bJets.size();
     jetMult         = jets.size();
@@ -1424,7 +1412,10 @@ void fcncAnalyzer::SetEventVariables(vObj leptons, vector<TCJet> jets, vector<TC
             if (leptons[i].Type() == leptons[j].Type() && leptons[i].Charge() != leptons[j].Charge()) {
                 DileptonMassOS  = (leptons[i] + leptons[j]).M();
                 DileptonDROS    = leptons[i].DeltaR(leptons[j]);
-                MT              = CalculateTransMass(leptons[3 - (i + j)], met);
+                
+                if (leptons.size() == 3) {
+                    MT              = CalculateTransMass(leptons[3 - (i + j)], met);
+                }
             }
         }
     }

@@ -250,7 +250,7 @@ class fcncAnalyzer : public TSelector {
 
         // Set methods
         virtual void    SetEventCategory(vObj);
-        virtual void    SetVarsMVA(vObj, vector<TCJet>, vector<TCJet>, TCMET);
+        virtual void    SetVarsMVA(vObj, vector<TCJet>, vector<TCJet>);
         virtual void    SetEventVariables(vObj, vector<TCJet>, vector<TCJet>, TCMET);
         virtual void    SetYields(unsigned);
         virtual int     GetHistCategory(unsigned);
@@ -306,9 +306,9 @@ void fcncAnalyzer::Init(TTree *tree)
     fChain->SetBranchAddress("triggerObjects", &triggerObjects, &b_triggerObjects);
     fChain->SetBranchAddress("genJets", &genJets, &b_genJets);
     fChain->SetBranchAddress("genParticles", &genParticles, &b_genParticles);
-
     fChain->SetBranchAddress("primaryVtx", &primaryVtx, &b_primaryVtx);
-    fChain->SetBranchAddress("beamSpot", &beamSpot, &b_beamSpot);
+
+    //fChain->SetBranchAddress("beamSpot", &beamSpot, &b_beamSpot);
     fChain->SetBranchAddress("nPUVertices", &nPUVertices, &b_nPUVertices);
     fChain->SetBranchAddress("nPUVerticesTrue", &nPUVerticesTrue, &b_nPUVerticesTrue);
     fChain->SetBranchAddress("rhoFactor", &rhoFactor, &b_rhoFactor);
@@ -323,7 +323,7 @@ void fcncAnalyzer::Init(TTree *tree)
 
     fChain->SetBranchAddress("ptHat", &ptHat, &b_ptHat);
     fChain->SetBranchAddress("qScale", &qScale, &b_qScale);
-    //fChain->SetBranchAddress("evtWeight", &evtWeight, &b_evtWeight);
+    ////fChain->SetBranchAddress("evtWeight", &evtWeight, &b_evtWeight);
     fChain->SetBranchAddress("triggerStatus", &triggerStatus, &b_triggerStatus);
     fChain->SetBranchAddress("hltPrescale", hltPrescale, &b_hltPrescale);
     fChain->SetBranchAddress("NoiseFilters", &NoiseFilters_isScraping, &b_NoiseFilters);
@@ -332,19 +332,19 @@ void fcncAnalyzer::Init(TTree *tree)
 bool fcncAnalyzer::Notify()
 {
     UInt_t initEvents;
-    TFile   *inFile     = thisTree->GetCurrentFile();
-    TTree   *jobTree    = (TTree*)inFile->Get("ntupleProducer/jobTree");
-    TBranch *nEvents    =  jobTree->GetBranch("nEvents");
+    TFile   *inFile  = thisTree->GetCurrentFile();
+    TTree   *jobTree = (TTree*)inFile->Get("ntupleProducer/jobTree");
+    TBranch *nEvents = jobTree->GetBranch("nEvents");
 
     cout << "Analyzing file " << inFile->GetName() << endl;
 
     nEvents->SetAddress(&initEvents);
     nEvents->GetEntry(0);
 
-    evtWeight = 1;
+    evtWeight = initEvents;
     evtCategory.reset();
 
-    SetYields(initEvents);
+    SetYields(0);
 
     return kTRUE;
 }
