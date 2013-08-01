@@ -1,0 +1,18 @@
+
+	 Category 1
+
+
+exp_limit = 0.116292
+	1-sigma range: 0.135649	0.0845066
+	2-sigma range: 0.158615	0.0700301
+
+obs_limit = 0.110383
+
+crude check: 0.0884548
+
+Convert to upper limit on BR(t->Hq) :
+	expected:	0.0522874
+	observed:	0.0496307
+
+	1-sigma on expected: 0.0609908	0.037996
+	2-sigma on expected: 0.0713166	0.031487
