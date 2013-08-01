@@ -125,8 +125,8 @@ class fcncAnalyzer : public TSelector {
         Int_t       jetMult;
 
         bitset<18>  evtCategory;
-        Float_t     flCategory;
-        Float_t     chCategory;
+        UInt_t     flavorCat;
+        UInt_t     chargeCat;
         Float_t     evtWeight;
 
         // Simple ntuples for MVA
@@ -141,14 +141,13 @@ class fcncAnalyzer : public TSelector {
         Float_t     lep1Phi, lep2Phi, lep3Phi;
         Float_t     bJetPt, bJetEta, bJetPhi;
 
-        Int_t       flavorCat;
-
         // Lepton MVA tree
         TTree*      lepTree;
 
         // MVA reader and modified input variables
         TMVA::Reader* mvaReader;
         Float_t     f_flavorCat;
+        Float_t     f_chargeCat;
         Float_t     f_bJetMult;
         Float_t     f_jetMult;
 

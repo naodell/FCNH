@@ -116,19 +116,19 @@ void fcncAnalyzer::Begin(TTree* tree)
     }
 
     if (doPreMVA || doPostMVA) {
-        mvaReader = new TMVA::Reader("!Color:!Silent");
+        //mvaReader = new TMVA::Reader("!Color:!Silent");
 
-        mvaReader->AddVariable("met", &MET);
-        mvaReader->AddVariable("HT", &HT);
-        mvaReader->AddVariable("MT", &MT);
-        mvaReader->AddVariable("TrileptonMass", &TrileptonMass);
-        mvaReader->AddVariable("DileptonMassOS", &DileptonMassOS);
-        mvaReader->AddVariable("DileptonDROS", &DileptonDROS);
+        //mvaReader->AddVariable("met", &MET);
+        //mvaReader->AddVariable("HT", &HT);
+        //mvaReader->AddVariable("MT", &MT);
+        //mvaReader->AddVariable("TrileptonMass", &TrileptonMass);
+        //mvaReader->AddVariable("DileptonMassOS", &DileptonMassOS);
+        //mvaReader->AddVariable("DileptonDROS", &DileptonDROS);
         //mvaReader->AddVariable("flavorCat", &f_flavorCat);
-        mvaReader->AddVariable("jetMult", &f_jetMult);
-        mvaReader->AddVariable("bJetMult", &f_bJetMult);
+        //mvaReader->AddVariable("jetMult", &f_jetMult);
+        //mvaReader->AddVariable("bJetMult", &f_bJetMult);
 
-        mvaReader->BookMVA("test", "../data/weights/TMVAClassification_BDT.weights.xml");
+        //mvaReader->BookMVA("test", "../data/weights/TMVAClassification_BDT.weights.xml");
     }
 }
 
@@ -400,6 +400,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
     if (lowMassOS || isCosmics) return kTRUE;
 
+    return kTRUE;
 
     SetEventCategory(leptons);
     SetEventVariables(leptons, jets, bJetsM, *recoMET); 
@@ -423,7 +424,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
     SetYields(5);
 
     if (leptons.size() == 3 && doPreMVA) {
-        float mvaValue = mvaReader->EvaluateMVA("test");
+        float mvaValue = 1; //mvaReader->EvaluateMVA("test");
 
         histManager->SetFileNumber(4);
         histManager->SetDirectory("3l_inclusive/" + suffix);
@@ -496,7 +497,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
     SetYields(7);
 
     if (leptons.size() == 3 && doPostMVA) {
-        float mvaValue = mvaReader->EvaluateMVA("test");
+        float mvaValue = 1; //mvaReader->EvaluateMVA("test");
 
         histManager->SetFileNumber(4);
         histManager->SetDirectory("3l_inclusive/" + suffix);
@@ -755,7 +756,6 @@ void fcncAnalyzer::MakePlots(vObj leptons, vector<TCJet> jets, vector<TCJet> bJe
 
     for (int i = 0; i < 4; ++i) { // fixing 3l selection, removing categories
         unsigned histCategory = 0;
-        unsigned flCategory, chCategory;
 
         switch (i) {
             case 1:
@@ -782,14 +782,6 @@ void fcncAnalyzer::MakePlots(vObj leptons, vector<TCJet> jets, vector<TCJet> bJe
 
         //cout << i << ", " << histCategory << " |\t";
 
-        if (evtCategory.test(3)) {
-            chCategory = 5 + (((evtCategory.to_ulong() >> 12) & 0xF) >> 1);
-            flCategory = 5 + (((evtCategory.to_ulong() >> 8) & 0xF) >> 1);
-        } else {
-            chCategory = 1 + (((evtCategory.to_ulong() >> 12) & 0xF) >> 2);
-            flCategory = 1 + (((evtCategory.to_ulong() >> 8) & 0xF) >> 2);
-        }
-
         /*
            if (cutLevel == 4 && leptons.size() == 3) { // && i == 3) {
            cout << "\n" << categoryNames[histCategory] << ", " << cutLevel << ", " << met.Mod() << endl;;
@@ -800,9 +792,9 @@ void fcncAnalyzer::MakePlots(vObj leptons, vector<TCJet> jets, vector<TCJet> bJe
          */
 
         histManager->SetDirectory(categoryNames[histCategory] + "/" + suffix);
-        histManager->Fill1DHist(chCategory, "h1_LeptonCharge", "lepton charge categories;charge category;Entries / bin", 12, 0.5, 12.5);
-        histManager->Fill1DHist(flCategory, "h1_LeptonFlavor", "lepton flavor categories;flavor category;Entries / bin", 12, 0.5, 12.5);
-        histManager->Fill2DHist(chCategory, flCategory, "h2_LepChargeVsFlavor", "lepton flavor vs. charge;charge category;flavor category", 12, 0.5, 12.5, 12, 0.5, 12.5);
+        histManager->Fill1DHist(chargeCat, "h1_LeptonCharge", "lepton charge categories;charge category;Entries / bin", 12, 0.5, 12.5);
+        histManager->Fill1DHist(flavorCat, "h1_LeptonFlavor", "lepton flavor categories;flavor category;Entries / bin", 12, 0.5, 12.5);
+        histManager->Fill2DHist(chargeCat, flavorCat, "h2_LepChargeVsFlavor", "lepton flavor vs. charge;charge category;flavor category", 12, 0.5, 12.5, 12, 0.5, 12.5);
 
         LeptonPlots(leptons, met, jets, bJets, PV);
         MetPlots(met, leptons);
@@ -1317,7 +1309,7 @@ void fcncAnalyzer::SetVarsMVA(vObj leptons, vector<TCJet> bJets, vector<TCJet> j
     jetMult         = jets.size();
 
     // Jet multiplicities as floats for mva reader :( 
-    f_flavorCat     = flCategory;
+    f_flavorCat     = flavorCat;
     f_jetMult       = jets.size();
     f_bJetMult      = bJets.size();
 
@@ -1413,15 +1405,13 @@ void fcncAnalyzer::SetEventVariables(vObj leptons, vector<TCJet> jets, vector<TC
         HT += jets[i].Pt();
     }
 
-
-    unsigned flCategory;
     if (evtCategory.test(3)) {
-        flCategory = 5 + (((evtCategory.to_ulong() >> 8) & 0xF) >> 1);
+        flavorCat = 5 + (((evtCategory.to_ulong() >> 8) & 0xF) >> 1);
+        chargeCat = 5 + (((evtCategory.to_ulong() >> 12) & 0xF) >> 1);
     } else {
-        flCategory = 1 + (((evtCategory.to_ulong() >> 8) & 0xF) >> 2);
+        flavorCat = 1 + (((evtCategory.to_ulong() >> 8) & 0xF) >> 2);
+        chargeCat = 1 + (((evtCategory.to_ulong() >> 12) & 0xF) >> 2);
     }
-
-    flavorCat       = flCategory;
 
     if (leptons.size() == 3) 
         TrileptonMass   = (leptons[0] + leptons[1] + leptons[2]).M();
