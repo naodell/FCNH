@@ -115,14 +115,19 @@ class fcncAnalyzer : public TSelector {
         //Event variables
 
         Float_t     MET;
+        Float_t     metPhi;
         Float_t     HT;
         Float_t     MHT;
         Float_t     MT;
 
-        Int_t       BJetMult;
-        Int_t       JetMult;
+        Int_t       lepMult;
+        Int_t       bJetMult;
+        Int_t       jetMult;
 
-        Float_t     weights;
+        bitset<18>  evtCategory;
+        Float_t     flCategory;
+        Float_t     chCategory;
+        Float_t     evtWeight;
 
         // Simple ntuples for MVA
         TTree*      mvaTree;
@@ -138,15 +143,14 @@ class fcncAnalyzer : public TSelector {
 
         Int_t       flavorCat;
 
-
         // Lepton MVA tree
         TTree*      lepTree;
 
         // MVA reader and modified input variables
         TMVA::Reader* mvaReader;
         Float_t     f_flavorCat;
-        Float_t     f_BJetMult;
-        Float_t     f_JetMult;
+        Float_t     f_bJetMult;
+        Float_t     f_jetMult;
 
     public :
         TTree          *fChain;   //!pointer to the analyzed TTree or TChain
@@ -237,18 +241,20 @@ class fcncAnalyzer : public TSelector {
         //virtual void    SlaveTerminate() {};
         virtual void    Terminate();
 
-        virtual void    GetEventCategory(vObj, std::bitset<18>&);
-        virtual int     GetHistCategory(std::bitset<18>, unsigned);
-        virtual void    SetYields(unsigned, std::bitset<18>, float);
-        virtual void    MakePlots(vObj, vector<TCJet>, vector<TCJet>, TCMET, TVector3, float, std::bitset<18>, unsigned);
-        virtual void    LeptonPlots(vObj, TCMET, vector<TCJet>, vector<TCJet>, TVector3, unsigned);
-        virtual void    JetPlots(vector<TCJet>, vector<TCJet>, unsigned);
-        virtual void    MetPlots(TCMET, vObj, unsigned);
-        virtual void    DileptonPlots2D(vObj, unsigned);
+        // Plot methods
+        virtual void    MakePlots(vObj, vector<TCJet>, vector<TCJet>, TCMET, TVector3, unsigned);
+        virtual void    LeptonPlots(vObj, TCMET, vector<TCJet>, vector<TCJet>, TVector3);
+        virtual void    JetPlots(vector<TCJet>, vector<TCJet>);
+        virtual void    MetPlots(TCMET, vObj);
+        virtual void    DileptonPlots2D(vObj);
         virtual void    GenPlots(vector<TCGenParticle>, vObj);
 
-        virtual void    SetVarsMVA(vObj, vector<TCJet>, vector<TCJet>, TCMET, std::bitset<18>, float);
-        virtual void    SetEventVariables(vobj, vobj, TCMET);
+        // Set methods
+        virtual void    SetEventCategory(vObj);
+        virtual void    SetVarsMVA(vObj, vector<TCJet>, vector<TCJet>, TCMET);
+        virtual void    SetEventVariables(vObj, vector<TCJet>, vector<TCJet>, TCMET);
+        virtual void    SetYields(unsigned);
+        virtual int     GetHistCategory(unsigned);
 
         // helper functions
         virtual string  str(int i) {return static_cast<ostringstream*>( &(ostringstream() << i) )->str();}
@@ -336,7 +342,10 @@ bool fcncAnalyzer::Notify()
     nEvents->SetAddress(&initEvents);
     nEvents->GetEntry(0);
 
-    SetYields(0, 0, initEvents);
+    evtWeight = 1;
+    evtCategory.reset();
+
+    SetYields(initEvents);
 
     return kTRUE;
 }
