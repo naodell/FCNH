@@ -64,7 +64,7 @@ if __name__ == '__main__':
     bgList.extend(['ZJets', 'ZJets_M-10To50', 'WJets']) # V+jets
     bgList.extend(['WWJets2L2Nu', 'ZZJets2L2Nu']) #, 'ZZJets2L2Q', 'WZJets2L2Q']) # Diboson to 2l + X
     bgList.extend(['WZJets3LNu']) # WZ to 3l+nu
-    #bgList.extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']) # ZZ to 4l
+    bgList.extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']) # ZZ to 4l
     #bgList.extend(['tW', 'tbarW', 't_t-channel', 't_t-channel', 'ttbar']) # Top
     #bgList.extend(['ttZ', 'ttW', 'ttG']) # Top+V
     #bgList.extend(['QCD_20_MU', 'QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_EM', 'QCD_170-250_EM', 'QCD_250-350_EM', 'QCD_350_EM']) #QCD
@@ -107,14 +107,31 @@ if __name__ == '__main__':
     factory.SetVerbose(True)
 
     factory.AddVariable('met', 'met', 'GeV', 'F')
+    factory.AddVariable('metPhi', 'metPhi', 'GeV', 'F')
     factory.AddVariable('HT', 'HT', 'GeV', 'F')
     factory.AddVariable('MT', 'MT', 'GeV', 'F')
+
+    factory.AddVariable('lep1Pt', 'lep1Pt', 'GeV', 'F')
+    factory.AddVariable('lep2Pt', 'lep2Pt', 'GeV', 'F')
+    factory.AddVariable('lep3Pt', 'lep3Pt', 'GeV', 'F')
+    factory.AddVariable('lep1Eta', 'lep1Eta', '', 'F')
+    factory.AddVariable('lep2Eta', 'lep2Eta', '', 'F')
+    factory.AddVariable('lep3Eta', 'lep3Eta', '', 'F')
+    factory.AddVariable('lep1Phi', 'lep1Phi', 'rad', 'F')
+    factory.AddVariable('lep2Phi', 'lep2Phi', 'rad', 'F')
+    factory.AddVariable('lep3Phi', 'lep3Phi', 'rad', 'F')
+
+    factory.AddVariable('bJetPt', 'bJetPt', 'GeV', 'F')
+    factory.AddVariable('bJetEta', 'bJetEta', '', 'F')
+    factory.AddVariable('bJetPhi', 'bJetPhi', 'rad', 'F')
+
     factory.AddVariable('TrileptonMass', 'TrileptonMass', 'GeV', 'F')
     factory.AddVariable('DileptonMassOS', 'DileptonMassOS', 'GeV', 'F')
     factory.AddVariable('DileptonDROS', 'DileptonDROS', 'rad', 'F')
+
+    factory.AddVariable('flavorCat', 'flavorCat', '', 'I')
     factory.AddVariable('JetMult', 'JetMult', '', 'I')
     factory.AddVariable('BJetMult', 'BJetMult', '', 'I')
-    #factory.AddVariable('flavorCat', 'flavorCat', '', 'I')
 
     for tree in sigTrees:
         factory.AddSignalTree(tree, 1.)
@@ -135,6 +152,7 @@ if __name__ == '__main__':
     if 'BDT' in methods:
         factory.BookMethod(r.TMVA.Types.kBDT, "BDT", "!H:!V:NTrees=850:nEventsMin=150:MaxDepth=4:BoostType=AdaBoost:AdaBoostBeta=0.5:SeparationType=SDivSqrtSPlusB:nCuts=20:PruneMethod=NoPruning" )
         #factory.BookMethod(r.TMVA.Types.kBDT, "BDT", "!H:!V:NTrees=100:nEventsMin=150:MaxDepth=4:BoostType=AdaBoost:AdaBoostBeta=0.5:SeparationType=GiniIndex:nCuts=20:PruneMethod=CostComplexity" )
+
 
     factory.TrainAllMethods()
     factory.TestAllMethods()
