@@ -1,14 +1,14 @@
 import sys, os, subprocess, fileinput, math, tempfile, datetime
 
 
-def get_current_time(self):
+def get_current_time():
 
     now = datetime.datetime.now()
     currentTime = '{0:02d}{1:02d}{2:02d}_{3:02d}{4:02d}{5:02d}'.format(now.year, now.month, now.day, now.hour, now.minute, now.second)
     return currentTime
 
 
-def make_directory(self, filePath, clear = True):
+def make_directory(filePath, clear = True):
 
     if not os.path.exists(filePath):
         os.system('mkdir -p '+filePath)

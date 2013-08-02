@@ -1,1 +1,1 @@
-/home/naodell/STORAGE_ANALYSIS/FCNH/ntuples/nuTuple_1_1_bGf.root
+dcap://cmsdca1.fnal.gov:24140/pnfs/fnal.gov/usr/cms/WAX/11/store/user/naodell/nuTuples_v6_8TeV/TTJets/nuTuple_261_2_gfs.root
