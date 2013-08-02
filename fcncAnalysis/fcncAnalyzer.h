@@ -54,6 +54,7 @@
 #include "../plugins/TriggerSelector.h"
 #include "../plugins/WeightUtils.h"
 #include "../plugins/HistManager.h"
+#include "../plugins/MiscTools.h"
 
 using namespace std;
 
