@@ -54,6 +54,7 @@
 #include "../plugins/TriggerSelector.h"
 #include "../plugins/WeightUtils.h"
 #include "../plugins/HistManager.h"
+#include "../plugins/MiscTools.h"
 
 using namespace std;
 
@@ -117,6 +118,7 @@ class fcncAnalyzer : public TSelector {
         Float_t     MET;
         Float_t     metPhi;
         Float_t     HT;
+        Float_t     HTs;
         Float_t     MHT;
         Float_t     MT;
 
@@ -125,8 +127,8 @@ class fcncAnalyzer : public TSelector {
         Int_t       jetMult;
 
         bitset<18>  evtCategory;
-        UInt_t     flavorCat;
-        UInt_t     chargeCat;
+        UInt_t      flavorCat;
+        UInt_t      chargeCat;
         Float_t     evtWeight;
 
         // Simple ntuples for MVA
