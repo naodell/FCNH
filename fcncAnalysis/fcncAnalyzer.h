@@ -54,7 +54,6 @@
 #include "../plugins/TriggerSelector.h"
 #include "../plugins/WeightUtils.h"
 #include "../plugins/HistManager.h"
-#include "../plugins/MiscTools.h"
 
 using namespace std;
 
@@ -91,8 +90,8 @@ const string categoryNames[] = {
     //"3l_barrel",
 };
 
-const unsigned short N_CUTS = 5;
-const string cutNames[] = {"preselection", "jet selection", "lepton veto",  "MET selection", "Z veto"};
+const unsigned short N_CUTS = 9;
+const string cutNames[] = {"preselection", "Z veto",  "MET selection", "jet selection", "BDT", "WZ_CR", "ttbar_CR", "ZZ4l_CR", "Z4l_CR"};
 
 typedef vector<TCPhysObject> vObj;
 
@@ -114,9 +113,14 @@ class fcncAnalyzer : public TSelector {
         TriggerSelector *triggerSelector;
 
         //Event variables
+        bool zTagged;
+
+        TLorentzVector dileptonP4;
+        TLorentzVector lep1P4, lep2P4, lep3P4; // If event is zTagged, lep1 and lep2 are associated to the z
 
         Float_t     MET;
         Float_t     metPhi;
+        Float_t     METLD;
         Float_t     HT;
         Float_t     HTs;
         Float_t     MHT;
@@ -134,9 +138,9 @@ class fcncAnalyzer : public TSelector {
         // Simple ntuples for MVA
         TTree*      mvaTree;
 
-        Float_t     DileptonMassOS;
-        Float_t     TrileptonMass;
-        Float_t     DileptonDROS;
+        Float_t     dileptonMassOS;
+        Float_t     trileptonMass;
+        Float_t     dileptonDROS;
 
         Float_t     lep1Pt, lep2Pt, lep3Pt;
         Float_t     lep1Eta, lep2Eta, lep3Eta;

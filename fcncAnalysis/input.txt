@@ -1,1 +1,1 @@
-/home/naodell/STORAGE_ANALYSIS/FCNH/ntuples/nuTuple_1_1_bGf.root
+/home/naodell/STORAGE_ANALYSIS/FCNH/ntuples/nuTuple_WZJets.root
