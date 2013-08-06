@@ -469,7 +469,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
             zTagged 
             && leptons.size() == 3 
             && bJetsM.size() == 0
-            && MET > 30
+            && MET > 40
             ) {
         MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 5);
         SetYields(9);
