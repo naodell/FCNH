@@ -26,6 +26,7 @@ suffix      = sys.argv[1]
 
 cutList     = ['1_preselection']
 cutList.extend(['2_Z_veto', '3_MET', '4_bjet_cut', '5_BDT'])
+cutList.extend(['WZ_CR'])
 
 period      = '2012'
 LUMIDATA    = 19.7 #{'DATA_MUON': 20.31, 'DATA_ELECTRON': 19.7384, 'DATA_MUEG': 19.7794}
@@ -60,7 +61,7 @@ samples.append('VJets')
 #samples.extend(['WWZ', 'WZZ', 'ZZZ', 'WWG'])
 #samples.extend(['ttW', 'ttZ', 'ttG'])
 #samples.append('WWJets2L2Nu')
-#samples.append('WZJets3LNu')
+samples.append('WZJets3LNu')
 
 p_plot = []
 
@@ -137,7 +138,7 @@ if doPlots:
                                            'HT', 'HTs', 'EventBalance', 'Centrality',
                                            'JetMultCharge', 'JetMult', 'BJetMult']
 
-    plotter._variableDict['MET']        = ['Met', 'MetPhi', 'MetSumEt',
+    plotter._variableDict['MET']        = ['Met', 'MHT', 'METLD', 'MET-MHT', 'MetPhi', 'MetSumEt',
                                            'MetLepton1DeltaPhi', 'MetLepton2DeltaPhi'
                                            'MetLepDeltaPhiMin', 'nearLepIndex', 'ProjectedMet', 'MetLepton3DeltaPhi'] 
 

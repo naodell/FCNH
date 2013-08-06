@@ -1,6 +1,6 @@
 #!/bin/csh
 
-set count = 5
+set count = $2
 
 while ($count)
     #hadd -f -k combined_histos/{$1}_cut{$count}_{$2}_{$3}.root batchStage/{$3}/fcncHistograms_cut{$count}_*root > /dev/null &

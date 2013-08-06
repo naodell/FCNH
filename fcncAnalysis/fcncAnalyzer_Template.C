@@ -465,7 +465,12 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
 
     // WZ control region //
-    if (leptons.size() == 3 && zTagged && bJetsM.size() == 0) {
+    if (
+            zTagged 
+            && leptons.size() == 3 
+            && bJetsM.size() == 0
+            && MET > 30
+            ) {
         MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 5);
         SetYields(9);
     }

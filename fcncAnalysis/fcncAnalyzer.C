@@ -466,7 +466,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
     // WZ control region //
     if (leptons.size() == 3 && zTagged && bJetsM.size() == 0) {
-        cout << dileptonMassOS << endl;
         MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 5);
         SetYields(9);
     }
