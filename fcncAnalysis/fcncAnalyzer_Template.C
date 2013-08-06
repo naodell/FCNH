@@ -478,10 +478,24 @@ bool fcncAnalyzer::Process(Long64_t entry)
             zTagged 
             && leptons.size() == 3 
             && bJetsM.size() == 0
+            && jets.size() > 1
             && MET > 40
             ) {
         MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 5);
         SetYields(9);
+    }
+
+    // ttbar control region //
+    if (
+            !zTagged 
+            && leptons.size() == 2 
+            && (bJetsM.size() == 1 || bJetsL.size() == 2)
+            && leptons[0].Type() != leptons[1].Type()
+            && leptons[0].Charge() != leptons[1].Charge()
+            && MET > 30
+            ) {
+        MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 6);
+        SetYields(10);
     }
 
 
@@ -587,6 +601,7 @@ void fcncAnalyzer::Terminate()
     // Control regions //
     cout<<"\nControl region event yields."<<"\n"<<endl;
     cout<<"| WZ:                                |\t" << eventCount[9]  << "\t|\t" << eventCountWeighted[9] << "\t|"<<endl;
+    cout<<"| ttbar:                             |\t" << eventCount[10]  << "\t|\t" << eventCountWeighted[10] << "\t|"<<endl;
 
 
     //for (int i = 0; i < 8; ++i) fout[i].close();

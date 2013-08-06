@@ -90,7 +90,7 @@ const string categoryNames[] = {
     //"3l_barrel",
 };
 
-const unsigned short N_CUTS = 9;
+const unsigned short N_CUTS = 7;
 const string cutNames[] = {"preselection", "Z veto",  "MET selection", "jet selection", "BDT", "WZ_CR", "ttbar_CR", "ZZ4l_CR", "Z4l_CR"};
 
 typedef vector<TCPhysObject> vObj;
