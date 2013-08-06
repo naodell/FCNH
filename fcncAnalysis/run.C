@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void run(Long64_t nEntries = 1e10) {
+void run(Long64_t nEntries = 1e3) {
 
     //container classes
     gROOT->LoadMacro("../src/TCPhysObject.cc+");

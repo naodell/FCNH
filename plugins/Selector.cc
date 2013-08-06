@@ -495,24 +495,30 @@ TCJet Selector::JERCorrections(TCJet *inJet)
     float etaBins[]   = {0., 0.5, 1.1, 1.7, 2.3, 5.0};
 
     // Match jet to generator level jet
-    TCGenJet matchedJet;
     TCJet    jet = *inJet;
-    unsigned count = 0;
+    float    matchedJetPt   = 0.;
+    unsigned count          = 0;
 
     for (unsigned i = 0; i < _selGenJets.size(); ++i) {
         if (inJet->DeltaR(_selGenJets[i]) < 0.15) {
-            //cout << "\t" << _selGenJets[i].Pt() << ", " << _selGenJets[i].Eta() << "\t" << inJet->Pt() << ", " << inJet->Eta() << "\t\t";
-            matchedJet = _selGenJets[i];
+            //cout << _selGenJets[i].Pt() << "\t" << inJet->Pt() << ", " << inJet->DeltaR(_selGenJets[i]) << "\t\t";
+            matchedJetPt += _selGenJets[i].Pt();
             ++count;
         }
     }
 
-    if (count == 1) {
+
+    if (count > 0) {
         for (unsigned i = 0; i < 5; ++i) {
             if (fabs(inJet->Eta()) > etaBins[i] && fabs(inJet->Eta()) < etaBins[i+1]) {
-                double corJetPt = matchedJet.Pt() + sfEta[i]*(inJet->Pt() - matchedJet.Pt());
-                //cout << matchedJet.Pt() << ", " << inJet->Pt() << ", " << inJet->DeltaR(matchedJet) << ", " << corJetPt << endl;
-                jet.SetPtEtaPhiE(max(0., corJetPt), inJet->Eta(), inJet->Phi(), inJet->E());
+
+                if ((matchedJetPt - inJet->Pt())/inJet->Pt() < 0.3*inJet->Pt()) {
+                    double corJetPt = matchedJetPt + sfEta[i]*(inJet->Pt() - matchedJetPt);
+                    jet.SetPtEtaPhiE(corJetPt, inJet->Eta(), inJet->Phi(), inJet->E());
+
+                    //cout << "\t" << count << ", " << matchedJetPt << ", " << inJet->Pt() << ", " << corJetPt << endl;
+
+                }
             }
         }
     }  
