@@ -451,7 +451,7 @@ void Selector::JetSelector(TClonesArray* jets)
 
         if (fabs(corJet.Eta()) < 2.4) {
             if (
-                    corJet.Pt() > _jetPtCuts[1]
+                    corJet.Pt() > _jetPtCuts[0]
                     && corJet.NumConstit() > 1
                     && corJet.NeuHadFrac() < 0.99
                     && corJet.NeuEmFrac() < 0.99

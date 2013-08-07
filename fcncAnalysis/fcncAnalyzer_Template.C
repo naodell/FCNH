@@ -479,7 +479,8 @@ bool fcncAnalyzer::Process(Long64_t entry)
             && leptons.size() == 3 
             && bJetsM.size() == 0
             && jets.size() > 1
-            && MET > 40
+            && MET > 40 
+            && MHT > 20
             ) {
         MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 5);
         SetYields(9);
@@ -796,34 +797,31 @@ void fcncAnalyzer::LeptonPlots(vObj leptons, TCMET met, vector<TCJet> jets, vect
     }
 
     // OS dilepton pair variables
-    if (zTagged) {
-        histManager->Fill1DHist(dileptonP4.M(),
-                "h1_DileptonOSMass", "OS dilepton M;M_{OS};Entries / 4 GeV", 100, 0., 400.);
-        histManager->Fill1DHist(dileptonP4.Mt(),
-                "h1_DileptonOSTransMass", "OS dilepton MT;MT_{OS};Entries / 5 GeV", 100, 0., 500.);
-        histManager->Fill1DHist(dileptonP4.Pt(),
-                "h1_DileptonOSQt", "dilepton q_{T,OS};q_{T}^{OS};Entries / 5 GeV", 100, 0., 500.);
-        histManager->Fill1DHist(fabs(lep1P4.DeltaPhi(lep2P4)),
-                "h1_DileptonOSDeltaPhi", "dilepton #Delta #phi_{OS};#Delta #phi_{OS};Entries / bin", 36, 0., TMath::Pi());
-        histManager->Fill1DHist(fabs(lep1P4.Eta() - lep2P4.Eta()),
-                "h1_DileptonOSDeltaEta", "dilepton #Delta #eta_{OS};#Delta #eta_{OS};Entries / bin", 60, 0., 6.);
-        histManager->Fill1DHist(fabs(lep2P4.DeltaR(lep1P4)),
-                "h1_DileptonOSDeltaR", "dilepton #Delta R_{OS};#Delta R_{OS};Entries / bin", 70, 0., 7.);
-        histManager->Fill1DHist(fabs(lep1P4.Pt() - lep2P4.Pt())/(lep1P4.Pt() + lep2P4.Pt()),
-                "h1_DileptonOSDeltaPt", "dilepton #Delta p_{T, OS}/#Sigma p_{T, OS};#Delta p_{T, OS}/#Sigma p_{T, OS};Entries / bin", 100, 0., 1.);
-        histManager->Fill1DHist(dileptonP4.Pt()/(lep1P4.Pt() + lep2P4.Pt()),
-                "h1_DileptonOSBalance", "dilepton #Delta p_{T, OS}/#Sigma p_{T, OS};#Delta p_{T, OS}/#Sigma p_{T, OS};Entries / bin", 100, 0., 1.);
+    histManager->Fill1DHist(dileptonP4.M(),
+            "h1_DileptonOSMass", "OS dilepton M;M_{OS};Entries / 4 GeV", 100, 0., 400.);
+    histManager->Fill1DHist(dileptonP4.Mt(),
+            "h1_DileptonOSTransMass", "OS dilepton MT;MT_{OS};Entries / 5 GeV", 100, 0., 500.);
+    histManager->Fill1DHist(dileptonP4.Pt(),
+            "h1_DileptonOSQt", "dilepton q_{T,OS};q_{T}^{OS};Entries / 5 GeV", 100, 0., 500.);
+    histManager->Fill1DHist(fabs(lep1P4.DeltaPhi(lep2P4)),
+            "h1_DileptonOSDeltaPhi", "dilepton #Delta #phi_{OS};#Delta #phi_{OS};Entries / bin", 36, 0., TMath::Pi());
+    histManager->Fill1DHist(fabs(lep1P4.Eta() - lep2P4.Eta()),
+            "h1_DileptonOSDeltaEta", "dilepton #Delta #eta_{OS};#Delta #eta_{OS};Entries / bin", 60, 0., 6.);
+    histManager->Fill1DHist(fabs(lep2P4.DeltaR(lep1P4)),
+            "h1_DileptonOSDeltaR", "dilepton #Delta R_{OS};#Delta R_{OS};Entries / bin", 70, 0., 7.);
+    histManager->Fill1DHist(fabs(lep1P4.Pt() - lep2P4.Pt())/(lep1P4.Pt() + lep2P4.Pt()),
+            "h1_DileptonOSDeltaPt", "dilepton #Delta p_{T, OS}/#Sigma p_{T, OS};#Delta p_{T, OS}/#Sigma p_{T, OS};Entries / bin", 100, 0., 1.);
+    histManager->Fill1DHist(dileptonP4.Pt()/(lep1P4.Pt() + lep2P4.Pt()),
+            "h1_DileptonOSBalance", "dilepton #Delta p_{T, OS}/#Sigma p_{T, OS};#Delta p_{T, OS}/#Sigma p_{T, OS};Entries / bin", 100, 0., 1.);
 
-        if (leptons.size() == 3) {
-            histManager->Fill1DHist(dileptonP4.DeltaR(lep3P4), 
-                    "h1_DileptonLepDeltaR", "#Delta R(ll,l);#Delta R(ll,l);Entries / bin", 70, 0., 7.);
-            histManager->Fill1DHist(fabs(dileptonP4.DeltaPhi(lep3P4)), 
-                    "h1_DileptonLepDeltaPhi", "#Delta #phi(ll,l);#Delta #phi(ll,l);Entries / bin", 36, 0., TMath::Pi());
-            histManager->Fill1DHist(fabs(dileptonP4.Eta() - lep3P4.Eta()), 
-                    "h1_DileptonLepDeltaEta", "#Delta #eta(ll,l);#Delta #eta(ll,l);Entries / bin", 60, 0., 6.);
-        }
+    if (leptons.size() == 3) {
+        histManager->Fill1DHist(dileptonP4.DeltaR(lep3P4), 
+                "h1_DileptonLepDeltaR", "#Delta R(ll,l);#Delta R(ll,l);Entries / bin", 70, 0., 7.);
+        histManager->Fill1DHist(fabs(dileptonP4.DeltaPhi(lep3P4)), 
+                "h1_DileptonLepDeltaPhi", "#Delta #phi(ll,l);#Delta #phi(ll,l);Entries / bin", 36, 0., TMath::Pi());
+        histManager->Fill1DHist(fabs(dileptonP4.Eta() - lep3P4.Eta()), 
+                "h1_DileptonLepDeltaEta", "#Delta #eta(ll,l);#Delta #eta(ll,l);Entries / bin", 60, 0., 6.);
     }
-
 
     if (leptons.size() == 2) {
         if (leptons[0].Charge() == leptons[1].Charge()){
