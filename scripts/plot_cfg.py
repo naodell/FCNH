@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-import subprocess, shlex, datetime
+import subprocess, shlex, datetime, copy
 from multiprocessing import Process
 
 import ROOT as r
@@ -26,10 +26,12 @@ suffix      = sys.argv[1]
 
 cutList     = ['1_preselection']
 cutList.extend(['2_Z_veto', '3_MET', '4_bjet_cut', '5_BDT'])
-cutList.extend(['WZ_CR'])
+
+crList      = ['CR_WZ', 'CR_ttbar']
 
 period      = '2012'
 LUMIDATA    = 19.7 #{'DATA_MUON': 20.31, 'DATA_ELECTRON': 19.7384, 'DATA_MUEG': 19.7794}
+doLog       = True
 
 doPlots     = True
 doYields    = True
@@ -60,8 +62,6 @@ samples.append('VJets')
 
 #samples.extend(['WWZ', 'WZZ', 'ZZZ', 'WWG'])
 #samples.extend(['ttW', 'ttZ', 'ttG'])
-#samples.append('WWJets2L2Nu')
-samples.append('WZJets3LNu')
 
 p_plot = []
 
@@ -83,7 +83,7 @@ if doPlots:
     plotter._overlayList.extend(['DATA'])
     plotter._overlayList.extend(['FCNH'])
 
-    plotter.get_scale_factors(['FCNH'])
+    plotter.get_scale_factors(['FCNH'], ')
     #plotter.get_scale_factors()
 
     ### VARIABLES ###
@@ -94,7 +94,7 @@ if doPlots:
     ### plot while giving a key value which is the 
     ### directory that they are located in as a key.
 
-    plotter._directoryList1D            = ['Misc', 'Lepton', 'Dilepton', 'DileptonOS', 'Lep+Jet', 'MET', 'Jet', 'top', 'GEN']
+    plotter._directoryList1D            = ['Misc', 'Lepton', 'Dilepton', 'DileptonOS', 'MET', 'Jet', 'GEN']
     plotter._directoryList2D            = ['2D']
 
     plotter._variableDict['Misc']       = ['PvMult', 'YieldByCut', 'EventWeight', 'TriggerStatus']
@@ -176,7 +176,10 @@ if doPlots:
     for i, cut in enumerate(cutList):
 
         inFile  = 'fcncAnalysis/combined_histos/' + selection + '_cut' + str(i+1) + '_' + period + batch + '.root'
-        outFile = 'plots/' + currentDate + '/' + selection + '_' + suffix + '/' + cut
+        if doLog:
+            outFile = 'plots/' + currentDate + '/' + selection + '_' + suffix + '/log/' + cut
+        else:
+            outFile = 'plots/' + currentDate + '/' + selection + '_' + suffix + '/linear/' + cut
 
         plotter.make_save_path(outFile, clean=True)
 
@@ -187,7 +190,47 @@ if doPlots:
             #print '{0}: Testing new sample combiner on {1}'.format(i,category)
             #plotter_wrapper(plotter, category, inFile, outFile, True, False)
 
-            p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(plotter, category, inFile, outFile, do1D, do2D)))
+            p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(plotter, category, inFile, outFile, do1D, do2D, doLog)))
+
+    doLog = False
+
+    ### WZ control region
+    if 'CR_WZ' in crList:
+
+        wz_plotter = copy.deepcopy(plotter)
+
+        wz_plotter.add_datasets(['WW/ZZ', 'top', 'VJets', 'WZJets3LNu'], Clear=True)
+        wz_plotter._overlayList = ['DATA']
+
+        inFile  = 'fcncAnalysis/combined_histos/' + selection + '_cut6_' + period + batch + '.root'
+        if doLog:
+            outFile = 'plots/' + currentDate + '/' + selection + '_' + suffix + '/log/CR_WZ'
+        else:
+            outFile = 'plots/' + currentDate + '/' + selection + '_' + suffix + '/linear/CR_WZ'
+
+        wz_plotter.make_save_path(outFile, clean=True)
+
+        for category in cat3l:
+            p_plot.append(Process(name = 'CR_WZ/' + category, target = plotter_wrapper, args=(wz_plotter, category, inFile, outFile, do1D, do2D, doLog)))
+
+    ### ttbar control region
+    if 'CR_ttbar' in crList:
+
+        ttbar_plotter = copy.deepcopy(plotter)
+
+        ttbar_plotter.add_datasets(['single top', 'VJets', 'ttbar'],  Clear=True)
+        ttbar_plotter._overlayList = ['DATA']
+
+        inFile  = 'fcncAnalysis/combined_histos/' + selection + '_cut7_' + period + batch + '.root'
+        if doLog:
+            outFile = 'plots/' + currentDate + '/' + selection + '_' + suffix + '/log/CR_ttbar'
+        else:
+            outFile = 'plots/' + currentDate + '/' + selection + '_' + suffix + '/linear/CR_ttbar'
+        ttbar_plotter.make_save_path(outFile, clean=True)
+
+        p_plot.append(Process(name = 'CR_ttbar/os_emu', target = plotter_wrapper, args=(ttbar_plotter, 'os_emu', inFile, outFile, do1D, do2D, doLog)))
+
+### End of configuration for PlotProducer ###
 
 for process in p_plot:
     print 'Plotting {0}'.format(process.name)

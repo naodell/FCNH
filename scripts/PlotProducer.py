@@ -73,17 +73,6 @@ def build_legend(hists, dataList, var, styleDict):
 
     return legend
 
-def plotter_wrapper(plotter, category, inputPath, outputPath, do1D, do2D):
-
-    plotter.set_input_file(inputPath)
-    plotter.set_save_path(outputPath)
-    plotter._category = category
-
-    if do1D:
-        plotter.make_overlays_1D(logScale = True, doRatio = True, doEff = False)
-    if do2D:
-        plotter.make_overlays_2D(logScale = True, doProjection = False)
-
 ####                                      ####  
 #### Beginning of PlotProducer definition ####
 ####                                      ####  
@@ -331,7 +320,7 @@ class PlotProducer(AnalysisTools):
                     stacks[var].SetMinimum(0.005)
                 else:
                     stacks[var].SetMaximum(max(stacks[var].GetMaximum(), hists[var][0][0].GetMaximum())*1.25)
-                    stacks[var].SetMinimum(0.001)
+                    stacks[var].SetMinimum(0.00001)
 
                 if doRatio or doEff: 
                     legend.SetX1(0.91)
@@ -344,7 +333,7 @@ class PlotProducer(AnalysisTools):
                 sums[var].Draw('E2 SAME')
 
                 if not logScale:
-                    stacks[var].GetYaxis().SetTitleOffset(2.00);
+                    stacks[var].GetYaxis().SetTitleOffset(1.00);
 
                 for (hist, data) in hists[var]:
                     hist.Draw('E SAME')
@@ -542,14 +531,14 @@ class PlotProducer(AnalysisTools):
 #### End of PlotProducer class definition ####
 ####                                      ####  
 
-def plotter_wrapper(plotter, category, inputPath, outputPath, do1D, do2D):
+def plotter_wrapper(plotter, category, inputPath, outputPath, do1D, do2D, doLog):
 
     plotter.set_input_file(inputPath)
     plotter.set_save_path(outputPath)
     plotter._category = category
 
     if do1D:
-        plotter.make_overlays_1D(logScale = True, doRatio = True, doEff = False)
+        plotter.make_overlays_1D(logScale = doLog, doRatio = True, doEff = False)
     if do2D:
-        plotter.make_overlays_2D(logScale = True, doProjection = False)
+        plotter.make_overlays_2D(logScale = False, doProjection = False)
 
