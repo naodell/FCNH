@@ -487,8 +487,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
     // ttbar control region //
     if (
-            !zTagged 
-            && leptons.size() == 2 
+            leptons.size() == 2 
             && (bJetsM.size() == 1 || bJetsL.size() == 2)
             && leptons[0].Type() != leptons[1].Type()
             && leptons[0].Charge() != leptons[1].Charge()
