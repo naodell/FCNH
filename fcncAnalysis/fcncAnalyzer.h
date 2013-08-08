@@ -137,6 +137,7 @@ class fcncAnalyzer : public TSelector {
 
         // Simple ntuples for MVA
         TTree*      mvaTree;
+        TTree*      leptonTree;
 
         Float_t     dileptonMassOS;
         Float_t     trileptonMass;

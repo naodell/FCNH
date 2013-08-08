@@ -55,6 +55,8 @@ if __name__ == '__main__':
     methods = ['BDT']
     doGUI   = False
 
+    selection = '3l'
+
     # Scale factors
     paramFile = open('scripts/fcncParams.pkl', 'rb')
     scales    = pickle.load(paramFile)
@@ -112,26 +114,29 @@ if __name__ == '__main__':
     factory.AddVariable('MT', 'MT', 'GeV', 'F')
 
     factory.AddVariable('lep1Pt', 'lep1Pt', 'GeV', 'F')
-    factory.AddVariable('lep2Pt', 'lep2Pt', 'GeV', 'F')
-    factory.AddVariable('lep3Pt', 'lep3Pt', 'GeV', 'F')
     factory.AddVariable('lep1Eta', 'lep1Eta', '', 'F')
-    factory.AddVariable('lep2Eta', 'lep2Eta', '', 'F')
-    factory.AddVariable('lep3Eta', 'lep3Eta', '', 'F')
     factory.AddVariable('lep1Phi', 'lep1Phi', 'rad', 'F')
+    factory.AddVariable('lep2Pt', 'lep2Pt', 'GeV', 'F')
+    factory.AddVariable('lep2Eta', 'lep2Eta', '', 'F')
     factory.AddVariable('lep2Phi', 'lep2Phi', 'rad', 'F')
-    factory.AddVariable('lep3Phi', 'lep3Phi', 'rad', 'F')
 
     factory.AddVariable('bJetPt', 'bJetPt', 'GeV', 'F')
     factory.AddVariable('bJetEta', 'bJetEta', '', 'F')
     factory.AddVariable('bJetPhi', 'bJetPhi', 'rad', 'F')
 
-    factory.AddVariable('TrileptonMass', 'TrileptonMass', 'GeV', 'F')
-    factory.AddVariable('DileptonMassOS', 'DileptonMassOS', 'GeV', 'F')
-    factory.AddVariable('DileptonDROS', 'DileptonDROS', 'rad', 'F')
 
-    factory.AddVariable('flavorCat', 'flavorCat', '', 'I')
     factory.AddVariable('JetMult', 'JetMult', '', 'I')
     factory.AddVariable('BJetMult', 'BJetMult', '', 'I')
+
+    if selection is '3l':
+        factory.AddVariable('lep3Pt', 'lep3Pt', 'GeV', 'F')
+        factory.AddVariable('lep3Eta', 'lep3Eta', '', 'F')
+        factory.AddVariable('lep3Phi', 'lep3Phi', 'rad', 'F')
+
+        factory.AddVariable('TrileptonMass', 'TrileptonMass', 'GeV', 'F')
+        factory.AddVariable('DileptonMassOS', 'DileptonMassOS', 'GeV', 'F')
+        factory.AddVariable('DileptonDROS', 'DileptonDROS', 'rad', 'F')
+
 
     for tree in sigTrees:
         factory.AddSignalTree(tree, 1.)
