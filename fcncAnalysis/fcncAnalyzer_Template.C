@@ -370,6 +370,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
     if (leptons.size() == 2) {
         //!!! Dilepton selection !!!//
         if ( leptons[0].Pt() < leptonPtCut[0] || leptons[1].Pt() < leptonPtCut[1]) return kTRUE;
+
     } else if (leptons.size() == 3) {
         //!!! Trilepton selection !!!//
         if ( 
@@ -378,6 +379,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
                 || leptons[2].Pt() < leptonPtCut[1]
                 || fabs(leptons[0].Charge() + leptons[1].Charge() + leptons[2].Charge()) != 1) 
             return kTRUE;
+
     } else if (leptons.size() == 4) {
         //!!! Tetralepton selection !!!//
         if (leptons[0].Pt() > leptonPtCut[0]) {
@@ -388,7 +390,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
                 histManager->Fill1DHist(mass4L,
                         "h1_4lMass", "4l Mass;M_{4l};Entries / 4 GeV", 50, 5., 250.);
         }
-        return kTRUE;
     } else
         return kTRUE;
 
