@@ -510,7 +510,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
     //!! Z-veto !!//
     if (leptons.size() == 3) {
-        float trileptonMass = (leptons[0] + leptons[1] + leptons[2]).M();
         for (unsigned i = 1; i < leptons.size(); ++i) {
             for (unsigned j = 0; j < i; ++j) {
                 if ( 
@@ -796,23 +795,25 @@ void fcncAnalyzer::LeptonPlots(vObj leptons, TCMET met, vector<TCJet> jets, vect
         }
     }
 
-    // OS dilepton pair variables
-    histManager->Fill1DHist(dileptonP4.M(),
-            "h1_DileptonOSMass", "OS dilepton M;M_{OS};Entries / 4 GeV", 100, 0., 400.);
-    histManager->Fill1DHist(dileptonP4.Mt(),
-            "h1_DileptonOSTransMass", "OS dilepton MT;MT_{OS};Entries / 5 GeV", 100, 0., 500.);
-    histManager->Fill1DHist(dileptonP4.Pt(),
-            "h1_DileptonOSQt", "dilepton q_{T,OS};q_{T}^{OS};Entries / 5 GeV", 100, 0., 500.);
-    histManager->Fill1DHist(fabs(lep1P4.DeltaPhi(lep2P4)),
-            "h1_DileptonOSDeltaPhi", "dilepton #Delta #phi_{OS};#Delta #phi_{OS};Entries / bin", 36, 0., TMath::Pi());
-    histManager->Fill1DHist(fabs(lep1P4.Eta() - lep2P4.Eta()),
-            "h1_DileptonOSDeltaEta", "dilepton #Delta #eta_{OS};#Delta #eta_{OS};Entries / bin", 60, 0., 6.);
-    histManager->Fill1DHist(fabs(lep2P4.DeltaR(lep1P4)),
-            "h1_DileptonOSDeltaR", "dilepton #Delta R_{OS};#Delta R_{OS};Entries / bin", 70, 0., 7.);
-    histManager->Fill1DHist(fabs(lep1P4.Pt() - lep2P4.Pt())/(lep1P4.Pt() + lep2P4.Pt()),
-            "h1_DileptonOSDeltaPt", "dilepton #Delta p_{T, OS}/#Sigma p_{T, OS};#Delta p_{T, OS}/#Sigma p_{T, OS};Entries / bin", 100, 0., 1.);
-    histManager->Fill1DHist(dileptonP4.Pt()/(lep1P4.Pt() + lep2P4.Pt()),
-            "h1_DileptonOSBalance", "dilepton #Delta p_{T, OS}/#Sigma p_{T, OS};#Delta p_{T, OS}/#Sigma p_{T, OS};Entries / bin", 100, 0., 1.);
+    // OSSF dilepton pair variables
+    if (evtCategory.test(16)) {
+        histManager->Fill1DHist(dileptonP4.M(),
+                "h1_DileptonOSMass", "OS dilepton M;M_{OS};Entries / 4 GeV", 100, 0., 400.);
+        histManager->Fill1DHist(dileptonP4.Mt(),
+                "h1_DileptonOSTransMass", "OS dilepton MT;MT_{OS};Entries / 5 GeV", 100, 0., 500.);
+        histManager->Fill1DHist(dileptonP4.Pt(),
+                "h1_DileptonOSQt", "dilepton q_{T,OS};q_{T}^{OS};Entries / 5 GeV", 100, 0., 500.);
+        histManager->Fill1DHist(fabs(lep1P4.DeltaPhi(lep2P4)),
+                "h1_DileptonOSDeltaPhi", "dilepton #Delta #phi_{OS};#Delta #phi_{OS};Entries / bin", 36, 0., TMath::Pi());
+        histManager->Fill1DHist(fabs(lep1P4.Eta() - lep2P4.Eta()),
+                "h1_DileptonOSDeltaEta", "dilepton #Delta #eta_{OS};#Delta #eta_{OS};Entries / bin", 60, 0., 6.);
+        histManager->Fill1DHist(fabs(lep2P4.DeltaR(lep1P4)),
+                "h1_DileptonOSDeltaR", "dilepton #Delta R_{OS};#Delta R_{OS};Entries / bin", 70, 0., 7.);
+        histManager->Fill1DHist(fabs(lep1P4.Pt() - lep2P4.Pt())/(lep1P4.Pt() + lep2P4.Pt()),
+                "h1_DileptonOSDeltaPt", "dilepton #Delta p_{T, OS}/#Sigma p_{T, OS};#Delta p_{T, OS}/#Sigma p_{T, OS};Entries / bin", 100, 0., 1.);
+        histManager->Fill1DHist(dileptonP4.Pt()/(lep1P4.Pt() + lep2P4.Pt()),
+                "h1_DileptonOSBalance", "dilepton #Delta p_{T, OS}/#Sigma p_{T, OS};#Delta p_{T, OS}/#Sigma p_{T, OS};Entries / bin", 100, 0., 1.);
+    }
 
     if (leptons.size() == 3) {
         histManager->Fill1DHist(dileptonP4.DeltaR(lep3P4), 
@@ -1186,8 +1187,8 @@ int fcncAnalyzer::GetHistCategory(unsigned shift)
        Additionally there is OSSF and SSSF 3 lepton categories for syncing with
        the WH analysis.  
 
-16: OSSF
-17: SSSF
+    16: OSSF
+    17: SSSF
      */
 
     unsigned lepCat     = (evtCategory.to_ulong() >> 2) & 0x3;
@@ -1309,7 +1310,8 @@ void fcncAnalyzer::SetEventVariables(vObj leptons, vector<TCJet> jets, vector<TC
         trileptonMass   = -1.;
 
     // Reset OS variables for each event //
-    zTagged = false;
+    zTagged     = false;
+    ossfTagged  = false;
     dileptonMassOS = -1.;
 
     float zCandidateMass = 0.;
