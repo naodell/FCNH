@@ -33,7 +33,7 @@ period      = '2012'
 LUMIDATA    = 19.7 #{'DATA_MUON': 20.31, 'DATA_ELECTRON': 19.7384, 'DATA_MUEG': 19.7794}
 doLog       = True
 
-doPlots     = True
+doPlots     = False
 doYields    = True
 
 doOS        = True
@@ -253,8 +253,8 @@ if doYields:
 
     yieldTable.set_period(period)
 
-    #yieldTable._columnList  = ['higgs', 'Triboson', 'ttV', 'Diboson', 'top', 'QCD', 'VJets', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
-    yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
+    yieldTable._columnList  = ['higgs', 'Triboson', 'ttV', 'Diboson', 'top', 'VJets', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
+    #yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
     yieldTable.add_datasets(samples, Clear = True)
     yieldTable.add_datasets('FCNH')
@@ -296,7 +296,7 @@ if doYields:
             continue
             #yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 1)
         else:
-            yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
+            yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 1)
 
     outFile.close()
     subprocess.call('pdflatex -output-dir=yields yields/yields.tex', shell = True)

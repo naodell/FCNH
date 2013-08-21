@@ -52,7 +52,7 @@ class WeightUtils: public TObject {
         float   VBFHiggsWeight(float, int);
         float   GetTotalWeight();
         float   FakeWeight(TCPhysObject);
-        float   BJetEfficiency(vector<TLorentzVector>, string);
+        float   BTagModifier(vector<TLorentzVector>, string);
 
         // lepton reco efficiencies
         float GetElectronEff(TLorentzVector) const;

@@ -927,7 +927,7 @@ void fcncAnalyzer::MetPlots(TCMET met, vObj leptons)
 void fcncAnalyzer::JetPlots(vector<TCJet> jets, vector<TCJet> bJets)
 {
     float etaBins[] = {0., 0.8, 1.2, 2.1, 2.4};
-    float ptBins[]  = {30., 40., 50., 70., 85., 120., 175., 1e3};
+    float ptBins[] = {20, 30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500, 600, 800};
 
     histManager->Fill1DHist(jets.size(),
             "h1_JetMult", "Multiplicity of jets;N_{jets};Entries / bin", 11, -0.5, 10.5);
@@ -946,9 +946,9 @@ void fcncAnalyzer::JetPlots(vector<TCJet> jets, vector<TCJet> bJets)
         histManager->Fill1DHist(jets[i].Phi(),
                 "h1_Jet" + index + "Phi", "#phi of jet" + index + ";#phi^{j" + index + "};Entries / bin", 36, -TMath::Pi(), TMath::Pi());
 
-        if (abs(jets[i].JetFlavor()) == 5) {
-            histManager->Fill2DHistUnevenBins(jets[i].Pt(), jets[i].Eta(),
-                    "h2_JetBTruthEtaVsPt", "b flavor jet #eta vs. p_{T};p_{T};#eta", 7, ptBins, 4, etaBins);
+        if (abs(jets[i].JetFlavor()) == 5) { // b-jets that are not correctly tagged
+            histManager->Fill1DHistUnevenBins(jets[i].Pt(),
+                    "h1_BTruthDenomPt", "b flavor jet p_{T};p_{T}", 16, ptBins);
         }
 
     }
@@ -965,12 +965,15 @@ void fcncAnalyzer::JetPlots(vector<TCJet> jets, vector<TCJet> bJets)
         histManager->Fill1DHist(bJets[i].Phi(),
                 "h1_BJet" + index + "Phi", "#phi of b-jet " + index + ";#phi^{b" + index + "};Entries / bin", 36, -TMath::Pi(), TMath::Pi());
          
-        histManager->Fill2DHistUnevenBins(bJets[i].Pt(), bJets[i].Eta(),
-                "h2_BJetEtaVsPt", "b flavor jet #eta vs. p_{T};p_{T};#eta", 7, ptBins, 4, etaBins);
 
-        if (abs(bJets[i].JetFlavor()) == 5) {
-            histManager->Fill2DHistUnevenBins(bJets[i].Pt(), bJets[i].Eta(),
-                    "h2_JetBTruthEtaVsPt", "b flavor jet #eta vs. p_{T};p_{T};#eta", 7, ptBins, 4, etaBins);
+        if (abs(bJets[i].JetFlavor()) == 5) { // Correctly tagged b-jets
+            histManager->Fill1DHistUnevenBins(bJets[i].Pt(),
+                    "h1_BTruthNumerPt", "b flavor jet p_{T};p_{T}", 16, ptBins);
+            histManager->Fill1DHistUnevenBins(bJets[i].Pt(),
+                    "h1_BTruthDenomPt", "b flavor jet p_{T};p_{T}", 16, ptBins);
+        } else { // misidentified b-jets (b-tagged light jets)
+            histManager->Fill1DHistUnevenBins(bJets[i].Pt(),
+                    "h1_BMistagNumerPt", "b flavor jet p_{T};p_{T}", 16, ptBins);
         }
     }
 
