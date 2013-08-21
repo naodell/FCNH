@@ -91,7 +91,7 @@ const string categoryNames[] = {
 };
 
 const unsigned short N_CUTS = 7;
-const string cutNames[] = {"preselection", "Z veto",  "MET selection", "jet selection", "BDT", "WZ_CR", "ttbar_CR", "ZZ4l_CR", "Z4l_CR"};
+const string cutNames[] = {"preselection", "Z veto",  "MET selection", "jet selection", "BDT", "WZ_CR", "ttbar_CR"}; //, "ZZ4l_CR", "Z4l_CR"};
 
 typedef vector<TCPhysObject> vObj;
 
@@ -137,6 +137,7 @@ class fcncAnalyzer : public TSelector {
 
         // Simple ntuples for MVA
         TTree*      mvaTree;
+        TTree*      leptonTree;
 
         Float_t     dileptonMassOS;
         Float_t     trileptonMass;
