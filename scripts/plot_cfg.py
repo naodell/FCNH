@@ -83,7 +83,7 @@ if doPlots:
     plotter._overlayList.extend(['DATA'])
     plotter._overlayList.extend(['FCNH'])
 
-    plotter.get_scale_factors(['FCNH'], ')
+    plotter.get_scale_factors(['FCNH'])
     #plotter.get_scale_factors()
 
     ### VARIABLES ###

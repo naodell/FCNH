@@ -71,7 +71,8 @@ if period == '2012':
         #cfg('WbbToLNu', dCache+'/naodell/nuTuples_v6_8TeV/WbbJetsToLNu', 20, 'WbbToLNu muon 2012'),
         #cfg('WG', dCache+'/naodell/nuTuples_v6_8TeV/WGToLNuG', 10, 'WG muon 2012'),
 
-        cfg('ttbar', dCache+'/naodell/nuTuples_v6_8TeV/TTJets', 30, 'ttbar muon 2012'),
+        cfg('ttbar', dCache+'/naodell/nuTuples_v6_8TeV/TTJets', 30, 'ttbar muon 2012'), # Testing b-tag mc efficiencies
+        #cfg('ttbar', dCache+'/naodell/nuTuples_v6_8TeV/TTJets', 30, 'ttbar muon 2012'),
         cfg('tbarW', dCache+'/naodell/nuTuples_v6_8TeV/Tbar_tW', 5, 'tbarW muon 2012'),
         cfg('tW', dCache+'/naodell/nuTuples_v6_8TeV/T_tW', 5, 'tW muon 2012'),
         cfg('t_t-channel', dCache+'/naodell/nuTuples_v6_8TeV/T_t', 5, 't_t-channel muon 2012'),
