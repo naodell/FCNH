@@ -393,7 +393,8 @@ bool fcncAnalyzer::Process(Long64_t entry)
                 leptons[0].Pt() < leptonPtCut[0] 
                 || leptons[1].Pt() < leptonPtCut[1] 
                 || leptons[2].Pt() < leptonPtCut[1]
-                || fabs(leptons[0].Charge() + leptons[1].Charge() + leptons[2].Charge()) != 1) 
+                || fabs(leptons[0].Charge() + leptons[1].Charge() + leptons[2].Charge()) != 1
+                ) 
             return kTRUE;
 
     } else if (leptons.size() == 4) {
@@ -529,20 +530,14 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
 
     //!! Z-veto !!//
-    if (leptons.size() == 3) {
-        for (unsigned i = 1; i < leptons.size(); ++i) {
-            for (unsigned j = 0; j < i; ++j) {
-                if ( 
-                        selector->IsZCandidate(&leptons[i], &leptons[j], 7.5)
-                    || (leptons[i].Type() == leptons[j].Type() && leptons[i].Charge() != leptons[j].Charge()
-                            && (leptons[i] + leptons[j]).M() > 40 && fabs(trileptonMass - 90.) < 7.5)
-                        ) return kTRUE;
-            }
-        }
-    } else if (leptons.size() == 2 && leptons[0].Charge() == leptons[1].Charge()) {
-        if (selector->IsZCandidate(&leptons[0], &leptons[1], 10.) ) 
-            return kTRUE;
-    }
+    if ( leptons.size() == 3
+            && zTagged
+            && fabs(trileptonMass - 90.) < 7.5
+       ) return kTRUE;
+    else if (leptons.size() == 2 
+            && leptons[0].Charge() == leptons[1].Charge()
+            && selector->IsZCandidate(&leptons[0], &leptons[1], 10.) 
+            ) return kTRUE;
 
     MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 1);
     SetYields(6);
