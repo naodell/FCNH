@@ -14,6 +14,11 @@ Selector::Selector(const float* muPtCuts, const float* elePtCuts, const float* j
     _jetPtCuts  = jetPtCuts;
     _vtxIndex   = 0;
 
+    // b-tag mc efficiencies
+    TFile* f_bEff = new TFile("../data/bEff_ttbar_2012.root");
+    _misTagEff  = (TGraphAsymmErrors*)f_bEff->Get("g_MistagEff");
+    _bTagEff    = (TGraphAsymmErrors*)f_bEff->Get("g_bTagEff");
+
     // Initialize electron MVA tool 
     std::vector<std::string> WeightsMVA;
     WeightsMVA.push_back("../data/weights/Electrons_BDTG_TrigV0_Cat1.weights.xml");
@@ -25,6 +30,8 @@ Selector::Selector(const float* muPtCuts, const float* elePtCuts, const float* j
 
     electronMVA = new EGammaMvaEleEstimator();
     electronMVA->initialize("BDT", EGammaMvaEleEstimator::kTrig, true, WeightsMVA);
+
+    rnGen = new TRandom3(0);
 }
 
 void Selector::PurgeObjects()
@@ -465,9 +472,9 @@ void Selector::JetSelector(TClonesArray* jets)
                 else if (overlap[1]) 
                     _selJets["eleJets"].push_back(corJet);
                 else {
-                    if (corJet.BDiscriminatorMap("CSV") > 0.679) 
+                    if (BTagModifier(corJet, "CSVM")) 
                         _selJets["bJetsMedium"].push_back(corJet);
-                    else if (corJet.BDiscriminatorMap("CSV") > 0.244) 
+                    else if (BTagModifier(corJet, "CSVL")) 
                         _selJets["bJetsLoose"].push_back(corJet);
                     else if (
                             corJet.VtxNTracks() > 0
@@ -524,6 +531,80 @@ TCJet Selector::JERCorrections(TCJet *inJet)
     }  
 
     return jet;
+}
+
+
+bool Selector::BTagModifier(TCJet jet, string bTag)
+{
+    float jetPt     = jet.Pt();
+    float jetEta    = jet.Eta();
+    int   jetFlavor = jet.JetFlavor();
+    bool  isBTagged = false;
+
+    // Get b-tagging efficiencies scale factors for jet depending on it's pt 
+    float bTagSF       = 1.;
+    if (bTag == "CSVL") {
+        if (jet.BDiscriminatorMap("CSV") > 0.244) isBTagged = true;
+        bTagSF = 0.981149*((1.+(-0.000713295*jetPt))/(1.+(-0.000703264*jetPt)));
+    } else if (bTag == "CSVM") {
+        if (jet.BDiscriminatorMap("CSV") > 0.679) isBTagged = true;
+        bTagSF = 0.726981*((1.+(0.253238*jetPt))/(1.+(0.188389*jetPt)));
+    } else if (bTag == "CSVT") {
+        if (jet.BDiscriminatorMap("CSV") > 1.) isBTagged = true;
+        bTagSF = 0.869965*((1.+(0.0335062*jetPt))/(1.+(0.0304598*jetPt)));
+    }
+
+    // Get mistag scale factors dependent on jet pt and eta
+    float bMistagSF = 0.;
+    if( bTag == "CSVM") {
+        if (fabs(jetEta) < 0.8) 
+            bMistagSF = 1.07541 + 0.00231827*jetPt - 4.74249e-06*pow(jetPt,2) + 2.70862e-09*pow(jetPt, 3);
+        if (fabs(jetEta) > 0.8 && fabs(jetEta) < 1.6) 
+            bMistagSF = 1.05613 + 0.00114031*jetPt - 2.56066e-06*pow(jetPt,2) + 1.67792e-09*pow(jetPt,3);
+        if (fabs(jetEta) > 1.6 && fabs(jetEta) < 2.4) 
+            bMistagSF = 1.05625 + 0.00487231*jetPt - 2.22792e-06*pow(jetPt,2) + 1.70262e-09*pow(jetPt,3);
+    } else if( bTag == "CSVL") {
+        if (fabs(jetEta) < 0.5) 
+            bMistagSF = 1.01177 + 0.00231827*jetPt - 4.74249e-06*pow(jetPt,2) + 2.70862e-09*pow(jetPt, 3); // Need to update non-zeroth order terms
+        if (fabs(jetEta) > 0.5 && fabs(jetEta) < 1.) 
+            bMistagSF = 0.97596 + 0.00114031*jetPt - 2.56066e-06*pow(jetPt,2) + 1.67792e-09*pow(jetPt,3);
+        if (fabs(jetEta) > 1. && fabs(jetEta) < 1.5) 
+            bMistagSF = 0.93821 + 0.00114031*jetPt - 2.56066e-06*pow(jetPt,2) + 1.67792e-09*pow(jetPt,3);
+        if (fabs(jetEta) > 1.5 && fabs(jetEta) < 2.4) 
+            bMistagSF = 1.00022 + 0.00487231*jetPt - 2.22792e-06*pow(jetPt,2) + 1.70262e-09*pow(jetPt,3);
+    }
+
+    // Upgrade or downgrade jet
+    float rNumber = rnGen->Uniform(1.);
+
+    if (abs(jetFlavor) == 5 || abs(jetFlavor) == 4) {
+        float bTagEff   = _bTagEff->Eval(jetPt);
+        if (abs(jetFlavor) == 4) bTagSF = bTagSF/5.;
+        if(bTagSF > 1){  // use this if SF>1
+            if (!isBTagged) {
+                //upgrade to tagged
+                float mistagPercent = (1.0 - bTagSF) / (1.0 - (bTagSF/bTagEff) );
+                if(rNumber < mistagPercent ) isBTagged = true;
+            }
+        } else if (bTagSF < 1) {
+            //downgrade tagged to untagged
+            if( isBTagged && rNumber > bTagSF ) isBTagged = false;
+        }
+
+    } else if (abs(jetFlavor) > 0) {
+        float mistagEff = _misTagEff->Eval(jetPt);
+        if(bMistagSF > 1){  // use this if SF>1
+            if (!isBTagged) {
+                //upgrade to tagged
+                float mistagPercent = (1.0 - bMistagSF) / (1.0 - (bMistagSF/mistagEff));
+                if(rNumber < mistagPercent ) isBTagged = true;
+            }
+        } else if (bMistagSF < 1) {
+            //downgrade tagged to untagged
+            if( isBTagged && rNumber > bMistagSF ) isBTagged = false;
+        }
+    }
+    return isBTagged;
 }
 
 

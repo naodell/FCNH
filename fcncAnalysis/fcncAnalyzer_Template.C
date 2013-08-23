@@ -173,11 +173,12 @@ bool fcncAnalyzer::Process(Long64_t entry)
         triggerSelector->SetDataBit(isRealData);
     }
 
+    if (eventCount[1] == 0)
+        cout << "Starting analysis..." << endl;
+    else if (eventCount[1] % (int)1e4 == 0) 
+        cout << eventCount[5] << " events passed of " << eventCount[1] << " checked!" << endl;
+
     SetYields(1);
-
-    if (eventCount[1] % (int)1e4 == 0) cout << eventCount[5] << " events passed of " << eventCount[1] << " checked!" << endl;
-
-
 
     //////////////////
     //Trigger status//
@@ -926,8 +927,7 @@ void fcncAnalyzer::MetPlots(TCMET met, vObj leptons)
 
 void fcncAnalyzer::JetPlots(vector<TCJet> jets, vector<TCJet> bJets)
 {
-    float etaBins[] = {0., 0.8, 1.2, 2.1, 2.4};
-    float ptBins[] = {20, 30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500, 600, 800};
+    float ptBins[] = {15, 30, 40, 50, 60, 70, 90, 120, 160, 200, 1000};
 
     histManager->Fill1DHist(jets.size(),
             "h1_JetMult", "Multiplicity of jets;N_{jets};Entries / bin", 11, -0.5, 10.5);
@@ -946,11 +946,20 @@ void fcncAnalyzer::JetPlots(vector<TCJet> jets, vector<TCJet> bJets)
         histManager->Fill1DHist(jets[i].Phi(),
                 "h1_Jet" + index + "Phi", "#phi of jet" + index + ";#phi^{j" + index + "};Entries / bin", 36, -TMath::Pi(), TMath::Pi());
 
+        histManager->SetWeight(1);
         if (abs(jets[i].JetFlavor()) == 5) { // b-jets that are not correctly tagged
             histManager->Fill1DHistUnevenBins(jets[i].Pt(),
-                    "h1_BTruthDenomPt", "b flavor jet p_{T};p_{T}", 16, ptBins);
+                    "h1_BTruthDenomPt", "b flavor jet p_{T};p_{T}", 10, ptBins);
+        } else if (abs(jets[i].JetFlavor()) == 4) {
+            histManager->Fill1DHistUnevenBins(jets[i].Pt(),
+                    "h1_CTruthNumerPt", "c flavor jet p_{T};p_{T}", 10, ptBins);
+            histManager->Fill1DHistUnevenBins(jets[i].Pt(),
+                    "h1_CTruthDenomPt", "c flavor jet p_{T};p_{T}", 10, ptBins);
+        } else if (abs(jets[i].JetFlavor()) != 0) {
+            histManager->Fill1DHistUnevenBins(jets[i].Pt(),
+                    "h1_MistagDenomPt", "mistag jet p_{T};p_{T}", 10, ptBins);
         }
-
+        histManager->SetWeight(evtWeight);
     }
 
     for (unsigned i = 0; i < bJets.size(); ++i) {
@@ -966,15 +975,22 @@ void fcncAnalyzer::JetPlots(vector<TCJet> jets, vector<TCJet> bJets)
                 "h1_BJet" + index + "Phi", "#phi of b-jet " + index + ";#phi^{b" + index + "};Entries / bin", 36, -TMath::Pi(), TMath::Pi());
          
 
+        histManager->SetWeight(1);
         if (abs(bJets[i].JetFlavor()) == 5) { // Correctly tagged b-jets
             histManager->Fill1DHistUnevenBins(bJets[i].Pt(),
-                    "h1_BTruthNumerPt", "b flavor jet p_{T};p_{T}", 16, ptBins);
+                    "h1_BTruthNumerPt", "b flavor jet p_{T};p_{T}", 10, ptBins);
             histManager->Fill1DHistUnevenBins(bJets[i].Pt(),
-                    "h1_BTruthDenomPt", "b flavor jet p_{T};p_{T}", 16, ptBins);
-        } else { // misidentified b-jets (b-tagged light jets)
+                    "h1_BTruthDenomPt", "b flavor jet p_{T};p_{T}", 10, ptBins);
+        } else if (abs(bJets[i].JetFlavor()) == 4) {
             histManager->Fill1DHistUnevenBins(bJets[i].Pt(),
-                    "h1_BMistagNumerPt", "b flavor jet p_{T};p_{T}", 16, ptBins);
+                    "h1_CTruthDenomPt", "c flavor jet p_{T};p_{T}", 10, ptBins);
+        } else if (abs(bJets[i].JetFlavor()) != 0) { // misidentified b-jets (b-tagged light jets)
+            histManager->Fill1DHistUnevenBins(bJets[i].Pt(),
+                    "h1_MistagDenomPt", "b flavor jet p_{T};p_{T}", 10, ptBins);
+            histManager->Fill1DHistUnevenBins(bJets[i].Pt(),
+                    "h1_MistagNumerPt", "b flavor jet p_{T};p_{T}", 10, ptBins);
         }
+        histManager->SetWeight(evtWeight);
     }
 
     // Angular correlations between leading jets //

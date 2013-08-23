@@ -6,9 +6,12 @@
 #include <vector>
 #include <map>
 
+#include "TFile.h"
 #include "TObject.h"
 #include "TLorentzVector.h"
 #include "TClonesArray.h"
+#include "TRandom3.h"
+#include "TGraphAsymmErrors.h"
 
 #include "../src/TCPrimaryVtx.h"
 #include "../src/TCPhysObject.h"
@@ -18,6 +21,7 @@
 #include "../src/TCPhoton.h"
 #include "../src/TCGenParticle.h"
 #include "../src/TCGenJet.h"
+
 #include "EGammaMvaEleEstimator.h"
 
 using namespace std;
@@ -54,6 +58,7 @@ class Selector : public TObject {
         // Useful tools
         bool    IsZCandidate(TCPhysObject*, TCPhysObject*, float);
         float   EffectiveArea(TCPhysObject*); 
+        bool    BTagModifier(TCJet, string);
 
         //Get processed collections
         vector<TVector3*>       GetSelectedPVs();
@@ -93,6 +98,13 @@ class Selector : public TObject {
         map<string, vector<TCJet> >         _selJets;
         map<string, vector<TCGenParticle> > _selGenParticles;
         vector<TCGenJet>                    _selGenJets;
+
+        // b-tag efficiencies from MC 
+        TGraphAsymmErrors*  _misTagEff;
+        TGraphAsymmErrors*  _bTagEff;
+
+        //Misc
+        TRandom3* rnGen;
 };
 
 #endif
