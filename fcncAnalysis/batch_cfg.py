@@ -146,8 +146,6 @@ if period == '2011':
         cfg('FCNC', dCache+'/devildog/nuTuples_v2_7TeV/FCNC_tH', 5, 'FCNC mc 2011')
         ])
 
-### TEMPORARY!!! ###
-bg = [ cfg('ttbar', dCache+'/naodell/nuTuples_v7_8TeV/TTJets_test', 30, 'ttbar muon 2012')] # Testing b-tag mc efficiencies
 
 inputSamples = []
 
