@@ -574,6 +574,8 @@ bool Selector::BTagModifier(TCJet jet, string bTag)
             bMistagSF = 1.00022 + 0.00487231*jetPt - 2.22792e-06*pow(jetPt,2) + 1.70262e-09*pow(jetPt,3);
     }
 
+    return isBTagged;
+
     // Upgrade or downgrade jet
     float rNumber = rnGen->Uniform(1.);
 
@@ -604,6 +606,7 @@ bool Selector::BTagModifier(TCJet jet, string bTag)
             if( isBTagged && rNumber > bMistagSF ) isBTagged = false;
         }
     }
+
     return isBTagged;
 }
 
