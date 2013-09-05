@@ -1,6 +1,5 @@
 from AnalysisTools import *
 
-
 def make_index_afs(self, filePath):
 
     if not os.path.isfile(filePath+'/../writeIndexHTML.py'):

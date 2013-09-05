@@ -19,7 +19,6 @@
 #include "TH1D.h"
 #include "TH2D.h"
 #include "TFile.h"
-#include "TRandom3.h"
 #include "TGraphErrors.h"
 
 // boost libraries
@@ -52,7 +51,6 @@ class WeightUtils: public TObject {
         float   VBFHiggsWeight(float, int);
         float   GetTotalWeight();
         float   FakeWeight(TCPhysObject);
-        float   BJetEfficiency(vector<TLorentzVector>, string);
 
         // lepton reco efficiencies
         float GetElectronEff(TLorentzVector) const;
@@ -92,9 +90,6 @@ class WeightUtils: public TObject {
         float _vbfWeight;
         float _recoWeight;
         float _triggerWeight;
-
-        //Misc
-        TRandom3* rnGen;
 };
 
 #endif

@@ -8,7 +8,6 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
     _isRealData = isRealData;
 
     Initialize();
-    rnGen = new TRandom3(0);
 
     // Muon reco efficiencies
     TFile* f_muRecoSF2012 = new TFile("../data/Muon_ID_iso_Efficiencies_Run_2012ABCD_53X.root", "OPEN"); 
@@ -31,6 +30,7 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
     TFile* f_fakeFile = new TFile("../data/fakeRates_jetCuts.root", "OPEN");
     h2_EleFakes = (TH2D*)f_fakeFile->Get("h2_Fakes_ele_v1");
     h2_MuFakes = (TH2D*)f_fakeFile->Get("h2_Fakes_mu_v1");
+
 }
 
 void WeightUtils::Initialize()
@@ -169,11 +169,11 @@ float WeightUtils::GetElectronEff(TLorentzVector lep) const
     /*
     // Scale factors based for 2012 8 TeV data (53X) for tight muon selection
     float eleScale[5][6] = {
-        {0.818, 0.928, 0.973, 0.979, 0.984, 0.983},
-        {0.840, 0.914, 0.948, 0.961, 0.972, 0.977},
-        {1.008, 0.877, 0.983, 0.983, 0.957, 0.978},
-        {0.906, 0.907, 0.957, 0.962, 0.985, 0.986},
-        {0.991, 0.939, 1.001, 1.002, 0.999, 0.995}
+    {0.818, 0.928, 0.973, 0.979, 0.984, 0.983},
+    {0.840, 0.914, 0.948, 0.961, 0.972, 0.977},
+    {1.008, 0.877, 0.983, 0.983, 0.957, 0.978},
+    {0.906, 0.907, 0.957, 0.962, 0.985, 0.986},
+    {0.991, 0.939, 1.001, 1.002, 0.999, 0.995}
     };
 
     int ptBin  = 0;
@@ -183,20 +183,20 @@ float WeightUtils::GetElectronEff(TLorentzVector lep) const
     float weight    = 1.;
 
     for (int i = 0; i < 5; ++i) {
-        if (fabs(lep.Eta()) > etaBins[i] && fabs(lep.Eta()) <= etaBins[i+1]) {
-            etaBin = i;
-            break;
-        }
+    if (fabs(lep.Eta()) > etaBins[i] && fabs(lep.Eta()) <= etaBins[i+1]) {
+    etaBin = i;
+    break;
+    }
     }
 
     for (int i = 0; i < 6; ++i) {
-        if (lep.Pt() > ptBins[i] && lep.Pt() <= ptBins [i+1]) {
-            ptBin = i;
-            break;
-        }
+    if (lep.Pt() > ptBins[i] && lep.Pt() <= ptBins [i+1]) {
+    ptBin = i;
+    break;
+    }
     }
     weight = eleScale[etaBin][ptBin];
-    */
+     */
 
     float weight = 1.;
 
@@ -246,45 +246,3 @@ float WeightUtils::FakeWeight(TCPhysObject fakeableP4)
         return fakeRate / (1 - fakeRate);
 }
 
-float WeightUtils::BJetEfficiency(vector<TLorentzVector> bJets, string bTag)
-{
-    float ptBins[] = {20, 30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500, 600, 800};
-
-    vector<float>  scaleFactors;
-
-    for (unsigned i = 0; i < 2; ++i) {
-
-        unsigned iPt    = 0;
-        float SFb       = 1.;
-        float eSFb      = 0.;
-        float bJetPt    = bJets[i].Pt();
-
-        for (unsigned j = 0; j < 16; ++j) {
-            if (bJetPt > ptBins[j] && bJetPt < ptBins[j+1]){
-                iPt = j;
-                break;
-            }
-        }
-
-        if (bTag == "CSVL") {
-            SFb = 0.981149*((1.+(-0.000713295*bJetPt))/(1.+(-0.000703264*bJetPt)));
-            //float SFb_error[] = {0.0484285, 0.0126178, 0.0120027, 0.0141137, 0.0145441, 0.0131145, 0.0168479, 0.0160836, 0.0126209, 0.0136017, 0.019182, 0.0198805, 0.0386531, 0.0392831, 0.0481008, 0.0474291 };
-        } else if (bTag == "CSVM") {
-            SFb = 0.726981*((1.+(0.253238*bJetPt))/(1.+(0.188389*bJetPt)));
-            //float SFb_error[] = { 0.0554504, 0.0209663, 0.0207019, 0.0230073, 0.0208719, 0.0200453, 0.0264232, 0.0240102, 0.0229375, 0.0184615, 0.0216242, 0.0248119, 0.0465748, 0.0474666, 0.0718173, 0.0717567 };
-        } else if (bTag == "CSVT") {
-            SFb = 0.869965*((1.+(0.0335062*bJetPt))/(1.+(0.0304598*bJetPt)));
-            //float SFb_error[] = { 0.0567059, 0.0266907, 0.0263491, 0.0342831, 0.0303327, 0.024608, 0.0333786, 0.0317642, 0.031102, 0.0295603, 0.0474663, 0.0503182, 0.0580424, 0.0575776, 0.0769779, 0.0898199 };
-        }
-
-        scaleFactors.push_back(SFb);
-    }
-
-    float weight    = 1.;
-
-    if (bJets.size() == 2) {
-        weight = scaleFactors[1]*scaleFactors[0];
-    }
-
-    return weight;
-}

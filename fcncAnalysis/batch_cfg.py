@@ -145,6 +145,7 @@ if period == '2011':
         cfg('FCNC', dCache+'/devildog/nuTuples_v2_7TeV/FCNC_tH', 5, 'FCNC mc 2011')
         ])
 
+
 inputSamples = []
 
 if doData:
