@@ -33,7 +33,7 @@ period      = '2012'
 LUMIDATA    = 19.7 #{'DATA_MUON': 20.31, 'DATA_ELECTRON': 19.7384, 'DATA_MUEG': 19.7794}
 doLog       = True
 
-doPlots     = False
+doPlots     = True
 doYields    = True
 
 doOS        = True

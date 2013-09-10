@@ -1,11 +1,5 @@
-/* 
- * File:   TCMET.cc
- * Author: Nate O. 
- * 
- * Created on December 6 2010 8:04 PM
- */
-
-#include "TCMET.h"
+#include "../interface/TCMET.h"
+#include "../interface/TCMETLinkDef.h"
 #include <iostream>
 
 TCMET::TCMET() {}

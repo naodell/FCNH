@@ -25,9 +25,9 @@
 //#include <boost/array.hpp>
 
 // custom libraries
-#include "../src/TCPhysObject.h"
-#include "../src/TCJet.h"
-#include "../src/TCGenJet.h"
+#include "../interface/TCPhysObject.h"
+#include "../interface/TCJet.h"
+#include "../interface/TCGenJet.h"
 
 using namespace std;
 
