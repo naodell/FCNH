@@ -408,6 +408,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
                 histManager->Fill1DHist(mass4L,
                         "h1_4lMass", "4l Mass;M_{4l};Entries / 4 GeV", 50, 5., 250.);
         }
+        return kTRUE;
     } else
         return kTRUE;
 
@@ -531,7 +532,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
 
     //!! Z-veto !!//
-    if ( leptons.size() == 3
+    if (leptons.size() == 3
             && zTagged
             && fabs(trileptonMass - 90.) < 7.5
        ) return kTRUE;
@@ -659,7 +660,7 @@ void fcncAnalyzer::MakePlots(vObj leptons, vector<TCJet> jets, vector<TCJet> bJe
 
     //cout << "\n" << endl;
 
-    for (int i = 0; i < 4; ++i) { // fixing 3l selection, removing categories
+    for (int i = 0; i < 4; ++i) { 
         unsigned histCategory = 0;
 
         switch (i) {
@@ -684,17 +685,6 @@ void fcncAnalyzer::MakePlots(vObj leptons, vector<TCJet> jets, vector<TCJet> bJe
         }
 
         if (i != 0 && histCategory == 0) continue;
-
-        //cout << i << ", " << histCategory << " |\t";
-
-        /*
-           if (cutLevel == 4 && leptons.size() == 3) { 
-           cout << "\n" << categoryNames[histCategory] << ", " << cutLevel << ", " << met.Mod() << endl;;
-        //cout << "\n" << categoryNames[histCategory] << ", " << leptons.size() << endl;;
-        for (unsigned j = 0; j < leptons.size(); ++j) 
-        cout << setw(10) << left << "\t" << leptons[j].Charge() << "\t" << leptons[j].Type() << endl; //"\t" << leptons[j].Pt() << endl;
-        }
-         */
 
         histManager->SetDirectory(categoryNames[histCategory] + "/" + suffix);
         histManager->Fill1DHist(chargeCat, "h1_LeptonCharge", "lepton charge categories;charge category;Entries / bin", 12, 0.5, 12.5);

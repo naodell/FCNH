@@ -1,8 +1,6 @@
 #ifndef _TCELECTRON_H
 #define	_TCELECTRON_H
 
-#include <iostream>
-
 #include "TObject.h"
 #include "TLorentzVector.h"
 #include "TCPhysObject.h"
