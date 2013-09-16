@@ -13,14 +13,14 @@
 #include "TRandom3.h"
 #include "TGraphAsymmErrors.h"
 
-#include "../src/TCPrimaryVtx.h"
-#include "../src/TCPhysObject.h"
-#include "../src/TCJet.h"
-#include "../src/TCMuon.h"
-#include "../src/TCElectron.h"
-#include "../src/TCPhoton.h"
-#include "../src/TCGenParticle.h"
-#include "../src/TCGenJet.h"
+#include "../interface/TCPrimaryVtx.h"
+#include "../interface/TCPhysObject.h"
+#include "../interface/TCJet.h"
+#include "../interface/TCMuon.h"
+#include "../interface/TCElectron.h"
+#include "../interface/TCPhoton.h"
+#include "../interface/TCGenParticle.h"
+#include "../interface/TCGenJet.h"
 
 #include "EGammaMvaEleEstimator.h"
 

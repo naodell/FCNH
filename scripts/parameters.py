@@ -13,7 +13,8 @@ styleDict['DATA_MUEG']          = (2, r.kGray+2, 0, 21, 'Observed (e#mu)')
 
 #V+jets
 styleDict['VJets']              = (0, r.kRed, 1, 1, 'V+jets') # Vector boson combination
-styleDict['ZJets']              = (0, r.kRed+1, 1, 1, 'Z+jets (M_{Z/#gamma*} > 50)')
+styleDict['ZJets']              = (0, r.kRed, 1, 1, 'Z+jets') # Vector boson combination
+styleDict['ZJets_M-50']         = (0, r.kRed+1, 1, 1, 'Z+jets (M_{Z/#gamma*} > 50)')
 styleDict['ZJets_M-10To50']     = (0, r.kRed+2, 1, 1, 'Z+jets (M_{Z/#gamma*} < 50)')
 styleDict['ZbbToLL']            = (2, r.kRed-8, 1, 1, 'Z+bb')
 styleDict['ZG']                 = (0, r.kRed-9, 1, 1, 'Z#gamma')
@@ -27,6 +28,7 @@ styleDict['WGStarLNu2Tau']      = (0, r.kAzure, 1, 1, 'WG*#ell#nu2#tau')
 # Madgraph diboson
 styleDict['Diboson']            = (0, r.kGray+1, 1, 1, 'diboson')
 styleDict['WW/ZZ']              = (0, r.kGray+1, 1, 1, 'WW/ZZ')
+styleDict['ZZ4l']               = (0, r.kGray+1, 1, 1, 'ZZ#rightarrow4l')
 styleDict['ZZJets2L2Nu']        = (2, r.kGreen+3, 1, 1, 'ZZ#rightarrow2l2#nu')
 styleDict['ZZJets2L2Q']         = (2, r.kBlue-7, 1, 1, 'ZZ#rightarrow2l2q')
 styleDict['ZZJets4L']           = (2, r.kBlue+2, 1, 1, 'ZZ#rightarrow4l')
@@ -101,7 +103,7 @@ styleDict['fakes']              = (2, r.kBlack, 0, 21, 'fakes')
 scaleDict = {'2011':{}, '2012':{}}
 
 ### 2011 x-sections
-scaleDict['2011']['ZJets']              = 3048.
+scaleDict['2011']['ZJets_M-50']         = 3048.
 scaleDict['2011']['ZJets_M-10To50']     = 742.6
 scaleDict['2011']['ZbbToLL']            = 304.
 scaleDict['2011']['ZG']                 = 159.12
@@ -140,7 +142,7 @@ scaleDict['2012']['WG']                 = 1000.0
 scaleDict['2012']['WGStarLNu2E']        = 5.873
 scaleDict['2012']['WGStarLNu2Mu']       = 1.914
 scaleDict['2012']['WGStarLNu2Tau']      = 0.336
-scaleDict['2012']['ZJets']              = 3532.8 
+scaleDict['2012']['ZJets_M-50']         = 3532.8 
 scaleDict['2012']['ZJets_M-10To50']     = 860.5
 scaleDict['2012']['ZbbToLL']            = 100. 
 scaleDict['2012']['ZG']                 = 159.12
@@ -204,8 +206,8 @@ scaleDict['2012']['ggHToWW2L2Nu_M-125'] = .01
 #scaleDict['GJets_300to470']     = 1/1391.1
 #scaleDict['GJets_470to800']     = 1/15812.2
 
-scaleDict['2012']['FCNC_M125_t']        = 0.0074#*20.
-scaleDict['2012']['FCNC_M125_tbar']     = 0.0074#*20.
+scaleDict['2012']['FCNC_M125_t']        = 234*2*1.*0.01*0.215*0.1*0.1*0.1
+scaleDict['2012']['FCNC_M125_tbar']     = 234*2*1.*0.01*0.215*0.1*0.1*0.1
 scaleDict['2012']['DATA_MUON']          = 1.
 scaleDict['2012']['DATA_ELECTRON']      = 1.
 scaleDict['2012']['DATA_MUEG']          = 1.
@@ -214,12 +216,14 @@ scaleDict['2012']['fakes']              = 1.
 combineDict = {}
 combineDict['FCNH']             = ['FCNC_M125_t', 'FCNC_M125_tbar']
 combineDict['DATA']             = ['DATA_MUON', 'DATA_ELECTRON', 'DATA_MUEG']
-combineDict['VJets']            = ['ZJets', 'ZJets_M-10To50', 'WJets']
+combineDict['VJets']            = ['ZJets_M-50', 'ZJets_M-10To50', 'WJets']
+combineDict['ZJets']            = ['ZJets_M-50', 'ZJets_M-10To50']
 combineDict['WGStar']           = ['WGStarLNu2E', 'WGStarLNu2Mu', 'WGStarLNu2Tau']
 combineDict['top']              = ['ttbar', 'tW', 'tbarW', 't_t-channel', 'tbar_t-channel']
 combineDict['single top']       = ['tW', 'tbarW', 't_t-channel', 'tbar_t-channel']
 combineDict['Diboson']          = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'WZJets3LNu']
 combineDict['WW/ZZ']            = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'WWJets2L2Nu', 'ZZJets2L2Nu']
+combineDict['ZZ4l']             = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
 combineDict['ttV']              = ['ttZ', 'ttW', 'ttG']
 combineDict['Triboson']         = ['WWW', 'WWZ', 'WZZ', 'ZZZ', 'WWG']
 combineDict['QCD']              = ['QCD_20_MU', 'QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_EM', 'QCD_170-250_EM', 'QCD_250-350_EM', 'QCD_350_EM']
