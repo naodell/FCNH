@@ -503,7 +503,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
             && leptons.size() == 3 
             && bJetsM.size() == 0
             && jets.size() > 1
-            && MET > 50 
+            //&& MET > 50 
             && MHT > 20
             ) {
         MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 5);
@@ -1203,7 +1203,7 @@ int fcncAnalyzer::GetHistCategory(unsigned shift)
        in groups of 4 bits so each shift switches the category type.  As of now, 
        the standard categories go as following (in bits),
 
-       0 - 3:    set bit, os/ss, number of leptons
+       0 - 3:    set bit, empty, os/ss, dilepton/trilepton
        4 - 7:    eta categories
        8 - 11:   flavor categories
        12 - 15:  charge categores
@@ -1215,7 +1215,8 @@ int fcncAnalyzer::GetHistCategory(unsigned shift)
        17: SSSF
     */
 
-    unsigned lepCat     = (evtCategory.to_ulong() >> 2) & 0x3;
+    //unsigned lepCat     = (evtCategory.to_ulong() >> 2) & 0x3;
+    unsigned lepCat     = evtCategory.test(2) + 2*evtCategory.test(3);
     unsigned category   = (evtCategory.to_ulong() >> 4*shift) & 0xF;
     unsigned sum = 0;
 

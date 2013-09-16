@@ -54,15 +54,15 @@ cat3l.extend(['3l_eee', '3l_eemu', '3l_emumu', '3l_mumumu'])
 ### Samples to be included in stacks ###
 samples     = []
 #samples.append('higgs')
-samples.append('Triboson')
+#samples.append('Triboson')
 samples.append('ttV')
 #samples.append('WGStar')
 #samples.extend(['WGStarLNu2E', 'WGStarLNu2Mu', 'WGStarLNu2Tau'])
-samples.append('Diboson')
-samples.append('ZZ4l')
-samples.append('top')
+#samples.append('Diboson')
+#samples.append('ZZ4l')
+#samples.append('top')
 #samples.append('QCD')
-samples.append('VJets')
+#samples.append('VJets')
 
 #samples.append('WZJets3LNu')
 #samples.extend(['WWZ', 'WZZ', 'ZZZ', 'WWG'])
@@ -85,10 +85,10 @@ if doPlots:
     ### and overlay accordingly. 
 
     plotter.add_datasets(samples)
-    plotter._overlayList.extend(['DATA'])
-    plotter._overlayList.extend(['FCNH'])
+    plotter._overlayList.extend(['DATA_MUON'])
+    #plotter._overlayList.extend(['FCNH'])
 
-    plotter.get_scale_factors(['FCNH'])
+    #plotter.get_scale_factors(['FCNH'])
     plotter.get_scale_factors()
 
     ### VARIABLES ###
