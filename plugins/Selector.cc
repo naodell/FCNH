@@ -141,8 +141,7 @@ void Selector::PVSelector(TClonesArray* pv)
         TCPrimaryVtx* pVtx = (TCPrimaryVtx*) pv->At(i);
 
         if (
-                //!pVtx->IsFake() // Removed to compare with Andrey
-                true
+                !pVtx->IsFake() 
                 && pVtx->NDof()         > 4.
                 && fabs(pVtx->z())      <= 24.
                 && fabs(pVtx->Perp())   <= 2.
@@ -185,7 +184,6 @@ bool Selector::MuonTightID(TCMuon* muon)
     return pass;
 }
 
-
 bool Selector::MuonLooseID(TCMuon* muon)
 {
     bool pass = false;
@@ -213,8 +211,12 @@ void Selector::MuonSelector(TClonesArray* muons)
         thisMuon->SetType("muon");
 
         float muISO = 0.;
-        muISO = (thisMuon->IsoMap("pfChargedHadronPt_R04") + TMath::Max(0.0, (double)thisMuon->IsoMap("pfPhotonEt_R04") 
-                    + thisMuon->IsoMap("pfNeutralHadronEt_R04") - TMath::Max(0.0, (double)_rho*EffectiveArea(thisMuon))))/thisMuon->Pt();
+        muISO = (
+                    thisMuon->IsoMap("pfChargedHadronPt_R04") 
+                    + TMath::Max(0.0, (double)thisMuon->IsoMap("pfPhotonEt_R04") 
+                    + thisMuon->IsoMap("pfNeutralHadronEt_R04") 
+                    - TMath::Max(0.0, (double)_rho*EffectiveArea(thisMuon)))
+                    )/thisMuon->Pt();
 
         //cout << "(" << thisMuon->Pt() << ", " << thisMuon->Eta() << "),\t";
 
@@ -222,10 +224,17 @@ void Selector::MuonSelector(TClonesArray* muons)
                 thisMuon->Pt() > _muPtCuts[0]
                 && MuonTightID(thisMuon)
            ) {
-
+            
             if (muISO < 1.0) _selMuons["denom_v1"].push_back(*thisMuon);
             if (muISO < 0.4) _selMuons["denom_v2"].push_back(*thisMuon);
             if (muISO < 0.12) _selMuons["tight"].push_back(*thisMuon);
+        } else if (
+                thisMuon->Pt() > _muPtCuts[0]
+                && thisMuon->IsPF()
+                && fabs(muon->Dz(_selVertices[0]))  < 1. 
+                && fabs(muon->Dxy(_selVertices[0])) < 0.5
+                ) 
+            _selMuons["premva"].push_back(*thisMuon);
         } else if (
                 thisMuon->Pt() > _muPtCuts[1]  
                 && MuonLooseID(thisMuon)
@@ -368,6 +377,7 @@ void Selector::ElectronSelector(TClonesArray* electrons)
 
         // analysis electrons
         //if (ElectronTightID(thisElec)) {
+
         if (thisElec->IdMap("preSelPassV1") && ElectronMVA(thisElec)) {
             _selElectrons["denom_v3"].push_back(*thisElec);
 

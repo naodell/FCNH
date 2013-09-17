@@ -79,11 +79,31 @@ void fcncAnalyzer::Begin(TTree* tree)
 
     }
 
+    // Initialize tree for lepton post-selection MVA //
+    if (doLepTree) {
+        histoFile[0]->cd();
+        lepTree = new TTree(("lepTree_" + suffix).c_str(), "Tree for lepton MVA");
+
+        mvaTree->Branch("sip3d", &sip3d, "sip3d/F");
+        mvaTree->Branch("chPFIso", &chPFIso, "chPFIso/F");
+        mvaTree->Branch("neuPFIso", &neuPFIso, "neuPFIso/F");
+
+        mvaTree->Branch("drLepJet", &drLepJet, "drLepJet/F");
+        mvaTree->Branch("ptRatioLepJet", &ptRatioLepJet, "ptRatioLepJet/F");
+        mvaTree->Branch("btagLepJet", &btagLepJet, "btagLepJet/F");
+
+        mvaTree->Branch("dxy", &dxy, "dxy");
+        mvaTree->Branch("dz", &dz, "dz");
+
+        mvaTree->Branch("eleMVA", &eleMVA, "eleMVA");
+        mvaTree->Branch("eleMissHits", &eleMissHits, "eleMissHits");
+    }
+
     // Initialize pass tree for MVA input //
     if (doMVATree) {
         histoFile[0]->cd();
         // make base tree for 3l and ss selections
-        mvaTree = new TTree(("mvaTree_" + suffix).c_str(), "Tree for input into MVA");
+        mvaTree = new TTree(("mvaTree_" + suffix).c_str(), "Tree for cut MVA");
 
         mvaTree->Branch("met", &MET, "met/F");
         mvaTree->Branch("metPhi", &metPhi, "metPhi/F");
@@ -395,7 +415,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
                 || leptons[1].Pt() < leptonPtCut[1] 
                 || leptons[2].Pt() < leptonPtCut[1]
                 || fabs(leptons[0].Charge() + leptons[1].Charge() + leptons[2].Charge()) != 1
-                ) 
+           ) 
             return kTRUE;
 
     } else if (leptons.size() == 4) {
@@ -407,8 +427,9 @@ bool fcncAnalyzer::Process(Long64_t entry)
             if (mass4L != 0)
                 histManager->Fill1DHist(mass4L,
                         "h1_4lMass", "4l Mass;M_{4l};Entries / 4 GeV", 50, 5., 250.);
+
         }
-        return kTRUE;
+        //return kTRUE;
     } else
         return kTRUE;
 
@@ -422,9 +443,9 @@ bool fcncAnalyzer::Process(Long64_t entry)
             if (
                     leptons.size() == 2
                     || (leptons.size() == 3
-                    && leptons[i].Type() == leptons[j].Type()
-                    && leptons[i].Charge() != leptons[j].Charge()
-                    )
+                        && leptons[i].Type() == leptons[j].Type()
+                        && leptons[i].Charge() != leptons[j].Charge()
+                       )
                ) {
                 if ((leptons[i] + leptons[j]).M() < 12)
                     lowMassOS = true;
@@ -453,6 +474,21 @@ bool fcncAnalyzer::Process(Long64_t entry)
         cat = GetHistCategory(2) - 10;
         histManager->SetDirectory(categoryNames[cat] + "/" + suffix);
         GenPlots(gLeptons, leptons);
+    }
+
+    // ZZ control region //
+    if (leptons.size() == 4) {
+
+        if (
+                zTagged 
+                && bJetsM.size() == 0
+                && jets.size() > 1
+                && MET < 40 
+           ) {
+            MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 7);
+            SetYields(11);
+        }
+        return kTRUE; 
     }
 
 
@@ -505,7 +541,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
             && jets.size() > 1
             //&& MET > 50 
             && MHT > 20
-            ) {
+       ) {
         MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 5);
         SetYields(9);
     }
@@ -517,7 +553,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
             && leptons[0].Type() != leptons[1].Type()
             && leptons[0].Charge() != leptons[1].Charge()
             && MET > 30
-            ) {
+       ) {
         MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 6);
         SetYields(10);
     }
@@ -619,6 +655,7 @@ void fcncAnalyzer::Terminate()
     cout<<"\nControl region event yields."<<"\n"<<endl;
     cout<<"| WZ:                                |\t" << eventCount[9]  << "\t|\t" << eventCountWeighted[9] << "\t|"<<endl;
     cout<<"| ttbar:                             |\t" << eventCount[10]  << "\t|\t" << eventCountWeighted[10] << "\t|"<<endl;
+    cout<<"| ZZ:                                |\t" << eventCount[11]  << "\t|\t" << eventCountWeighted[11] << "\t|"<<endl;
 
 
     //for (int i = 0; i < 8; ++i) fout[i].close();
@@ -958,7 +995,7 @@ void fcncAnalyzer::JetPlots(vector<TCJet> jets, vector<TCJet> bJets)
                 "h1_BJet" + index + "Eta", "#eta of b-jet " + index + ";#eta^{b" + index + "};Entries / bin", 50, -2.5, 2.5);
         histManager->Fill1DHist(bJets[i].Phi(),
                 "h1_BJet" + index + "Phi", "#phi of b-jet " + index + ";#phi^{b" + index + "};Entries / bin", 36, -TMath::Pi(), TMath::Pi());
-         
+
 
         histManager->SetWeight(1);
         if (abs(bJets[i].JetFlavor()) == 5) { // Correctly tagged b-jets
@@ -1211,9 +1248,9 @@ int fcncAnalyzer::GetHistCategory(unsigned shift)
        Additionally there is OSSF and SSSF 3 lepton categories for syncing with
        the WH analysis.  
 
-       16: OSSF
-       17: SSSF
-    */
+16: OSSF
+17: SSSF
+     */
 
     //unsigned lepCat     = (evtCategory.to_ulong() >> 2) & 0x3;
     unsigned lepCat     = evtCategory.test(2) + 2*evtCategory.test(3);
@@ -1368,7 +1405,7 @@ void fcncAnalyzer::SetEventVariables(vObj leptons, vector<TCJet> jets, vector<TC
                         lep3P4  = leptons[3 - (i + j)];
                         MT = CalculateTransMass(leptons[3 - (i + j)], met);
                     }
-                // Might want to come up with a way for choosing the dilepton when it's outside the Z window 
+                    // Might want to come up with a way for choosing the dilepton when it's outside the Z window 
                 } else if (!zTagged) { 
                     dileptonP4      = leptons[i] + leptons[j];
                     lep1P4          = leptons[j];
