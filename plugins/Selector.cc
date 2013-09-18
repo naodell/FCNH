@@ -38,6 +38,7 @@ Selector::Selector(const float* muPtCuts, const float* elePtCuts, const float* j
     muCorrector = new rochcor2012(229);
 
     rnGen = new TRandom3(1337);
+
 }
 
 void Selector::PurgeObjects()
@@ -69,6 +70,7 @@ void Selector::SetRho(float rho)
 {
     _rho = rho;
 }
+
 
 vector<TVector3*> Selector::GetSelectedPVs()
 {
@@ -294,6 +296,8 @@ bool Selector::ElectronMVA(TCElectron* electron)
             electron->IdMap("preShowerORaw"), electron->IdMap("d0"),
             electron->IdMap("ip3d"), electron->SCEta(), electron->Pt(), false);                
 
+    electron->SetIdMap("mva", mvaValue);
+
     if (fabs(electron->Eta()) < 0.8) {
         if (electron->Pt() > 20 && mvaValue > 0.94)
             pass = true;
@@ -310,7 +314,6 @@ bool Selector::ElectronMVA(TCElectron* electron)
         else if (electron->Pt() < 20 && mvaValue > 0.62)
             pass = true;
     }
-
 
     return pass;
 }
@@ -368,7 +371,6 @@ bool Selector::ElectronLooseID(TCElectron* electron)
 
 void Selector::ElectronSelector(TClonesArray* electrons) 
 {
-
     //cout << "Electrons (" << electrons->GetSize() << "): ";
 
     for (int i = 0; i <  electrons->GetSize(); ++i) {
@@ -403,7 +405,7 @@ void Selector::ElectronSelector(TClonesArray* electrons)
         //if (ElectronTightID(thisElec)) 
 
         if (thisElec->IdMap("preSelPassV1") && ElectronMVA(thisElec)) {
-            _selElectrons["denom_v3"].push_back(*thisElec);
+            _selElectrons["premva"].push_back(*thisElec);
 
             if (eleISO < 0.15) 
                 _selElectrons["tight"].push_back(*thisElec);			
@@ -412,16 +414,6 @@ void Selector::ElectronSelector(TClonesArray* electrons)
                 ElectronLooseID(thisElec)
                 && (thisElec->Pt() > 20 && eleISO > 0.15)
                 ) _selElectrons["loose"].push_back(*thisElec);
-        if (
-                ElectronLooseID(thisElec) 
-           ) {
-            _selElectrons["denom_v1"].push_back(*thisElec);			
-
-            if (eleISO < 0.1) 
-                _selElectrons["denom_v2"].push_back(*thisElec);			
-            if (eleISO < 0.2) 
-                _selElectrons["denom_v4"].push_back(*thisElec);			
-        }
     }
     //cout << endl;
 }

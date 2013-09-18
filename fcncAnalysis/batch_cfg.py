@@ -59,23 +59,6 @@ if period == '2012':
         cfg('muEG_2012D', dCache+'/naodell/nuTuples_v7_4/MuEG_Run2012D', 15, 'DATA_MUEG muEG 2012')
         ])
 
-    #data.extend([
-    #    cfg('muon_2012A', dCache+'/naodell/nuTuples_v6_8TeV/DoubleMu_Run2012A', 10, 'DATA_MUON muon 2012'),
-    #    cfg('muon_2012B', dCache+'/naodell/nuTuples_v6_8TeV/DoubleMu_Run2012B', 10, 'DATA_MUON muon 2012'),
-    #    cfg('muon_2012C', dCache+'/naodell/nuTuples_v6_8TeV/DoubleMu_Run2012C', 10, 'DATA_MUON muon 2012'),
-    #    cfg('muon_2012D', dCache+'/naodell/nuTuples_v6_8TeV/DoubleMu_Run2012D', 15, 'DATA_MUON muon 2012'),
-
-    #    cfg('electron_2012A', dCache+'/naodell/nuTuples_v6_8TeV/DoubleElectron_Run2012A', 20, 'DATA_ELECTRON electron 2012'),
-    #    cfg('electron_2012B', dCache+'/naodell/nuTuples_v6_8TeV/DoubleElectron_Run2012B', 20, 'DATA_ELECTRON electron 2012'),
-    #    cfg('electron_2012C', dCache+'/naodell/nuTuples_v6_8TeV/DoubleElectron_Run2012C', 20, 'DATA_ELECTRON electron 2012'),
-    #    cfg('electron_2012D', dCache+'/naodell/nuTuples_v6_8TeV/DoubleElectron_Run2012D', 25, 'DATA_ELECTRON electron 2012')
-
-    #    cfg('muEG_2012A', dCache+'/naodell/nuTuples_v6_8TeV/MuEG_Run2012A', 10, 'DATA_MUEG muEG 2012'),
-    #    cfg('muEG_2012B', dCache+'/naodell/nuTuples_v6_8TeV/MuEG_Run2012B', 10, 'DATA_MUEG muEG 2012'),
-    #    cfg('muEG_2012C', dCache+'/naodell/nuTuples_v6_8TeV/MuEG_Run2012C', 10, 'DATA_MUEG muEG 2012'),
-    #    cfg('muEG_2012D', dCache+'/naodell/nuTuples_v6_8TeV/MuEG_Run2012D', 15, 'DATA_MUEG muEG 2012')
-    #    ])
-
     bg.extend([
         cfg('ZJets_M-50', dCache+'/naodell/nuTuples_v7_4/DYJets', 30, 'ZJets_M-50 muon 2012'),
         cfg('ZJets_M-10To50', dCache+'/naodell/nuTuples_v7_4/DYJets_M-10To50', 10, 'ZJets_M-10To50 muon 2012'),
@@ -126,12 +109,13 @@ if period == '2012':
 
         cfg('ggHToZZ4L_M-125', dCache+'/naodell/nuTuples_v7_4/GluGluToHToZZTo4L_M-125', 2, 'ggHToZZ4L_M-125 muon 2012'),
         cfg('ggHToWW2L2Nu_M-125', dCache+'/naodell/nuTuples_v7_4/GluGluToHToWWTo2LAndTau2Nu_M-125', 2, 'ggHToWW2L2Nu_M-125 muon 2012'),
-        cfg('WHToWWW3L_M-125', dCache+'/naodell/nuTuples_v7_4/WH_HToWW_3l_M-125', 2, 'WHToWWW3L_M-125 muon 2012')
+        cfg('WHToWWW3L_M-125', dCache+'/naodell/nuTuples_v7_4/WH_HToWW_3l_M-125', 2, 'WHToWWW3L_M-125 muon 2012'),
+        cfg('TTH_M-125', dCache+'/naodell/nuTuples_v7_4/TTH_Inclusive_M-125', 2, 'TTH_M-125 muon 2012')
         ])
 
     signal.extend([
-        cfg('FCNC_M125_tHj', dCache+'/naodell/nuTuples_v6_8TeV/FCNH_M125_t', 1, 'FCNC_M125_t mc 2012'),
-        cfg('FCNC_M125_tbarHj', dCache+'/naodell/nuTuples_v6_8TeV/FCNH_M125_tbar', 1, 'FCNC_M125_tbar mc 2012')
+        cfg('FCNC_M125_tHj', dCache+'/naodell/nuTuples_v7_4/TToFCNHToWWTo2l2nuPlusTop_M125', 1, 'FCNC_M125_t mc 2012'),
+        cfg('FCNC_M125_tbarHj', dCache+'/naodell/nuTuples_v7_4/TbarToFCNHToWWTo2l2nuPlusTop_M125/', 1, 'FCNC_M125_tbar mc 2012')
         ])
 
 

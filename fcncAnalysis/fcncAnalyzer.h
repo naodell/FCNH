@@ -88,8 +88,6 @@ const string categoryNames[] = {
     //"3l_2end1bar",
     //"3l_1end2bar",
     //"3l_barrel",
-
-    "4l_inclusive"
 };
 
 const unsigned short N_CUTS = 7;
@@ -137,9 +135,20 @@ class fcncAnalyzer : public TSelector {
         UInt_t      chargeCat;
         Float_t     evtWeight;
 
+        // trees for lepton mva
+        TTree*  muTree;
+        TTree*  eleTree;
+
+        Float_t sip3d;
+        Float_t chPFIso, neuPFIso;
+        Float_t drLepJet, ptRatioLepJet, btagLepJet;
+        Float_t dxy, dz; // muon specific
+        Float_t mva; // electron specific
+        Int_t   missHits; 
+
+
         // Simple ntuples for MVA
         TTree*      mvaTree;
-        TTree*      leptonTree;
 
         Float_t     dileptonMassOS;
         Float_t     trileptonMass;
@@ -149,15 +158,6 @@ class fcncAnalyzer : public TSelector {
         Float_t     lep1Eta, lep2Eta, lep3Eta;
         Float_t     lep1Phi, lep2Phi, lep3Phi;
         Float_t     bJetPt, bJetEta, bJetPhi;
-
-        // Lepton MVA tree
-        TTree*      lepTree;
-
-        Float_t     sip3d;
-        Float_t     chPFIso, neuPFIso;
-        Float_t     drLepJet, ptRatioLepJet, btagLepJet;
-        Float_t     dxy, dz;
-        Float_t     eleMVA, eleMissHits;
 
         // MVA reader and modified input variables
         TMVA::Reader* mvaReader;
@@ -257,6 +257,7 @@ class fcncAnalyzer : public TSelector {
 
         // Plot methods
         virtual void    MakePlots(vObj, vector<TCJet>, vector<TCJet>, TCMET, TVector3, unsigned);
+        virtual void    Make4lPlots(vObj, TCMET, vector<TCJet>, vector<TCJet>);
         virtual void    LeptonPlots(vObj, TCMET, vector<TCJet>, vector<TCJet>, TVector3);
         virtual void    JetPlots(vector<TCJet>, vector<TCJet>);
         virtual void    MetPlots(TCMET, vObj);
@@ -266,6 +267,7 @@ class fcncAnalyzer : public TSelector {
         // Set methods
         virtual void    SetEventCategory(vObj);
         virtual void    SetVarsMVA(vObj, vector<TCJet>, vector<TCJet>);
+        virtual void    FillLepMVA(vector<TCMuon>, vector<TCElectron>, vector<TCJet>, TVector3);
         virtual void    SetEventVariables(vObj, vector<TCJet>, vector<TCJet>, TCMET);
         virtual void    SetYields(unsigned);
         virtual int     GetHistCategory(unsigned);

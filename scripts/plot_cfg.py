@@ -61,7 +61,7 @@ samples.append('ttV')
 samples.append('Diboson')
 #samples.append('ZZ4l')
 samples.append('top')
-#samples.append('QCD')
+samples.append('QCD')
 samples.append('VJets')
 
 #samples.append('WZJets3LNu')
@@ -86,10 +86,10 @@ if doPlots:
 
     plotter.add_datasets(samples)
     plotter._overlayList.extend(['DATA'])
-    plotter._overlayList.extend(['FCNH'])
+    #plotter._overlayList.extend(['FCNH'])
 
-    plotter.get_scale_factors(['FCNH'])
-    #plotter.get_scale_factors()
+    #plotter.get_scale_factors(['FCNH'])
+    plotter.get_scale_factors()
 
     ### VARIABLES ###
     ### First specify the directories in which your
