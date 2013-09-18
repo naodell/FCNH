@@ -84,19 +84,19 @@ void fcncAnalyzer::Begin(TTree* tree)
         histoFile[0]->cd();
         lepTree = new TTree(("lepTree_" + suffix).c_str(), "Tree for lepton MVA");
 
-        mvaTree->Branch("sip3d", &sip3d, "sip3d/F");
-        mvaTree->Branch("chPFIso", &chPFIso, "chPFIso/F");
-        mvaTree->Branch("neuPFIso", &neuPFIso, "neuPFIso/F");
+        lepTree->Branch("sip3d", &sip3d, "sip3d/F");
+        lepTree->Branch("chPFIso", &chPFIso, "chPFIso/F");
+        lepTree->Branch("neuPFIso", &neuPFIso, "neuPFIso/F");
 
-        mvaTree->Branch("drLepJet", &drLepJet, "drLepJet/F");
-        mvaTree->Branch("ptRatioLepJet", &ptRatioLepJet, "ptRatioLepJet/F");
-        mvaTree->Branch("btagLepJet", &btagLepJet, "btagLepJet/F");
+        lepTree->Branch("drLepJet", &drLepJet, "drLepJet/F");
+        lepTree->Branch("ptRatioLepJet", &ptRatioLepJet, "ptRatioLepJet/F");
+        lepTree->Branch("btagLepJet", &btagLepJet, "btagLepJet/F");
 
-        mvaTree->Branch("dxy", &dxy, "dxy");
-        mvaTree->Branch("dz", &dz, "dz");
+        lepTree->Branch("dxy", &dxy, "dxy");
+        lepTree->Branch("dz", &dz, "dz");
 
-        mvaTree->Branch("eleMVA", &eleMVA, "eleMVA");
-        mvaTree->Branch("eleMissHits", &eleMissHits, "eleMissHits");
+        lepTree->Branch("eleMVA", &eleMVA, "eleMVA");
+        lepTree->Branch("eleMissHits", &eleMissHits, "eleMissHits");
     }
 
     // Initialize pass tree for MVA input //
@@ -191,6 +191,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
     if (eventCount[1] == 0) {
         weighter->SetDataBit(isRealData);
         triggerSelector->SetDataBit(isRealData);
+        selector->SetDataBit(isRealData);
     }
 
     if (eventCount[1] == 0)
@@ -420,7 +421,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
     } else if (leptons.size() == 4) {
         //!!! Tetralepton selection !!!//
-        if (leptons[0].Pt() > leptonPtCut[0]) {
+        if (leptons[0].Pt() < leptonPtCut[0] || leptons[1].Pt() < leptonPtCut[1]) {
 
             float mass4L = CalculateFourLeptonMass(leptons);
 
@@ -485,8 +486,8 @@ bool fcncAnalyzer::Process(Long64_t entry)
                 && jets.size() > 1
                 && MET < 40 
            ) {
-            MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 7);
-            SetYields(11);
+            //Make4lPlots(leptons, jets, bJetsM, *recoMET, selectedVtx);
+            SetYields(12);
         }
         return kTRUE; 
     }
@@ -518,7 +519,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
                 SetYields(15);
             }
             if (mvaValue > 0.) {
-                MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 4);
+                MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 5);
                 SetYields(14);
             }
             if (mvaValue > 0.1) {
@@ -543,7 +544,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
             && MHT > 20
        ) {
         MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 5);
-        SetYields(9);
+        SetYields(10);
     }
 
     // ttbar control region //
@@ -555,7 +556,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
             && MET > 30
        ) {
         MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 6);
-        SetYields(10);
+        SetYields(11);
     }
 
 
@@ -580,7 +581,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
     MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 1);
     SetYields(6);
 
-    //!! MET+HT cut !!//
+    //!! MET cut !!//
 
     if (leptons.size() == 2){
         if (leptons[0].Charge() == leptons[1].Charge()) 
@@ -593,6 +594,20 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
     MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 2);
     SetYields(7);
+
+    //!! HT cut !!//
+
+    if (leptons.size() == 2){
+        if (leptons[0].Charge() == leptons[1].Charge()) 
+            if (sqrt(HT) < htCut[0])
+                return kTRUE;
+    } else if (leptons.size() == 3) {
+        if (sqrt(HT) < htCut[1]) 
+            return kTRUE;
+    }
+
+    MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 3);
+    SetYields(8);
 
     if (leptons.size() == 3 && doPostMVA && !doPreMVA) {
 
@@ -613,7 +628,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
                     SetYields(15);
                 }
                 if (mvaValue > -0.) {
-                    MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 4);
+                    MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 5);
                     SetYields(14);
                 }
                 if (mvaValue > 0.1) {
@@ -627,8 +642,8 @@ bool fcncAnalyzer::Process(Long64_t entry)
     if (bJetsM.size() == 0) return kTRUE;
     //if (jets.size() == 0) return kTRUE;
 
-    MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 3);
-    SetYields(8);
+    MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 4);
+    SetYields(9);
 
     return kTRUE;
 }
@@ -653,9 +668,9 @@ void fcncAnalyzer::Terminate()
 
     // Control regions //
     cout<<"\nControl region event yields."<<"\n"<<endl;
-    cout<<"| WZ:                                |\t" << eventCount[9]  << "\t|\t" << eventCountWeighted[9] << "\t|"<<endl;
-    cout<<"| ttbar:                             |\t" << eventCount[10]  << "\t|\t" << eventCountWeighted[10] << "\t|"<<endl;
-    cout<<"| ZZ:                                |\t" << eventCount[11]  << "\t|\t" << eventCountWeighted[11] << "\t|"<<endl;
+    cout<<"| WZ:                                |\t" << eventCount[10]  << "\t|\t" << eventCountWeighted[9] << "\t|"<<endl;
+    cout<<"| ttbar:                             |\t" << eventCount[11]  << "\t|\t" << eventCountWeighted[10] << "\t|"<<endl;
+    cout<<"| ZZ:                                |\t" << eventCount[12]  << "\t|\t" << eventCountWeighted[11] << "\t|"<<endl;
 
 
     //for (int i = 0; i < 8; ++i) fout[i].close();
@@ -754,6 +769,10 @@ void fcncAnalyzer::MakePlots(vObj leptons, vector<TCJet> jets, vector<TCJet> bJe
         histManager->SetWeight(evtWeight);
     }
 }
+
+//void fcncAnalyzer::Make4LeptonPlots(vObj leptons, TCMET met, vector<TCJet> jets, vector<TCJet> bJets, TVector3 PV) {
+//
+//}
 
 void fcncAnalyzer::LeptonPlots(vObj leptons, TCMET met, vector<TCJet> jets, vector<TCJet> bJets, TVector3 PV)
 {

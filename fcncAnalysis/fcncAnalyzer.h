@@ -76,7 +76,7 @@ const string categoryNames[] = {
     "3l_mumumu",
 
     "3l_SSSF",
-    "3l_OSSF" 
+    "3l_OSSF",
 
     //"ss_endcap",
     //"ss_mixed",
@@ -88,6 +88,8 @@ const string categoryNames[] = {
     //"3l_2end1bar",
     //"3l_1end2bar",
     //"3l_barrel",
+
+    "4l_inclusive"
 };
 
 const unsigned short N_CUTS = 7;
@@ -107,9 +109,9 @@ class fcncAnalyzer : public TSelector {
         TRandom3* rnGenerator;
 
         // Utilities and selectors
-        WeightUtils *weighter;
-        HistManager *histManager;
-        Selector    *selector;
+        WeightUtils     *weighter;
+        HistManager     *histManager;
+        Selector        *selector;
         TriggerSelector *triggerSelector;
 
         //Event variables
@@ -150,6 +152,12 @@ class fcncAnalyzer : public TSelector {
 
         // Lepton MVA tree
         TTree*      lepTree;
+
+        Float_t     sip3d;
+        Float_t     chPFIso, neuPFIso;
+        Float_t     drLepJet, ptRatioLepJet, btagLepJet;
+        Float_t     dxy, dz;
+        Float_t     eleMVA, eleMissHits;
 
         // MVA reader and modified input variables
         TMVA::Reader* mvaReader;

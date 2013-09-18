@@ -23,6 +23,7 @@
 #include "../interface/TCGenJet.h"
 
 #include "EGammaMvaEleEstimator.h"
+#include "rochcor2012jan22.h"
 
 using namespace std;
 
@@ -51,9 +52,11 @@ class Selector : public TObject {
         //bool    PhotonLooseID(TCPhoton*);
 
         EGammaMvaEleEstimator *electronMVA;
+        rochcor2012 *muCorrector;
 
         //Set internal variables
         void    SetRho(float);
+        void    SetDataBit(bool);
 
         // Useful tools
         bool    IsZCandidate(TCPhysObject*, TCPhysObject*, float);
@@ -80,6 +83,7 @@ class Selector : public TObject {
     private:
         //inputs
         float       _rho;
+        bool        _isRealData;
 
         //cuts
         const float*        _muPtCuts;

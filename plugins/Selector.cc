@@ -1,18 +1,22 @@
 #include "Selector.h" 
 
-Selector::Selector() {
+Selector::Selector() 
+{
 }
 
-Selector::~Selector(){
+Selector::~Selector()
+{
     delete electronMVA;
 }
 
-Selector::Selector(const float* muPtCuts, const float* elePtCuts, const float* jetPtCuts, const float* phoPtCuts) {
+Selector::Selector(const float* muPtCuts, const float* elePtCuts, const float* jetPtCuts, const float* phoPtCuts) 
+{
 
     _muPtCuts   = muPtCuts;
     _elePtCuts  = elePtCuts;
     _jetPtCuts  = jetPtCuts;
     _vtxIndex   = 0;
+    _isRealData = false;
 
     // b-tag mc efficiencies
     TFile* f_bEff = new TFile("../data/bEff_ttbar_2012.root");
@@ -31,7 +35,9 @@ Selector::Selector(const float* muPtCuts, const float* elePtCuts, const float* j
     electronMVA = new EGammaMvaEleEstimator();
     electronMVA->initialize("BDT", EGammaMvaEleEstimator::kTrig, true, WeightsMVA);
 
-    rnGen = new TRandom3(0);
+    muCorrector = new rochcor2012(229);
+
+    rnGen = new TRandom3(1337);
 }
 
 void Selector::PurgeObjects()
@@ -52,6 +58,11 @@ void Selector::PurgeObjects()
         _selGenParticles.clear();
     if (_selGenJets.begin() != _selGenJets.end())
         _selGenJets.clear();
+}
+
+void Selector::SetDataBit(bool isRealData)
+{
+    _isRealData = isRealData;
 }
 
 void Selector::SetRho(float rho)
@@ -210,32 +221,45 @@ void Selector::MuonSelector(TClonesArray* muons)
 
         thisMuon->SetType("muon");
 
+        // momentum scale corrections (Rochestor corrections)
+        TLorentzVector tmpP4 = *thisMuon;
+        float muPtErr = 1.;
+        if (_isRealData) {
+            muCorrector->momcor_data(tmpP4, (float)thisMuon->Charge(), 0, muPtErr);
+        } else {
+            muCorrector->momcor_data(tmpP4, (float)thisMuon->Charge(), 0, muPtErr);
+        }
+
+        thisMuon->SetPtEtaPhiM(tmpP4.Pt(), tmpP4.Eta(), tmpP4.Phi(), tmpP4.M());
+
+        // isolation
         float muISO = 0.;
         muISO = (
-                    thisMuon->IsoMap("pfChargedHadronPt_R04") 
-                    + TMath::Max(0.0, (double)thisMuon->IsoMap("pfPhotonEt_R04") 
+                thisMuon->IsoMap("pfChargedHadronPt_R04") 
+                + TMath::Max(0.0, (double)thisMuon->IsoMap("pfPhotonEt_R04") 
                     + thisMuon->IsoMap("pfNeutralHadronEt_R04") 
                     - TMath::Max(0.0, (double)_rho*EffectiveArea(thisMuon)))
-                    )/thisMuon->Pt();
+                )/thisMuon->Pt();
 
         //cout << "(" << thisMuon->Pt() << ", " << thisMuon->Eta() << "),\t";
 
+        // identification
         if (
                 thisMuon->Pt() > _muPtCuts[0]
                 && MuonTightID(thisMuon)
            ) {
-            
+
             if (muISO < 1.0) _selMuons["denom_v1"].push_back(*thisMuon);
             if (muISO < 0.4) _selMuons["denom_v2"].push_back(*thisMuon);
             if (muISO < 0.12) _selMuons["tight"].push_back(*thisMuon);
         } else if (
                 thisMuon->Pt() > _muPtCuts[0]
                 && thisMuon->IsPF()
-                && fabs(muon->Dz(_selVertices[0]))  < 1. 
-                && fabs(muon->Dxy(_selVertices[0])) < 0.5
+                && fabs(thisMuon->Dz(_selVertices[0]))  < 1. 
+                && fabs(thisMuon->Dxy(_selVertices[0])) < 0.5
                 ) 
             _selMuons["premva"].push_back(*thisMuon);
-        } else if (
+        else if (
                 thisMuon->Pt() > _muPtCuts[1]  
                 && MuonLooseID(thisMuon)
                 && (muISO > 0.1 && thisMuon->Pt() > 20)
@@ -376,7 +400,7 @@ void Selector::ElectronSelector(TClonesArray* electrons)
                         + thisElec->IsoMap("pfNeuIso_R04") - _rho*thisElec->IsoMap("EffArea_R04"))))/thisElec->Pt(); 
 
         // analysis electrons
-        //if (ElectronTightID(thisElec)) {
+        //if (ElectronTightID(thisElec)) 
 
         if (thisElec->IdMap("preSelPassV1") && ElectronMVA(thisElec)) {
             _selElectrons["denom_v3"].push_back(*thisElec);
