@@ -253,7 +253,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
     }*/
 
     if (
-            (recoMuons->GetSize() + recoElectrons->GetSize()) > 1
+            (recoMuons->GetSize() + recoElectrons->GetSize()) < 1
             || recoMET->Mod() > 20 
             || allJets.size() == 0
             ) return kTRUE;
@@ -267,7 +267,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
     for (unsigned i = 0; i < 4; ++i) { 
 
         string index = str(i+1);
-        vector<TCElectron> eleDenom = selector->GetSelectedElectrons("denom_v" + index);
+        vector<TCElectron> eleDenom = looseElectrons; 
         unsigned nMatched   = 0;
         unsigned nDenom     = 0;
 
@@ -297,7 +297,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
             for (unsigned k = 0; k < leptons.size(); ++k) {
 
-                if (leptons[k].Type() != "electron" || eleDenom[j].DeltaR(leptons[k]) != 0.) continue;
+                if (leptons[k].Type() != "electron" || eleDenom[j].DeltaR(electrons[k]) != 0.) continue;
 
                 histManager->Fill1DHistUnevenBins(eleDenom[j].Pt(), "h1_NumerPt", "electron fakeable p_{T};p_{T};Entries / 10 GeV", 9, ptBins);
                 histManager->Fill1DHistUnevenBins(fabs(eleDenom[j].Eta()), "h1_NumerEta", "electron fakeable #eta;#eta;Entries / bin", 4, etaBins);
@@ -320,7 +320,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
         if (allJets[0].Pt() < 15) break;
 
         string index = str(i+1);
-        vector<TCMuon> muDenom = selector->GetSelectedMuons("denom_v" + index);
+        vector<TCMuon> muDenom = looseMuons;
         unsigned nMatched   = 0;
         unsigned nDenom     = 0;
 

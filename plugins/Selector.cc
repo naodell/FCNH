@@ -264,8 +264,8 @@ void Selector::MuonSelector(TClonesArray* muons)
         else if (
                 thisMuon->Pt() > _muPtCuts[1]  
                 && MuonLooseID(thisMuon)
-                && (muISO > 0.1 && thisMuon->Pt() > 20)
-                && (muISO < 0.15 && thisMuon->Pt() < 20)
+                //&& (muISO > 0.1 && thisMuon->Pt() > 20)
+                //&& (muISO < 0.15 && thisMuon->Pt() < 20)
                 ) 
             _selMuons["loose"].push_back(*thisMuon);
     }
@@ -412,7 +412,7 @@ void Selector::ElectronSelector(TClonesArray* electrons)
 
         } else if (
                 ElectronLooseID(thisElec)
-                && (thisElec->Pt() > 20 && eleISO > 0.15)
+                //&& (thisElec->Pt() > 20 && eleISO > 0.15)
                 ) _selElectrons["loose"].push_back(*thisElec);
     }
     //cout << endl;

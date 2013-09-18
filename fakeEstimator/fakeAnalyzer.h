@@ -34,17 +34,17 @@
 #include "TCanvas.h"
 
 // object definitions 
-#include "../src/TCPhysObject.h"
-#include "../src/TCJet.h"
-#include "../src/TCMET.h"
-#include "../src/TCElectron.h"
-#include "../src/TCMuon.h"
-#include "../src/TCTau.h"
-#include "../src/TCPhoton.h"
-#include "../src/TCGenJet.h"
-#include "../src/TCGenParticle.h"
-#include "../src/TCPrimaryVtx.h"
-#include "../src/TCTriggerObject.h"
+#include "../interface/TCPhysObject.h"
+#include "../interface/TCJet.h"
+#include "../interface/TCMET.h"
+#include "../interface/TCElectron.h"
+#include "../interface/TCMuon.h"
+#include "../interface/TCTau.h"
+#include "../interface/TCPhoton.h"
+#include "../interface/TCGenJet.h"
+#include "../interface/TCGenParticle.h"
+#include "../interface/TCPrimaryVtx.h"
+#include "../interface/TCTriggerObject.h"
 
 // plugins
 #include "../plugins/Selector.h"
