@@ -62,7 +62,7 @@ if period == '2012':
     bg.extend([
         cfg('ZJets_M-50', dCache+'/naodell/nuTuples_v7_4/DYJets', 30, 'ZJets_M-50 muon 2012'),
         cfg('ZJets_M-10To50', dCache+'/naodell/nuTuples_v7_4/DYJets_M-10To50', 10, 'ZJets_M-10To50 muon 2012'),
-        #cfg('ZbbToLL', dCache+'/naodell/nuTuples_v7_4/ZbbToLL', 20, 'ZbbToLL muon 2012'),
+        cfg('ZbbToLL', dCache+'/naodell/nuTuples_v7_4/ZbbToLL', 20, 'ZbbToLL muon 2012'),
         #cfg('ZG', dCache+'/naodell/nuTuples_v7_4/ZGToLLG', 10, 'ZG muon 2012'),
         cfg('WJets', dCache+'/naodell/nuTuples_v7_4/WJetsToLNu', 20, 'WJets muon 2012'),
         #cfg('WGStarLNu2E', dCache+'/naodell/nuTuples_v7_4/WGStarToLNu2E', 5, 'WGStarLNu2E muon 2012'),

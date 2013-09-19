@@ -14,10 +14,10 @@ const string    selection   = "SELECTION";
 const string    period      = "PERIOD";
 const bool      doPrintout  = false;
 const bool      doGenPrint  = false;
-const bool      doPreMVA    = true;
+const bool      doPreMVA    = false;
 const bool      doPostMVA   = false;
-const bool      doMVACut    = true;
-const bool      doMVATree   = true;
+const bool      doMVACut    = false;
+const bool      doMVATree   = false;
 const bool      doLepTree   = true;
 
 
@@ -484,13 +484,10 @@ bool fcncAnalyzer::Process(Long64_t entry)
     if (leptons.size() == 4) {
 
         if (
-                zTagged 
-                && bJetsM.size() == 0
-                && jets.size() > 1
-                && MET < 40 
+                zTagged && bJetsM.size() == 0
            ) {
             Make4lPlots(leptons, *recoMET, jets, bJetsM);
-            SetYields(12);
+            SetYields(13);
         }
         return kTRUE; 
     }
@@ -518,15 +515,9 @@ bool fcncAnalyzer::Process(Long64_t entry)
             histManager->SetDirectory("3l_inclusive/" + suffix);
             histManager->Fill1DHist(mvaValue, "h1_BDT", "BDT value;Entries / bin;BDT", 36, -1., 0.2);
 
-            if (mvaValue > -0.1) {
-                SetYields(15);
-            }
             if (mvaValue > 0.) {
-                MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 5);
-                SetYields(14);
-            }
-            if (mvaValue > 0.1) {
-                SetYields(13);
+                //MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 5);
+                SetYields(15);
             }
         }
     }
@@ -543,8 +534,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
             && leptons.size() == 3 
             && bJetsM.size() == 0
             && jets.size() > 1
-            //&& MET > 50 
-            && MHT > 20
+            && METLD > 0.3
        ) {
         MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 5);
         SetYields(10);
@@ -562,6 +552,32 @@ bool fcncAnalyzer::Process(Long64_t entry)
         SetYields(11);
     }
 
+    // ttZ control region //
+    if (
+            leptons.size() == 3 
+            && zTagged
+            && (bJetsM.size() == 1 || bJetsL.size() == 2)
+            && METLD > 0.2 
+       ) {
+        MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 7);
+        SetYields(12);
+    }
+
+    // fakes control region //
+    if (
+            leptons.size() == 2
+            && (extraLeptons.size() > 0)
+            && bJetsL.size() == 2
+       ) {
+
+        vObj lepPlusFake;
+        lepPlusFake.insert(lepPlusFake.end(), leptons.begin(), leptons.end());
+        lepPlusFake.insert(lepPlusFake.end(), extraLeptons.begin(), extraLeptons.end());
+        sort(lepPlusFake.begin(), lepPlusFake.end(), P4SortCondition);
+
+        MakePlots(lepPlusFake, jets, bJetsM, *recoMET, selectedVtx, 8);
+        SetYields(13);
+    }
 
     //!!!!!!!!!!!!!!!!!!!!!!//
     //                      //
@@ -627,15 +643,9 @@ bool fcncAnalyzer::Process(Long64_t entry)
                 histManager->SetDirectory("3l_inclusive/" + suffix);
                 histManager->Fill1DHist(mvaValue, "h1_BDT", "BDT value;Entries / bin;BDT", 36, -1., 0.2);
 
-                if (mvaValue > -0.1) {
-                    SetYields(15);
-                }
                 if (mvaValue > -0.) {
-                    MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 5);
-                    SetYields(14);
-                }
-                if (mvaValue > 0.1) {
-                    SetYields(13);
+                    //MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 5);
+                    SetYields(15);
                 }
             }
         }
@@ -674,7 +684,9 @@ void fcncAnalyzer::Terminate()
     cout<<"\nControl region event yields."<<"\n"<<endl;
     cout<<"| WZ:                                |\t" << eventCount[10]  << "\t|\t" << eventCountWeighted[10] << "\t|"<<endl;
     cout<<"| ttbar:                             |\t" << eventCount[11]  << "\t|\t" << eventCountWeighted[11] << "\t|"<<endl;
-    cout<<"| ZZ:                                |\t" << eventCount[12]  << "\t|\t" << eventCountWeighted[12] << "\t|"<<endl;
+    cout<<"| ttZ:                               |\t" << eventCount[12]  << "\t|\t" << eventCountWeighted[12] << "\t|"<<endl;
+    cout<<"| ZZ:                                |\t" << eventCount[13]  << "\t|\t" << eventCountWeighted[13] << "\t|"<<endl;
+    cout<<"| fakes:                             |\t" << eventCount[14]  << "\t|\t" << eventCountWeighted[14] << "\t|"<<endl;
 
 
     //for (int i = 0; i < 8; ++i) fout[i].close();
@@ -780,14 +792,23 @@ void fcncAnalyzer::Make4lPlots(vObj leptons, TCMET met, vector<TCJet> jets, vect
     histManager->SetDirectory("inclusive/" + suffix);
     
     TLorentzVector tetraLeptonP4 = leptons[0] + leptons[1] + leptons[2] + leptons[3];
+    float pt4l = leptons[0].Pt() + leptons[1].Pt() + leptons[2].Pt() + leptons[3].Pt();
 
     histManager->Fill1DHist(tetraLeptonP4.M(), 
             "h1_4lMass", "M_{4l};M_{4l};Entries / 5 GeV", 40, 50., 250.);
     histManager->Fill1DHist(tetraLeptonP4.Pt(), 
             "h1_4lPt", "p_{T,4l};p_{T,4l};Entries / 5 GeV", 20, 0., 500.);
+    histManager->Fill1DHist(pt4l, 
+            "h1_4lSumPt", "#Sigma p_{T,4l};#Sigma p_{T,4l};Entries / 5 GeV", 20, 0., 500.);
 
     histManager->Fill1DHist(met.Mod(), 
             "h1_4lMet", "MET (4l);MET;Entries / 10 GeV", 35, 0., 350.);
+
+    //if (fabs(tetraLeptonP4.M() - 91.2) < 15) {
+    //    histManager->Fill1DHist(leptons[3], 
+    //            "h1_Z4lLep4Pt", "MET (4l);MET;Entries / 10 GeV", 35, 0., 350.);
+    //}
+
 }
 
 void fcncAnalyzer::LeptonPlots(vObj leptons, TCMET met, vector<TCJet> jets, vector<TCJet> bJets, TVector3 PV)
@@ -1411,12 +1432,16 @@ void fcncAnalyzer::SetEventVariables(vObj leptons, vector<TCJet> jets, vector<TC
     zTagged     = false;
     dileptonMassOS = -1.;
 
+    //cout << leptons.size() << ":\t";
+
     float zCandidateMass = 0.;
     for (unsigned i = 0; i < leptons.size(); ++i) {
         HTs     += leptons[i].Pt();
         sumP4   += leptons[i];
 
         for (unsigned j = leptons.size()-1; j > i; --j) {
+
+            //cout << (leptons[i] + leptons[j]).M() << ", " << i << j << "\t";
 
             // Check for opposite-sign, same-flavor pair //
             if (leptons[i].Type() == leptons[j].Type() && leptons[i].Charge() != leptons[j].Charge()) {

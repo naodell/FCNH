@@ -25,16 +25,16 @@ suffix      = sys.argv[1]
 #suffix      = 'TEST'
 
 cutList     = ['1_preselection']
-cutList.extend(['2_Z_veto', '3_MET', '4_bjet_cut']) #, '5_BDT'])
+cutList.extend(['2_Z_veto', '3_MET', '4_HT', '5_bjet'])
 
-crList      = ['CR_WZ', 'CR_ttbar']
+crList      = ['CR_WZ', 'CR_ttbar', 'CR_ttZ', 'CR_fakes']
 
 period      = '2012'
 LUMIDATA    = 19.7 
 doLog       = True
 
 doPlots     = True
-doYields    = True
+doYields    = False
 
 doOS        = True
 doSS        = True
@@ -99,7 +99,7 @@ if doPlots:
     ### plot while giving a key value which is the 
     ### directory that they are located in as a key.
 
-    plotter._directoryList1D            = ['Misc', 'Lepton', 'Dilepton', 'DileptonOS', 'MET', 'Jet', 'GEN']
+    plotter._directoryList1D            = ['Misc', 'Lepton', 'Dilepton', 'DileptonOS', 'MET', 'Jet', 'GEN', '4l']
     plotter._directoryList2D            = ['2D']
 
     plotter._variableDict['Misc']       = ['PvMult', 'YieldByCut', 'YieldByCutRaw', 'EventWeight', 'TriggerStatus', 
@@ -150,6 +150,8 @@ if doPlots:
 
     plotter._variableDict['GEN']        = ['GenChargeMisId', 'GenMisIdPt', 'GenMisIdEta',
                                            'GenDeltaR', 'GenBalance']
+
+    plotter._variableDict['4l']         = ['4lMass', '4lPt', '4lMet']
 
     plotter._variableDict['2D']         = ['metVsHt', 'metVsSqrtHt', 'TrileptonMVsDileptonMOS',
                                             'DileptonMVsDeltaROS', 'DileptonQtVsDeltaROS',
@@ -235,6 +237,23 @@ if doPlots:
         ttbar_plotter.make_save_path(outFile, clean=True)
 
         p_plot.append(Process(name = 'CR_ttbar/os_emu', target = plotter_wrapper, args=(ttbar_plotter, 'os_emu', inFile, outFile, do1D, do2D, doLog)))
+
+    ### ttZ control region
+    if 'CR_ttZ' in crList:
+
+        ttZ_plotter = copy.deepcopy(plotter)
+
+        ttZ_plotter.add_datasets(['single top', 'VJets', 'ttZ'],  Clear=True)
+        ttZ_plotter._overlayList = ['DATA']
+
+        inFile  = 'fcncAnalysis/combined_histos/' + selection + '_cut7_' + period + batch + '.root'
+        if doLog:
+            outFile = 'plots/' + currentDate + '/' + selection + '_' + suffix + '/log/CR_ttZ'
+        else:
+            outFile = 'plots/' + currentDate + '/' + selection + '_' + suffix + '/linear/CR_ttZ'
+        ttZ_plotter.make_save_path(outFile, clean=True)
+
+        p_plot.append(Process(name = 'CR_ttZ/os_emu', target = plotter_wrapper, args=(ttZ_plotter, 'os_emu', inFile, outFile, do1D, do2D, doLog)))
 
 ### End of configuration for PlotProducer ###
 
