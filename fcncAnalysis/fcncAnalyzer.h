@@ -114,6 +114,7 @@ class fcncAnalyzer : public TSelector {
 
         //Event variables
         bool zTagged;
+        bool ossfTagged;
 
         TLorentzVector dileptonP4;
         TLorentzVector lep1P4, lep2P4, lep3P4; // If event is zTagged, lep1 and lep2 are associated to the z
@@ -357,6 +358,8 @@ bool fcncAnalyzer::Notify()
 
     nEvents->SetAddress(&initEvents);
     nEvents->GetEntry(0);
+
+    cout << initEvents << endl;
 
     evtWeight = initEvents;
     evtCategory.reset();

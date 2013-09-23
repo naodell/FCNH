@@ -484,7 +484,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
     if (leptons.size() == 4) {
 
         if (
-                zTagged && bJetsM.size() == 0
+                bJetsM.size() == 0
            ) {
             Make4lPlots(leptons, *recoMET, jets, bJetsM);
             SetYields(13);
@@ -556,7 +556,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
     if (
             leptons.size() == 3 
             && zTagged
-            && (bJetsM.size() == 1 || bJetsL.size() == 2)
+            && (bJetsM.size() == 1 && bJetsL.size() == 2)
             && METLD > 0.2 
        ) {
         MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 7);
@@ -896,7 +896,7 @@ void fcncAnalyzer::LeptonPlots(vObj leptons, TCMET met, vector<TCJet> jets, vect
     }
 
     // OSSF dilepton pair variables
-    if (evtCategory.test(16)) {
+    if (ossfTagged) {
         histManager->Fill1DHist(dileptonP4.M(),
                 "h1_DileptonOSMass", "OS dilepton M;M_{OS};Entries / 4 GeV", 100, 0., 400.);
         histManager->Fill1DHist(dileptonP4.Mt(),
@@ -1430,6 +1430,7 @@ void fcncAnalyzer::SetEventVariables(vObj leptons, vector<TCJet> jets, vector<TC
 
     // Reset OS variables for each event //
     zTagged     = false;
+    ossfTagged  = false;
     dileptonMassOS = -1.;
 
     //cout << leptons.size() << ":\t";
@@ -1445,6 +1446,7 @@ void fcncAnalyzer::SetEventVariables(vObj leptons, vector<TCJet> jets, vector<TC
 
             // Check for opposite-sign, same-flavor pair //
             if (leptons[i].Type() == leptons[j].Type() && leptons[i].Charge() != leptons[j].Charge()) {
+                ossfTagged = true;
 
                 // Is the pair mass consistent with the Z mass within a 20 GeV window?
                 if (fabs((leptons[i] + leptons[j]).M() - 91.2) < 10) {
@@ -1468,16 +1470,18 @@ void fcncAnalyzer::SetEventVariables(vObj leptons, vector<TCJet> jets, vector<TC
                     }
                     // Might want to come up with a way for choosing the dilepton when it's outside the Z window 
                 } else if (!zTagged) { 
-                    dileptonP4      = leptons[i] + leptons[j];
-                    lep1P4          = leptons[j];
-                    lep2P4          = leptons[i];
+                    if ((leptons[i] + leptons[j]).M() > dileptonMassOS) {
+                        dileptonP4      = leptons[i] + leptons[j];
+                        lep1P4          = leptons[j];
+                        lep2P4          = leptons[i];
 
-                    dileptonMassOS  = dileptonP4.M();
-                    dileptonDROS    = leptons[i].DeltaR(leptons[j]);
+                        dileptonMassOS  = dileptonP4.M();
+                        dileptonDROS    = leptons[i].DeltaR(leptons[j]);
 
-                    if (leptons.size() == 3) {
-                        lep3P4  = leptons[3 - (i + j)];
-                        MT = CalculateTransMass(leptons[3 - (i + j)], met);
+                        if (leptons.size() == 3) {
+                            lep3P4  = leptons[3 - (i + j)];
+                            MT = CalculateTransMass(leptons[3 - (i + j)], met);
+                        }
                     }
                 }
             }

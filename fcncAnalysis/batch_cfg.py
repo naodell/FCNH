@@ -69,6 +69,7 @@ if period == '2012':
         #cfg('WGStarLNu2Mu', dCache+'/naodell/nuTuples_v7_4/WGStarToLNu2Mu', 5, 'WGStarLNu2Mu muon 2012'),
         #cfg('WGStarLNu2Tau', dCache+'/naodell/nuTuples_v7_4/WGStarToLNu2Tau', 5, 'WGStarLNu2Tau muon 2012'),
         #cfg('WbbToLNu', dCache+'/naodell/nuTuples_v7_4/WbbJetsToLNu', 20, 'WbbToLNu muon 2012'),
+        cfg('WbbToLNu', dCache+'/naodell/nuTuples_v7_4/WbbToLL', 20, 'WbbToLNu muon 2012'),
         #cfg('WG', dCache+'/naodell/nuTuples_v7_4/WGToLNuG', 10, 'WG muon 2012'),
 
         cfg('ttbar', dCache+'/naodell/nuTuples_v7_4/TTJets', 30, 'ttbar muon 2012'),
@@ -110,12 +111,16 @@ if period == '2012':
         cfg('ggHToZZ4L_M-125', dCache+'/naodell/nuTuples_v7_4/GluGluToHToZZTo4L_M-125', 2, 'ggHToZZ4L_M-125 muon 2012'),
         cfg('ggHToWW2L2Nu_M-125', dCache+'/naodell/nuTuples_v7_4/GluGluToHToWWTo2LAndTau2Nu_M-125', 2, 'ggHToWW2L2Nu_M-125 muon 2012'),
         cfg('WHToWWW3L_M-125', dCache+'/naodell/nuTuples_v7_4/WH_HToWW_3l_M-125', 2, 'WHToWWW3L_M-125 muon 2012'),
-        cfg('TTH_M-125', dCache+'/naodell/nuTuples_v7_4/TTH_Inclusive_M-125', 2, 'TTH_M-125 muon 2012')
+        cfg('TTH_M-125', dCache+'/naodell/nuTuples_v7_4/TTH_Inclusive_M-125', 2, 'TTH_M-125 muon 2012'),
+
+        cfg('ZGstar', dCache+'/naodell/nuTuples_v7_4/ZGstar', 1, 'ZGstar muon 2012')
         ])
 
     signal.extend([
-        cfg('FCNC_M125_tHj', dCache+'/naodell/nuTuples_v7_4/TToFCNHToWWTo2l2nuPlusTop_M125', 1, 'FCNC_M125_t mc 2012'),
-        cfg('FCNC_M125_tbarHj', dCache+'/naodell/nuTuples_v7_4/TbarToFCNHToWWTo2l2nuPlusTop_M125/', 1, 'FCNC_M125_tbar mc 2012')
+        #cfg('FCNC_M125_tHj', dCache+'/naodell/nuTuples_v7_4/TToFCNHToWWTo2l2nuPlusTop_M125', 1, 'FCNC_M125_t mc 2012'),
+        #cfg('FCNC_M125_tbarHj', dCache+'/naodell/nuTuples_v7_4/TbarToFCNHToWWTo2l2nuPlusTop_M125/', 1, 'FCNC_M125_tbar mc 2012')
+        cfg('FCNC_M125_tHj', dCache+'/naodell/nuTuples_v6_8TeV', 1, 'FCNC_M125_t mc 2012'),
+        cfg('FCNC_M125_tbarHj', dCache+'/naodell/nuTuples_v6_8TeV', 1, 'FCNC_M125_tbar mc 2012')
         ])
 
 

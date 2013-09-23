@@ -86,6 +86,7 @@ styleDict['ZZ']                 = (2, r.kOrange+4, 0, 1, 'ZZ')
 styleDict['WW']                 = (2, r.kGreen-4, 0, 1, 'WW')
 styleDict['WZ']                 = (2, r.kPink+9, 0, 1, 'WZ')
 styleDict['ZGToNuNu']           = (2, r.kBlue+3, 0, 1, 'ZG->#nu#nu')
+styleDict['ZGstar']             = (2, r.kBlue+3, 0, 1, 'Z#gamma^{*}')
 styleDict['GJets_15to30']       = (2, r.kYellow+2, 0, 1, 'gamma+jets') 
 
 #Higgs
@@ -137,14 +138,14 @@ scaleDict['2011']['fakes']              = 1.
 
 ### 2012 x-sections
 scaleDict['2012']['WJets']              = 36257.2
-scaleDict['2012']['WbbToLNu']           = 10000. 
+scaleDict['2012']['WbbToLNu']           = 39.9 
 scaleDict['2012']['WG']                 = 1000.0
 scaleDict['2012']['WGStarLNu2E']        = 5.873
 scaleDict['2012']['WGStarLNu2Mu']       = 1.914
 scaleDict['2012']['WGStarLNu2Tau']      = 0.336
 scaleDict['2012']['ZJets_M-50']         = 3532.8 
 scaleDict['2012']['ZJets_M-10To50']     = 860.5
-scaleDict['2012']['ZbbToLL']            = 100. 
+scaleDict['2012']['ZbbToLL']            = 94.1 
 scaleDict['2012']['ZG']                 = 159.12
 
 scaleDict['2012']['ZZJets2L2Nu']        = 0.365
@@ -192,10 +193,12 @@ scaleDict['2012']['WW']                 = 54.8
 scaleDict['2012']['GluGluWW']           = 0.1505
 scaleDict['2012']['WJets']              = 31314
 scaleDict['2012']['ZGToNuNu']           = 3.462
+scaleDict['2012']['ZGstar']             = 0.5
 
-scaleDict['2012']['ggHToZZ4L_M-125']    = .01
-scaleDict['2012']['WHToWWW3L_M-125']    = .01
-scaleDict['2012']['ggHToWW2L2Nu_M-125'] = .01
+scaleDict['2012']['ggHToZZ4L_M-125']    = 19.3*0.0264*0.09*0.09
+scaleDict['2012']['WHToWWW3L_M-125']    = .705*0.3*0.3*0.3
+scaleDict['2012']['ggHToWW2L2Nu_M-125'] = 19.3*0.215*0.3*0.3
+scaleDict['2012']['TTH_M-125']          = .1032
 
 #scaleDict['GJets_15to30']       = 1/0.012
 #scaleDict['GJets_30to50']       = 1/0.131
@@ -206,8 +209,8 @@ scaleDict['2012']['ggHToWW2L2Nu_M-125'] = .01
 #scaleDict['GJets_300to470']     = 1/1391.1
 #scaleDict['GJets_470to800']     = 1/15812.2
 
-scaleDict['2012']['FCNC_M125_t']        = 234*2*1.*0.01*0.215*0.1*0.1*0.1
-scaleDict['2012']['FCNC_M125_tbar']     = 234*2*1.*0.01*0.215*0.1*0.1*0.1
+scaleDict['2012']['FCNC_M125_t']        = 234*2*1.*0.01*0.215*0.3*0.3*0.3
+scaleDict['2012']['FCNC_M125_tbar']     = 234*2*1.*0.01*0.215*0.3*0.3*0.3
 scaleDict['2012']['DATA_MUON']          = 1.
 scaleDict['2012']['DATA_ELECTRON']      = 1.
 scaleDict['2012']['DATA_MUEG']          = 1.
@@ -227,7 +230,7 @@ combineDict['ZZ4l']             = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2
 combineDict['ttV']              = ['ttZ', 'ttW', 'ttG']
 combineDict['Triboson']         = ['WWW', 'WWZ', 'WZZ', 'ZZZ', 'WWG']
 combineDict['QCD']              = ['QCD_20_MU', 'QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_EM', 'QCD_170-250_EM', 'QCD_250-350_EM', 'QCD_350_EM']
-combineDict['higgs']            = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125'] #, 'ggHToWW2L2Nu_M-125']
+combineDict['higgs']            = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125']
 
 categoryDict = {'inclusive':'inclusive',
                 'ss_inclusive':'ss inclusive', 'ss_mumu':'#mu^{#pm}#mu^{#pm}', 'ss_ee':'e^{#pm}e^{#pm}', 'ss_emu':'e^{#pm}#mu^{#pm}',
