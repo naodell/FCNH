@@ -27,20 +27,20 @@ suffix      = sys.argv[1]
 cutList     = ['1_preselection']
 cutList.extend(['2_Z_veto', '3_MET', '4_HT', '5_bjet'])
 
-crList      = ['CR_WZ', 'CR_ttbar'] #, 'CR_ttZ', 'CR_fakes']
+crList      = ['CR_WZ', 'CR_ttbar', 'CR_ttZ']#, 'CR_fakes']
 
 period      = '2012'
 LUMIDATA    = 19.7 
 doLog       = True
 
 doPlots     = True
-doYields    = False
+doYields    = True
 
 doOS        = True
 doSS        = True
 do3l        = True
 do1D        = True
-do2D        = False
+do2D        = True
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive']
@@ -77,11 +77,12 @@ samples['3l'].append('VJets')
 #samples['3l'].extend(['WGStarLNu2E', 'WGStarLNu2Mu', 'WGStarLNu2Tau'])
 
 samples['ss'].append('higgs')
-samples['ss'].append('Triboson')
 samples['ss'].append('ttV')
 samples['ss'].append('top')
 samples['ss'].append('Diboson')
-samples['ss'].append('QCD')
+#samples['ss'].append('QCD')
+samples['ss'].append('QCD_EM')
+samples['ss'].append('QCD_20_MU')
 samples['ss'].append('VJets')
 samples['ss'].append('ZbbToLL')
 samples['ss'].append('WbbToLNu')
@@ -94,12 +95,14 @@ samples['ttZ'].extend(['top', 'VJets', 'WZJets3LNu', 'ttW', 'ttZ'])
 
 p_plot = []
 
+
 if doPlots:
 
     print '\nMaking the plots...\n'
 
     r.gROOT.SetBatch()
 
+    ### Initialize plot producer ###
     plotter = PlotProducer(inputFile = 'fcncAnalysis/combined_histos/' + selection + '_cut1_' + period + batch + '.root', savePath = '', scale = LUMIDATA, isAFS = False)
     plotter.set_period(period)
     plotter.set_output_type(plotType)
@@ -107,7 +110,6 @@ if doPlots:
     ### DATASETS ###
     ### Specify the datasets you wish to stack 
     ### and overlay accordingly. 
-
 
     plotter.add_datasets(samples['inclusive'])
     plotter._overlayList.extend(['DATA'])
@@ -181,9 +183,9 @@ if doPlots:
 
     plotter._variableDict['2D']         = ['metVsHt', 'metVsSqrtHt', 'TrileptonMVsDileptonMOS',
                                             'DileptonMVsDeltaROS', 'DileptonQtVsDeltaROS',
-                                            'DileptonM13VsM21', 'DileptonM12VsM31', 'DileptonM21VsM32',
-                                            'DalitzM13VsM21', 'DalitzM12VsM31', 'DalitzM21VsM32',
-                                            'BJetVsJetSumBDiscriminator', 'LepChargeVsFlavor']
+                                            #'DileptonM13VsM21', 'DileptonM12VsM31', 'DileptonM21VsM32',
+                                            #'DalitzM13VsM21', 'DalitzM12VsM31', 'DalitzM21VsM32',
+                                            'LepChargeVsFlavor']
 
 
      ###################   
@@ -251,6 +253,7 @@ if doPlots:
             for category in catSS:
                 p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(ss_plotter, category, inFile, outFile, do1D, do2D, doLog)))
 
+
     ### os selection ###
     if doOS:
         os_plotter = copy.deepcopy(plotter)
@@ -287,7 +290,7 @@ if doPlots:
         wz_plotter.make_save_path(outFile, clean=True)
 
         for category in cat3l:
-            p_plot.append(Process(name = 'CR_WZ/' + category, target = plotter_wrapper, args=(wz_plotter, category, inFile, outFile, do1D, do2D, doLog)))
+            p_plot.append(Process(name = 'CR_WZ/' + category, target = plotter_wrapper, args=(wz_plotter, category, inFile, outFile, do1D, False, doLog)))
 
     ### ttbar control region
     if 'CR_ttbar' in crList:
@@ -302,12 +305,12 @@ if doPlots:
             outFile = 'plots/' + currentDate + '/' + selection + '_' + suffix + '/linear/CR_ttbar'
         ttbar_plotter.make_save_path(outFile, clean=True)
 
-        p_plot.append(Process(name = 'CR_ttbar/os_emu', target = plotter_wrapper, args=(ttbar_plotter, 'os_emu', inFile, outFile, do1D, do2D, doLog)))
+        p_plot.append(Process(name = 'CR_ttbar/os_emu', target = plotter_wrapper, args=(ttbar_plotter, 'os_emu', inFile, outFile, do1D, False, doLog)))
 
     ### ttZ control region
     if 'CR_ttZ' in crList:
         ttZ_plotter = copy.deepcopy(plotter)
-        ttZ_plotter.add_datasets(samples['CR_ttZ'],  Clear=True)
+        ttZ_plotter.add_datasets(samples['ttZ'],  Clear=True)
         ttZ_plotter._overlayList = ['DATA']
 
         inFile  = 'fcncAnalysis/combined_histos/' + selection + '_cut8_' + period + batch + '.root'
@@ -319,7 +322,7 @@ if doPlots:
         ttZ_plotter.make_save_path(outFile, clean=True)
 
         for category in cat3l:
-            p_plot.append(Process(name = 'CR_ttZ/' + category, target = plotter_wrapper, args=(ttZ_plotter, category, inFile, outFile, do1D, do2D, doLog)))
+            p_plot.append(Process(name = 'CR_ttZ/' + category, target = plotter_wrapper, args=(ttZ_plotter, category, inFile, outFile, do1D, False, doLog)))
 
 
 ### End of configuration for PlotProducer ###
@@ -333,64 +336,62 @@ for process in p_plot:
 
 print '\n'
 
-     ####################
-     ### MAKE TABLES! ###
-     ####################
-
 if doYields:
-    doPresel        = True
-    outFile         = file('yields/.yields_tmp.tex', 'w')
-    categoryNames   = []
-    yieldTable      = TableMaker('fcncAnalysis/combined_histos/' + selection + '_cut1_' + period + batch + '.root', outFile, scale = LUMIDATA, delimiter = '&', doSumBG = True)
-
+    ### Initialize table maker ###
+    tableFile       = file('yields/.yields_tmp.tex', 'w')
+    yieldTable      = TableMaker('fcncAnalysis/combined_histos/' + selection + '_cut1_' + period + batch + '.root', tableFile, scale = LUMIDATA, delimiter = '&', doSumBG = True)
     yieldTable.set_period(period)
 
-    yieldTable._columnList  = ['higgs', 'Triboson', 'ttV', 'Diboson', 'top', 'VJets', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
-    #yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
-
-    yieldTable.add_datasets(samples, Clear = True)
-    yieldTable.add_datasets('FCNH')
-    yieldTable.add_datasets('DATA')
-
-    print '\n\n Printing yields...\n'
-
-    if doOS:
-        categoryNames.extend(catOS)
-    if doSS:
-        categoryNames.extend(catSS)
-    if do3l:
-        categoryNames.extend(cat3l)
-
-    if not doPlots: 
+    yieldTable.add_datasets(samples['inclusive'], Clear = True)
+    if not doPlots:
         yieldTable.get_scale_factors()
+        #yieldTable.get_scale_factors(['FCNH'])
 
-    for category in categoryNames:
-        if category == 'inclusive':
-            continue
+    if do3l:
+        yieldTable._columnList  = samples['3l'] + ['BG', 'DATA']#, 'FCNH', 'Significance'] 
 
-        #yieldTable._rowList = ['Initial', '.', '.', '.', '.']
-        yieldTable._rowList = ['.', '.', '.', '.', '.']
+        yieldTable.add_datasets(samples['3l'], Clear = True)
+        #yieldTable.add_datasets('FCNH')
+        yieldTable.add_datasets('DATA')
 
-        if category[:2] == '3l' and do3l:
-            yieldTable._rowList.extend(['3 lepton', 'Z removal', 'MET  \& HT ', 'b-jet']) #, '1 jet'])
-            #yieldTable._rowList.extend(['.', '.', '.', '.', '.', '.', 'BDT > -0.3']) 
+        yieldTable._rowList = ['.', '.', '.', '.', '.','3 lepton', 'Z removal', 'MET', 'HT', 'b-jet']
 
-        elif category[:2] == 'ss' and doSS:
-            yieldTable._rowList.extend(['ss lepton', '.', 'MET \& HT', '1 b-jet']) #, '1 jet'])
-
-        elif category[:2] == 'os' and doOS:
-            yieldTable._rowList.extend(['2 os leptons', 'MET cut', '1 b-jet/1 jet', 'Z removal'])
-
-        yieldTable._category = category
-        histDict = yieldTable.get_hist_dict('YieldByCut')
-
-        if category[:2] == 'os':
-            continue
-            #yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 1)
-        else:
+        for category in cat3l:
+            yieldTable._category = category
+            histDict = yieldTable.get_hist_dict('YieldByCut')
             yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 1)
 
-    outFile.close()
+    if doSS:
+        yieldTable._columnList  = samples['ss'] + ['BG', 'DATA']#, 'FCNH', 'Significance'] 
+
+        yieldTable.add_datasets(samples['ss'], Clear = True)
+        #yieldTable.add_datasets('FCNH')
+        yieldTable.add_datasets('DATA')
+
+        yieldTable._rowList = ['.', '.', '.', '.', '.','ss lepton', '.', 'MET', 'HT', 'b-jet']
+
+        for category in catSS:
+            yieldTable._category = category
+            histDict = yieldTable.get_hist_dict('YieldByCut')
+            yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 1)
+
+    crCats = {'CR_WZ':'3l_inclusive', 'CR_ttbar':'os_emu', 'CR_ttZ':'3l_inclusive'}
+    for i,CR in enumerate(crList):
+
+        yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut{1}_{2}{3}.root'.format(selection, i+5, period, batch))
+        yieldTable._columnList  = samples[CR[3:]] + ['BG', 'DATA']
+
+        yieldTable.add_datasets(samples[CR[3:]], Clear = True)
+        yieldTable.add_datasets('DATA')
+
+        yieldTable._rowList = ['preselection'] + (4+i)*['.'] + [CR[3:]]
+
+        yieldTable._category = crCats[CR]
+        histDict = yieldTable.get_hist_dict('YieldByCut')
+        yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 6)
+
+
+    tableFile.close()
+
     subprocess.call('pdflatex -output-dir=yields yields/yields.tex', shell = True)
     subprocess.call('cp yields/yields.pdf plots/{0}/{1}_{2}/.'.format(currentDate, selection, suffix), shell = True)
-    subprocess.call('cp yields/.yields_tmp.tex plots/{0}/{1}_{2}/yields.tex'.format(currentDate, selection, suffix), shell = True)

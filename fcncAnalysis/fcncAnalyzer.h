@@ -359,8 +359,6 @@ bool fcncAnalyzer::Notify()
     nEvents->SetAddress(&initEvents);
     nEvents->GetEntry(0);
 
-    cout << initEvents << endl;
-
     evtWeight = initEvents;
     evtCategory.reset();
 

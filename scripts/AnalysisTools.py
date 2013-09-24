@@ -101,15 +101,13 @@ class AnalysisTools():
                 if dataName in self._scaleDict[self._period]:
                     print dataName,
 
-                    nInit       = self._histFile.GetDirectory('inclusive/' + data).Get('h1_YieldByCut').GetBinContent(1)
-                    nRaw        = self._histFile.GetDirectory('inclusive/' + data).Get('h1_YieldByCutRaw').GetBinContent(6)
-                    nWeighted   = self._histFile.GetDirectory('inclusive/' + data).Get('h1_YieldByCut').GetBinContent(6)
+                    nInit       = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCut').GetBinContent(1)
+                    nRaw        = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCutRaw').GetBinContent(6)
+                    nWeighted   = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCut').GetBinContent(6)
 
                     nInitWeight = nInit - (nRaw - nWeighted)
 
-                    print dataName, self._scaleDict[self._period][dataName]
-                    self._scaleDict[self._period][dataName] = 1e3*self._scaleDict[self._period][dataName]/nInit
-                    print dataName, self._scaleDict[self._period][dataName]
+                    self._scaleDict[self._period][dataName] = 1e3*self._scaleDict[self._period][dataName]/nInitWeight
                 else:
                     print '{0} not found in scale dictionary; setting to 0'.format(dataName)
                     self._scaleDict[self._period][dataName] = 0.

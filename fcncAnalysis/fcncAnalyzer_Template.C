@@ -229,6 +229,9 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
     vstring passNames = triggerSelector->GetPassNames();
 
+    //for (unsigned i = 0; i < passNames.size(); ++i) cout << passNames[i] << endl;
+    //cout << endl;
+
     if (passNames.size() == 0) passNames.push_back("NULL");
 
 
@@ -444,22 +447,14 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
     for (unsigned i = 1; i < leptons.size(); ++i) {
         for (unsigned j = 0; j < i; ++j) {
-            if (
-                    leptons.size() == 2
-                    || (leptons.size() == 3
-                        && leptons[i].Type() == leptons[j].Type()
-                        && leptons[i].Charge() != leptons[j].Charge()
-                       )
-               ) {
-                if ((leptons[i] + leptons[j]).M() < 12)
-                    lowMassOS = true;
+            if ((leptons[i] + leptons[j]).M() < 12) lowMassOS = true;
 
-                if (isRealData && leptons[i].Type() == "muon" && leptons[j].Type() == "muon")
-                    if (CosmicMuonFilter(leptons[i], leptons[j]))
-                        isCosmics = true;
-            }
+            if (isRealData && leptons[i].Type() == "muon" && leptons[j].Type() == "muon")
+                if (CosmicMuonFilter(leptons[i], leptons[j]))
+                    isCosmics = true;
         }
     }
+
 
     if (lowMassOS || isCosmics) return kTRUE;
 
@@ -556,7 +551,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
     if (
             leptons.size() == 3 
             && zTagged
-            && (bJetsM.size() == 1 && bJetsL.size() == 2)
+            && (bJetsM.size() == 1 || bJetsL.size() == 2)
             && METLD > 0.2 
        ) {
         MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 7);
@@ -588,13 +583,13 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
 
     //!! Z-veto !!//
-    if (leptons.size() == 3
-            && zTagged
-            && fabs(trileptonMass - 90.) < 7.5
-       ) return kTRUE;
-    else if (leptons.size() == 2 
+    if (leptons.size() == 2 
             && leptons[0].Charge() == leptons[1].Charge()
             && selector->IsZCandidate(&leptons[0], &leptons[1], 10.) 
+       ) return kTRUE;
+    else if (leptons.size() == 3
+            && zTagged
+            || fabs(trileptonMass - 90.) < 7.5
             ) return kTRUE;
 
     MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 1);

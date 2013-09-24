@@ -70,6 +70,8 @@ styleDict['WWG']                = (0, r.kCyan+4, 1, 1, 'WWG')
 
 #QCD
 styleDict['QCD']                = (2, r.kOrange, 1, 1, 'QCD')
+styleDict['QCD_EM']             = (2, r.kOrange+1, 1, 1, 'QCD e#gamma')
+styleDict['QCD_20_MU']          = (2, r.kOrange-1, 1, 1, 'QCD #mu')
 
 #Alternative MC
 styleDict['PhotonJets']         = (2, r.kRed, 0, 1, 'Z+jets (data)')
@@ -145,17 +147,17 @@ scaleDict['2012']['WGStarLNu2Mu']       = 1.914
 scaleDict['2012']['WGStarLNu2Tau']      = 0.336
 scaleDict['2012']['ZJets_M-50']         = 3532.8 
 scaleDict['2012']['ZJets_M-10To50']     = 860.5
-scaleDict['2012']['ZbbToLL']            = 94.1 
+scaleDict['2012']['ZbbToLL']            = 94.1 #* 10 
 scaleDict['2012']['ZG']                 = 159.12
 
 scaleDict['2012']['ZZJets2L2Nu']        = 0.365
 scaleDict['2012']['ZZJets2L2Q']         = 1.28
 scaleDict['2012']['ZZJets4L']           = 0.0921
-scaleDict['2012']['WZJets3LNu']         = 1.086#*1.05 #<-- Check this
+scaleDict['2012']['WZJets3LNu']         = 1.086*1.15 #<-- WZ rescaled based on 3 lepton control region
 scaleDict['2012']['WZJets2L2Q']         = 5.09
 scaleDict['2012']['WWJets2L2Nu']        = 5.995
 
-scaleDict['2012']['ttbar']              = 234#*1.2  
+scaleDict['2012']['ttbar']              = 234*1.052 #<-- ttbar rescaled based on e/mu lepton control region
 scaleDict['2012']['tW']                 = 11.77
 scaleDict['2012']['tbarW']              = 11.77
 scaleDict['2012']['t_t-channel']        = 55.53
@@ -230,6 +232,7 @@ combineDict['ZZ4l']             = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2
 combineDict['ttV']              = ['ttZ', 'ttW', 'ttG']
 combineDict['Triboson']         = ['WWW', 'WWZ', 'WZZ', 'ZZZ', 'WWG']
 combineDict['QCD']              = ['QCD_20_MU', 'QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_EM', 'QCD_170-250_EM', 'QCD_250-350_EM', 'QCD_350_EM']
+combineDict['QCD_EM']           = ['QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_EM', 'QCD_170-250_EM', 'QCD_250-350_EM', 'QCD_350_EM']
 combineDict['higgs']            = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125']
 
 categoryDict = {'inclusive':'inclusive',
