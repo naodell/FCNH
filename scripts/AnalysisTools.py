@@ -97,6 +97,7 @@ class AnalysisTools():
                     nInitWeight = nInit - (nRaw - nWeighted)
 
                     self._scaleDict[self._period][data] = 1e3*self._scaleDict[self._period][data]/nInitWeight 
+
             else:
                 if dataName in self._scaleDict[self._period]:
                     print dataName,
@@ -108,6 +109,7 @@ class AnalysisTools():
                     nInitWeight = nInit - (nRaw - nWeighted)
 
                     self._scaleDict[self._period][dataName] = 1e3*self._scaleDict[self._period][dataName]/nInitWeight
+
                 else:
                     print '{0} not found in scale dictionary; setting to 0'.format(dataName)
                     self._scaleDict[self._period][dataName] = 0.
