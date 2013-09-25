@@ -2,13 +2,13 @@
 
 ### Required parameters #####
 
-dataName  = $1
-count 	  = $2
+DATANAME=$1
+COUNT=$2
 
 ### Specify addtional arguments here ####
-suffix    = $3
-selection = $4
-period    = $5
+SUFFIX=$3
+SELECTION=$4
+PERIOD=$5
 
 ### Transfer files, prepare directory ###
 source /etc/bashrc prod
@@ -20,18 +20,15 @@ scram p CMSSW CMSSW_5_3_2
 cd ./CMSSW_5_3_2/src
 cmsenv 
 
-#cd ${_CONDOR_SCRATCH_DIR}
-
 cp ../../source.tar.gz .
 tar -xzf source.tar.gz
 cd Analysis_CMS/fcncAnalysis
-cp ../../../../input_${dataName}_${count}.txt input.txt
+cp ../../../../input_${DATANAME}_${COUNT}.txt input.txt
 rm histos/*root
 
-./fcncLocal.csh $suffix $selection $period
+./fcncLocal.csh $SUFFIX $SELECTION $PERIOD
 
 ### Copy output and cleanup ###
-rename .root _${dataName}_$count.root histos/fcncHistograms*
+rename .root _${DATANAME}_$COUNT.root histos/fcncHistograms*
 
-#cp histos/fcncHistograms_*.root $outDir/.
 cp histos/fcncHistograms_*.root ${_CONDOR_SCRATCH_DIR}
