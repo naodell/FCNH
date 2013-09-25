@@ -137,6 +137,7 @@ void fcncAnalyzer::Begin(TTree* tree)
         mvaTree->Branch("lep3Pt", &lep3Pt, "lep3Pt/F");
         mvaTree->Branch("lep3Eta", &lep3Eta, "lep3Eta/F");
         mvaTree->Branch("lep3Phi", &lep3Phi, "lep3Phi/F");
+
         // Do ss selection branches //
 
     }
@@ -583,17 +584,43 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
 
     //!! Z-veto !!//
-    if (leptons.size() == 2 
+    if (
+            leptons.size() == 2 
             && leptons[0].Charge() == leptons[1].Charge()
             && selector->IsZCandidate(&leptons[0], &leptons[1], 10.) 
        ) return kTRUE;
-    else if (leptons.size() == 3
-            && zTagged
-            || fabs(trileptonMass - 90.) < 7.5
+    else if (
+            leptons.size() == 3
+            && (zTagged || (dileptonMassOS > 50 && fabs(trileptonMass - 90.) < 7.5))
             ) return kTRUE;
 
     MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 1);
     SetYields(6);
+
+
+    if (leptons.size() == 3 && doPostMVA && !doPreMVA) {
+
+        //Fill MVA ntuples
+        SetVarsMVA(leptons, bJetsM, jets);
+
+        if (doMVACut) {
+            if (doMVATree) mvaTree->Fill();
+
+            if (doMVACut) {
+                float mvaValue = mvaReader->EvaluateMVA("test");
+
+                histManager->SetFileNumber(4);
+                histManager->SetDirectory("3l_inclusive/" + suffix);
+                histManager->Fill1DHist(mvaValue, "h1_BDT", "BDT value;Entries / bin;BDT", 36, -1., 0.2);
+
+                if (mvaValue > -0.) {
+                    //MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 5);
+                    SetYields(15);
+                }
+            }
+        }
+    }
+
 
     //!! MET cut !!//
 
@@ -622,29 +649,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
     MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 3);
     SetYields(8);
-
-    if (leptons.size() == 3 && doPostMVA && !doPreMVA) {
-
-        //Fill MVA ntuples
-        SetVarsMVA(leptons, bJetsM, jets);
-
-        if (doMVACut) {
-            if (doMVATree) mvaTree->Fill();
-
-            if (doMVACut) {
-                float mvaValue = mvaReader->EvaluateMVA("test");
-
-                histManager->SetFileNumber(4);
-                histManager->SetDirectory("3l_inclusive/" + suffix);
-                histManager->Fill1DHist(mvaValue, "h1_BDT", "BDT value;Entries / bin;BDT", 36, -1., 0.2);
-
-                if (mvaValue > -0.) {
-                    //MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 5);
-                    SetYields(15);
-                }
-            }
-        }
-    }
 
     //!! Require at least one b-jet !!//
     if (bJetsM.size() == 0) return kTRUE;
@@ -1300,8 +1304,8 @@ int fcncAnalyzer::GetHistCategory(unsigned shift)
        Additionally there is OSSF and SSSF 3 lepton categories for syncing with
        the WH analysis.  
 
-16: OSSF
-17: SSSF
+        16: OSSF
+        17: SSSF
      */
 
     //unsigned lepCat     = (evtCategory.to_ulong() >> 2) & 0x3;
