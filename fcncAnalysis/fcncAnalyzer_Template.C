@@ -113,7 +113,6 @@ void fcncAnalyzer::Begin(TTree* tree)
         mvaTree->Branch("lep3Pt", &lep3Pt, "lep3Pt/F");
         mvaTree->Branch("lep3Eta", &lep3Eta, "lep3Eta/F");
         mvaTree->Branch("lep3Phi", &lep3Phi, "lep3Phi/F");
-
         // Do ss selection branches //
 
     }
@@ -534,6 +533,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
     //!! Z-veto !!//
 <<<<<<< HEAD
+<<<<<<< HEAD
     if (
             leptons.size() == 2 
             && leptons[0].Charge() == leptons[1].Charge()
@@ -551,11 +551,21 @@ bool fcncAnalyzer::Process(Long64_t entry)
             && leptons[0].Charge() == leptons[1].Charge()
             && selector->IsZCandidate(&leptons[0], &leptons[1], 10.) 
 >>>>>>> d6a0fe9542d5a9e61dfe3c7141c5e79515fdcf15
+=======
+    if (leptons.size() == 2 
+            && leptons[0].Charge() == leptons[1].Charge()
+            && selector->IsZCandidate(&leptons[0], &leptons[1], 10.) 
+       ) return kTRUE;
+    else if (leptons.size() == 3
+            && zTagged
+            || fabs(trileptonMass - 90.) < 7.5
+>>>>>>> parent of 267739a... shit might be fucked up...
             ) return kTRUE;
 
     MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 1);
     SetYields(6);
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 
     if (leptons.size() == 3 && doPostMVA && !doPreMVA) {
@@ -582,6 +592,8 @@ bool fcncAnalyzer::Process(Long64_t entry)
     }
 
 
+=======
+>>>>>>> parent of 267739a... shit might be fucked up...
     //!! MET cut !!//
 =======
     //!! MET+HT cut !!//
@@ -643,6 +655,29 @@ bool fcncAnalyzer::Process(Long64_t entry)
         }
     }
 >>>>>>> d6a0fe9542d5a9e61dfe3c7141c5e79515fdcf15
+
+    if (leptons.size() == 3 && doPostMVA && !doPreMVA) {
+
+        //Fill MVA ntuples
+        SetVarsMVA(leptons, bJetsM, jets);
+
+        if (doMVACut) {
+            if (doMVATree) mvaTree->Fill();
+
+            if (doMVACut) {
+                float mvaValue = mvaReader->EvaluateMVA("test");
+
+                histManager->SetFileNumber(4);
+                histManager->SetDirectory("3l_inclusive/" + suffix);
+                histManager->Fill1DHist(mvaValue, "h1_BDT", "BDT value;Entries / bin;BDT", 36, -1., 0.2);
+
+                if (mvaValue > -0.) {
+                    //MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 5);
+                    SetYields(15);
+                }
+            }
+        }
+    }
 
     //!! Require at least one b-jet !!//
     if (bJetsM.size() == 0) return kTRUE;
@@ -1269,8 +1304,13 @@ int fcncAnalyzer::GetHistCategory(unsigned shift)
        the WH analysis.  
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         16: OSSF
         17: SSSF
+=======
+16: OSSF
+17: SSSF
+>>>>>>> parent of 267739a... shit might be fucked up...
      */
 =======
        16: OSSF
