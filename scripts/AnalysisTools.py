@@ -89,27 +89,11 @@ class AnalysisTools():
                 print dataName, ':\t',
                 for data in self._combineDict[dataName]:
                     print data,
-
-                    nInit       = self._histFile.GetDirectory('inclusive/' + data).Get('h1_YieldByCut').GetBinContent(1)
-                    nRaw        = self._histFile.GetDirectory('inclusive/' + data).Get('h1_YieldByCutRaw').GetBinContent(6)
-                    nWeighted   = self._histFile.GetDirectory('inclusive/' + data).Get('h1_YieldByCut').GetBinContent(6)
-
-                    nInitWeight = nInit - (nRaw - nWeighted)
-
-                    self._scaleDict[self._period][data] = 1e3*self._scaleDict[self._period][data]/nInitWeight 
-
+                    self._scaleDict[self._period][data] = 1e3*self._scaleDict[self._period][data]/self._histFile.GetDirectory('inclusive/' + data).Get('h1_YieldByCut').GetBinContent(1)
             else:
                 if dataName in self._scaleDict[self._period]:
                     print dataName,
-
-                    nInit       = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCut').GetBinContent(1)
-                    nRaw        = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCutRaw').GetBinContent(6)
-                    nWeighted   = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCut').GetBinContent(6)
-
-                    nInitWeight = nInit - (nRaw - nWeighted)
-
-                    self._scaleDict[self._period][dataName] = 1e3*self._scaleDict[self._period][dataName]/nInitWeight
-
+                    self._scaleDict[self._period][dataName] = 1e3*self._scaleDict[self._period][dataName]/self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCut').GetBinContent(1)
                 else:
                     print '{0} not found in scale dictionary; setting to 0'.format(dataName)
                     self._scaleDict[self._period][dataName] = 0.

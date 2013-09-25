@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void run(Long64_t nEntries = 1e9) {
+void run(Long64_t nEntries = 1e10) {
 
     //container classes
     gROOT->LoadMacro("../src/TCPhysObject.cc+");
@@ -22,12 +22,11 @@ void run(Long64_t nEntries = 1e9) {
     gROOT->LoadMacro("../src/TCTriggerObject.cc+");
 
     //analysis plugins (selectors, utiltities, etc.)
-    gROOT->LoadMacro("../plugins/HistManager.cc+");
-    gROOT->LoadMacro("../plugins/EGammaMvaEleEstimator.cc+");
-    gROOT->LoadMacro("../plugins/rochcor2012jan22.C+");
     gROOT->LoadMacro("../plugins/WeightUtils.cc+");
     gROOT->LoadMacro("../plugins/TriggerSelector.cc+");
+    gROOT->LoadMacro("../plugins/HistManager.cc+");
     gROOT->LoadMacro("../plugins/Selector.cc+");
+    gROOT->LoadMacro("../plugins/EGammaMvaEleEstimator.cc+");
 
     TChain* fChain = new TChain("ntupleProducer/eventTree");
 

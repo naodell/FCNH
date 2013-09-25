@@ -1,22 +1,18 @@
 #include "Selector.h" 
 
-Selector::Selector() 
-{
+Selector::Selector() {
 }
 
-Selector::~Selector()
-{
+Selector::~Selector(){
     delete electronMVA;
 }
 
-Selector::Selector(const float* muPtCuts, const float* elePtCuts, const float* jetPtCuts, const float* phoPtCuts) 
-{
+Selector::Selector(const float* muPtCuts, const float* elePtCuts, const float* jetPtCuts, const float* phoPtCuts) {
 
     _muPtCuts   = muPtCuts;
     _elePtCuts  = elePtCuts;
     _jetPtCuts  = jetPtCuts;
     _vtxIndex   = 0;
-    _isRealData = false;
 
     // b-tag mc efficiencies
     TFile* f_bEff = new TFile("../data/bEff_ttbar_2012.root");
@@ -35,10 +31,7 @@ Selector::Selector(const float* muPtCuts, const float* elePtCuts, const float* j
     electronMVA = new EGammaMvaEleEstimator();
     electronMVA->initialize("BDT", EGammaMvaEleEstimator::kTrig, true, WeightsMVA);
 
-    muCorrector = new rochcor2012(229);
-
-    rnGen = new TRandom3(1337);
-
+    rnGen = new TRandom3(0);
 }
 
 void Selector::PurgeObjects()
@@ -61,16 +54,10 @@ void Selector::PurgeObjects()
         _selGenJets.clear();
 }
 
-void Selector::SetDataBit(bool isRealData)
-{
-    _isRealData = isRealData;
-}
-
 void Selector::SetRho(float rho)
 {
     _rho = rho;
 }
-
 
 vector<TVector3*> Selector::GetSelectedPVs()
 {
@@ -154,7 +141,8 @@ void Selector::PVSelector(TClonesArray* pv)
         TCPrimaryVtx* pVtx = (TCPrimaryVtx*) pv->At(i);
 
         if (
-                !pVtx->IsFake() 
+                //!pVtx->IsFake() // Removed to compare with Andrey
+                true
                 && pVtx->NDof()         > 4.
                 && fabs(pVtx->z())      <= 24.
                 && fabs(pVtx->Perp())   <= 2.
@@ -197,6 +185,7 @@ bool Selector::MuonTightID(TCMuon* muon)
     return pass;
 }
 
+
 bool Selector::MuonLooseID(TCMuon* muon)
 {
     bool pass = false;
@@ -223,29 +212,12 @@ void Selector::MuonSelector(TClonesArray* muons)
 
         thisMuon->SetType("muon");
 
-        // momentum scale corrections (Rochestor corrections)
-        TLorentzVector tmpP4 = *thisMuon;
-        float muPtErr = 1.;
-        if (_isRealData) {
-            muCorrector->momcor_data(tmpP4, (float)thisMuon->Charge(), 0, muPtErr);
-        } else {
-            muCorrector->momcor_data(tmpP4, (float)thisMuon->Charge(), 0, muPtErr);
-        }
-
-        thisMuon->SetPtEtaPhiM(tmpP4.Pt(), tmpP4.Eta(), tmpP4.Phi(), tmpP4.M());
-
-        // isolation
         float muISO = 0.;
-        muISO = (
-                thisMuon->IsoMap("pfChargedHadronPt_R04") 
-                + TMath::Max(0.0, (double)thisMuon->IsoMap("pfPhotonEt_R04") 
-                    + thisMuon->IsoMap("pfNeutralHadronEt_R04") 
-                    - TMath::Max(0.0, (double)_rho*EffectiveArea(thisMuon)))
-                )/thisMuon->Pt();
+        muISO = (thisMuon->IsoMap("pfChargedHadronPt_R04") + TMath::Max(0.0, (double)thisMuon->IsoMap("pfPhotonEt_R04") 
+                    + thisMuon->IsoMap("pfNeutralHadronEt_R04") - TMath::Max(0.0, (double)_rho*EffectiveArea(thisMuon))))/thisMuon->Pt();
 
         //cout << "(" << thisMuon->Pt() << ", " << thisMuon->Eta() << "),\t";
 
-        // identification
         if (
                 thisMuon->Pt() > _muPtCuts[0]
                 && MuonTightID(thisMuon)
@@ -255,17 +227,10 @@ void Selector::MuonSelector(TClonesArray* muons)
             if (muISO < 0.4) _selMuons["denom_v2"].push_back(*thisMuon);
             if (muISO < 0.12) _selMuons["tight"].push_back(*thisMuon);
         } else if (
-                thisMuon->Pt() > _muPtCuts[0]
-                && thisMuon->IsPF()
-                && fabs(thisMuon->Dz(_selVertices[0]))  < 1. 
-                && fabs(thisMuon->Dxy(_selVertices[0])) < 0.5
-                ) 
-            _selMuons["premva"].push_back(*thisMuon);
-        else if (
                 thisMuon->Pt() > _muPtCuts[1]  
                 && MuonLooseID(thisMuon)
-                //&& (muISO > 0.1 && thisMuon->Pt() > 20)
-                //&& (muISO < 0.15 && thisMuon->Pt() < 20)
+                && (muISO > 0.1 && thisMuon->Pt() > 20)
+                && (muISO < 0.15 && thisMuon->Pt() < 20)
                 ) 
             _selMuons["loose"].push_back(*thisMuon);
     }
@@ -296,8 +261,6 @@ bool Selector::ElectronMVA(TCElectron* electron)
             electron->IdMap("preShowerORaw"), electron->IdMap("d0"),
             electron->IdMap("ip3d"), electron->SCEta(), electron->Pt(), false);                
 
-    electron->SetIdMap("mva", mvaValue);
-
     if (fabs(electron->Eta()) < 0.8) {
         if (electron->Pt() > 20 && mvaValue > 0.94)
             pass = true;
@@ -314,6 +277,7 @@ bool Selector::ElectronMVA(TCElectron* electron)
         else if (electron->Pt() < 20 && mvaValue > 0.62)
             pass = true;
     }
+
 
     return pass;
 }
@@ -371,6 +335,7 @@ bool Selector::ElectronLooseID(TCElectron* electron)
 
 void Selector::ElectronSelector(TClonesArray* electrons) 
 {
+
     //cout << "Electrons (" << electrons->GetSize() << "): ";
 
     for (int i = 0; i <  electrons->GetSize(); ++i) {
@@ -402,18 +367,27 @@ void Selector::ElectronSelector(TClonesArray* electrons)
                         + thisElec->IsoMap("pfNeuIso_R04") - _rho*thisElec->IsoMap("EffArea_R04"))))/thisElec->Pt(); 
 
         // analysis electrons
-        //if (ElectronTightID(thisElec)) 
-
+        //if (ElectronTightID(thisElec)) {
         if (thisElec->IdMap("preSelPassV1") && ElectronMVA(thisElec)) {
-            _selElectrons["premva"].push_back(*thisElec);
+            _selElectrons["denom_v3"].push_back(*thisElec);
 
             if (eleISO < 0.15) 
                 _selElectrons["tight"].push_back(*thisElec);			
 
         } else if (
                 ElectronLooseID(thisElec)
-                //&& (thisElec->Pt() > 20 && eleISO > 0.15)
+                && (thisElec->Pt() > 20 && eleISO > 0.15)
                 ) _selElectrons["loose"].push_back(*thisElec);
+        if (
+                ElectronLooseID(thisElec) 
+           ) {
+            _selElectrons["denom_v1"].push_back(*thisElec);			
+
+            if (eleISO < 0.1) 
+                _selElectrons["denom_v2"].push_back(*thisElec);			
+            if (eleISO < 0.2) 
+                _selElectrons["denom_v4"].push_back(*thisElec);			
+        }
     }
     //cout << endl;
 }

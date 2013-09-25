@@ -22,7 +22,6 @@ float etaBins[]  = {0., 1., 1.479, 2., 2.5};
 
 // Do something about these: should just have one sort condition function
 bool P4SortCondition(const TLorentzVector& p1, const TLorentzVector& p2) {return (p1.Pt() > p2.Pt());} 
-bool BTagSortCondition(TCJet j1, TCJet j2) {return (j1.BDiscriminatorMap("CSV") > j2.BDiscriminatorMap("CSV"));} 
 
 void fakeAnalyzer::Begin(TTree* tree) 
 {
@@ -36,7 +35,7 @@ void fakeAnalyzer::Begin(TTree* tree)
 
     // Initialize utilities and selectors here //
     selector        = new Selector(muPtCut, elePtCut, jetPtCut, phoPtCut);
-    triggerSelector = new TriggerSelector("mc", "2012", *triggerNames, true);
+    triggerSelector = new TriggerSelector("fakes", "2012", *triggerNames, false);
 
     // Add single lepton triggers for fake rates //
     vstring triggers;
@@ -47,7 +46,7 @@ void fakeAnalyzer::Begin(TTree* tree)
     triggers.push_back("HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v");
     triggers.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
     triggers.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v");
-    //triggerSelector->AddTriggers(triggers);
+    triggerSelector->AddTriggers(triggers);
 
     // Random numbers! //
     //rnGenerator = new TRandom3();
@@ -63,14 +62,24 @@ void fakeAnalyzer::Begin(TTree* tree)
     histoFile->mkdir("inclusive", "inclusive");
     histoFile->GetDirectory("inclusive", "inclusive")->mkdir(suffix.c_str(), suffix.c_str());
 
+    histoFile->mkdir("ele_v1", "ele_v1");
+    histoFile->GetDirectory("ele_v1", "ele_v1")->mkdir(suffix.c_str(), suffix.c_str());
+    histoFile->mkdir("ele_v2", "ele_v2");
+    histoFile->GetDirectory("ele_v2", "ele_v2")->mkdir(suffix.c_str(), suffix.c_str());
+    histoFile->mkdir("ele_v3", "ele_v3");
+    histoFile->GetDirectory("ele_v3", "ele_v3")->mkdir(suffix.c_str(), suffix.c_str());
+    histoFile->mkdir("ele_v4", "ele_v4");
+    histoFile->GetDirectory("ele_v4", "ele_v4")->mkdir(suffix.c_str(), suffix.c_str());
+
+    histoFile->mkdir("mu_v1", "mu_v1");
+    histoFile->GetDirectory("mu_v1", "mu_v1")->mkdir(suffix.c_str(), suffix.c_str());
+    histoFile->mkdir("mu_v2", "mu_v2");
+    histoFile->GetDirectory("mu_v2", "mu_v2")->mkdir(suffix.c_str(), suffix.c_str());
+
     histManager->AddFile(histoFile);
     histManager->SetFileNumber(0);
 
     cout << endl;
-
-    for (unsigned i = 0; i < 2; ++i) {
-        eventCount[i] = 0;
-    }
 }
 
 bool fakeAnalyzer::Process(Long64_t entry)
@@ -87,6 +96,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
     ++eventCount[1];
 
     if (eventCount[1] % (int)1e4 == 0) cout << eventCount[1] << " analyzed!" << endl;
+
 
     bool triggerPass = false;
     triggerPass = triggerSelector->SelectTrigger(triggerStatus, hltPrescale);
@@ -156,6 +166,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
         cout << "\n" << endl;
     }
 
+
     //////////////////////
     // object selection //
     //////////////////////
@@ -194,20 +205,18 @@ bool fakeAnalyzer::Process(Long64_t entry)
     // Get jets
     vector<TCJet> allJets;
     vector<TCJet> jets      = selector->GetSelectedJets("tight");
-    vector<TCJet> bJetsL    = selector->GetSelectedJets("bJetsL");
-    vector<TCJet> bJetsM    = selector->GetSelectedJets("bJetsM");
+    vector<TCJet> bJets     = selector->GetSelectedJets("bJetsL");
     vector<TCJet> fwdJets   = selector->GetSelectedJets("forward");
 
     jets.insert(jets.end(), fwdJets.begin(), fwdJets.end());
     allJets.insert(allJets.end(), jets.begin(), jets.end());
-    allJets.insert(allJets.end(), bJetsM.begin(), bJetsM.end());
+    allJets.insert(allJets.end(), bJets.begin(), bJets.end());
 
     // Order collections by pt
     sort(extraLeptons.begin(), extraLeptons.end(), P4SortCondition);
     sort(allJets.begin(), allJets.end(), P4SortCondition);
     sort(jets.begin(), jets.end(), P4SortCondition);
-    sort(bJetsL.begin(), bJetsL.end(), BTagSortCondition);
-    sort(bJetsM.begin(), bJetsM.end(), BTagSortCondition);
+    sort(bJets.begin(), bJets.end(), P4SortCondition);
     sort(leptons.begin(), leptons.end(), P4SortCondition);
 
 
@@ -215,45 +224,9 @@ bool fakeAnalyzer::Process(Long64_t entry)
             "h1_leptonMult", "lepton multiplicity; N_{leptons}; Entries / bin", 6, -0.5, 5.5);
     histManager->Fill1DHist(jets.size(),
             "h1_jetMult", "jet multiplicity; N_{jets}; Entries / bin", 10, -0.5, 9.5);
-    histManager->Fill1DHist(bJetsM.size(),
+    histManager->Fill1DHist(bJets.size(),
             "h1_bJetMult", "b-jet multiplicity; N_{b-jet}; Entries / bin", 10, -0.5, 9.5);
 
-
-    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
-    //                                                //
-    // Start electron charge misassignment estimation //
-    //                                                //
-    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
-
-    if (electrons.size() == 2) {
-
-        float elePtBins[]   = {0, 20., 30., 100.};
-        float eleEtaBins[]  = {0., 1.5, 2.4};
-
-        if (
-                electrons[0].Charge() == electrons[1].Charge() 
-                && fabs((electrons[0] + electrons[1]).M() - 91.2) < 10
-           ) {
-            histManager->Fill2DHistUnevenBins(electrons[0].Pt(), electrons[0].Eta(),
-                    "h2_LeadElectronMisQIDPtVsEta", ";p_{T};#eta", 3, elePtBins, 2, eleEtaBins);
-            histManager->Fill2DHistUnevenBins(electrons[1].Pt(), electrons[1].Eta(),
-                    "h2_TrailingElectronMisQIDPtVsEta", ";p_{T};#eta", 3, elePtBins, 2, eleEtaBins);
-
-        }
-
-        if (
-                electrons[0].Charge() != electrons[1].Charge() 
-                && fabs((electrons[0] + electrons[1]).M() - 91.2) < 10
-           ) {
-            histManager->Fill2DHistUnevenBins(electrons[0].Pt(), electrons[0].Eta(),
-                    "h2_LeadElectronQIDPtVsEta", ";p_{T};#eta", 3, elePtBins, 2, eleEtaBins);
-            histManager->Fill2DHistUnevenBins(electrons[1].Pt(), electrons[1].Eta(),
-                    "h2_TrailingElectronQIDPtVsEta", ";p_{T};#eta", 3, elePtBins, 2, eleEtaBins);
-
-        }
-    }
-
-    return kTRUE;
 
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
     //                            //
@@ -267,23 +240,23 @@ bool fakeAnalyzer::Process(Long64_t entry)
     // lepton, at least one jet, and MET < 30 (20) as in HWW analysis
 
     /*bool zTag = false;
-      pair<unsigned, unsigned> lepIndex;
+    pair<unsigned, unsigned> lepIndex;
 
-      for (unsigned i = 1; i < leptons.size(); ++i) {
-      for (unsigned j = 0; j < i; ++j) {
-      if (selector->IsZCandidate(&leptons[i], &leptons[j], 15.)) {
-      zTag = true;
-      lepIndex.first  = i;
-      lepIndex.second = j;
-      }
-      }
-      }*/
+    for (unsigned i = 1; i < leptons.size(); ++i) {
+        for (unsigned j = 0; j < i; ++j) {
+            if (selector->IsZCandidate(&leptons[i], &leptons[j], 15.)) {
+                zTag = true;
+                lepIndex.first  = i;
+                lepIndex.second = j;
+            }
+        }
+    }*/
 
     if (
-            (recoMuons->GetSize() + recoElectrons->GetSize()) < 1
+            (recoMuons->GetSize() + recoElectrons->GetSize()) > 1
             || recoMET->Mod() > 20 
             || allJets.size() == 0
-       ) return kTRUE;
+            ) return kTRUE;
 
     //return kTRUE;
 
@@ -291,81 +264,100 @@ bool fakeAnalyzer::Process(Long64_t entry)
     // electrons first..
 
 
-    vector<TCElectron> eleDenom = looseElectrons; 
-    unsigned nMatched   = 0;
-    unsigned nDenom     = 0;
+    for (unsigned i = 0; i < 4; ++i) { 
 
-    for (unsigned j = 0; j < eleDenom.size(); ++j) {
+        string index = str(i+1);
+        vector<TCElectron> eleDenom = selector->GetSelectedElectrons("denom_v" + index);
+        unsigned nMatched   = 0;
+        unsigned nDenom     = 0;
 
-        if (
-                eleDenom[j].DeltaR(allJets[0]) < 1.
-                //|| eleDenom[j].DeltaR(leptons[lepIndex.first]) == 0. 
-                //|| eleDenom[j].DeltaR(leptons[lepIndex.second]) == 0.
-           ) continue;
+        // Select lead jet to mold fake pt spectrum
 
-        //if (j == 0) {
-        //    histManager->Fill1DHist((leptons[lepIndex.first] + leptons[lepIndex.second]).M(), "h1_DileptonMass", "dilepton mass;M_{ll};Entries / 2 GeV", 30, 60, 120);
-        //}
+        if (allJets[0].Pt() < 35) break;
 
-        histManager->Fill1DHistUnevenBins(eleDenom[j].Pt(), "h1_DenomPt", "electron fakeable p_{T};p_{T};Entries / 10 GeV", 9, ptBins);
-        histManager->Fill1DHistUnevenBins(fabs(eleDenom[j].Eta()), "h1_DenomEta", "electron fakeable #eta;#eta;Entries / bin", 4, etaBins);
-        histManager->Fill2DHistUnevenBins(fabs(eleDenom[j].Eta()), eleDenom[j].Pt(), "h2_DenomPtVsEta", "electron fakeable ;#eta;p_{T}", 4, etaBins, 9, ptBins);
+        histManager->SetDirectory("ele_v" + index + "/" + suffix);
 
-        ++nDenom;
+        for (unsigned j = 0; j < eleDenom.size(); ++j) {
 
-        for (unsigned k = 0; k < leptons.size(); ++k) {
+            if (
+                    eleDenom[j].DeltaR(allJets[0]) < 1.
+                    //|| eleDenom[j].DeltaR(leptons[lepIndex.first]) == 0. 
+                    //|| eleDenom[j].DeltaR(leptons[lepIndex.second]) == 0.
+                    ) continue;
 
-            if (leptons[k].Type() != "electron" || eleDenom[j].DeltaR(electrons[k]) != 0.) continue;
+            //if (j == 0) {
+            //    histManager->Fill1DHist((leptons[lepIndex.first] + leptons[lepIndex.second]).M(), "h1_DileptonMass", "dilepton mass;M_{ll};Entries / 2 GeV", 30, 60, 120);
+            //}
 
-            histManager->Fill1DHistUnevenBins(eleDenom[j].Pt(), "h1_NumerPt", "electron fakeable p_{T};p_{T};Entries / 10 GeV", 9, ptBins);
-            histManager->Fill1DHistUnevenBins(fabs(eleDenom[j].Eta()), "h1_NumerEta", "electron fakeable #eta;#eta;Entries / bin", 4, etaBins);
-            histManager->Fill2DHistUnevenBins(fabs(eleDenom[j].Eta()), eleDenom[j].Pt(), "h2_NumerPtVsEta", "electron fakeable;#eta;p_{T}", 4, etaBins, 9, ptBins);
+            histManager->Fill1DHistUnevenBins(eleDenom[j].Pt(), "h1_DenomPt", "electron fakeable p_{T};p_{T};Entries / 10 GeV", 9, ptBins);
+            histManager->Fill1DHistUnevenBins(fabs(eleDenom[j].Eta()), "h1_DenomEta", "electron fakeable #eta;#eta;Entries / bin", 4, etaBins);
+            histManager->Fill2DHistUnevenBins(fabs(eleDenom[j].Eta()), eleDenom[j].Pt(), "h2_DenomPtVsEta", "electron fakeable ;#eta;p_{T}", 4, etaBins, 9, ptBins);
 
-            ++nMatched; 
+            ++nDenom;
+
+            for (unsigned k = 0; k < leptons.size(); ++k) {
+
+                if (leptons[k].Type() != "electron" || eleDenom[j].DeltaR(leptons[k]) != 0.) continue;
+
+                histManager->Fill1DHistUnevenBins(eleDenom[j].Pt(), "h1_NumerPt", "electron fakeable p_{T};p_{T};Entries / 10 GeV", 9, ptBins);
+                histManager->Fill1DHistUnevenBins(fabs(eleDenom[j].Eta()), "h1_NumerEta", "electron fakeable #eta;#eta;Entries / bin", 4, etaBins);
+                histManager->Fill2DHistUnevenBins(fabs(eleDenom[j].Eta()), eleDenom[j].Pt(), "h2_NumerPtVsEta", "electron fakeable;#eta;p_{T}", 4, etaBins, 9, ptBins);
+
+                ++nMatched; 
+            }
+
+            histManager->Fill1DHist(nDenom, "h1_DenomMult", "electron denominator;N_{denom};Entries / bin", 4, -0.5, 3.5);
         }
-
-        histManager->Fill1DHist(nDenom, "h1_DenomMult", "electron denominator;N_{denom};Entries / bin", 4, -0.5, 3.5);
     }
 
 
     // Now the muons...
 
-    vector<TCMuon> muDenom = looseMuons;
-    nMatched   = 0;
-    nDenom     = 0;
+    for (unsigned i = 0; i < 2; ++i) { 
 
-    for (unsigned j = 0; j < muDenom.size(); ++j) {
+        // Apply jet conditions based on HWW analysis
+        // Might not be necessary, but...
+        if (allJets[0].Pt() < 15) break;
 
-        if (
-                muDenom[j].DeltaR(allJets[0]) < 1.
-                //|| muDenom[j].DeltaR(leptons[lepIndex.first]) == 0. 
-                //|| muDenom[j].DeltaR(leptons[lepIndex.second]) == 0.
-           ) continue;
+        string index = str(i+1);
+        vector<TCMuon> muDenom = selector->GetSelectedMuons("denom_v" + index);
+        unsigned nMatched   = 0;
+        unsigned nDenom     = 0;
 
-        //if (j == 0) {
-        //    histManager->Fill1DHist((leptons[lepIndex.first] + leptons[lepIndex.second]).M(), "h1_DileptonMass", "dilepton mass;M_{ll};Entries / 2 GeV", 30, 60, 120);
-        //}
+        histManager->SetDirectory("mu_v" + index + "/" + suffix);
 
-        histManager->Fill1DHistUnevenBins(muDenom[j].Pt(), "h1_MuDenomPt", "muon fakeable p_{T};p_{T};Entries / 10 GeV", 9, ptBins);
-        histManager->Fill1DHistUnevenBins(fabs(muDenom[j].Eta()), "h1_MuDenomEta", "muon fakeable #eta;#eta;Entries / bin", 4, etaBins);
-        histManager->Fill2DHistUnevenBins(fabs(muDenom[j].Eta()), muDenom[j].Pt(), "h2_MuDenomPtVsEta", "muon fakeable ;#eta;p_{T}", 4, etaBins, 9, ptBins);
+        for (unsigned j = 0; j < muDenom.size(); ++j) {
 
-        ++nDenom;
+            if (
+                    muDenom[j].DeltaR(allJets[0]) < 1.
+                    //|| muDenom[j].DeltaR(leptons[lepIndex.first]) == 0. 
+                    //|| muDenom[j].DeltaR(leptons[lepIndex.second]) == 0.
+                    ) continue;
 
-        for (unsigned k = 0; k < leptons.size(); ++k) {
+            //if (j == 0) {
+            //    histManager->Fill1DHist((leptons[lepIndex.first] + leptons[lepIndex.second]).M(), "h1_DileptonMass", "dilepton mass;M_{ll};Entries / 2 GeV", 30, 60, 120);
+            //}
 
-            if (leptons[k].Type() != "muon" || muDenom[j].DeltaR(leptons[k]) != 0.) continue;
+            histManager->Fill1DHistUnevenBins(muDenom[j].Pt(), "h1_DenomPt", "muon fakeable p_{T};p_{T};Entries / 10 GeV", 9, ptBins);
+            histManager->Fill1DHistUnevenBins(fabs(muDenom[j].Eta()), "h1_DenomEta", "muon fakeable #eta;#eta;Entries / bin", 4, etaBins);
+            histManager->Fill2DHistUnevenBins(fabs(muDenom[j].Eta()), muDenom[j].Pt(), "h2_DenomPtVsEta", "muon fakeable ;#eta;p_{T}", 4, etaBins, 9, ptBins);
 
-            histManager->Fill1DHistUnevenBins(muDenom[j].Pt(), "h1_MuNumerPt", "muon fakeable p_{T};p_{T};Entries / 10 GeV", 9, ptBins);
-            histManager->Fill1DHistUnevenBins(fabs(muDenom[j].Eta()), "h1_MuNumerEta", "muon fakeable #eta;#eta;Entries / bin", 4, etaBins);
-            histManager->Fill2DHistUnevenBins(fabs(muDenom[j].Eta()), muDenom[j].Pt(), "h2_MuNumerPtVsEta", "muon fakeable ;#eta;p_{T}", 4, etaBins, 9, ptBins);
+            ++nDenom;
 
-            ++nMatched; 
+            for (unsigned k = 0; k < leptons.size(); ++k) {
+
+                if (leptons[k].Type() != "muon" || muDenom[j].DeltaR(leptons[k]) != 0.) continue;
+
+                histManager->Fill1DHistUnevenBins(muDenom[j].Pt(), "h1_NumerPt", "muon fakeable p_{T};p_{T};Entries / 10 GeV", 9, ptBins);
+                histManager->Fill1DHistUnevenBins(fabs(muDenom[j].Eta()), "h1_NumerEta", "muon fakeable #eta;#eta;Entries / bin", 4, etaBins);
+                histManager->Fill2DHistUnevenBins(fabs(muDenom[j].Eta()), muDenom[j].Pt(), "h2_NumerPtVsEta", "muon fakeable ;#eta;p_{T}", 4, etaBins, 9, ptBins);
+
+                ++nMatched; 
+            }
+
+            histManager->Fill1DHist(nDenom, "h1_DenomMult", "muon denominator;N_{denom};Entries / bin", 4, -0.5, 3.5);
         }
-
-        histManager->Fill1DHist(nDenom, "h1_MuDenomMult", "muon denominator;N_{denom};Entries / bin", 4, -0.5, 3.5);
     }
-
     return kTRUE;
 }
 

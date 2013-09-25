@@ -76,7 +76,7 @@ const string categoryNames[] = {
     "3l_mumumu",
 
     "3l_SSSF",
-    "3l_OSSF",
+    "3l_OSSF" 
 
     //"ss_endcap",
     //"ss_mixed",
@@ -90,8 +90,8 @@ const string categoryNames[] = {
     //"3l_barrel",
 };
 
-const unsigned short N_CUTS = 9;
-const string cutNames[] = {"preselection", "Z veto",  "MET selection", "jet selection", "BDT", "WZ_CR", "ttbar_CR", "ttZ_CR", "fakes_CR"};
+const unsigned short N_CUTS = 7;
+const string cutNames[] = {"preselection", "Z veto",  "MET selection", "jet selection", "BDT", "WZ_CR", "ttbar_CR"}; //, "ZZ4l_CR", "Z4l_CR"};
 
 typedef vector<TCPhysObject> vObj;
 
@@ -107,14 +107,13 @@ class fcncAnalyzer : public TSelector {
         TRandom3* rnGenerator;
 
         // Utilities and selectors
-        WeightUtils     *weighter;
-        HistManager     *histManager;
-        Selector        *selector;
+        WeightUtils *weighter;
+        HistManager *histManager;
+        Selector    *selector;
         TriggerSelector *triggerSelector;
 
         //Event variables
         bool zTagged;
-        bool ossfTagged;
 
         TLorentzVector dileptonP4;
         TLorentzVector lep1P4, lep2P4, lep3P4; // If event is zTagged, lep1 and lep2 are associated to the z
@@ -136,20 +135,9 @@ class fcncAnalyzer : public TSelector {
         UInt_t      chargeCat;
         Float_t     evtWeight;
 
-        // trees for lepton mva
-        TTree*  muTree;
-        TTree*  eleTree;
-
-        Float_t sip3d;
-        Float_t chPFIso, neuPFIso;
-        Float_t drLepJet, ptRatioLepJet, btagLepJet;
-        Float_t dxy, dz; // muon specific
-        Float_t mva; // electron specific
-        Int_t   missHits; 
-
-
         // Simple ntuples for MVA
         TTree*      mvaTree;
+        TTree*      leptonTree;
 
         Float_t     dileptonMassOS;
         Float_t     trileptonMass;
@@ -159,6 +147,9 @@ class fcncAnalyzer : public TSelector {
         Float_t     lep1Eta, lep2Eta, lep3Eta;
         Float_t     lep1Phi, lep2Phi, lep3Phi;
         Float_t     bJetPt, bJetEta, bJetPhi;
+
+        // Lepton MVA tree
+        TTree*      lepTree;
 
         // MVA reader and modified input variables
         TMVA::Reader* mvaReader;
@@ -258,7 +249,6 @@ class fcncAnalyzer : public TSelector {
 
         // Plot methods
         virtual void    MakePlots(vObj, vector<TCJet>, vector<TCJet>, TCMET, TVector3, unsigned);
-        virtual void    Make4lPlots(vObj, TCMET, vector<TCJet>, vector<TCJet>);
         virtual void    LeptonPlots(vObj, TCMET, vector<TCJet>, vector<TCJet>, TVector3);
         virtual void    JetPlots(vector<TCJet>, vector<TCJet>);
         virtual void    MetPlots(TCMET, vObj);
@@ -268,7 +258,6 @@ class fcncAnalyzer : public TSelector {
         // Set methods
         virtual void    SetEventCategory(vObj);
         virtual void    SetVarsMVA(vObj, vector<TCJet>, vector<TCJet>);
-        virtual void    FillLepMVA(vector<TCMuon>, vector<TCElectron>, vector<TCJet>, TVector3);
         virtual void    SetEventVariables(vObj, vector<TCJet>, vector<TCJet>, TCMET);
         virtual void    SetYields(unsigned);
         virtual int     GetHistCategory(unsigned);
