@@ -1,18 +1,22 @@
-#!/bin/csh
+#!/bin/sh
 
 ### Required parameters #####
 
-set dataName  = $1
-set count     = $2
+dataName  = $1
+count 	  = $2
 
 ### Specify addtional arguments here ####
-set suffix    = $3
-set selection = $4
-set period    = $5
+suffix    = $3
+selection = $4
+period    = $5
 
 ### Transfer files, prepare directory ###
-source /uscmst1/prod/sw/cms/cshrc prod
-scram pro CMSSW CMSSW_5_3_2
+source /etc/bashrc prod
+export OSG_APP=/software/tier3/osg
+export SCRAM_ARCH=slc5_amd64_gcc462
+source /software/tier3/osg/cmsset_default.sh
+
+scram p CMSSW CMSSW_5_3_2
 cd ./CMSSW_5_3_2/src
 cmsenv 
 
@@ -23,7 +27,6 @@ tar -xzf source.tar.gz
 cd Analysis_CMS/fcncAnalysis
 cp ../../../../input_${dataName}_${count}.txt input.txt
 rm histos/*root
-
 
 ./fcncLocal.csh $suffix $selection $period
 
