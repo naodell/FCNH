@@ -68,6 +68,7 @@ samples['3l'].append('Triboson')
 samples['3l'].append('ttV')
 samples['3l'].append('WZJets3LNu')
 samples['3l'].append('ZZ4l')
+#samples['3l'].append('WW')
 samples['3l'].append('top')
 samples['3l'].append('VJets')
 #samples['3l'].append('ZGstar')
@@ -80,18 +81,17 @@ samples['ss'].append('higgs')
 samples['ss'].append('ttV')
 samples['ss'].append('top')
 samples['ss'].append('Diboson')
-#samples['ss'].append('QCD')
-samples['ss'].append('QCD_EM')
-samples['ss'].append('QCD_20_MU')
+samples['ss'].append('QCD')
+#samples['ss'].append('QCD_EM')
+#samples['ss'].append('QCD_20_MU')
 samples['ss'].append('VJets')
-samples['ss'].append('ZbbToLL')
-samples['ss'].append('WbbToLNu')
+#samples['ss'].extend(['ZbbToLL', 'WbbToLNu'])
 
 samples['os'].extend(['Diboson', 'QCD', 'top', 'VJets'])
 
 samples['WZ'].extend(['WW/ZZ', 'top', 'VJets', 'WZJets3LNu'])
 samples['ttbar'].extend(['single top', 'VJets', 'ttbar'])
-samples['ttZ'].extend(['top', 'VJets', 'WZJets3LNu', 'ttW', 'ttZ'])
+samples['ttZ'].extend(['top', 'VJets', 'WZJets3LNu', 'ttW', 'ttG', 'ttZ'])
 
 p_plot = []
 
@@ -113,11 +113,11 @@ if doPlots:
 
     plotter.add_datasets(samples['inclusive'])
     plotter._overlayList.extend(['DATA'])
-    #plotter._overlayList.extend(['FCNH'])
+    plotter._overlayList.extend(['FCNH'])
 
-    #plotter.get_scale_factors(['FCNH'])
+    plotter.get_scale_factors(['FCNH'])
 
-    plotter.get_scale_factors()
+    #plotter.get_scale_factors()
 
     ### VARIABLES ###
     ### First specify the directories in which your
@@ -219,7 +219,7 @@ if doPlots:
 
         plotter_3l = copy.deepcopy(plotter)
         plotter_3l.add_datasets(samples['3l'], Clear=True)
-        plotter_3l._overlayList = ['DATA']
+        plotter_3l._overlayList = ['DATA', 'FCNH']
 
         for i, cut in enumerate(cutList):
             inFile  = 'fcncAnalysis/combined_histos/' + selection + '_cut' + str(i+1) + '_' + period + batch + '.root'
@@ -238,7 +238,7 @@ if doPlots:
     if doSS:
         ss_plotter = copy.deepcopy(plotter)
         ss_plotter.add_datasets(samples['ss'], Clear=True)
-        ss_plotter._overlayList = ['DATA']
+        ss_plotter._overlayList = ['DATA', 'FCNH']
 
         for i, cut in enumerate(cutList):
             inFile  = 'fcncAnalysis/combined_histos/' + selection + '_cut' + str(i+1) + '_' + period + batch + '.root'
@@ -344,14 +344,14 @@ if doYields:
 
     yieldTable.add_datasets(samples['inclusive'], Clear = True)
     if not doPlots:
-        yieldTable.get_scale_factors()
-        #yieldTable.get_scale_factors(['FCNH'])
+        #yieldTable.get_scale_factors()
+        yieldTable.get_scale_factors(['FCNH'])
 
     if do3l:
-        yieldTable._columnList  = samples['3l'] + ['BG', 'DATA']#, 'FCNH', 'Significance'] 
+        yieldTable._columnList  = samples['3l'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
         yieldTable.add_datasets(samples['3l'], Clear = True)
-        #yieldTable.add_datasets('FCNH')
+        yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
 
         yieldTable._rowList = ['.', '.', '.', '.', '.','3 lepton', 'Z removal', 'MET', 'HT', 'b-jet']
@@ -362,10 +362,10 @@ if doYields:
             yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 1)
 
     if doSS:
-        yieldTable._columnList  = samples['ss'] + ['BG', 'DATA']#, 'FCNH', 'Significance'] 
+        yieldTable._columnList  = samples['ss'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
         yieldTable.add_datasets(samples['ss'], Clear = True)
-        #yieldTable.add_datasets('FCNH')
+        yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
 
         yieldTable._rowList = ['.', '.', '.', '.', '.','ss lepton', '.', 'MET', 'HT', 'b-jet']

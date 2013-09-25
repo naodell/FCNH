@@ -17,8 +17,8 @@ const bool      doGenPrint  = false;
 const bool      doPreMVA    = false;
 const bool      doPostMVA   = false;
 const bool      doMVACut    = false;
-const bool      doMVATree   = false;
-const bool      doLepTree   = true;
+const bool      doMVATree   = true;
+const bool      doLepTree   = false;
 
 
 /////////////////
@@ -27,8 +27,8 @@ const bool      doLepTree   = true;
 
 
 const float   jetPtCut[]        = {30., 15.};
-const float   muPtCut[]         = {10., 3.};
-const float   elePtCut[]        = {10., 10.};
+const float   muPtCut[]         = {5., 3.};
+const float   elePtCut[]        = {7., 7.};
 const float   phoPtCut[]        = {10., 10.};
 const float   leptonPtCut[]     = {20., 10.};
 const float   metCut[]          = {60., 50.};
