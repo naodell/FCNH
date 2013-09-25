@@ -391,6 +391,20 @@ if doYields:
         yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 6)
 
 
+    ### Special case for ZZ->4l control region ###
+    yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut1_{2}{3}.root'.format(selection, i+5, period, batch))
+    yieldTable._columnList  = ['ZZ'] + ['BG', 'DATA']
+
+    yieldTable.add_datasets(samples[CR[3:]], Clear = True)
+    yieldTable.add_datasets('DATA')
+
+    yieldTable._rowList = 7*['.'] + ['ZZ\rightarrow 4\ell']
+
+    yieldTable._category = 'inclusive' 
+    histDict = yieldTable.get_hist_dict('YieldByCut')
+    yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 6)
+
+
     tableFile.close()
 
     subprocess.call('pdflatex -output-dir=yields yields/yields.tex', shell = True)
