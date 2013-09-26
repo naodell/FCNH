@@ -28,6 +28,6 @@ for sample in sampleList[1:]:
         if dataset == '' : continue
 
         print 'Transferring file {0}...'.format(i+1, len(files))
-        os.system('srmcp -num_streams=10 -2 srm://cmssrm.fnal.gov:8443/srm/managerv2?SFN={0} file:///{1}/{2}/'.format(dataset, outPath, sample))
+        os.system('srmcp -2 srm://cmssrm.fnal.gov:8443/srm/managerv2?SFN={0} file:///{1}/{2}/'.format(dataset, outPath, sample))
 
     #os.system('srmcp -2 srm://cmssrm.fnal.gov:8443/srm/managerv2?SFN=/11/store/user/naodell/nuTuples_v7_4/{0}/ file:////tthome/naodell/storage/data/nuTuples_v7_4/{0}/. -recursive'.format(sample))
