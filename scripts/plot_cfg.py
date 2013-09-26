@@ -390,6 +390,15 @@ if doYields:
         histDict = yieldTable.get_hist_dict('YieldByCut')
         yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 6)
 
+    ### Special case for ZZ->4l control region ###
+    yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut1_{1}{2}.root'.format(selection, period, batch))
+    yieldTable.add_datasets(['ZZ', 'DATA'], Clear = True)
+    yieldTable._columnList  = ['ZZ'] + ['BG', 'DATA']
+    yieldTable._rowList = 7*['.'] + ['ZZ CR']
+
+    yieldTable._category = 'inclusive'
+    histDict = yieldTable.get_hist_dict('YieldByCut')
+    yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 6)
 
     ### Special case for ZZ->4l control region ###
     yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut1_{2}{3}.root'.format(selection, i+5, period, batch))
