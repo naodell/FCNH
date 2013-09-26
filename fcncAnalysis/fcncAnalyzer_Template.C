@@ -536,6 +536,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     if (
             leptons.size() == 2 
             && leptons[0].Charge() == leptons[1].Charge()
@@ -580,11 +581,21 @@ bool fcncAnalyzer::Process(Long64_t entry)
             && zTagged
             || fabs(trileptonMass - 90.) < 7.5
 >>>>>>> parent of 267739a... shit might be fucked up...
+=======
+    if (leptons.size() == 2 
+            && leptons[0].Charge() == leptons[1].Charge()
+            && selector->IsZCandidate(&leptons[0], &leptons[1], 10.) 
+       ) return kTRUE;
+    else if (leptons.size() == 3
+            && zTagged
+            || fabs(trileptonMass - 90.) < 7.5
+>>>>>>> parent of 267739a... shit might be fucked up...
             ) return kTRUE;
 
     MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 1);
     SetYields(6);
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -614,6 +625,8 @@ bool fcncAnalyzer::Process(Long64_t entry)
     }
 
 
+=======
+>>>>>>> parent of 267739a... shit might be fucked up...
 =======
 >>>>>>> parent of 267739a... shit might be fucked up...
 =======
@@ -681,6 +694,29 @@ bool fcncAnalyzer::Process(Long64_t entry)
         }
     }
 >>>>>>> d6a0fe9542d5a9e61dfe3c7141c5e79515fdcf15
+
+    if (leptons.size() == 3 && doPostMVA && !doPreMVA) {
+
+        //Fill MVA ntuples
+        SetVarsMVA(leptons, bJetsM, jets);
+
+        if (doMVACut) {
+            if (doMVATree) mvaTree->Fill();
+
+            if (doMVACut) {
+                float mvaValue = mvaReader->EvaluateMVA("test");
+
+                histManager->SetFileNumber(4);
+                histManager->SetDirectory("3l_inclusive/" + suffix);
+                histManager->Fill1DHist(mvaValue, "h1_BDT", "BDT value;Entries / bin;BDT", 36, -1., 0.2);
+
+                if (mvaValue > -0.) {
+                    //MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 5);
+                    SetYields(15);
+                }
+            }
+        }
+    }
 
     if (leptons.size() == 3 && doPostMVA && !doPreMVA) {
 
@@ -1379,8 +1415,13 @@ int fcncAnalyzer::GetHistCategory(unsigned shift)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         16: OSSF
         17: SSSF
+=======
+16: OSSF
+17: SSSF
+>>>>>>> parent of 267739a... shit might be fucked up...
 =======
 16: OSSF
 17: SSSF
