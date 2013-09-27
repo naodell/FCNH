@@ -404,3 +404,4 @@ if doYields:
 
     subprocess.call('pdflatex -output-dir=yields yields/yields.tex', shell = True)
     subprocess.call('cp yields/yields.pdf plots/{0}/{1}_{2}/.'.format(currentDate, selection, suffix), shell = True)
+    subprocess.call('cp yields/.yields_tmp.tex plots/{0}/{1}_{2}/yields.tex'.format(currentDate, selection, suffix), shell = True)
