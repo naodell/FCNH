@@ -148,7 +148,7 @@ class TableMaker(AnalysisTools):
                 elif column == 'Significance':
                     significance    = totalSig/sqrt(totalBG+totalSig)
                     significanceErr = pow((totalSig + totalBG), -3/2)*sqrt(pow((totalSig + totalBG),2)*sigErr2 + pow(totalSig,2)*bgErr2)
-                    self._outFile.write('{0} {1} '.format(delimiter, significance*100))
+                    self._outFile.write('{0} {1:.2f} '.format(delimiter, significance))
 
                 else:
                     self._outFile.write(pStatement.format(value, error, eff*100, delimiter))

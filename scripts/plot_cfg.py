@@ -30,7 +30,7 @@ cutList.extend(['2_Z_veto', '3_MET', '4_HT', '5_bjet'])
 crList      = ['CR_WZ', 'CR_ttbar', 'CR_ttZ']#, 'CR_fakes']
 
 period      = '2012'
-LUMIDATA    = 19.7 
+LUMIDATA    = 19.712 
 doLog       = True
 
 doPlots     = True
@@ -52,7 +52,16 @@ cat3l.extend(['3l_OSSF', '3l_SSSF'])
 cat3l.extend(['3l_eee', '3l_eemu', '3l_emumu', '3l_mumumu'])
 
 ### Samples to be included in stacks ###
-samples     = {'inclusive':[], '3l':[], 'ss':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[], 'fakes':[]}
+samples     = {'all':[], 'inclusive':[], '3l':[], 'ss':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[], 'fakes':[]}
+
+samples['all'].append('higgs')
+samples['all'].append('Triboson')
+samples['all'].append('ttV')
+samples['all'].append('Diboson')
+samples['all'].append('top')
+samples['all'].append('VJets')
+samples['all'].append('QCD')
+samples['all'].extend(['ZbbToLL', 'WbbToLNu']) #, 'ZGstar'])
 
 samples['inclusive'].append('higgs')
 samples['inclusive'].append('Triboson')
@@ -60,14 +69,12 @@ samples['inclusive'].append('ttV')
 samples['inclusive'].append('Diboson')
 samples['inclusive'].append('top')
 samples['inclusive'].append('VJets')
-samples['inclusive'].append('QCD')
-samples['inclusive'].extend(['ZbbToLL', 'WbbToLNu']) #, 'ZGstar'])
 
 samples['3l'].append('higgs')
 samples['3l'].append('Triboson')
 samples['3l'].append('ttV')
-samples['3l'].append('WZJets3LNu')
 samples['3l'].append('ZZ4l')
+samples['3l'].append('WZJets3LNu')
 #samples['3l'].append('WW')
 samples['3l'].append('top')
 samples['3l'].append('VJets')
@@ -87,7 +94,7 @@ samples['ss'].append('QCD')
 samples['ss'].append('VJets')
 #samples['ss'].extend(['ZbbToLL', 'WbbToLNu'])
 
-samples['os'].extend(['Diboson', 'QCD', 'top', 'VJets'])
+samples['os'].extend(['Diboson', 'top', 'VJets'])
 
 samples['WZ'].extend(['WW/ZZ', 'top', 'VJets', 'WZJets3LNu'])
 samples['ttbar'].extend(['single top', 'VJets', 'ttbar'])
@@ -111,7 +118,7 @@ if doPlots:
     ### Specify the datasets you wish to stack 
     ### and overlay accordingly. 
 
-    plotter.add_datasets(samples['inclusive'])
+    plotter.add_datasets(samples['all'])
     plotter._overlayList.extend(['DATA'])
     plotter._overlayList.extend(['FCNH'])
 
@@ -200,7 +207,7 @@ if doPlots:
     ### inclusive ###
 
     inclusive_plotter = copy.deepcopy(plotter)
-    inclusive_plotter.add_datasets(samples['3l'], Clear=True)
+    inclusive_plotter.add_datasets(samples['inclusive'], Clear=True)
     inclusive_plotter._overlayList = ['DATA'] # overlaySamples
 
     for i, cut in enumerate(cutList):
@@ -210,8 +217,8 @@ if doPlots:
         else:
             outFile = 'plots/' + currentDate + '/' + selection + '_' + suffix + '/linear/' + cut
 
-        plotter.make_save_path(outFile, clean=True)
-        p_plot.append(Process(name = cut[2:] + '/inclusive', target = plotter_wrapper, args=(plotter, 'inclusive', inFile, outFile, do1D, do2D, doLog)))
+        inclusive_plotter.make_save_path(outFile, clean=True)
+        p_plot.append(Process(name = cut[2:] + '/inclusive', target = plotter_wrapper, args=(inclusive_plotter, 'inclusive', inFile, outFile, do1D, do2D, doLog)))
 
 
     ### 3l selection ###
@@ -348,7 +355,8 @@ if doYields:
         yieldTable.get_scale_factors(['FCNH'])
 
     if do3l:
-        yieldTable._columnList  = samples['3l'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
+        #yieldTable._columnList  = samples['3l'] + ['BG', 'DATA', 'FCNH', 'Significance'] 
+        yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
         yieldTable.add_datasets(samples['3l'], Clear = True)
         yieldTable.add_datasets('FCNH')
@@ -359,10 +367,11 @@ if doYields:
         for category in cat3l:
             yieldTable._category = category
             histDict = yieldTable.get_hist_dict('YieldByCut')
-            yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 1)
+            yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
 
     if doSS:
-        yieldTable._columnList  = samples['ss'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
+        #yieldTable._columnList  = samples['ss'] + ['BG', 'DATA', 'FCNH', 'Significance'] 
+        yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
         yieldTable.add_datasets(samples['ss'], Clear = True)
         yieldTable.add_datasets('FCNH')
@@ -373,7 +382,7 @@ if doYields:
         for category in catSS:
             yieldTable._category = category
             histDict = yieldTable.get_hist_dict('YieldByCut')
-            yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 1)
+            yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
 
     crCats = {'CR_WZ':'3l_inclusive', 'CR_ttbar':'os_emu', 'CR_ttZ':'3l_inclusive'}
     for i,CR in enumerate(crList):
@@ -392,29 +401,16 @@ if doYields:
 
     ### Special case for ZZ->4l control region ###
     yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut1_{1}{2}.root'.format(selection, period, batch))
-    yieldTable.add_datasets(['ZZ', 'DATA'], Clear = True)
-    yieldTable._columnList  = ['ZZ'] + ['BG', 'DATA']
-    yieldTable._rowList = 7*['.'] + ['ZZ CR']
+    yieldTable.add_datasets(['ZZ4l', 'DATA'], Clear = True)
+    yieldTable._columnList  = ['ZZ4l'] + ['BG', 'DATA']
+    yieldTable._rowList = 7*['.'] + ['ZZ4l']
 
     yieldTable._category = 'inclusive'
     histDict = yieldTable.get_hist_dict('YieldByCut')
     yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 6)
 
-    ### Special case for ZZ->4l control region ###
-    yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut1_{2}{3}.root'.format(selection, i+5, period, batch))
-    yieldTable._columnList  = ['ZZ'] + ['BG', 'DATA']
-
-    yieldTable.add_datasets(samples[CR[3:]], Clear = True)
-    yieldTable.add_datasets('DATA')
-
-    yieldTable._rowList = 7*['.'] + ['ZZ\rightarrow 4\ell']
-
-    yieldTable._category = 'inclusive' 
-    histDict = yieldTable.get_hist_dict('YieldByCut')
-    yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 6)
-
-
     tableFile.close()
 
     subprocess.call('pdflatex -output-dir=yields yields/yields.tex', shell = True)
     subprocess.call('cp yields/yields.pdf plots/{0}/{1}_{2}/.'.format(currentDate, selection, suffix), shell = True)
+    subprocess.call('cp yields/.yields_tmp.tex plots/{0}/{1}_{2}/yields.tex'.format(currentDate, selection, suffix), shell = True)
