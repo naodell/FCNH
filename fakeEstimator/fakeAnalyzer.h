@@ -34,17 +34,17 @@
 #include "TCanvas.h"
 
 // object definitions 
-#include "../src/TCPhysObject.h"
-#include "../src/TCJet.h"
-#include "../src/TCMET.h"
-#include "../src/TCElectron.h"
-#include "../src/TCMuon.h"
-#include "../src/TCTau.h"
-#include "../src/TCPhoton.h"
-#include "../src/TCGenJet.h"
-#include "../src/TCGenParticle.h"
-#include "../src/TCPrimaryVtx.h"
-#include "../src/TCTriggerObject.h"
+#include "../interface/TCPhysObject.h"
+#include "../interface/TCJet.h"
+#include "../interface/TCMET.h"
+#include "../interface/TCElectron.h"
+#include "../interface/TCMuon.h"
+#include "../interface/TCTau.h"
+#include "../interface/TCPhoton.h"
+#include "../interface/TCGenJet.h"
+#include "../interface/TCGenParticle.h"
+#include "../interface/TCPrimaryVtx.h"
+#include "../interface/TCTriggerObject.h"
 
 // plugins
 #include "../plugins/Selector.h"
@@ -191,19 +191,16 @@ void fakeAnalyzer::Init(TTree *tree)
     fChain->SetMakeClass(1);
 
     fChain->SetBranchAddress("recoJets", &recoJets, &b_recoJets);
-    //fChain->SetBranchAddress("recoJPT", &recoJPT, &b_recoJPT);
     fChain->SetBranchAddress("recoElectrons", &recoElectrons, &b_recoElectrons);
     fChain->SetBranchAddress("recoMuons", &recoMuons, &b_recoMuons);
-    fChain->SetBranchAddress("recoTaus", &recoTaus, &b_recoTaus);
     fChain->SetBranchAddress("recoPhotons", &recoPhotons, &b_recoPhotons);
     fChain->SetBranchAddress("recoMET", &recoMET, &b_recoMET);
-    //fChain->SetBranchAddress("recoMETNoPU", &recoMETNoPU, &b_recoMETNoPU);
     fChain->SetBranchAddress("triggerObjects", &triggerObjects, &b_triggerObjects);
     fChain->SetBranchAddress("genJets", &genJets, &b_genJets);
     fChain->SetBranchAddress("genParticles", &genParticles, &b_genParticles);
-
     fChain->SetBranchAddress("primaryVtx", &primaryVtx, &b_primaryVtx);
-    fChain->SetBranchAddress("beamSpot", &beamSpot, &b_beamSpot);
+
+    //fChain->SetBranchAddress("beamSpot", &beamSpot, &b_beamSpot);
     fChain->SetBranchAddress("nPUVertices", &nPUVertices, &b_nPUVertices);
     fChain->SetBranchAddress("nPUVerticesTrue", &nPUVerticesTrue, &b_nPUVerticesTrue);
     fChain->SetBranchAddress("isRealData", &isRealData, &b_isRealData);

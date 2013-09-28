@@ -340,7 +340,7 @@ class PlotProducer(AnalysisTools):
 
                 if logScale:
                     stacks[var].SetMaximum(max(stacks[var].GetMaximum(), hists[var][0][0].GetMaximum())*5)
-                    stacks[var].SetMinimum(0.005)
+                    stacks[var].SetMinimum(0.05)
                 else:
                     stacks[var].SetMaximum(max(stacks[var].GetMaximum(), hists[var][0][0].GetMaximum())*1.25)
                     stacks[var].SetMinimum(0.00001)

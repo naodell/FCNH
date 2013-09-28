@@ -5,7 +5,7 @@ import subprocess
 import ROOT as r
 
 canvas  = r.TCanvas('canvas', 'canvas', 800, 600)
-inFile  = r.TFile('histos/fcnh_cut1_2012_20130823_144237.root', 'OPEN')
+inFile  = r.TFile('histos/fcnh_cut1_2012_20130822_183318.root', 'OPEN')
 inPath  = 'inclusive/ttbar'
 #inFile  = r.TFile('histos/fcncHistograms_cut1.root', 'OPEN')
 #inPath  = 'inclusive/TEST'
@@ -15,7 +15,7 @@ outPath = 'plots/bTag_eff'
 r.gROOT.SetBatch()
 r.gStyle.SetOptStat(0)
 
-ratioDict   = {'bTagEff':('BTruthNumerPt', 'BTruthDenomPt'), 'cTagEff':('CTruthNumerPt', 'CTruthDenomPt'), 'MistagEff':('MistagNumerPt', 'MistagDenomPt')}
+ratioDict   = {'bTagEff':('BTruthNumerPt', 'BTruthDenomPt'), 'bMistagEff':('BMistagNumerPt', 'BMistagDenomPt')}
 
 canvas.SetGridx()
 canvas.SetGridy()

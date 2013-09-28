@@ -107,13 +107,14 @@ float WeightUtils::RecoWeight()
 
     for (vector<TCPhysObject>::const_iterator iLep = _leptons.begin(); iLep != _leptons.end(); ++iLep) {
         if (iLep->Type() == "muon") {
-            _triggerWeight *= GetMuTriggerEff((TLorentzVector)*iLep);
+            //_triggerWeight *= GetMuTriggerEff((TLorentzVector)*iLep);
             _recoWeight    *= GetMuEff((TLorentzVector)*iLep);
         }
         if (iLep->Type() == "electron") {
-            _triggerWeight *= 0.995;
+            //_triggerWeight *= 1.;
             _recoWeight    *= GetElectronEff((TLorentzVector)*iLep);
         }
+
         //cout << iLep->Type() << ", " << _recoWeight << "\t";
     }
 
