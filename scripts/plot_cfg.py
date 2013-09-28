@@ -59,16 +59,16 @@ samples['all'].append('Triboson')
 samples['all'].append('ttV')
 samples['all'].append('Diboson')
 samples['all'].append('top')
-samples['all'].append('VJets')
+samples['all'].append('ZJets')
 samples['all'].append('QCD')
-samples['all'].extend(['ZbbToLL', 'WbbToLNu']) #, 'ZGstar'])
+#samples['all'].extend(['ZbbToLL', 'WbbToLNu']) #, 'ZGstar'])
 
 samples['inclusive'].append('higgs')
 samples['inclusive'].append('Triboson')
 samples['inclusive'].append('ttV')
 samples['inclusive'].append('Diboson')
 samples['inclusive'].append('top')
-samples['inclusive'].append('VJets')
+samples['inclusive'].append('ZJets')
 
 samples['3l'].append('higgs')
 samples['3l'].append('Triboson')
@@ -77,7 +77,7 @@ samples['3l'].append('ZZ4l')
 samples['3l'].append('WZJets3LNu')
 #samples['3l'].append('WW')
 samples['3l'].append('top')
-samples['3l'].append('VJets')
+samples['3l'].append('ZJets')
 #samples['3l'].append('ZGstar')
 
 #samples['3l'].append('Diboson')
@@ -88,17 +88,17 @@ samples['ss'].append('higgs')
 samples['ss'].append('ttV')
 samples['ss'].append('top')
 samples['ss'].append('Diboson')
+samples['ss'].append('ZJets')
 samples['ss'].append('QCD')
 #samples['ss'].append('QCD_EM')
 #samples['ss'].append('QCD_20_MU')
-samples['ss'].append('VJets')
 #samples['ss'].extend(['ZbbToLL', 'WbbToLNu'])
 
-samples['os'].extend(['Diboson', 'top', 'VJets'])
+samples['os'].extend(['Diboson', 'top', 'ZJets'])
 
-samples['WZ'].extend(['WW/ZZ', 'top', 'VJets', 'WZJets3LNu'])
-samples['ttbar'].extend(['single top', 'VJets', 'ttbar'])
-samples['ttZ'].extend(['top', 'VJets', 'WZJets3LNu', 'ttW', 'ttG', 'ttZ'])
+samples['WZ'].extend(['WW/ZZ', 'top', 'ZJets', 'WZJets3LNu'])
+samples['ttbar'].extend(['single top', 'ZJets', 'ttbar'])
+samples['ttZ'].extend(['top', 'ZJets', 'WZJets3LNu', 'ttW', 'ttG', 'ttZ'])
 
 p_plot = []
 
@@ -349,20 +349,21 @@ if doYields:
     yieldTable      = TableMaker('fcncAnalysis/combined_histos/' + selection + '_cut1_' + period + batch + '.root', tableFile, scale = LUMIDATA, delimiter = '&', doSumBG = True)
     yieldTable.set_period(period)
 
-    yieldTable.add_datasets(samples['inclusive'], Clear = True)
+    yieldTable.add_datasets(samples['all'], Clear = True)
+
     if not doPlots:
         #yieldTable.get_scale_factors()
         yieldTable.get_scale_factors(['FCNH'])
 
     if do3l:
-        #yieldTable._columnList  = samples['3l'] + ['BG', 'DATA', 'FCNH', 'Significance'] 
+        #yieldTable._columnList  = samples['3l'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
         yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
         yieldTable.add_datasets(samples['3l'], Clear = True)
         yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
 
-        yieldTable._rowList = ['.', '.', '.', '.', '.','3 lepton', 'Z removal', 'MET', 'HT', 'b-jet']
+        yieldTable._rowList = 5*['.'] + ['3 lepton', 'Z removal', 'MET', 'HT', 'b-jet'] + 5*['.'] + ['BDT']
 
         for category in cat3l:
             yieldTable._category = category
@@ -370,7 +371,7 @@ if doYields:
             yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
 
     if doSS:
-        #yieldTable._columnList  = samples['ss'] + ['BG', 'DATA', 'FCNH', 'Significance'] 
+        #yieldTable._columnList  = samples['ss'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
         yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
         yieldTable.add_datasets(samples['ss'], Clear = True)
@@ -403,7 +404,7 @@ if doYields:
     yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut1_{1}{2}.root'.format(selection, period, batch))
     yieldTable.add_datasets(['ZZ4l', 'DATA'], Clear = True)
     yieldTable._columnList  = ['ZZ4l'] + ['BG', 'DATA']
-    yieldTable._rowList = 7*['.'] + ['ZZ4l']
+    yieldTable._rowList = 8*['.'] + ['ZZ4l']
 
     yieldTable._category = 'inclusive'
     histDict = yieldTable.get_hist_dict('YieldByCut')

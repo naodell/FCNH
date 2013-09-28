@@ -591,7 +591,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
        ) return kTRUE;
     else if (
             leptons.size() == 3
-            && (zTagged || (dileptonMassOS > 50 && fabs(trileptonMass - 90.) < 7.5))
+            && (zTagged || (dileptonMassOS > 40 && fabs(trileptonMass - 90.) < 7.5))
             ) return kTRUE;
 
     MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 1);
