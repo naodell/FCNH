@@ -16,7 +16,7 @@ const bool      doPrintout  = false;
 const bool      doGenPrint  = false;
 const bool      doPreMVA    = false;
 const bool      doPostMVA   = true;
-const bool      doMVACut    = true;
+const bool      doMVACut    = false;
 const bool      doMVATree   = false;
 const bool      doLepTree   = false;
 
