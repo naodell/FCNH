@@ -14,10 +14,17 @@ const string    selection   = "SELECTION";
 const string    period      = "PERIOD";
 const bool      doPrintout  = false;
 const bool      doGenPrint  = false;
+<<<<<<< HEAD
 const bool      doPreMVA    = true;
 const bool      doPostMVA   = false;
 const bool      doMVACut    = true;
 const bool      doMVATree   = true;
+=======
+const bool      doPreMVA    = false;
+const bool      doPostMVA   = true;
+const bool      doMVACut    = true;
+const bool      doMVATree   = false;
+>>>>>>> recover
 const bool      doLepTree   = false;
 
 
@@ -32,7 +39,7 @@ const float   elePtCut[]        = {10., 10.};
 const float   phoPtCut[]        = {10., 10.};
 const float   leptonPtCut[]     = {20., 10.};
 const float   metCut[]          = {60., 50.};
-const float   htCut[]           = {13., 14.};
+const float   htCut[]           = {100., 100.};
 const float   bJetVeto          = 1e9;
 
 bool P4SortCondition(const TLorentzVector& p1, const TLorentzVector& p2) {return (p1.Pt() > p2.Pt());} 
@@ -86,22 +93,22 @@ void fcncAnalyzer::Begin(TTree* tree)
         mvaTree = new TTree(("mvaTree_" + suffix).c_str(), "Tree for input into MVA");
 
         mvaTree->Branch("met", &MET, "met/F");
-        mvaTree->Branch("metPhi", &metPhi, "metPhi/F");
+        //mvaTree->Branch("metPhi", &metPhi, "metPhi/F");
         mvaTree->Branch("HT", &HT, "HT/F");
         mvaTree->Branch("MT", &MT, "MT/F");
 
-        mvaTree->Branch("lep1Pt", &lep1Pt, "lep1Pt/F");
-        mvaTree->Branch("lep1Eta", &lep1Eta, "lep1Eta/F");
-        mvaTree->Branch("lep1Phi", &lep1Phi, "lep1Phi/F");
-        mvaTree->Branch("lep2Pt", &lep2Pt, "lep2Pt/F");
-        mvaTree->Branch("lep2Eta", &lep2Eta, "lep2Eta/F");
-        mvaTree->Branch("lep2Phi", &lep2Phi, "lep2Phi/F");
+        //mvaTree->Branch("lep1Pt", &lep1Pt, "lep1Pt/F");
+        //mvaTree->Branch("lep1Eta", &lep1Eta, "lep1Eta/F");
+        //mvaTree->Branch("lep1Phi", &lep1Phi, "lep1Phi/F");
+        //mvaTree->Branch("lep2Pt", &lep2Pt, "lep2Pt/F");
+        //mvaTree->Branch("lep2Eta", &lep2Eta, "lep2Eta/F");
+        //mvaTree->Branch("lep2Phi", &lep2Phi, "lep2Phi/F");
 
         mvaTree->Branch("jetMult", &jetMult, "jetMult/I");
         mvaTree->Branch("bJetMult", &bJetMult, "bJetMult/I");
-        mvaTree->Branch("bJetPt", &bJetPt, "bJetPt/F");
-        mvaTree->Branch("bJetEta", &bJetEta, "bJetEta/F");
-        mvaTree->Branch("bJetPhi", &bJetPhi, "bJetPhi/F");
+        //mvaTree->Branch("bJetPt", &bJetPt, "bJetPt/F");
+        //mvaTree->Branch("bJetEta", &bJetEta, "bJetEta/F");
+        //mvaTree->Branch("bJetPhi", &bJetPhi, "bJetPhi/F");
 
         mvaTree->Branch("evtWeight", &evtWeight, "evtWeight/F");
 
@@ -110,9 +117,16 @@ void fcncAnalyzer::Begin(TTree* tree)
         mvaTree->Branch("dileptonMassOS", &dileptonMassOS, "dileptonMassOS/F");
         mvaTree->Branch("dileptonDROS", &dileptonDROS, "dileptonDROS/F");
 
+<<<<<<< HEAD
         mvaTree->Branch("lep3Pt", &lep3Pt, "lep3Pt/F");
         mvaTree->Branch("lep3Eta", &lep3Eta, "lep3Eta/F");
         mvaTree->Branch("lep3Phi", &lep3Phi, "lep3Phi/F");
+=======
+        //mvaTree->Branch("lep3Pt", &lep3Pt, "lep3Pt/F");
+        //mvaTree->Branch("lep3Eta", &lep3Eta, "lep3Eta/F");
+        //mvaTree->Branch("lep3Phi", &lep3Phi, "lep3Phi/F");
+
+>>>>>>> recover
         // Do ss selection branches //
 
     }
@@ -121,26 +135,26 @@ void fcncAnalyzer::Begin(TTree* tree)
         mvaReader = new TMVA::Reader("!Color:!Silent");
 
         mvaReader->AddVariable("met", &MET);
-        mvaReader->AddVariable("metPhi", &metPhi);
+        //mvaReader->AddVariable("metPhi", &metPhi);
         mvaReader->AddVariable("HT", &HT);
         mvaReader->AddVariable("MT", &MT);
 
-        mvaReader->AddVariable("lep1Pt", &lep1Pt);
-        mvaReader->AddVariable("lep1Eta", &lep1Eta);
-        mvaReader->AddVariable("lep1Phi", &lep1Phi);
-        mvaReader->AddVariable("lep2Pt", &lep2Pt);
-        mvaReader->AddVariable("lep2Eta", &lep2Eta);
-        mvaReader->AddVariable("lep2Phi", &lep2Phi);
+        //mvaReader->AddVariable("lep1Pt", &lep1Pt);
+        //mvaReader->AddVariable("lep1Eta", &lep1Eta);
+        //mvaReader->AddVariable("lep1Phi", &lep1Phi);
+        //mvaReader->AddVariable("lep2Pt", &lep2Pt);
+        //mvaReader->AddVariable("lep2Eta", &lep2Eta);
+        //mvaReader->AddVariable("lep2Phi", &lep2Phi);
 
-        mvaReader->AddVariable("bJetPt", &bJetPt);
-        mvaReader->AddVariable("bJetEta", &bJetEta);
-        mvaReader->AddVariable("bJetPhi", &bJetPhi);
+        //mvaReader->AddVariable("bJetPt", &bJetPt);
+        //mvaReader->AddVariable("bJetEta", &bJetEta);
+        //mvaReader->AddVariable("bJetPhi", &bJetPhi);
         mvaReader->AddVariable("jetMult", &f_jetMult);
         mvaReader->AddVariable("bJetMult", &f_bJetMult);
 
-        mvaReader->AddVariable("lep3Pt", &lep3Pt);
-        mvaReader->AddVariable("lep3Eta", &lep3Eta);
-        mvaReader->AddVariable("lep3Phi", &lep3Phi);
+        //mvaReader->AddVariable("lep3Pt", &lep3Pt);
+        //mvaReader->AddVariable("lep3Eta", &lep3Eta);
+        //mvaReader->AddVariable("lep3Phi", &lep3Phi);
 
         mvaReader->AddVariable("trileptonMass", &trileptonMass);
         mvaReader->AddVariable("dileptonMassOS", &dileptonMassOS);
@@ -455,6 +469,21 @@ bool fcncAnalyzer::Process(Long64_t entry)
         GenPlots(gLeptons, leptons);
     }
 
+<<<<<<< HEAD
+=======
+    // ZZ control region //
+    if (leptons.size() == 4) {
+
+        if (
+                bJetsM.size() == 0
+           ) {
+            Make4lPlots(leptons, *recoMET, jets, bJetsM);
+            SetYields(14);
+        }
+        return kTRUE; 
+    }
+
+>>>>>>> recover
 
     MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 0);
     SetYields(5);
@@ -544,6 +573,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
        ) return kTRUE;
     else if (
             leptons.size() == 3
+<<<<<<< HEAD
             && (zTagged || (dileptonMassOS > 50 && fabs(trileptonMass - 90.) < 7.5))
 =======
     if (leptons.size() == 3
@@ -590,6 +620,9 @@ bool fcncAnalyzer::Process(Long64_t entry)
             && zTagged
             || fabs(trileptonMass - 90.) < 7.5
 >>>>>>> parent of 267739a... shit might be fucked up...
+=======
+            && (zTagged || (dileptonMassOS > 40 && fabs(trileptonMass - 90.) < 7.5))
+>>>>>>> recover
             ) return kTRUE;
 
     MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 1);
@@ -605,21 +638,18 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
         //Fill MVA ntuples
         SetVarsMVA(leptons, bJetsM, jets);
+        if (doMVATree) mvaTree->Fill();
 
         if (doMVACut) {
-            if (doMVATree) mvaTree->Fill();
+            float mvaValue = mvaReader->EvaluateMVA("test");
 
-            if (doMVACut) {
-                float mvaValue = mvaReader->EvaluateMVA("test");
+            histManager->SetFileNumber(4);
+            histManager->SetDirectory("3l_inclusive/" + suffix);
+            histManager->Fill1DHist(mvaValue, "h1_BDT", "BDT value;Entries / bin;BDT", 36, -1., 0.2);
 
-                histManager->SetFileNumber(4);
-                histManager->SetDirectory("3l_inclusive/" + suffix);
-                histManager->Fill1DHist(mvaValue, "h1_BDT", "BDT value;Entries / bin;BDT", 36, -1., 0.2);
-
-                if (mvaValue > -0.) {
-                    //MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 5);
-                    SetYields(15);
-                }
+            if (mvaValue > -0.2) {
+                //MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 5);
+                SetYields(15);
             }
         }
     }
@@ -655,10 +685,10 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
     if (leptons.size() == 2){
         if (leptons[0].Charge() == leptons[1].Charge()) 
-            if (sqrt(HT) < htCut[0])
+            if (HT < htCut[0])
                 return kTRUE;
     } else if (leptons.size() == 3) {
-        if (sqrt(HT) < htCut[1]) 
+        if (HT < htCut[1]) 
             return kTRUE;
     }
 
@@ -810,15 +840,30 @@ void fcncAnalyzer::Terminate()
 
     // FCNH selection //
     cout<<"| Z veto:                            |\t" << eventCount[6]  << "\t|\t" << eventCountWeighted[6] << "\t|"<<endl;
+<<<<<<< HEAD
     cout<<"| MET > 40 and HT > 75:              |\t" << eventCount[7]  << "\t|\t" << eventCountWeighted[7] << "\t|"<<endl;
     cout<<"| At least one b-jet:                |\t" << eventCount[8]  << "\t|\t" << eventCountWeighted[8] << "\t|"<<endl;
     cout<<"| BDT > 0.:                          |\t" << eventCount[15]  << "\t|\t" << eventCountWeighted[15] << "\t|"<<endl;
+=======
+    cout<<"| MET cut:                           |\t" << eventCount[7]  << "\t|\t" << eventCountWeighted[7] << "\t|"<<endl;
+    cout<<"| HT cut:                            |\t" << eventCount[8]  << "\t|\t" << eventCountWeighted[8] << "\t|"<<endl;
+    cout<<"| At least one b-jet:                |\t" << eventCount[9]  << "\t|\t" << eventCountWeighted[9] << "\t|"<<endl;
+    cout<<"| BDT > -0.2:                        |\t" << eventCount[15]  << "\t|\t" << eventCountWeighted[15] << "\t|"<<endl;
+>>>>>>> recover
 
 
     // Control regions //
     cout<<"\nControl region event yields."<<"\n"<<endl;
+<<<<<<< HEAD
     cout<<"| WZ:                                |\t" << eventCount[9]  << "\t|\t" << eventCountWeighted[9] << "\t|"<<endl;
     cout<<"| ttbar:                             |\t" << eventCount[10]  << "\t|\t" << eventCountWeighted[10] << "\t|"<<endl;
+=======
+    cout<<"| WZ:                                |\t" << eventCount[10]  << "\t|\t" << eventCountWeighted[10] << "\t|"<<endl;
+    cout<<"| ttbar:                             |\t" << eventCount[11]  << "\t|\t" << eventCountWeighted[11] << "\t|"<<endl;
+    cout<<"| ttZ:                               |\t" << eventCount[12]  << "\t|\t" << eventCountWeighted[12] << "\t|"<<endl;
+    cout<<"| fakes:                             |\t" << eventCount[13]  << "\t|\t" << eventCountWeighted[13] << "\t|"<<endl;
+    cout<<"| ZZ:                                |\t" << eventCount[14]  << "\t|\t" << eventCountWeighted[14] << "\t|"<<endl;
+>>>>>>> recover
 
 
     //for (int i = 0; i < 8; ++i) fout[i].close();
@@ -1571,11 +1616,19 @@ void fcncAnalyzer::SetEventVariables(vObj leptons, vector<TCJet> jets, vector<TC
 
         for (unsigned j = leptons.size()-1; j > i; --j) {
 
+<<<<<<< HEAD
             // Check for opposite-sign, same-flavor pair //
             if (leptons[i].Type() == leptons[j].Type() && leptons[i].Charge() != leptons[j].Charge()) {
+=======
+            //cout << (leptons[i] + leptons[j]).M() << ", " << i << j << "\t";
+
+            // Check for opposite-sign pair //
+            if (leptons[i].Charge() != leptons[j].Charge()) {
+                ossfTagged = true;
+>>>>>>> recover
 
                 // Is the pair mass consistent with the Z mass within a 20 GeV window?
-                if (fabs((leptons[i] + leptons[j]).M() - 91.2) < 10) {
+                if (fabs((leptons[i] + leptons[j]).M() - 91.2) < 10 && leptons[i].Type() == leptons[j].Type()) {
                     zTagged = true;
                     zCandidateMass = (leptons[i] + leptons[j]).M();
                 }
@@ -1594,7 +1647,11 @@ void fcncAnalyzer::SetEventVariables(vObj leptons, vector<TCJet> jets, vector<TC
                         lep3P4  = leptons[3 - (i + j)];
                         MT = CalculateTransMass(leptons[3 - (i + j)], met);
                     }
+<<<<<<< HEAD
                 // Might want to come up with a way for choosing the dilepton when it's outside the Z window 
+=======
+                    // Pick the highest mass OS pairing
+>>>>>>> recover
                 } else if (!zTagged) { 
                     dileptonP4      = leptons[i] + leptons[j];
                     lep1P4          = leptons[j];

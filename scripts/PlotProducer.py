@@ -218,6 +218,30 @@ class PlotProducer(AnalysisTools):
 
         return hEff
 
+    def get_significance(self, h_sig, h_bg, dataType):
+        '''
+        Generates a histogram with the significance
+        for a 1-D plot.  Intended for comparison of
+        background and signal.
+        '''
+
+        nBins = h_bg.GetNbinsX()
+        xAxisName = h_bg.GetXaxis().GetTitle()
+        hSig = r.TH1D('h1_Sig_'+dataType, ';' + xAxisName + ';sig', nBins, hist.GetBinLowEdge(1), hist.GetBinLowEdge(nBins + 1))
+
+        for i in range(nBins):
+            sumError = r.Double(0)
+            eff = h_sig.IntegralAndError(i+1, nBins, sumError)/math.sqrt(h_sig.IntegralAndError(i+1, nBins, sumError) + h_bg.IntegralAndError(i+1, nBins, sumError))
+            hSig.SetBinContent(i + 1, eff)
+            hSig.SetBinError(i + 1, 0.025*eff)
+
+            #hSig.SetBinError(i + 1, self.binomial_error(eff, hist.Integral()))
+
+
+        set_hist_style(hSig, dataType, self._styleDict)
+        prep_hist(hSig, (-0.05, 1.1))
+
+        return hSig
 
     def make_stacks_by_category(self, categoryList = '', logScale = False):
         '''
@@ -367,9 +391,10 @@ class PlotProducer(AnalysisTools):
                     hEffBG.Draw("E3")
 
                     for hist in hists[var]:
-                        if hist[1] in ['SIGNAL', 'FCNC_M125_t']:
+                        if hist[1] in ['SIGNAL', 'FCNH', 'FCNC_M125_t', 'FCNC_M125_tbar']:
                             hEffSig = self.get_cut_efficiency(hist[0], 'SIG_EFF')
                             hEffSig.Draw("E3 SAME")
+
                             continue
 
                 elif doEff and doRatio:
@@ -386,7 +411,7 @@ class PlotProducer(AnalysisTools):
                     format_axis(axisEff, 0.5, '#varepsilon_{cut}', r.kBlack)
 
                     for hist in hists[var]:
-                        if hist[1] in ['SIGNAL', 'FCNC_M125_t']:
+                        if hist[1] in ['SIGNAL', 'FCNH', 'FCNC_M125_t', 'FCNC_M125_tbar']:
                             hEffSig = self.get_cut_efficiency(hist[0], 'SIG_EFF')
                             canvas.Update()
                             scale_to_pad(hEffSig)
