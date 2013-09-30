@@ -62,14 +62,14 @@ if period == '2012':
     bg.extend([
         cfg('ZJets_M-50', dCache+'/naodell/nuTuples_v7_4/DYJets', 30, 'ZJets_M-50 muon 2012'),
         cfg('ZJets_M-10To50', dCache+'/naodell/nuTuples_v7_4/DYJets_M-10To50', 10, 'ZJets_M-10To50 muon 2012'),
-        cfg('ZbbToLL', dCache+'/naodell/nuTuples_v7_4/ZbbToLL', 20, 'ZbbToLL muon 2012'),
+        #cfg('ZbbToLL', dCache+'/naodell/nuTuples_v7_4/ZbbToLL', 20, 'ZbbToLL muon 2012'),
         #cfg('ZG', dCache+'/naodell/nuTuples_v7_4/ZGToLLG', 10, 'ZG muon 2012'),
-        cfg('WJets', dCache+'/naodell/nuTuples_v7_4/WJetsToLNu', 20, 'WJets muon 2012'),
+        #cfg('WJets', dCache+'/naodell/nuTuples_v7_4/WJetsToLNu', 20, 'WJets muon 2012'),
         #cfg('WGStarLNu2E', dCache+'/naodell/nuTuples_v7_4/WGStarToLNu2E', 5, 'WGStarLNu2E muon 2012'),
         #cfg('WGStarLNu2Mu', dCache+'/naodell/nuTuples_v7_4/WGStarToLNu2Mu', 5, 'WGStarLNu2Mu muon 2012'),
         #cfg('WGStarLNu2Tau', dCache+'/naodell/nuTuples_v7_4/WGStarToLNu2Tau', 5, 'WGStarLNu2Tau muon 2012'),
         #cfg('WbbToLNu', dCache+'/naodell/nuTuples_v7_4/WbbJetsToLNu', 20, 'WbbToLNu muon 2012'),
-        cfg('WbbToLNu', dCache+'/naodell/nuTuples_v7_4/WbbToLL', 20, 'WbbToLNu muon 2012'),
+        #cfg('WbbToLNu', dCache+'/naodell/nuTuples_v7_4/WbbToLL', 20, 'WbbToLNu muon 2012'),
         #cfg('WG', dCache+'/naodell/nuTuples_v7_4/WGToLNuG', 10, 'WG muon 2012'),
 
         cfg('ttbar', dCache+'/naodell/nuTuples_v7_4/TTJets', 30, 'ttbar muon 2012'),
