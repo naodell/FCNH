@@ -6,8 +6,8 @@
 
 using namespace std;
 
-const Int_t N_CATEGORIES = 2;
-const unsigned nToys = 20;
+const Int_t N_CATEGORIES = 5;
+const unsigned nToys = 10;
 const string categoryNames[] = {
     "3l_inclusive",
     //"3l_OSSF",
@@ -16,10 +16,13 @@ const string categoryNames[] = {
     //"3l_eemu",
     //"3l_emumu", 
     //"3l_mumumu", 
-    "ss_inclusive"
+    "ss_inclusive",
     //"ss_mumu", 
     //"ss_ee"
     //"ss_emu", 
+    "3l_BDT",
+    "3l_BDT_OSSF",
+    "3l_BDT_SSSF"
 };
 
 const Double_t cs_ttbar     = 252.;
@@ -37,18 +40,19 @@ void simpleLimit()
     //Double_t sigInit    = 291.6;                  // initial number of signal events accounting for cross-section
     //Double_t sigInitErr = 24.99;                  // error on initial number of events
     Double_t sigInit    = br_total*lumi;            // initial number of signal events accounting for cross-section
-    Double_t sigInitErr = sqrt(sigInit);            // error on initial number of events
+    Double_t sigInitErr = 0.1*sqrt(sigInit);            // error on initial number of events
 
-    Double_t sigList[]  = {6.47, 5*13.05};           // Final yields for signal
-    Double_t sSigList[] = {0.22, 5*0.32};           // Errors on final yields of signal
-    Double_t bckList[]  = {33.9, 134.43};          // Final yields for background
-    Double_t sbckList[] = {3.78, 14.67};           // Errors on final yields of background
+    Double_t sigList[]  = {6.47, 13.05, 35.65, 26.21, 9.44};           // Final yields for signal
+    Double_t sSigList[] = {0.22, 0.32, 0.5, 0.43, 0.25};           // Errors on final yields of signal
+    Double_t bckList[]  = {33.9, 134.43, 140.89, 123.42, 17.47};          // Final yields for background
+    Double_t sbckList[] = {3.78, 14.67, 8.94, 8.42, 3.01};           // Errors on final yields of background
 
-    Int_t    nObs[]     = {36, 161};
-
+    Int_t    nObs[]     = {36, 161, 196, 173, 23};
 
     for (unsigned i = 0; i < N_CATEGORIES; ++i) {
-        if (categoryNames[i] != "ss_inclusive") continue;
+        //if (categoryNames[i] != "ss_inclusive") continue;
+        if (categoryNames[i] != "3l_BDT_SSSF") continue;
+
         Double_t eff    = sigList[i]/sigInit;
 
         //Double_t eff    = (sigList[i]*(0.0074/br_total))/sigInit;
