@@ -1,0 +1,18 @@
+
+	 Category 3l_inclusive
+
+
+exp_limit = 0.0315729
+	1-sigma range: 0.0398585	0.0230884
+	2-sigma range: 0.0521779	0.0158512
+
+obs_limit = 0.0364211
+
+crude check: 0.0259616
+
+Convert to upper limit on BR(t->Hq) :
+	expected:	0.00997224
+	observed:	0.0115036
+
+	1-sigma on expected: 0.0125893	0.00729245
+	2-sigma on expected: 0.0164803	0.00500659
