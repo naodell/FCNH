@@ -16,7 +16,7 @@ const bool      doPrintout  = false;
 const bool      doGenPrint  = false;
 const bool      doPreMVA    = false;
 const bool      doPostMVA   = true;
-const bool      doMVACut    = false;
+const bool      doMVACut    = true;
 const bool      doMVATree   = false;
 const bool      doLepTree   = false;
 
@@ -189,10 +189,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
     evtCategory.reset();
     evtWeight = 1.;
 
-    histManager->SetFileNumber(0);
-    histManager->SetDirectory(categoryNames[0] + "/" + suffix);
-    histManager->SetWeight(1);
-
     if (eventCount[1] == 0) {
         weighter->SetDataBit(isRealData);
         triggerSelector->SetDataBit(isRealData);
@@ -242,6 +238,9 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
 
     if (!isRealData) {
+        histManager->SetFileNumber(0);
+        histManager->SetDirectory("inclusive/" + suffix);
+        histManager->SetWeight(1);
 
         histManager->Fill1DHist(nPUVertices,
                 "h1_SimVertexMult", "Multiplicity of simulated vertices", 500, 0., 100.);
@@ -397,6 +396,9 @@ bool fcncAnalyzer::Process(Long64_t entry)
     if (doLepTree)
         FillLepMVA(selector->GetSelectedMuons("premva"), selector->GetSelectedElectrons("premva"), allJets, selectedVtx);
 
+    histManager->SetFileNumber(0);
+    histManager->SetDirectory("inclusive/" + suffix);
+    histManager->SetWeight(1);
 
     //!!!!!!!!!!!!!!!!//
     //                //
@@ -475,6 +477,22 @@ bool fcncAnalyzer::Process(Long64_t entry)
         histManager->SetDirectory(categoryNames[cat] + "/" + suffix);
         GenPlots(gLeptons, leptons);
     }
+
+    //if (leptons[0].Charge() == leptons[1].Charge())
+    //    cout << leptons.size() << ": " << leptons[0].Type() << ", " << leptons[0].Charge() << "\t " << leptons[1].Type() << ", " << leptons[1].Charge() << endl;
+
+
+    // Electron charge misid control region //
+    if (leptons.size() == 2) {
+        if (
+                leptons[0].Type() == "electron" && leptons[1].Type() == "electron"
+                && (abs((leptons[0] + leptons[1]).M() - 91.2) < 10)
+           ) {
+
+            MakeQMisIDPlots(leptons);
+        }
+    }
+
 
     // ZZ control region //
     if (leptons.size() == 4) {
@@ -705,7 +723,6 @@ void fcncAnalyzer::Terminate()
     histManager->Delete();
 
     // Close ntuple file
-
     for (unsigned i = 0; i < N_CUTS; ++i) {
         histoFile[i]->Write();
         histoFile[i]->Close();  
@@ -779,6 +796,29 @@ void fcncAnalyzer::MakePlots(vObj leptons, vector<TCJet> jets, vector<TCJet> bJe
         histManager->Fill1DHist(primaryVtx->GetSize(),
                 "h1_PvMultUnweighted", "Multiplicity of PVs", 51, -0.5, 50.);
         histManager->SetWeight(evtWeight);
+    }
+}
+
+void fcncAnalyzer::MakeQMisIDPlots(vObj electrons)
+{
+    histManager->SetFileNumber(0);
+    histManager->SetDirectory("inclusive/" + suffix);
+
+    float ptBins[] = {0., 20., 50., 100.};
+    float etaBins[] = {0., 1.5, 2.5};
+
+    if (electrons[0].Charge() == electrons[1].Charge()) {
+        histManager->Fill2DHistUnevenBins(electrons[0].Pt(), electrons[0].Eta(),
+                "h2_LeadElecQMisIDNumer", "lead e charge misID (numerator);p_{T};#eta", 3, ptBins, 2, etaBins); 
+        histManager->Fill2DHistUnevenBins(electrons[1].Pt(), electrons[1].Eta(),
+                "h2_TrailingElecQMisIDNumer", "trailing e charge misID (numerator);p_{T};#eta", 3, ptBins, 2, etaBins); 
+    }
+
+    if (electrons[0].Charge() != electrons[1].Charge()) {
+        histManager->Fill2DHistUnevenBins(electrons[0].Pt(), electrons[0].Eta(),
+                "h2_LeadElecQMisIDDenom", "lead e charge misID (numerator);p_{T};#eta", 3, ptBins, 2, etaBins); 
+        histManager->Fill2DHistUnevenBins(electrons[1].Pt(), electrons[1].Eta(),
+                "h2_TrailingElecQMisIDDenom", "trailing e charge misID (numerator);p_{T};#eta", 3, ptBins, 2, etaBins); 
     }
 }
 

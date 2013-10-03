@@ -258,6 +258,7 @@ class fcncAnalyzer : public TSelector {
 
         // Plot methods
         virtual void    MakePlots(vObj, vector<TCJet>, vector<TCJet>, TCMET, TVector3, unsigned);
+        virtual void    MakeQMisIDPlots(vObj);
         virtual void    Make4lPlots(vObj, TCMET, vector<TCJet>, vector<TCJet>);
         virtual void    LeptonPlots(vObj, TCMET, vector<TCJet>, vector<TCJet>, TVector3);
         virtual void    JetPlots(vector<TCJet>, vector<TCJet>);
