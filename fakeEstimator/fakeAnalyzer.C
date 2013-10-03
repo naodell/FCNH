@@ -219,42 +219,6 @@ bool fakeAnalyzer::Process(Long64_t entry)
             "h1_bJetMult", "b-jet multiplicity; N_{b-jet}; Entries / bin", 10, -0.5, 9.5);
 
 
-    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
-    //                                                //
-    // Start electron charge misassignment estimation //
-    //                                                //
-    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
-
-    if (electrons.size() == 2) {
-
-        float elePtBins[]   = {0, 20., 30., 100.};
-        float eleEtaBins[]  = {0., 1.5, 2.4};
-
-        if (
-                electrons[0].Charge() == electrons[1].Charge() 
-                && fabs((electrons[0] + electrons[1]).M() - 91.2) < 10
-           ) {
-            histManager->Fill2DHistUnevenBins(electrons[0].Pt(), electrons[0].Eta(),
-                    "h2_LeadElectronMisQIDPtVsEta", ";p_{T};#eta", 3, elePtBins, 2, eleEtaBins);
-            histManager->Fill2DHistUnevenBins(electrons[1].Pt(), electrons[1].Eta(),
-                    "h2_TrailingElectronMisQIDPtVsEta", ";p_{T};#eta", 3, elePtBins, 2, eleEtaBins);
-
-        }
-
-        if (
-                electrons[0].Charge() != electrons[1].Charge() 
-                && fabs((electrons[0] + electrons[1]).M() - 91.2) < 10
-           ) {
-            histManager->Fill2DHistUnevenBins(electrons[0].Pt(), electrons[0].Eta(),
-                    "h2_LeadElectronQIDPtVsEta", ";p_{T};#eta", 3, elePtBins, 2, eleEtaBins);
-            histManager->Fill2DHistUnevenBins(electrons[1].Pt(), electrons[1].Eta(),
-                    "h2_TrailingElectronQIDPtVsEta", ";p_{T};#eta", 3, elePtBins, 2, eleEtaBins);
-
-        }
-    }
-
-    return kTRUE;
-
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
     //                            //
     // Start fake rate estimation //
@@ -266,30 +230,17 @@ bool fakeAnalyzer::Process(Long64_t entry)
     // Prepare sample for FR estimation.  Require only one reconstructed
     // lepton, at least one jet, and MET < 30 (20) as in HWW analysis
 
-    /*bool zTag = false;
-      pair<unsigned, unsigned> lepIndex;
-
-      for (unsigned i = 1; i < leptons.size(); ++i) {
-      for (unsigned j = 0; j < i; ++j) {
-      if (selector->IsZCandidate(&leptons[i], &leptons[j], 15.)) {
-      zTag = true;
-      lepIndex.first  = i;
-      lepIndex.second = j;
-      }
-      }
-      }*/
-
     if (
             (recoMuons->GetSize() + recoElectrons->GetSize()) < 1
             || recoMET->Mod() > 20 
             || allJets.size() == 0
        ) return kTRUE;
 
-    //return kTRUE;
+    // Check if there is a dilepton pair consisten with a Z boson
+    DoZTag(leptons);
 
     // Do numerator/denominator counting for estimate. 
     // electrons first..
-
 
     vector<TCElectron> eleDenom = looseElectrons; 
     unsigned nMatched   = 0;
@@ -307,9 +258,9 @@ bool fakeAnalyzer::Process(Long64_t entry)
         //    histManager->Fill1DHist((leptons[lepIndex.first] + leptons[lepIndex.second]).M(), "h1_DileptonMass", "dilepton mass;M_{ll};Entries / 2 GeV", 30, 60, 120);
         //}
 
-        histManager->Fill1DHistUnevenBins(eleDenom[j].Pt(), "h1_DenomPt", "electron fakeable p_{T};p_{T};Entries / 10 GeV", 9, ptBins);
-        histManager->Fill1DHistUnevenBins(fabs(eleDenom[j].Eta()), "h1_DenomEta", "electron fakeable #eta;#eta;Entries / bin", 4, etaBins);
-        histManager->Fill2DHistUnevenBins(fabs(eleDenom[j].Eta()), eleDenom[j].Pt(), "h2_DenomPtVsEta", "electron fakeable ;#eta;p_{T}", 4, etaBins, 9, ptBins);
+        histManager->Fill1DHistUnevenBins(eleDenom[j].Pt(), "h1_EleDenomPt", "electron fakeable p_{T};p_{T};Entries / 10 GeV", 9, ptBins);
+        histManager->Fill1DHistUnevenBins(fabs(eleDenom[j].Eta()), "h1_EleDenomEta", "electron fakeable #eta;#eta;Entries / bin", 4, etaBins);
+        histManager->Fill2DHistUnevenBins(fabs(eleDenom[j].Eta()), eleDenom[j].Pt(), "h2_EleDenomPtVsEta", "electron fakeable ;#eta;p_{T}", 4, etaBins, 9, ptBins);
 
         ++nDenom;
 
@@ -317,16 +268,15 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
             if (leptons[k].Type() != "electron" || eleDenom[j].DeltaR(electrons[k]) != 0.) continue;
 
-            histManager->Fill1DHistUnevenBins(eleDenom[j].Pt(), "h1_NumerPt", "electron fakeable p_{T};p_{T};Entries / 10 GeV", 9, ptBins);
-            histManager->Fill1DHistUnevenBins(fabs(eleDenom[j].Eta()), "h1_NumerEta", "electron fakeable #eta;#eta;Entries / bin", 4, etaBins);
-            histManager->Fill2DHistUnevenBins(fabs(eleDenom[j].Eta()), eleDenom[j].Pt(), "h2_NumerPtVsEta", "electron fakeable;#eta;p_{T}", 4, etaBins, 9, ptBins);
+            histManager->Fill1DHistUnevenBins(eleDenom[j].Pt(), "h1_EleNumerPt", "electron fakeable p_{T};p_{T};Entries / 10 GeV", 9, ptBins);
+            histManager->Fill1DHistUnevenBins(fabs(eleDenom[j].Eta()), "h1_EleNumerEta", "electron fakeable #eta;#eta;Entries / bin", 4, etaBins);
+            histManager->Fill2DHistUnevenBins(fabs(eleDenom[j].Eta()), eleDenom[j].Pt(), "h2_EleNumerPtVsEta", "electron fakeable;#eta;p_{T}", 4, etaBins, 9, ptBins);
 
             ++nMatched; 
         }
 
-        histManager->Fill1DHist(nDenom, "h1_DenomMult", "electron denominator;N_{denom};Entries / bin", 4, -0.5, 3.5);
+        histManager->Fill1DHist(nDenom, "h1_EleDenomMult", "electron denominator;N_{denom};Entries / bin", 4, -0.5, 3.5);
     }
-
 
     // Now the muons...
 
@@ -394,3 +344,45 @@ void fakeAnalyzer::Terminate()
 }
 
 
+void fakeAnalyzer::DoZTag(vObj leptons)
+{
+    // Reset OS variables for each event //
+    zTagged     = false;
+    ossfTagged  = false;
+    dileptonMassOS = -1.;
+
+    //cout << leptons.size() << ":\t";
+
+    float zCandidateMass = 0.;
+    for (unsigned i = 0; i < leptons.size(); ++i) {
+        for (unsigned j = leptons.size()-1; j > i; --j) {
+
+            // Check for opposite-sign pair //
+            if (leptons[i].Charge() != leptons[j].Charge()) {
+                ossfTagged = true;
+
+                // Is the pair mass consistent with the Z mass within a 20 GeV window?
+                if (
+                        fabs((leptons[i] + leptons[j]).M() - 91.2) < 10 
+                        && leptons[i].Type() == leptons[j].Type()
+                   ) {
+                    zTagged = true;
+                    zCandidateMass = (leptons[i] + leptons[j]).M();
+                }
+
+                // Select the pairing that is closest to the mass of the Z.
+                //if (zTagged && (fabs(dileptonMassOS - 91.2) > fabs(zCandidateMass - 91.2))) {
+                //    dileptonP4      = leptons[i] + leptons[j];
+                //    lep1P4          = leptons[j];
+                //    lep2P4          = leptons[i];
+
+                //    // If 3 leptons present, try to reconstruct a W from the unpaired lepton
+                //    if (leptons.size() == 3) {
+                //        lep3P4  = leptons[3 - (i + j)];
+                //    }
+                //    // Pick the highest mass OS pairing
+                //}
+            }
+        }
+    }
+}
