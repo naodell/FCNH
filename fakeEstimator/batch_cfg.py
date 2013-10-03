@@ -6,14 +6,14 @@ cfg = b.JobConfig
 
 ''' Specify parameters '''
 dCache      = '/pnfs/cms/WAX/11/store/user'
-outputPath  = '/eos/uscms/store/user/naodell/BatchOutput/fakes'
 executable  = 'execBatch.csh'
 
-selection = 'fakes'
-period    = '2012'
-doData    = False
-doBG      = False
-doSignal  = False
+selection   = 'fcnc'
+period      = '2012'
+doData      = False
+doBG        = False
+doSignal    = False
+doFakes     = False
 
 # Config from command line #
 
@@ -25,6 +25,8 @@ if 'bg' in sys.argv[1:]:
     doBG = True
 if 'signal' in sys.argv[1:]:
     doSignal = True
+if 'fakes' in sys.argv[1:]:
+    doFakes = True
 
 ############################
 
@@ -33,59 +35,91 @@ if 'signal' in sys.argv[1:]:
     (Dataset, path to data, number of jobs, arguments to pass to executable, output directory name)
 '''
 
-data = []
-bg = []
-signal = []
+data    = []
+fakes   = []
+bg      = []
+signal  = []
+
 
 if period == '2012':
     data.extend([
-        cfg('muon_2012A', dCache+'/naodell/nuTuples_v5_5_8TeV/DoubleMu_Run2012A_v2', 20, 'DATA muon 2012'),
-        cfg('muon_2012B', dCache+'/naodell/nuTuples_v5_5_8TeV/DoubleMu_Run2012B_v2', 20, 'DATA muon 2012'),
-        cfg('muon_2012C_prompt', dCache+'/naodell/nuTuples_v5_5_8TeV/DoubleMu_Run2012C_Prompt_v2', 20, 'DATA muon 2012'),
-        cfg('muon_2012C_recover', dCache+'/naodell/nuTuples_v5_5_8TeV/DoubleMu_Run2012C_Recover_v2', 5, 'DATA muon 2012'),
-        cfg('muon_2012C_24Aug', dCache+'/naodell/nuTuples_v5_5_8TeV/DoubleMu_Run2012C_24Aug_v2', 10, 'DATA muon 2012'),
-        cfg('muon_2012D', dCache+'/naodell/nuTuples_v5_5_8TeV/DoubleMu_Run2012D_v2', 20, 'DATA muon 2012'),
+        #cfg('muon_2012A', dCache+'/naodell/nuTuples_v7_4/DoubleMu_Run2012A', 10, 'DATA_MUON muon 2012'),
+        #cfg('muon_2012B', dCache+'/naodell/nuTuples_v7_4/DoubleMu_Run2012B', 10, 'DATA_MUON muon 2012'),
+        #cfg('muon_2012C', dCache+'/naodell/nuTuples_v7_4/DoubleMu_Run2012C', 10, 'DATA_MUON muon 2012'),
+        #cfg('muon_2012D', dCache+'/naodell/nuTuples_v7_4/DoubleMu_Run2012D', 15, 'DATA_MUON muon 2012'),
 
-        cfg('electron_2012A', dCache+'/naodell/nuTuples_v5_5_8TeV/DoubleElectron_Run2012A_v2', 20, 'DATA electron 2012'),
-        cfg('electron_2012B', dCache+'/naodell/nuTuples_v5_5_8TeV/DoubleElectron_Run2012B_v2', 20, 'DATA electron 2012'),
-        cfg('electron_2012C_prompt', dCache+'/naodell/nuTuples_v5_5_8TeV/DoubleElectron_Run2012C_Prompt_v2', 20, 'DATA electron 2012'),
-        cfg('electron_2012C_recover', dCache+'/naodell/nuTuples_v5_5_8TeV/DoubleElectron_Run2012C_Recover_v2', 5, 'DATA electron 2012'),
-        cfg('electron_2012C_24Aug', dCache+'/naodell/nuTuples_v5_5_8TeV/DoubleElectron_Run2012C_24Aug_v2', 10, 'DATA electron 2012')
-        #cfg('electron_2012D', dCache+'/naodell/nuTuples_v5_5_8TeV/DoubleElectron_Run2012D_v2', 20, 'DATA electron 2012'),
+        cfg('electron_2012A', dCache+'/naodell/nuTuples_v7_4/DoubleElectron_Run2012A', 10, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012B', dCache+'/naodell/nuTuples_v7_4/DoubleElectron_Run2012B', 10, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012C', dCache+'/naodell/nuTuples_v7_4/DoubleElectron_Run2012C', 10, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012D', dCache+'/naodell/nuTuples_v7_4/DoubleElectron_Run2012D', 15, 'DATA_ELECTRON electron 2012')
 
-        #cfg('muEG_2012A', dCache+'/naodell/nuTuples_v5_5_8TeV/MuEG_Run2012A', 20, 'DATA muEG 2012'),
-        #cfg('muEG_2012B', dCache+'/naodell/nuTuples_v5_5_8TeV/MuEG_Run2012B', 20, 'DATA muEG 2012'),
-        #cfg('muEG_2012C_prompt', dCache+'/naodell/nuTuples_v5_5_8TeV/MuEG_Run2012C_prompt', 20, 'DATA muEG 2012'),
-        #cfg('muEG_2012C_recover', dCache+'/naodell/nuTuples_v5_5_8TeV/MuEG_Run2012C_recover', 5, 'DATA muEG 2012'),
-        #cfg('muEG_2012C_24Aug', dCache+'/naodell/nuTuples_v5_5_8TeV/MuEG_Run2012C_24Aug', 10, 'DATA muEG 2012'),
-        #cfg('muEG_2012D', dCache+'/naodell/nuTuples_v5_5_8TeV/MuEG_Run2012D', 20, 'DATA muEG 2012')
+        #cfg('muEG_2012A', dCache+'/naodell/nuTuples_v7_4/MuEG_Run2012A', 10, 'DATA_MUEG muEG 2012'),
+        #cfg('muEG_2012B', dCache+'/naodell/nuTuples_v7_4/MuEG_Run2012B', 10, 'DATA_MUEG muEG 2012'),
+        #cfg('muEG_2012C', dCache+'/naodell/nuTuples_v7_4/MuEG_Run2012C', 10, 'DATA_MUEG muEG 2012'),
+        #cfg('muEG_2012D', dCache+'/naodell/nuTuples_v7_4/MuEG_Run2012D', 15, 'DATA_MUEG muEG 2012')
         ])
 
     bg.extend([
-        cfg('ZJets', dCache+'/andreypz/nuTuples_v5_8TeV/DYjets', 40, 'ZJets muon 2012'),
-        cfg('ZJets_M-10To50', dCache+'/naodell/nuTuples_v5_8TeV/DYJetsToLL_M-10To50', 20, 'ZJets_M-10To50 muon 2012'),
-        #cfg('WJets', dCache+'/naodell/nuTuples_v5_8TeV/WJetsToLNu', 30, 'WJets muon 2012'),
-        #cfg('WG', dCache+'/naodell/nuTuples_v5_5_8TeV/WGToLNuG', 10, 'WG muon 2012'),
-        #cfg('ZG', dCache+'/naodell/nuTuples_v5_5_8TeV/ZGToLLG', 10, 'ZG muon 2012'),
-        cfg('ttbar', dCache+'/andreypz/nuTuples_v5_8TeV/TTJets', 40, 'ttbar muon 2012'),
-        cfg('ttW', dCache+'/naodell/nuTuples_v5_5_8TeV/TTWJets', 10, 'ttW muon 2012'),
-        cfg('ttZ', dCache+'/naodell/nuTuples_v5_5_8TeV/TTZJets', 10, 'ttZ muon 2012'),
-        cfg('tbarW', dCache+'/andreypz/nuTuples_v5_8TeV/tbarW', 30, 'tbarW muon 2012'),
-        cfg('tW', dCache+'/andreypz/nuTuples_v5_8TeV/tW', 15, 'tW muon 2012'),
-        cfg('ZZJets2L2Nu', dCache+'/andreypz/nuTuples_v5_8TeV/ZZJetsTo2L2Nu', 5, 'ZZJets2L2Nu muon 2012'),
-        cfg('ZZJets2L2Q', dCache+'/naodell/nuTuples_v5_8TeV/ZZJetsTo2L2Q', 5, 'ZZJets2L2Q muon 2012'),
-        cfg('ZZJets4L', dCache+'/naodell/nuTuples_v5_8TeV/ZZJetsTo4L', 5, 'ZZJets4L muon 2012'),
-        cfg('WWJets2L2Nu', dCache+'/andreypz/nuTuples_v5_8TeV/WWJetsTo2L2Nu', 5, 'WWJets2L2Nu muon 2012'),
-        cfg('WZJets3LNu', dCache+'/andreypz/nuTuples_v5_8TeV/WZJetsTo3LNu', 5, 'WZJets3LNu muon 2012'),
-        cfg('WZJets2L2Q', dCache+'/naodell/nuTuples_v5_8TeV/WZJetsTo2L2Q', 10, 'WZJets2L2Q muon 2012')
-        #cfg('QCD_EM', dCache+'/naodell/nuTuples_v5_5_8TeV/QCD_Pt-40_doubleEMEnriched', 10, 'QCD_EM mc 2012')
+        cfg('ZJets_M-50', dCache+'/naodell/nuTuples_v7_4/DYJets', 30, 'ZJets_M-50 muon 2012'),
+        cfg('ZJets_M-10To50', dCache+'/naodell/nuTuples_v7_4/DYJets_M-10To50', 10, 'ZJets_M-10To50 muon 2012'),
+        #cfg('ZbbToLL', dCache+'/naodell/nuTuples_v7_4/ZbbToLL', 20, 'ZbbToLL muon 2012'),
+        #cfg('ZG', dCache+'/naodell/nuTuples_v7_4/ZGToLLG', 10, 'ZG muon 2012'),
+        #cfg('WJets', dCache+'/naodell/nuTuples_v7_4/WJetsToLNu', 20, 'WJets muon 2012'),
+        #cfg('WGStarLNu2E', dCache+'/naodell/nuTuples_v7_4/WGStarToLNu2E', 5, 'WGStarLNu2E muon 2012'),
+        #cfg('WGStarLNu2Mu', dCache+'/naodell/nuTuples_v7_4/WGStarToLNu2Mu', 5, 'WGStarLNu2Mu muon 2012'),
+        #cfg('WGStarLNu2Tau', dCache+'/naodell/nuTuples_v7_4/WGStarToLNu2Tau', 5, 'WGStarLNu2Tau muon 2012'),
+        #cfg('WbbToLNu', dCache+'/naodell/nuTuples_v7_4/WbbJetsToLNu', 20, 'WbbToLNu muon 2012'),
+        #cfg('WbbToLNu', dCache+'/naodell/nuTuples_v7_4/WbbToLL', 20, 'WbbToLNu muon 2012'),
+        #cfg('WG', dCache+'/naodell/nuTuples_v7_4/WGToLNuG', 10, 'WG muon 2012'),
+
+        cfg('ttbar', dCache+'/naodell/nuTuples_v7_4/TTJets', 30, 'ttbar muon 2012'),
+        cfg('tbarW', dCache+'/naodell/nuTuples_v7_4/Tbar_tW', 5, 'tbarW muon 2012'),
+        cfg('tW', dCache+'/naodell/nuTuples_v7_4/T_tW', 5, 'tW muon 2012'),
+        cfg('t_t-channel', dCache+'/naodell/nuTuples_v7_4/T_t', 5, 't_t-channel muon 2012'),
+        cfg('tbar_t-channel', dCache+'/naodell/nuTuples_v7_4/Tbar_t', 5, 'tbar_t-channel muon 2012'),
+        cfg('ttW', dCache+'/naodell/nuTuples_v7_4/TTWJets', 5, 'ttW muon 2012'),
+        cfg('ttZ', dCache+'/naodell/nuTuples_v7_4/TTZJets', 5, 'ttZ muon 2012'),
+        cfg('ttG', dCache+'/naodell/nuTuples_v7_4/TTGJets', 5, 'ttG muon 2012'),
+
+        cfg('WWW', dCache+'/naodell/nuTuples_v7_4/WWWJets', 5, 'WWW muon 2012'),
+        cfg('WWZ', dCache+'/naodell/nuTuples_v7_4/WWZNoGstarJets', 5, 'WWZ muon 2012'),
+        cfg('WZZ', dCache+'/naodell/nuTuples_v7_4/WZZNoGstarJets', 5, 'WZZ muon 2012'),
+        cfg('ZZZ', dCache+'/naodell/nuTuples_v7_4/ZZZNoGstarJets', 5, 'ZZZ muon 2012'),
+        cfg('WWG', dCache+'/naodell/nuTuples_v7_4/WWGJets', 5, 'WWG muon 2012'),
+
+        cfg('ZZJets2L2Nu', dCache+'/naodell/nuTuples_v7_4/ZZJetsTo2L2Nu', 5, 'ZZJets2L2Nu muon 2012'),
+        cfg('ZZJets2L2Q', dCache+'/naodell/nuTuples_v7_4/ZZJetsTo2L2Q', 5, 'ZZJets2L2Q muon 2012'),
+        #cfg('ZZJets4L', dCache+'/naodell/nuTuples_v7_4/ZZJetsTo4L', 5, 'ZZJets4L muon 2012'),
+        cfg('ZZTo4e', dCache+'/naodell/nuTuples_v7_4/ZZTo4e', 5, 'ZZ4e muon 2012'),
+        cfg('ZZTo4mu', dCache+'/naodell/nuTuples_v7_4/ZZTo4mu', 5, 'ZZ4mu muon 2012'),
+        cfg('ZZTo4tau', dCache+'/naodell/nuTuples_v7_4/ZZTo4tau', 5, 'ZZ4tau muon 2012'),
+        cfg('ZZTo2e2mu', dCache+'/naodell/nuTuples_v7_4/ZZTo2e2mu', 5, 'ZZ2e2mu muon 2012'),
+        cfg('ZZTo2e2tau', dCache+'/naodell/nuTuples_v7_4/ZZTo2e2tau', 5, 'ZZ2e2tau muon 2012'),
+        cfg('ZZTo2mu2tau', dCache+'/naodell/nuTuples_v7_4/ZZTo2mu2tau', 5, 'ZZ2mu2tau muon 2012'),
+        cfg('WWJets2L2Nu', dCache+'/naodell/nuTuples_v7_4/WWJetsTo2L2Nu', 5, 'WWJets2L2Nu muon 2012'),
+        cfg('WZJets3LNu', dCache+'/naodell/nuTuples_v7_4/WZJetsTo3LNu', 5, 'WZJets3LNu muon 2012'),
+        cfg('WZJets2L2Q', dCache+'/naodell/nuTuples_v7_4/WZJetsTo2L2Q', 10, 'WZJets2L2Q muon 2012'),
+
+        cfg('QCD_20-30_EM', dCache+'/naodell/nuTuples_v7_4/QCD_Pt_20_30_EMEnriched', 10, 'QCD_20-30_EM muon 2012'),
+        cfg('QCD_30-80_EM', dCache+'/naodell/nuTuples_v7_4/QCD_Pt_30_80_EMEnriched', 10, 'QCD_30-80_EM muon 2012'),
+        cfg('QCD_80-170_EM', dCache+'/naodell/nuTuples_v7_4/QCD_Pt_80_170_EMEnriched', 10, 'QCD_80-170_EM muon 2012'),
+        cfg('QCD_170-250_EM', dCache+'/naodell/nuTuples_v7_4/QCD_Pt_170_250_EMEnriched', 10, 'QCD_170-250_EM muon 2012'),
+        cfg('QCD_250-350_EM', dCache+'/naodell/nuTuples_v7_4/QCD_Pt_250_350_EMEnriched', 10, 'QCD_250-350_EM muon 2012'),
+        cfg('QCD_350_EM', dCache+'/naodell/nuTuples_v7_4/QCD_Pt_350_EMEnriched', 10, 'QCD_350_EM muon 2012'),
+        cfg('QCD_20_MU', dCache+'/naodell/nuTuples_v7_4/QCD_Pt_20_MuEnrichedPt_15', 10, 'QCD_20_MU muon 2012'),
+
+        cfg('ggHToZZ4L_M-125', dCache+'/naodell/nuTuples_v7_4/GluGluToHToZZTo4L_M-125', 2, 'ggHToZZ4L_M-125 muon 2012'),
+        cfg('ggHToWW2L2Nu_M-125', dCache+'/naodell/nuTuples_v7_4/GluGluToHToWWTo2LAndTau2Nu_M-125', 2, 'ggHToWW2L2Nu_M-125 muon 2012'),
+        cfg('WHToWWW3L_M-125', dCache+'/naodell/nuTuples_v7_4/WH_HToWW_3l_M-125', 2, 'WHToWWW3L_M-125 muon 2012'),
+        cfg('TTH_M-125', dCache+'/naodell/nuTuples_v7_4/TTH_Inclusive_M-125', 2, 'TTH_M-125 muon 2012')
+
         ])
 
-
     signal.extend([
-        #cfg('FCNC_M125', dCache+'/devildog/nuTuples_v2_7TeV/FCNC_tH', 5, 'FCNC_M125 mc 2012')
-        cfg('FCNC_M125', dCache+'/naodell/nuTuples_v5_5_8TeV/FCNC_M125_8TeV', 5, 'FCNC_M125 mc 2012'),
-        cfg('FCNC_M145', dCache+'/naodell/nuTuples_v5_5_8TeV/FCNC_M145_8TeV', 5, 'FCNC_M145 mc 2012')
+        #cfg('FCNC_M125_tHj', dCache+'/naodell/nuTuples_v7_4/TToFCNHToWWTo2l2nuPlusTop_M125', 1, 'FCNC_M125_t mc 2012'),
+        #cfg('FCNC_M125_tbarHj', dCache+'/naodell/nuTuples_v7_4/TbarToFCNHToWWTo2l2nuPlusTop_M125/', 1, 'FCNC_M125_tbar mc 2012')
+        cfg('FCNC_M125_tHj', dCache+'/naodell/nuTuples_v6_8TeV/FCNH_M125_t', 1, 'FCNC_M125_t mc 2012'),
+        cfg('FCNC_M125_tbarHj', dCache+'/naodell/nuTuples_v6_8TeV/FCNH_M125_tbar', 1, 'FCNC_M125_tbar mc 2012')
         ])
 
 
@@ -116,6 +150,7 @@ if period == '2011':
         cfg('FCNC', dCache+'/devildog/nuTuples_v2_7TeV/FCNC_tH', 5, 'FCNC mc 2011')
         ])
 
+
 inputSamples = []
 
 if doData:
@@ -124,8 +159,10 @@ if doBG:
     inputSamples.extend(bg)
 if doSignal:
     inputSamples.extend(signal)
+if doFakes:
+    inputSamples.extend(fakes)
 
 if len(inputSamples) is not 0:
-    batcher = b.BatchMaster(inputSamples, outputPath, shortQueue = False, stageDir = 'batchStage/outputBatch', executable = executable, selection = selection + '_' + period)
+    batcher = b.BatchMaster(inputSamples, shortQueue = False, stageDir = 'batchStage', executable = executable, selection = selection + '_' + period)
     batcher.submit_to_batch()
 

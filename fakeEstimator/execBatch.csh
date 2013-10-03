@@ -2,30 +2,33 @@
 
 ### Required parameters #####
 
-set outDir    = $1
+set dataName  = $1
 set count     = $2
-set dataName  = $3
 
 ### Specify addtional arguments here ####
-set suffix    = $4
-set selection = $5
-set period    = $6
+set suffix    = $3
+set selection = $4
+set period    = $5
 
 ### Transfer files, prepare directory ###
 source /uscmst1/prod/sw/cms/cshrc prod
 scram pro CMSSW CMSSW_5_3_2
-cd CMSSW_5_3_2/src
+cd ./CMSSW_5_3_2/src
 cmsenv 
+
+#cd ${_CONDOR_SCRATCH_DIR}
 
 cp ../../source.tar.gz .
 tar -xzf source.tar.gz
-cd analysis/fakeEstimator
+cd Analysis_CMS/fcncAnalysis
 cp ../../../../input_${dataName}_${count}.txt input.txt
 rm histos/*root
 
-sed -i "s/SUFFIX/${suffix}/g" fakeAnalyzer.C
-root -l -b -q run.C
+
+./fcncLocal.csh $suffix $selection $period
 
 ### Copy output and cleanup ###
-rename .root _${dataName}_$count.root histos/fakeHistograms*
-cp histos/fakeHistograms_*.root $outDir/.
+rename .root _${dataName}_$count.root histos/fcncHistograms*
+
+#cp histos/fcncHistograms_*.root $outDir/.
+cp histos/fcncHistograms_*.root ${_CONDOR_SCRATCH_DIR}
