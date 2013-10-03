@@ -67,6 +67,12 @@ class fakeAnalyzer : public TSelector {
         Selector    *selector;
         TriggerSelector *triggerSelector;
 
+        // Useful global variables
+        bool    zTagged;
+        bool    ossfTagged;
+
+        Float_t dileptonMassOS;
+
     public :
         TTree          *fChain;   //!pointer to the analyzed TTree or TChain
 
@@ -153,6 +159,8 @@ class fakeAnalyzer : public TSelector {
         virtual TList  *GetOutputList() const { return fOutput; }
         //virtual void    SlaveTerminate() {};
         virtual void    Terminate();
+
+        virtual void    DoZTag(vObj leptons);
 
         virtual string  str(int i) {return static_cast<ostringstream*>( &(ostringstream() << i) )->str();}
 
