@@ -211,6 +211,7 @@ bool Selector::MuonLooseID(TCMuon* muon)
     return pass;
 }
 
+
 void Selector::MuonSelector(TClonesArray* muons) 
 {
 
@@ -243,30 +244,32 @@ void Selector::MuonSelector(TClonesArray* muons)
                     - TMath::Max(0.0, (double)_rho*EffectiveArea(thisMuon)))
                 )/thisMuon->Pt();
 
+        thisMuon->SetIsoMap("IsoRel", muISO);
         //cout << "(" << thisMuon->Pt() << ", " << thisMuon->Eta() << "),\t";
 
-        // identification
-        if (
-                thisMuon->Pt() > _muPtCuts[0]
-                && MuonTightID(thisMuon)
-           ) {
+        // pt cuts, identification, and isolation
+        if (thisMuon->Pt() > _muPtCuts[0]) {
 
-            if (muISO < 1.0) _selMuons["denom_v1"].push_back(*thisMuon);
-            if (muISO < 0.4) _selMuons["denom_v2"].push_back(*thisMuon);
-            if (muISO < 0.12) _selMuons["tight"].push_back(*thisMuon);
-        } else if (
-                thisMuon->Pt() > _muPtCuts[0]
-                && thisMuon->IsPF()
-                && fabs(thisMuon->Dz(_selVertices[0]))  < 1. 
-                && fabs(thisMuon->Dxy(_selVertices[0])) < 0.5
-                ) 
-            _selMuons["premva"].push_back(*thisMuon);
-        else if (
-                thisMuon->Pt() > _muPtCuts[1]  
-                && MuonLooseID(thisMuon)
+            // QCD dilepton control retion tag and probe
+            if (
+                    sqrt(pow(thisMuon->Dz(_selVertices[0]), 2) + pow(thisMuon->Dxy(_selVertices[0]), 2)) > 1. // Replacement for SIP3D inverted cut -- needs to be tuned
+                    && muISO > 0.5
+                    ) 
+                _selMuons["QCD2l_CR_tag"].push_back(*thisMuon);
+            else if (
+                    thisMuon->IsPF()
+                    ) 
+                _selMuons["QCD2l_CR_probe"].push_back(*thisMuon);
+
+            // analysis lepton selection
+            if (MuonTightID(thisMuon) && muISO < 0.12) 
+                _selMuons["tight"].push_back(*thisMuon);
+
+        } else if ( thisMuon->Pt() > _muPtCuts[1]  ) 
+                if (MuonLooseID(thisMuon)
                 //&& (muISO > 0.1 && thisMuon->Pt() > 20)
                 //&& (muISO < 0.15 && thisMuon->Pt() < 20)
-                ) 
+                   )
             _selMuons["loose"].push_back(*thisMuon);
     }
 
@@ -403,6 +406,8 @@ void Selector::ElectronSelector(TClonesArray* electrons)
 
         // analysis electrons
         //if (ElectronTightID(thisElec)) 
+
+        if (thisElec->IdMap("preSelPassV1")) _selElectrons["fakeable"].push_back(*thisElec);
 
         if (thisElec->IdMap("preSelPassV1") && ElectronMVA(thisElec)) {
             _selElectrons["premva"].push_back(*thisElec);

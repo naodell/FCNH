@@ -1,1 +1,1 @@
-dcap://cmsdca1.fnal.gov:24140/pnfs/fnal.gov/usr/cms/WAX/11/store/user/naodell/nuTuples_v7_4/DYJets/nuTuple_218_1_hDE.root
+/home/naodell/STORAGE_ANALYSIS/data/ntuples/nuTuple_1_1_UA3.root
