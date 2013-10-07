@@ -825,19 +825,15 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj electrons)
         iPt1 = 1;
     else if (electrons[0].Pt() > 20 && electrons[0].Pt() < 50)
         iPt1 = 2;
-    else if (electrons[0].Pt() > 50 && electrons[0].Pt() < 100)
+    else if (electrons[0].Pt() > 50)
         iPt1 = 3;
-    else
-        iPt1 = 4;
 
     if (electrons[1].Pt() < 20.)
         iPt2 = 1;
     else if (electrons[1].Pt() > 20 && electrons[1].Pt() < 50)
         iPt2 = 2;
-    else if (electrons[1].Pt() > 50 && electrons[1].Pt() < 100)
+    else if (electrons[1].Pt() > 50) 
         iPt2 = 3;
-    else
-        iPt2 = 4;
 
     //cout << "===========================" << endl;
     //cout << iPt1 << ", " << iEta1 << "\t\t" << electrons[0].Pt() << ", " << electrons[0].Eta() << "\t\t" << 3*iEta1 + iPt1 << endl;
