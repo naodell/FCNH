@@ -282,6 +282,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
     for (unsigned i = 0; i < leptons.size(); ++i) {
         if (probeLep.DeltaR(leptons[i]) < 0.01) {
             passLep = leptons[i];
+            matched = true;
             break;
         }
     }
