@@ -70,6 +70,9 @@ class fakeAnalyzer : public TSelector {
         // Useful global variables
         bool    zTagged;
         bool    ossfTagged;
+        bool    isTP;
+
+        TCPhysObject   tagLep, probeLep, passLep;
 
         Float_t dileptonMassOS;
 
@@ -160,6 +163,8 @@ class fakeAnalyzer : public TSelector {
         //virtual void    SlaveTerminate() {};
         virtual void    Terminate();
 
+        virtual void    FillDenominatorHists();
+        virtual void    FillNumeratorHists();
         virtual void    DoZTag(vObj leptons);
 
         virtual string  str(int i) {return static_cast<ostringstream*>( &(ostringstream() << i) )->str();}
