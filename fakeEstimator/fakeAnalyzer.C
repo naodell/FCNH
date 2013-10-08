@@ -278,6 +278,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
     if (!isTP) return kTRUE;
 
     // Match probe lepton to tight leptons
+    bool matched = false;
     for (unsigned i = 0; i < leptons.size(); ++i) {
         if (probeLep.DeltaR(leptons[i]) < 0.01) {
             passLep = leptons[i];
@@ -285,9 +286,10 @@ bool fakeAnalyzer::Process(Long64_t entry)
         }
     }
 
-    FillNumeratorHists();
-
-    return kTRUE;
+    if (matched)
+        FillNumeratorHists();
+    else
+        return kTRUE;
 }
 
 void fakeAnalyzer::Terminate()
@@ -406,11 +408,11 @@ void fakeAnalyzer::FillNumeratorHists()
                 "h1_MuPassLepEta", "pass muon #eta;#eta;Entries / bin", 25, -2.5, 2.5);
 
         histManager->Fill1DHistUnevenBins(passLep.Pt(),
-                "h1_MuDenomPt", "pass muon p_{T};p_{T};Entries / 3 GeV", nPtBins, ptBins);
+                "h1_MuNumerPt", "pass muon p_{T};p_{T};Entries / 3 GeV", nPtBins, ptBins);
         histManager->Fill1DHistUnevenBins(passLep.Eta(),
-                "h1_MuDenomEta", "pass muon #eta;#eta;Entries / 3 GeV", nEtaBins, etaBins);
+                "h1_MuNumerEta", "pass muon #eta;#eta;Entries / 3 GeV", nEtaBins, etaBins);
         histManager->Fill2DHistUnevenBins(passLep.Pt(), passLep.Eta(),
-                "h2_MuDenom", "pass muon p_{T};p_{T};#eta", nPtBins, ptBins, nEtaBins, etaBins);
+                "h2_MuNumer", "pass muon p_{T};p_{T};#eta", nPtBins, ptBins, nEtaBins, etaBins);
 
     }   else if (lepType == "electron") {
         histManager->Fill1DHist(passLep.Pt(),
@@ -419,10 +421,10 @@ void fakeAnalyzer::FillNumeratorHists()
                 "h1_ElePassLepEta", "pass electron #eta;#eta;Entries / bin", 25, -2.5, 2.5);
 
         histManager->Fill1DHistUnevenBins(passLep.Pt(),
-                "h1_EleDenomPt", "pass electron p_{T};p_{T};Entries / 3 GeV", nPtBins, ptBins);
+                "h1_EleNumerPt", "pass electron p_{T};p_{T};Entries / 3 GeV", nPtBins, ptBins);
         histManager->Fill1DHistUnevenBins(passLep.Eta(),
-                "h1_EleDenomEta", "pass electron #eta;#eta;Entries / 3 GeV", nEtaBins, etaBins);
+                "h1_EleNumerEta", "pass electron #eta;#eta;Entries / 3 GeV", nEtaBins, etaBins);
         histManager->Fill2DHistUnevenBins(passLep.Pt(), passLep.Eta(),
-                "h2_EleDenom", "pass electron p_{T};p_{T};#eta", nPtBins, ptBins, nEtaBins, etaBins);
+                "h2_EleNumer", "pass electron p_{T};p_{T};#eta", nPtBins, ptBins, nEtaBins, etaBins);
     }
 }
