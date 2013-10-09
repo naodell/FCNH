@@ -16,19 +16,12 @@ scram pro CMSSW CMSSW_5_3_2
 cd ./CMSSW_5_3_2/src
 cmsenv 
 
-#cd ${_CONDOR_SCRATCH_DIR}
-
 cp ../../source.tar.gz .
 tar -xzf source.tar.gz
-cd Analysis_CMS/fcncAnalysis
+cd Analysis_CMS/fakeEstimator
 cp ../../../../input_${dataName}_${count}.txt input.txt
-rm histos/*root
 
+root -l -b -q run.C
+ls
 
-./fcncLocal.csh $suffix $selection $period
-
-### Copy output and cleanup ###
-rename .root _${dataName}_$count.root histos/fcncHistograms*
-
-#cp histos/fcncHistograms_*.root $outDir/.
-cp histos/fcncHistograms_*.root ${_CONDOR_SCRATCH_DIR}
+cp fakeHisotgrams.root ${_CONDOR_SCRATCH_DIR}/fakeHistograms_${suffix}_${count}.root

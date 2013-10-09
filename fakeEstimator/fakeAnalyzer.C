@@ -10,15 +10,18 @@ using namespace std;
 
 const string suffix = "TEST";
 
-const bool  doGenPrint  = false;
+const bool  doQCDDileptonCR = true;
+const bool  doGenPrint      = false;
 
 const float jetPtCut[]        = {30., 15.};
 const float muPtCut[]         = {10., 3.};
 const float elePtCut[]        = {10., 10.};
 const float phoPtCut[]        = {10., 10.};
 
-float ptBins[]   = {10., 15., 20., 25., 30., 35., 50., 80., 120., 250.};
-float etaBins[]  = {0., 1., 1.479, 2., 2.5};    
+unsigned  nPtBins     = 6;
+unsigned  nEtaBins    = 2;
+float     ptBins[]    = {5., 10., 20., 35., 50., 70., 100.}; 
+float     etaBins[]   = {0., 1.5, 2.5};
 
 // Do something about these: should just have one sort condition function
 bool P4SortCondition(const TLorentzVector& p1, const TLorentzVector& p2) {return (p1.Pt() > p2.Pt());} 
@@ -226,97 +229,68 @@ bool fakeAnalyzer::Process(Long64_t entry)
     //                            //
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
 
+    isTP = false;
 
-    // Prepare sample for FR estimation.  Require only one reconstructed
-    // lepton, at least one jet, and MET < 30 (20) as in HWW analysis
+    // Prepare control regions for FR estimation...  
 
-    if (
-            (recoMuons->GetSize() + recoElectrons->GetSize()) < 1
-            || recoMET->Mod() > 20 
-            || allJets.size() == 0
-       ) return kTRUE;
+    if (doQCDDileptonCR) {
+        // For description of QCD dilepton control region, see section 7.4.1 of
+        // ttH note (AN-13-159).
+        // First thing is to find the tag lepton and the probe lepton. For this
+        // control region, the tag is a muon that is displaced from the PV and
+        // is anti-isolated.  The probe is a lepton passing loose
+        // identification requirement without any isolation requirement
 
-    // Check if there is a dilepton pair consisten with a Z boson
-    DoZTag(leptons);
+        UInt_t nTags    = selector->GetSelectedMuons("QCD2l_CR_tag").size();
+        UInt_t nProbes  = selector->GetSelectedMuons("QCD2l_CR_probe").size();
 
-    // Do numerator/denominator counting for estimate. 
-    // electrons first..
+        if (nTags == 1 && nProbes == 1) {
 
-    vector<TCElectron> eleDenom = looseElectrons; 
-    unsigned nMatched   = 0;
-    unsigned nDenom     = 0;
+            tagLep    = (TCPhysObject)selector->GetSelectedMuons("QCD2l_CR_tag")[0];
+            probeLep  = (TCPhysObject)selector->GetSelectedMuons("QCD2l_CR_probe")[0];
 
-    for (unsigned j = 0; j < eleDenom.size(); ++j) {
+            // Next we  make sure event is consistent with bbbar production
+            //probes.push_back(selector->GetSelectedElectrons("QCD2l_CR_probe")); // <-- Add these
 
-        if (
-                eleDenom[j].DeltaR(allJets[0]) < 1.
-                //|| eleDenom[j].DeltaR(leptons[lepIndex.first]) == 0. 
-                //|| eleDenom[j].DeltaR(leptons[lepIndex.second]) == 0.
-           ) continue;
+            // Check tag/probe pair is back-to-back
+            Float_t tpDeltaPhi  = tagLep.DeltaPhi(probeLep);
+            Float_t tpBalance   = probeLep.Pt()/(tagLep.Pt()*(1 + tagLep.IsoMap("IsoRel"))); 
 
-        //if (j == 0) {
-        //    histManager->Fill1DHist((leptons[lepIndex.first] + leptons[lepIndex.second]).M(), "h1_DileptonMass", "dilepton mass;M_{ll};Entries / 2 GeV", 30, 60, 120);
-        //}
+            histManager->Fill1DHist(fabs(tpDeltaPhi),
+                    "h1_TagProbeDeltaPhi", "#Delta #phi (tag,probe);#Delta #phi (tag,probe);Entries / bin", 36, 0., TMath::Pi());
+            histManager->Fill1DHist(fabs(tpBalance),
+                    "h1_TagProbePtBalance", "balance (tag,probe);balance (tag,probe);Entries / bin", 40, -2., 2.);
 
-        histManager->Fill1DHistUnevenBins(eleDenom[j].Pt(), "h1_EleDenomPt", "electron fakeable p_{T};p_{T};Entries / 10 GeV", 9, ptBins);
-        histManager->Fill1DHistUnevenBins(fabs(eleDenom[j].Eta()), "h1_EleDenomEta", "electron fakeable #eta;#eta;Entries / bin", 4, etaBins);
-        histManager->Fill2DHistUnevenBins(fabs(eleDenom[j].Eta()), eleDenom[j].Pt(), "h2_EleDenomPtVsEta", "electron fakeable ;#eta;p_{T}", 4, etaBins, 9, ptBins);
+            if (fabs(tpDeltaPhi) < 2.5 || tpBalance > 1) 
+                return kTRUE;
+            else {
+                // Fakeable object is found!!! Now fill histograms for parameterizing fake rates by pt and eta
+                isTP = true;
+                FillDenominatorHists();
+            }
 
-        ++nDenom;
+        } else
+            return kTRUE;
+    } else
+        return kTRUE;
 
-        for (unsigned k = 0; k < leptons.size(); ++k) {
+    // Verify that a probe is found
+    if (!isTP) return kTRUE;
 
-            if (leptons[k].Type() != "electron" || eleDenom[j].DeltaR(electrons[k]) != 0.) continue;
-
-            histManager->Fill1DHistUnevenBins(eleDenom[j].Pt(), "h1_EleNumerPt", "electron fakeable p_{T};p_{T};Entries / 10 GeV", 9, ptBins);
-            histManager->Fill1DHistUnevenBins(fabs(eleDenom[j].Eta()), "h1_EleNumerEta", "electron fakeable #eta;#eta;Entries / bin", 4, etaBins);
-            histManager->Fill2DHistUnevenBins(fabs(eleDenom[j].Eta()), eleDenom[j].Pt(), "h2_EleNumerPtVsEta", "electron fakeable;#eta;p_{T}", 4, etaBins, 9, ptBins);
-
-            ++nMatched; 
+    // Match probe lepton to tight leptons
+    bool matched = false;
+    for (unsigned i = 0; i < leptons.size(); ++i) {
+        if (probeLep.DeltaR(leptons[i]) < 0.01) {
+            passLep = leptons[i];
+            matched = true;
+            break;
         }
-
-        histManager->Fill1DHist(nDenom, "h1_EleDenomMult", "electron denominator;N_{denom};Entries / bin", 4, -0.5, 3.5);
     }
 
-    // Now the muons...
-
-    vector<TCMuon> muDenom = looseMuons;
-    nMatched   = 0;
-    nDenom     = 0;
-
-    for (unsigned j = 0; j < muDenom.size(); ++j) {
-
-        if (
-                muDenom[j].DeltaR(allJets[0]) < 1.
-                //|| muDenom[j].DeltaR(leptons[lepIndex.first]) == 0. 
-                //|| muDenom[j].DeltaR(leptons[lepIndex.second]) == 0.
-           ) continue;
-
-        //if (j == 0) {
-        //    histManager->Fill1DHist((leptons[lepIndex.first] + leptons[lepIndex.second]).M(), "h1_DileptonMass", "dilepton mass;M_{ll};Entries / 2 GeV", 30, 60, 120);
-        //}
-
-        histManager->Fill1DHistUnevenBins(muDenom[j].Pt(), "h1_MuDenomPt", "muon fakeable p_{T};p_{T};Entries / 10 GeV", 9, ptBins);
-        histManager->Fill1DHistUnevenBins(fabs(muDenom[j].Eta()), "h1_MuDenomEta", "muon fakeable #eta;#eta;Entries / bin", 4, etaBins);
-        histManager->Fill2DHistUnevenBins(fabs(muDenom[j].Eta()), muDenom[j].Pt(), "h2_MuDenomPtVsEta", "muon fakeable ;#eta;p_{T}", 4, etaBins, 9, ptBins);
-
-        ++nDenom;
-
-        for (unsigned k = 0; k < leptons.size(); ++k) {
-
-            if (leptons[k].Type() != "muon" || muDenom[j].DeltaR(leptons[k]) != 0.) continue;
-
-            histManager->Fill1DHistUnevenBins(muDenom[j].Pt(), "h1_MuNumerPt", "muon fakeable p_{T};p_{T};Entries / 10 GeV", 9, ptBins);
-            histManager->Fill1DHistUnevenBins(fabs(muDenom[j].Eta()), "h1_MuNumerEta", "muon fakeable #eta;#eta;Entries / bin", 4, etaBins);
-            histManager->Fill2DHistUnevenBins(fabs(muDenom[j].Eta()), muDenom[j].Pt(), "h2_MuNumerPtVsEta", "muon fakeable ;#eta;p_{T}", 4, etaBins, 9, ptBins);
-
-            ++nMatched; 
-        }
-
-        histManager->Fill1DHist(nDenom, "h1_MuDenomMult", "muon denominator;N_{denom};Entries / bin", 4, -0.5, 3.5);
-    }
-
-    return kTRUE;
+    if (matched)
+        FillNumeratorHists();
+    else
+        return kTRUE;
 }
 
 void fakeAnalyzer::Terminate()
@@ -384,5 +358,74 @@ void fakeAnalyzer::DoZTag(vObj leptons)
                 //}
             }
         }
+    }
+}
+
+void fakeAnalyzer::FillDenominatorHists()
+{
+
+    histManager->Fill1DHist(tagLep.Pt(),
+            "h1_TagLepPt", "tag lepton p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
+    histManager->Fill1DHist(tagLep.Eta(),
+            "h1_TagLepEta", "tag lepton #eta;#eta;Entries / bin", 25, -2.5, 2.5);
+
+    string lepType = probeLep.Type();
+    if (lepType == "muon") {
+        histManager->Fill1DHist(probeLep.Pt(),
+                "h1_MuProbeLepPt", "probe muon p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
+        histManager->Fill1DHist(probeLep.Eta(),
+                "h1_MuProbeLepEta", "probe muon #eta;#eta;Entries / bin", 25, -2.5, 2.5);
+
+        histManager->Fill1DHistUnevenBins(probeLep.Pt(),
+                "h1_MuDenomPt", "probe muon p_{T};p_{T};Entries / 3 GeV", nPtBins, ptBins);
+        histManager->Fill1DHistUnevenBins(probeLep.Eta(),
+                "h1_MuDenomEta", "probe muon #eta;#eta;Entries / 3 GeV", nEtaBins, etaBins);
+        histManager->Fill2DHistUnevenBins(probeLep.Pt(), probeLep.Eta(),
+                "h2_MuDenom", "probe muon p_{T};p_{T};#eta", nPtBins, ptBins, nEtaBins, etaBins);
+
+    }   else if (lepType == "electron") {
+        histManager->Fill1DHist(probeLep.Pt(),
+                "h1_EleProbeLepPt", "probe electron p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
+        histManager->Fill1DHist(probeLep.Eta(),
+                "h1_EleProbeLepEta", "probe electron #eta;#eta;Entries / bin", 25, -2.5, 2.5);
+
+        histManager->Fill1DHistUnevenBins(probeLep.Pt(),
+                "h1_EleDenomPt", "probe electron p_{T};p_{T};Entries / 3 GeV", nPtBins, ptBins);
+        histManager->Fill1DHistUnevenBins(probeLep.Eta(),
+                "h1_EleDenomEta", "probe electron #eta;#eta;Entries / 3 GeV", nEtaBins, etaBins);
+        histManager->Fill2DHistUnevenBins(probeLep.Pt(), probeLep.Eta(),
+                "h2_EleDenom", "probe electron p_{T};p_{T};#eta", nPtBins, ptBins, nEtaBins, etaBins);
+    }
+}
+
+void fakeAnalyzer::FillNumeratorHists()
+{
+
+    string lepType = passLep.Type();
+    if (lepType == "muon") {
+        histManager->Fill1DHist(passLep.Pt(),
+                "h1_MuPassLepPt", "pass muon p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
+        histManager->Fill1DHist(passLep.Eta(),
+                "h1_MuPassLepEta", "pass muon #eta;#eta;Entries / bin", 25, -2.5, 2.5);
+
+        histManager->Fill1DHistUnevenBins(passLep.Pt(),
+                "h1_MuNumerPt", "pass muon p_{T};p_{T};Entries / 3 GeV", nPtBins, ptBins);
+        histManager->Fill1DHistUnevenBins(passLep.Eta(),
+                "h1_MuNumerEta", "pass muon #eta;#eta;Entries / 3 GeV", nEtaBins, etaBins);
+        histManager->Fill2DHistUnevenBins(passLep.Pt(), passLep.Eta(),
+                "h2_MuNumer", "pass muon p_{T};p_{T};#eta", nPtBins, ptBins, nEtaBins, etaBins);
+
+    }   else if (lepType == "electron") {
+        histManager->Fill1DHist(passLep.Pt(),
+                "h1_ElePassLepPt", "pass electron p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
+        histManager->Fill1DHist(passLep.Eta(),
+                "h1_ElePassLepEta", "pass electron #eta;#eta;Entries / bin", 25, -2.5, 2.5);
+
+        histManager->Fill1DHistUnevenBins(passLep.Pt(),
+                "h1_EleNumerPt", "pass electron p_{T};p_{T};Entries / 3 GeV", nPtBins, ptBins);
+        histManager->Fill1DHistUnevenBins(passLep.Eta(),
+                "h1_EleNumerEta", "pass electron #eta;#eta;Entries / 3 GeV", nEtaBins, etaBins);
+        histManager->Fill2DHistUnevenBins(passLep.Pt(), passLep.Eta(),
+                "h2_EleNumer", "pass electron p_{T};p_{T};#eta", nPtBins, ptBins, nEtaBins, etaBins);
     }
 }

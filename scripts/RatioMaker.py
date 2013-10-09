@@ -24,7 +24,7 @@ def ratio_1D(ratioDict, path, inFile, outFile):
 
 def ratio_2D(ratioDict, path, inFile):
 
-    outFile = r.TFile('electronQMisID.root', 'RECREATE')
+    outFile = r.TFile('data/electronQMisID.root', 'RECREATE')
 
     h2_Eff = []
 
@@ -40,9 +40,8 @@ def ratio_2D(ratioDict, path, inFile):
                          h2_Numer.GetNbinsY(), h2_Numer.GetYaxis().GetXmin(), h2_Numer.GetYaxis().GetXmax()))
         h2_Eff[len(h2_Eff)-1].Divide(h2_Numer, h2_Denom)
 
-    print 'Done!!!'
-    outFile.Print()
 
+    print 'Done!!!'
     outFile.Write()
     outFile.Close()
 
@@ -51,10 +50,15 @@ if __name__ == '__main__':
     r.gROOT.SetBatch()
     r.gStyle.SetOptStat(0)
 
-    inFile  = r.TFile('fcncAnalysis/combined_histos/fcnh_cut1_2012_20131002_220101.root', 'OPEN')
+    inFile  = r.TFile('fcncAnalysis/combined_histos/fcnh_cut1_2012_20131003_171426.root', 'OPEN')
 
     #bDict = {'bTagEff':('BTruthNumerPt', 'BTruthDenomPt'), 'bMistagEff':('BMistagNumerPt', 'BMistagDenomPt')}
     #ratio_1D(bDict, r.TFile('histos/fcnh_cut1_2012_20130822_183318.root', 'OPEN'), 'inclusive/ttbar')
 
-    eMisQDict = {'leadElectronMisQ':('LeadElecQMisIDNumer', 'LeadElecQMisIDDenom'), 'trailingElectronMisQ':('TrailingElecQMisIDNumer', 'TrailingElecQMisIDDenom')}
+    eMisQDict = {
+        'LeadElectronMisQ':('LeadElecQMisIDNumer', 'LeadElecQMisIDDenom'),
+        'TrailingElectronMisQ':('TrailingElecQMisIDNumer', 'TrailingElecQMisIDDenom'),
+        'DielectronMisQ':('DileptonQMisIDNumer', 'DileptonQMisIDDenom')}
+
     ratio_2D(eMisQDict, 'inclusive/DATA_ELECTRON', inFile)
+
