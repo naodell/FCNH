@@ -404,6 +404,8 @@ void Selector::ElectronSelector(TClonesArray* electrons)
         float eleISO = (thisElec->IsoMap("pfChIso_R04") + max(0., (double)(thisElec->IsoMap("pfPhoIso_R04") 
                         + thisElec->IsoMap("pfNeuIso_R04") - _rho*thisElec->IsoMap("EffArea_R04"))))/thisElec->Pt(); 
 
+        thisElec->SetIsoMap("relIso", eleISO);
+
         // analysis electrons
         //if (ElectronTightID(thisElec)) 
 
