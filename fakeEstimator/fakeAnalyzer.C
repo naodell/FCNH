@@ -13,7 +13,7 @@ const string suffix = "TEST";
 const bool  doQCDDileptonCR = true;
 const bool  doGenPrint      = false;
 
-const float jetPtCut[]        = {30., 15.};
+const float jetPtCut[]        = {25., 15.};
 const float muPtCut[]         = {10., 3.};
 const float elePtCut[]        = {10., 10.};
 const float phoPtCut[]        = {10., 10.};
@@ -195,31 +195,27 @@ bool fakeAnalyzer::Process(Long64_t entry)
     extraLeptons.insert(extraLeptons.end(), looseMuons.begin(), looseMuons.end());
 
     // Get jets
-    vector<TCJet> allJets;
     vector<TCJet> jets      = selector->GetSelectedJets("tight");
-    vector<TCJet> bJetsL    = selector->GetSelectedJets("bJetsL");
-    vector<TCJet> bJetsM    = selector->GetSelectedJets("bJetsM");
+    vector<TCJet> bJetsL    = selector->GetSelectedJets("bJetsLoose");
+    vector<TCJet> bJetsM    = selector->GetSelectedJets("bJetsMedium");
     vector<TCJet> fwdJets   = selector->GetSelectedJets("forward");
+    vector<TCJet> muJets    = selector->GetSelectedJets("muJets");
+    vector<TCJet> eleJets   = selector->GetSelectedJets("eleJets");
 
     jets.insert(jets.end(), fwdJets.begin(), fwdJets.end());
-    allJets.insert(allJets.end(), jets.begin(), jets.end());
-    allJets.insert(allJets.end(), bJetsM.begin(), bJetsM.end());
+    jets.insert(jets.end(), bJetsL.begin(), bJetsL.end());
+
+    vector<TCJet> tagJets;
+    tagJets.insert(tagJets.end(), bJetsM.begin(), bJetsM.end());
+    tagJets.insert(tagJets.end(), bJetsL.begin(), bJetsL.end());
 
     // Order collections by pt
     sort(extraLeptons.begin(), extraLeptons.end(), P4SortCondition);
-    sort(allJets.begin(), allJets.end(), P4SortCondition);
+    sort(tagJets.begin(), tagJets.end(), P4SortCondition);
     sort(jets.begin(), jets.end(), P4SortCondition);
     sort(bJetsL.begin(), bJetsL.end(), BTagSortCondition);
     sort(bJetsM.begin(), bJetsM.end(), BTagSortCondition);
     sort(leptons.begin(), leptons.end(), P4SortCondition);
-
-
-    histManager->Fill1DHist(leptons.size(),
-            "h1_leptonMult", "lepton multiplicity; N_{leptons}; Entries / bin", 6, -0.5, 5.5);
-    histManager->Fill1DHist(jets.size(),
-            "h1_jetMult", "jet multiplicity; N_{jets}; Entries / bin", 10, -0.5, 9.5);
-    histManager->Fill1DHist(bJetsM.size(),
-            "h1_bJetMult", "b-jet multiplicity; N_{b-jet}; Entries / bin", 10, -0.5, 9.5);
 
 
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
@@ -252,6 +248,24 @@ bool fakeAnalyzer::Process(Long64_t entry)
             // Next we  make sure event is consistent with bbbar production
             //probes.push_back(selector->GetSelectedElectrons("QCD2l_CR_probe")); // <-- Add these
 
+            // Match the tag to a loose b-jet
+            bool jetMatched = false;
+            bool jetVeto    = false;
+            for (unsigned i = 0; i < tagJets.size(); ++i) {
+                if (tagLep.DeltaR(tagJets[i]) < 0.3) {
+                    jetMatched = true;
+                    continue;
+                }
+
+                if (
+                        tagJets.size() > 2 
+                        && (probeLep.DeltaR(tagJets[i]) < 0.7 || tagLep.DeltaR(tagJets[i]) < 0.7 )
+                   )
+                    jetVeto = true;
+            }
+
+            if (!jetMatched || jetVeto) return kTRUE;
+
             // Check tag/probe pair is back-to-back
             Float_t tpDeltaPhi  = tagLep.DeltaPhi(probeLep);
             Float_t tpBalance   = probeLep.Pt()/(tagLep.Pt()*(1 + tagLep.IsoMap("IsoRel"))); 
@@ -274,7 +288,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
     } else
         return kTRUE;
 
-    // Verify that a probe is found
+    // Verify that a tag/probe pair is found is found
     if (!isTP) return kTRUE;
 
     // Match probe lepton to tight leptons
@@ -286,6 +300,17 @@ bool fakeAnalyzer::Process(Long64_t entry)
             break;
         }
     }
+
+    // Require that there is only one tight lepton
+    if (leptons.size() != 0)
+        return kTRUE;
+
+    histManager->Fill1DHist(leptons.size(),
+            "h1_leptonMult", "lepton multiplicity; N_{leptons}; Entries / bin", 6, -0.5, 5.5);
+    histManager->Fill1DHist(jets.size(),
+            "h1_jetMult", "jet multiplicity; N_{jets}; Entries / bin", 10, -0.5, 9.5);
+    histManager->Fill1DHist(bJetsM.size(),
+            "h1_bJetMult", "b-jet multiplicity; N_{b-jet}; Entries / bin", 10, -0.5, 9.5);
 
     if (matched)
         FillNumeratorHists();

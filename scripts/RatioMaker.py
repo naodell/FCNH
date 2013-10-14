@@ -33,7 +33,7 @@ def ratio_2D(ratioDict, path, inFile):
         h2_Numer = inFile.GetDirectory(path).Get('h2_{0}'.format(value[0]))
         h2_Denom = inFile.GetDirectory(path).Get('h2_{0}'.format(value[1]))
 
-        h2_Eff.append(r.TH2D('h2_{0}'.format(key), '{0};p_{{T}};#varepsilon'.format(key),
+        h2_Eff.append(r.TH2D('h2_{0}'.format(key), '{0};;'.format(key),
                          h2_Numer.GetNbinsX(), h2_Numer.GetXaxis().GetXmin(), h2_Numer.GetXaxis().GetXmax(),
                          h2_Numer.GetNbinsY(), h2_Numer.GetYaxis().GetXmin(), h2_Numer.GetYaxis().GetXmax()))
         h2_Eff[len(h2_Eff)-1].Divide(h2_Numer, h2_Denom)

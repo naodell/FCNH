@@ -134,7 +134,10 @@ class fcncAnalyzer : public TSelector {
         bitset<18>  evtCategory;
         UInt_t      flavorCat;
         UInt_t      chargeCat;
+
         Float_t     evtWeight;
+        Float_t     qFlipWeight;
+        Float_t     fakeWeight;
 
         // trees for lepton mva
         TTree*  muTree;
@@ -192,7 +195,6 @@ class fcncAnalyzer : public TSelector {
         UInt_t          bunchCross;
         Float_t         ptHat;
         Float_t         qScale;
-        //Float_t         evtWeight;
         Float_t         rhoFactor;
         Float_t         rho25Factor;
         Float_t         rhoMuFactor;
@@ -265,8 +267,10 @@ class fcncAnalyzer : public TSelector {
         virtual void    MetPlots(TCMET, vObj);
         virtual void    DileptonPlots2D(vObj);
         virtual void    GenPlots(vector<TCGenParticle>, vObj);
+        virtual void    MiscPlots(unsigned);
+        virtual void    FillYieldHists(string, float, unsigned);
 
-        // Set methods
+        // Set/Get methods
         virtual void    SetEventCategory(vObj);
         virtual void    SetVarsMVA(vObj, vector<TCJet>, vector<TCJet>);
         virtual void    FillLepMVA(vector<TCMuon>, vector<TCElectron>, vector<TCJet>, TVector3);
@@ -342,7 +346,6 @@ void fcncAnalyzer::Init(TTree *tree)
 
     fChain->SetBranchAddress("ptHat", &ptHat, &b_ptHat);
     fChain->SetBranchAddress("qScale", &qScale, &b_qScale);
-    ////fChain->SetBranchAddress("evtWeight", &evtWeight, &b_evtWeight);
     fChain->SetBranchAddress("triggerStatus", &triggerStatus, &b_triggerStatus);
     fChain->SetBranchAddress("hltPrescale", hltPrescale, &b_hltPrescale);
     fChain->SetBranchAddress("NoiseFilters", &NoiseFilters_isScraping, &b_NoiseFilters);

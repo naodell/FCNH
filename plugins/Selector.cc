@@ -253,7 +253,7 @@ void Selector::MuonSelector(TClonesArray* muons)
             // QCD dilepton control retion tag and probe
             if (
                     sqrt(pow(thisMuon->Dz(_selVertices[0]), 2) + pow(thisMuon->Dxy(_selVertices[0]), 2)) > 1. // Replacement for SIP3D inverted cut -- needs to be tuned
-                    && muISO > 0.5
+                    && muISO > 0.2
                     ) 
                 _selMuons["QCD2l_CR_tag"].push_back(*thisMuon);
             else if (
