@@ -31,6 +31,9 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
     h2_EleFakes = (TH2D*)f_fakeFile->Get("h2_Fakes_ele_v1");
     h2_MuFakes = (TH2D*)f_fakeFile->Get("h2_Fakes_mu_v1");
 
+    TFile* f_misQFile = new TFile("../data/electronQMisID.root", "OPEN");
+    h2_DielectronMisQ = (TH2D*)f_misQFile->Get("h2_DielectronMisQ");
+
 }
 
 void WeightUtils::Initialize()
@@ -231,7 +234,7 @@ float WeightUtils::GetMuEff(TLorentzVector lep) const
     return weight;
 }
 
-float WeightUtils::FakeWeight(TCPhysObject fakeableP4)
+float WeightUtils::GetFakeWeight(TCPhysObject fakeableP4)
 {
     float fakeRate = 0;
 
@@ -247,3 +250,42 @@ float WeightUtils::FakeWeight(TCPhysObject fakeableP4)
         return fakeRate / (1 - fakeRate);
 }
 
+float WeightUtils::GetQFlipWeight()
+{
+    float weight = 1;
+    unsigned iPt1, iEta1, iPt2, iEta2;
+
+    if (_leptons[0].Type() == "electron" && _leptons[1].Type() == "electron") {
+        // Set iEta bins for leading and trailing electrons
+        if (fabs(_leptons[0].Eta()) < 1.5)
+            iEta1 = 0;
+        else 
+            iEta1 = 1;
+
+        if (fabs(_leptons[1].Eta()) < 1.5)
+            iEta2 = 0;
+        else 
+            iEta2 = 1;
+
+        // Set iPt bins for leading and trailing _leptons
+        if (_leptons[0].Pt() < 20.)
+            iPt1 = 1;
+        else if (_leptons[0].Pt() > 20 && _leptons[0].Pt() < 50)
+            iPt1 = 2;
+        else if (_leptons[0].Pt() > 50)
+            iPt1 = 3;
+
+        if (_leptons[1].Pt() < 20.)
+            iPt2 = 1;
+        else if (_leptons[1].Pt() > 20 && _leptons[1].Pt() < 50)
+            iPt2 = 2;
+        else if (_leptons[1].Pt() > 50) 
+            iPt2 = 3;
+
+        weight = h2_DielectronMisQ->GetBinContent(3*iEta1 + iPt1, 3*iEta2 + iPt2);
+    }
+
+    //cout << weight << endl;
+
+    return weight;
+}

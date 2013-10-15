@@ -1,1 +1,5 @@
-/home/naodell/STORAGE_ANALYSIS/data/ntuples/nuTuple_1_1_UA3.root
+dcap://cmsdca1.fnal.gov:24140/pnfs/fnal.gov/usr/cms/WAX/11/store/user/naodell/nuTuples_v7_4/TTJets/nuTuple_2_1_GZ9.root
+dcap://cmsdca1.fnal.gov:24140/pnfs/fnal.gov/usr/cms/WAX/11/store/user/naodell/nuTuples_v7_4/TTJets/nuTuple_210_1_Ol0.root
+dcap://cmsdca1.fnal.gov:24140/pnfs/fnal.gov/usr/cms/WAX/11/store/user/naodell/nuTuples_v7_4/TTJets/nuTuple_55_1_4s3.root
+dcap://cmsdca1.fnal.gov:24140/pnfs/fnal.gov/usr/cms/WAX/11/store/user/naodell/nuTuples_v7_4/TTJets/nuTuple_148_1_83A.root
+dcap://cmsdca1.fnal.gov:24140/pnfs/fnal.gov/usr/cms/WAX/11/store/user/naodell/nuTuples_v7_4/TTJets/nuTuple_199_1_pMX.root

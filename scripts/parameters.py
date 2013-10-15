@@ -211,15 +211,17 @@ scaleDict['2012']['TTH_M-125']          = .1032
 #scaleDict['GJets_300to470']     = 1/1391.1
 #scaleDict['GJets_470to800']     = 1/15812.2
 
-scaleDict['2012']['FCNC_M125_t']        = 2*252*1.*0.01*0.215*0.3*0.3*0.3
-scaleDict['2012']['FCNC_M125_tbar']     = 2*252*1.*0.01*0.215*0.3*0.3*0.3
+scaleDict['2012']['FCNC_M125_t']            = 252*1.*0.01*0.215*0.3*0.3*0.3
+scaleDict['2012']['FCNC_M125_tbar']         = 252*1.*0.01*0.215*0.3*0.3*0.3
+scaleDict['2012']['FCNC_M125_t_semilep']    = 2*252*1.*0.01*0.215*3*0.68*0.3*0.3
+
 scaleDict['2012']['DATA_MUON']          = 1.
 scaleDict['2012']['DATA_ELECTRON']      = 1.
 scaleDict['2012']['DATA_MUEG']          = 1.
 scaleDict['2012']['fakes']              = 1.
 
 combineDict = {}
-combineDict['FCNH']             = ['FCNC_M125_t', 'FCNC_M125_tbar']
+combineDict['FCNH']             = ['FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_M125_t_semilep']
 combineDict['DATA']             = ['DATA_MUON', 'DATA_ELECTRON', 'DATA_MUEG']
 combineDict['VJets']            = ['ZJets_M-50', 'ZJets_M-10To50', 'WJets']
 combineDict['ZJets']            = ['ZJets_M-50', 'ZJets_M-10To50']

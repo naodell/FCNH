@@ -24,4 +24,4 @@ cp ../../../../input_${dataName}_${count}.txt input.txt
 root -l -b -q run.C
 ls
 
-cp fakeHisotgrams.root ${_CONDOR_SCRATCH_DIR}/fakeHistograms_${suffix}_${count}.root
+cp fakeHistograms.root ${_CONDOR_SCRATCH_DIR}/fakeHistograms_${dataName}_${count}.root

@@ -50,7 +50,8 @@ class WeightUtils: public TObject {
         float   ZZWeight(vector<TLorentzVector>);
         float   VBFHiggsWeight(float, int);
         float   GetTotalWeight();
-        float   FakeWeight(TCPhysObject);
+        float   GetFakeWeight(TCPhysObject);
+        float   GetQFlipWeight();
 
         // lepton reco efficiencies
         float GetElectronEff(TLorentzVector) const;
@@ -82,7 +83,7 @@ class WeightUtils: public TObject {
         TH2D    *h2_EleMVASF;
         TH2D    *h2_EleFakes;
         TH2D    *h2_MuFakes;
-
+        TH2D    *h2_DielectronMisQ;
 
         //weights
         float _puWeight;
