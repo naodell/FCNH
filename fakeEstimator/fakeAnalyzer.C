@@ -252,19 +252,20 @@ bool fakeAnalyzer::Process(Long64_t entry)
             bool jetMatched = false;
             bool jetVeto    = false;
             for (unsigned i = 0; i < tagJets.size(); ++i) {
+                //cout << tagLep.DeltaR(tagJets[i]) << "\t" << probeLep.DeltaR(tagJets[i]) << endl;
                 if (tagLep.DeltaR(tagJets[i]) < 0.3) {
                     jetMatched = true;
                     continue;
                 }
 
                 if (
-                        tagJets.size() > 2 
+                        tagJets.size() > 1 
                         && (probeLep.DeltaR(tagJets[i]) < 0.7 || tagLep.DeltaR(tagJets[i]) < 0.7 )
                    )
                     jetVeto = true;
             }
 
-            if (!jetMatched || jetVeto) return kTRUE;
+            if (!jetMatched) return kTRUE;
 
             // Check tag/probe pair is back-to-back
             Float_t tpDeltaPhi  = tagLep.DeltaPhi(probeLep);
@@ -282,7 +283,6 @@ bool fakeAnalyzer::Process(Long64_t entry)
                 isTP = true;
                 FillDenominatorHists();
             }
-
         } else
             return kTRUE;
     } else
