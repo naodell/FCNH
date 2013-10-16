@@ -27,9 +27,8 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
     puReweight["2012"]  = (TH1D*)f_puFile->Get("h1_PU");
 
     // weights for fake background
-    TFile* f_fakeFile = new TFile("../data/fakeRates_jetCuts.root", "OPEN");
-    h2_EleFakes = (TH2D*)f_fakeFile->Get("h2_Fakes_ele_v1");
-    h2_MuFakes = (TH2D*)f_fakeFile->Get("h2_Fakes_mu_v1");
+    TFile* f_fakeFile = new TFile("../data/fakeRates.root", "OPEN");
+    g_MuonFakesPtB = (TGraphAsymmErrors*)f_fakeFile->Get("g_MuonFakePt");
 
     TFile* f_misQFile = new TFile("../data/electronQMisID.root", "OPEN");
     h2_DielectronMisQ = (TH2D*)f_misQFile->Get("h2_DielectronMisQ");
@@ -234,15 +233,14 @@ float WeightUtils::GetMuEff(TLorentzVector lep) const
     return weight;
 }
 
-float WeightUtils::GetFakeWeight(TCPhysObject fakeableP4)
+float WeightUtils::GetFakeWeight(TCPhysObject fakeable)
 {
     float fakeRate = 0;
 
-    if (fakeableP4.Type() == "electron") {
-        fakeRate = h2_EleFakes->GetBinContent(h2_EleFakes->FindBin(fakeableP4.Eta(), fakeableP4.Pt()));
-    } else if (fakeableP4.Type() == "muon") {
-        fakeRate = h2_MuFakes->GetBinContent(h2_EleFakes->FindBin(fakeableP4.Eta(), fakeableP4.Pt()));
-    }
+    if (fakeable.Type() == "muon") {
+        fakeRate = g_MuonFakesPtB->Eval(fakeable.Pt());
+    } /*else if (fakeable.Type() == "electron") {
+    }*/
 
     if (fakeRate > 0.99)
         return 0.;

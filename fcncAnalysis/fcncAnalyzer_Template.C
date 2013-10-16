@@ -19,13 +19,13 @@ const string    period      = "PERIOD";
 
 // MVA switches
 const bool      doPreMVA    = false;
-const bool      doPostMVA   = true;
-const bool      doMVACut    = true;
+const bool      doPostMVA   = false;
+const bool      doMVACut    = false;
 const bool      doMVATree   = false;
 const bool      doLepTree   = false;
 
 // Data-driven BG estimation switches
-bool doQFlips = true;    
+bool doQFlips = false;    
 bool doFakes  = false;    
 
 
@@ -386,6 +386,13 @@ bool fcncAnalyzer::Process(Long64_t entry)
     extraLeptons.insert(extraLeptons.end(), looseElectrons.begin(), looseElectrons.end());
     extraLeptons.insert(extraLeptons.end(), looseMuons.begin(), looseMuons.end());
 
+    // Get fakeable leptons
+    vObj fakeables;
+    //vector<TCElectron>  fakeableElectrons  = selector->GetSelectedElectrons("fakeable");
+    vector<TCMuon>      fakeableMuons      = selector->GetSelectedMuons("fakeable");
+    //fakeables.insert(fakeables.end(), fakeableElectrons.begin(), fakeableElectrons.end());
+    fakeables.insert(fakeables.end(), fakeableMuons.begin(), fakeableMuons.end());
+
     // Get jets
     vector<TCJet> allJets;
     vector<TCJet> jets      = selector->GetSelectedJets("tight");
@@ -487,6 +494,8 @@ bool fcncAnalyzer::Process(Long64_t entry)
     evtWeight *= weighter->GetTotalWeight();
     histManager->SetWeight(evtWeight);
 
+    // Electron charge flip background estimation: applies weights based on
+    // Z->ee flips.
     if (
             doQFlips 
             && leptons.size() == 2 
@@ -497,9 +506,10 @@ bool fcncAnalyzer::Process(Long64_t entry)
     else 
         qFlipWeight = 0;
 
-    //if (doFakes)
-    //    fakeWeight *= evtWeight*weighter->GetFakeWeight();
-
+    // Data-driven fake (non-prompt) lepton background estimation.  See
+    // fakeEstimator for details of measurement
+    if (doFakes && fakeables.size() > 0)
+        fakeWeight *= evtWeight*weighter->GetFakeWeight(fakeables[0]);
 
     // Pre-selection mc-truth plots
     if (!isRealData) {
@@ -512,7 +522,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
         GenPlots(gLeptons, leptons);
     }
 
-
     // Electron charge misid control region //
     if (leptons.size() == 2) 
         if (
@@ -524,10 +533,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
     // ZZ control region //
     if (leptons.size() == 4) {
-
-        if (
-                bJetsM.size() == 0
-           ) {
+        if ( bJetsM.size() == 0) {
             Make4lPlots(leptons, *recoMET, jets, bJetsM);
             SetYields(14);
         }
@@ -606,21 +612,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
         SetYields(12);
     }
 
-    // fakes control region //
-    if (
-            leptons.size() == 2
-            && (extraLeptons.size() > 0)
-            && bJetsL.size() == 2
-       ) {
-
-        vObj lepPlusFake;
-        lepPlusFake.insert(lepPlusFake.end(), leptons.begin(), leptons.end());
-        lepPlusFake.insert(lepPlusFake.end(), extraLeptons.begin(), extraLeptons.end());
-        sort(lepPlusFake.begin(), lepPlusFake.end(), P4SortCondition);
-
-        MakePlots(lepPlusFake, jets, bJetsM, *recoMET, selectedVtx, 8);
-        SetYields(13);
-    }
 
     //!!!!!!!!!!!!!!!!!!!!!!//
     //                      //
@@ -667,7 +658,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
 
     //!! MET cut !!//
-
     if (leptons.size() == 2){
         if (leptons[0].Charge() == leptons[1].Charge()) 
             if (recoMET->Mod() < metCut[0])
@@ -681,7 +671,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
     SetYields(7);
 
     //!! HT cut !!//
-
     if (leptons.size() == 2){
         if (leptons[0].Charge() == leptons[1].Charge()) 
             if (HT < htCut[0])
@@ -728,7 +717,7 @@ void fcncAnalyzer::Terminate()
     cout<<"| WZ:                                |\t" << eventCount[10]  << "\t|\t" << eventCountWeighted[10] << "\t|"<<endl;
     cout<<"| ttbar:                             |\t" << eventCount[11]  << "\t|\t" << eventCountWeighted[11] << "\t|"<<endl;
     cout<<"| ttZ:                               |\t" << eventCount[12]  << "\t|\t" << eventCountWeighted[12] << "\t|"<<endl;
-    cout<<"| fakes:                             |\t" << eventCount[13]  << "\t|\t" << eventCountWeighted[13] << "\t|"<<endl;
+    //cout<<"| fakes:                             |\t" << eventCount[13]  << "\t|\t" << eventCountWeighted[13] << "\t|"<<endl;
     cout<<"| ZZ:                                |\t" << eventCount[14]  << "\t|\t" << eventCountWeighted[14] << "\t|"<<endl;
 
 
@@ -809,7 +798,13 @@ void fcncAnalyzer::MakePlots(vObj leptons, vector<TCJet> jets, vector<TCJet> bJe
                 "h1_PvMultUnweighted", "Multiplicity of PVs", 51, -0.5, 50.);
 
         if (doQFlips && qFlipWeight != 0) {
-            histManager->SetDirectory(categoryNames[histCategory] + "/QFlips");
+            if (categoryNames[histCategory] == "os_inclusive") 
+                histManager->SetDirectory( "ss_inclusive/QFlips");
+            else if (categoryNames[histCategory] == "os_ee") 
+                histManager->SetDirectory( "ss_ee/QFlips");
+            else if (categoryNames[histCategory] == "os_emu") 
+                histManager->SetDirectory( "ss_emu/QFlips");
+
             histManager->SetWeight(evtWeight*qFlipWeight);
 
             LeptonPlots(leptons, met, jets, bJets, PV);
@@ -821,6 +816,19 @@ void fcncAnalyzer::MakePlots(vObj leptons, vector<TCJet> jets, vector<TCJet> bJe
             histManager->SetWeight(evtWeight);
         }
 
+        if (doFakes && fakeWeight != 0) {
+            //SetFakeCategory(fakeables, histCategory);
+
+            histManager->SetWeight(evtWeight*fakeWeight);
+
+            LeptonPlots(leptons, met, jets, bJets, PV);
+            MetPlots(met, leptons);
+            JetPlots(jets, bJets);
+            DileptonPlots2D(leptons);
+            MiscPlots(histCategory);
+
+            histManager->SetWeight(evtWeight);
+        }
     }
 }
 
@@ -828,15 +836,6 @@ void fcncAnalyzer::LeptonPlots(vObj leptons, TCMET met, vector<TCJet> jets, vect
 {
 
     unsigned centralCount = 0;
-
-    if (leptons.size() == 3) {
-        TLorentzVector trileptonP4 = leptons[0] + leptons[1] + leptons[2];
-        histManager->Fill1DHist(trileptonP4.M(),
-                "h1_TrileptonMass", "M_{lll};M_{lll};Entries / 5 GeV", 58, 10., 300.);
-        histManager->Fill1DHist(trileptonP4.Pt(),
-                "h1_TrileptonPt", "p_{T,3l};p_{T,3l};Entries / 5 GeV", 39, 10., 400.);
-
-    }
 
     for (unsigned i = 0; i < leptons.size(); ++i) {
         string index = str(i+1);
@@ -929,6 +928,14 @@ void fcncAnalyzer::LeptonPlots(vObj leptons, TCMET met, vector<TCJet> jets, vect
     }
 
     if (leptons.size() == 3) {
+
+        TLorentzVector trileptonP4 = leptons[0] + leptons[1] + leptons[2];
+        histManager->Fill1DHist(trileptonP4.M(),
+                "h1_TrileptonMass", "M_{lll};M_{lll};Entries / 5 GeV", 58, 10., 300.);
+        histManager->Fill1DHist(trileptonP4.Pt(),
+                "h1_TrileptonPt", "p_{T,3l};p_{T,3l};Entries / 5 GeV", 39, 10., 400.);
+
+
         histManager->Fill1DHist(dileptonP4.DeltaR(lep3P4), 
                 "h1_DileptonLepDeltaR", "#Delta R(OS,l3);#Delta R(ll,l);Entries / bin", 70, 0., 7.);
         histManager->Fill1DHist(fabs(dileptonP4.DeltaPhi(lep3P4)), 
@@ -1253,8 +1260,6 @@ void fcncAnalyzer::GenPlots(vector<TCGenParticle> gen, vObj leptons)
 
     for (unsigned i = 0; i < gen.size(); ++i) {
 
-        //cout << fabs(gen[i].GetPDGId()) << ", " << leptons[j].Type() << ", " << leptons[j].DeltaR(gen[i]) << endl;
-
         if (gen.size() == 3) {
             if (gen[i].Grandmother() == 25) {
                 string index = str(higgsLepCount + 1);
@@ -1289,7 +1294,6 @@ void fcncAnalyzer::GenPlots(vector<TCGenParticle> gen, vObj leptons)
                 short qxq = gen[i].Charge()*leptons[j].Charge(); 
                 eMatched = true;
 
-                //cout << gen[i].Charge() << ", " << leptons[j].Charge() << endl;
                 histManager->Fill1DHist(qxq,
                         "h1_GenEleChargeMisId", ";q_{gen} x q_{reco};Electrons / bin", 3, -1.5, 1.5);
                 histManager->Fill1DHist((gen[i].Pt() - leptons[j].Pt())/gen[i].Pt(),
@@ -1317,7 +1321,6 @@ void fcncAnalyzer::GenPlots(vector<TCGenParticle> gen, vObj leptons)
                 short qxq = gen[i].Charge()*leptons[j].Charge(); 
                 muMatched = true;
 
-                //cout << gen[i].Charge() << ", " << leptons[j].Charge() << endl;
                 histManager->Fill1DHist(qxq,
                         "h1_GenMuChargeMisId", ";q_{gen} x q_{reco};Muons / bin", 3, -1.5, 1.5);
                 histManager->Fill1DHist((gen[i].Pt() - leptons[j].Pt())/gen[i].Pt(),
@@ -1423,8 +1426,8 @@ int fcncAnalyzer::GetHistCategory(unsigned shift)
        Additionally there is OSSF and SSSF 3 lepton categories for syncing with
        the WH analysis.  
 
-16: OSSF
-17: SSSF
+        16: OSSF
+        17: SSSF
      */
 
     //unsigned lepCat     = (evtCategory.to_ulong() >> 2) & 0x3;
@@ -1448,6 +1451,9 @@ int fcncAnalyzer::GetHistCategory(unsigned shift)
 
     return histCategory;
 }
+
+int fcncAnalyzer::GetFakeCategory(unsigned shift)
+{
 
 void fcncAnalyzer::FillYieldHists(string directory, float weight, unsigned cut)
 {
@@ -1486,6 +1492,21 @@ void fcncAnalyzer::SetYields(unsigned cut)
         }
 
         if (doQFlips && qFlipWeight != 0) {
+            // inclusive
+            FillYieldHists(categoryNames[0] + "/" + suffix, evtWeight, cut);
+            // inclusive for lepton category
+            lepCat = (evtCategory.to_ulong() >> 2) & 0x3;
+            FillYieldHists(categoryNames[lepCat+1] + "/" + suffix, evtWeight, cut);
+            // flavor category
+            flCat = GetHistCategory(2) - 10;
+            FillYieldHists(categoryNames[flCat] + "/" + suffix, evtWeight, cut);
+            // WH category
+            whCat = GetHistCategory(3);
+            if (whCat != 0) {
+                FillYieldHists(categoryNames[whCat] + "/" + suffix, evtWeight, cut);
+            }
+        }
+        if (doFakes && fakeWeight != 0) {
             // inclusive
             FillYieldHists(categoryNames[0] + "/" + suffix, evtWeight, cut);
             // inclusive for lepton category
@@ -1545,7 +1566,6 @@ void fcncAnalyzer::SetEventVariables(vObj leptons, vector<TCJet> jets, vector<TC
     ossfTagged  = false;
     dileptonMassOS = -1.;
 
-    //cout << leptons.size() << ":\t";
 
     float zCandidateMass = 0.;
     for (unsigned i = 0; i < leptons.size(); ++i) {
@@ -1553,8 +1573,6 @@ void fcncAnalyzer::SetEventVariables(vObj leptons, vector<TCJet> jets, vector<TC
         sumP4   += leptons[i];
 
         for (unsigned j = leptons.size()-1; j > i; --j) {
-
-            //cout << (leptons[i] + leptons[j]).M() << ", " << i << j << "\t";
 
             // Check for opposite-sign pair //
             if (leptons[i].Charge() != leptons[j].Charge()) {
@@ -1567,22 +1585,23 @@ void fcncAnalyzer::SetEventVariables(vObj leptons, vector<TCJet> jets, vector<TC
                 }
 
                 // Select the pairing that is closest to the mass of the Z.
-                if (zTagged && (fabs(dileptonMassOS - 91.2) > fabs(zCandidateMass - 91.2))) {
-                    dileptonP4      = leptons[i] + leptons[j];
-                    lep1P4          = leptons[j];
-                    lep2P4          = leptons[i];
+                if (zTagged) {
+                    if (fabs(dileptonMassOS - 91.2) > fabs(zCandidateMass - 91.2)) {
+                        dileptonP4      = leptons[i] + leptons[j];
+                        lep1P4          = leptons[j];
+                        lep2P4          = leptons[i];
 
-                    dileptonMassOS  = dileptonP4.M();
-                    dileptonDROS    = leptons[i].DeltaR(leptons[j]);
+                        dileptonMassOS  = dileptonP4.M();
+                        dileptonDROS    = leptons[i].DeltaR(leptons[j]);
 
-                    // If 3 leptons present, try to reconstruct a W from the unpaired lepton
-                    if (leptons.size() == 3) {
-                        lep3P4  = leptons[3 - (i + j)];
-                        MT = CalculateTransMass(leptons[3 - (i + j)], met);
+                        // If 3 leptons present, try to reconstruct a W from the unpaired lepton
+                        if (leptons.size() == 3) {
+                            lep3P4  = leptons[3 - (i + j)];
+                            MT = CalculateTransMass(leptons[3 - (i + j)], met);
+                        }
                     }
-                    // Pick the highest mass OS pairing
                 } else if (!zTagged) { 
-                    if ((leptons[i] + leptons[j]).M() > dileptonMassOS) {
+                    if ((leptons[i] + leptons[j]).M() > dileptonMassOS) { // Pick the highest mass OS pairing
                         dileptonP4      = leptons[i] + leptons[j];
                         lep1P4          = leptons[j];
                         lep2P4          = leptons[i];
@@ -1600,7 +1619,19 @@ void fcncAnalyzer::SetEventVariables(vObj leptons, vector<TCJet> jets, vector<TC
         }
     }
 
-    //cout << zTagged << ", " << dileptonMassOS << endl;
+    if (!ossfTagged && leptons.size() >= 2) {
+        dileptonP4      = leptons[0] + leptons[1];
+        lep1P4          = leptons[0];
+        lep2P4          = leptons[1];
+
+        dileptonMassOS  = dileptonP4.M();
+        dileptonDROS    = leptons[0].DeltaR(leptons[1]);
+
+        if (leptons.size() == 3) {
+            lep3P4  = leptons[2];
+            MT      = CalculateTransMass(leptons[2], met);
+        }
+    }
 
     MHT     = sumP4.Pt();
     MET     = met.Mod();
@@ -1745,7 +1776,6 @@ float fcncAnalyzer::CalculateFourLeptonMass(vObj leptons) {
                )
                 Z2 = leptons[i] + leptons[j];
 
-            //cout << index1 << "\t" << index2 << "\t\t" << i << "\t" << j << endl;
         }
     }
 

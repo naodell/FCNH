@@ -302,7 +302,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
     }
 
     // Require that there is only one tight lepton
-    if (leptons.size() != 0)
+    if (leptons.size() != 1)
         return kTRUE;
 
     histManager->Fill1DHist(leptons.size(),

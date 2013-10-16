@@ -20,6 +20,7 @@
 #include "TH2D.h"
 #include "TFile.h"
 #include "TGraphErrors.h"
+#include "TGraphAsymmErrors.h"
 
 // boost libraries
 //#include <boost/array.hpp>
@@ -81,9 +82,12 @@ class WeightUtils: public TObject {
         map<string, TH1D*>  puReweight;
 
         TH2D    *h2_EleMVASF;
-        TH2D    *h2_EleFakes;
-        TH2D    *h2_MuFakes;
         TH2D    *h2_DielectronMisQ;
+
+        TGraphAsymmErrors *g_MuonFakesPtB;
+        //TGraphAsymmErrors *g_MuonFakesPtE;
+        //TGraphAsymmErrors *g_ElectronFakesPtB;
+        //TGraphAsymmErrors *g_ElectronFakesPtE;
 
         //weights
         float _puWeight;
