@@ -34,7 +34,7 @@ LUMIDATA    = 19.712
 doLog       = True
 
 doPlots     = True
-doYields    = True
+doYields    = False
 
 doOS        = True
 doSS        = True
@@ -75,9 +75,10 @@ samples['3l'].append('Triboson')
 samples['3l'].append('ttV')
 samples['3l'].append('ZZ4l')
 samples['3l'].append('WZJets3LNu')
+samples['3l'].append('Fakes')
 #samples['3l'].append('WW')
-samples['3l'].append('top')
-samples['3l'].append('ZJets')
+#samples['3l'].append('top')
+#samples['3l'].append('ZJets')
 #samples['3l'].append('ZGstar')
 
 #samples['3l'].append('Diboson')

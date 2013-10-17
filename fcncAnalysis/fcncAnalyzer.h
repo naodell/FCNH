@@ -59,11 +59,13 @@ using namespace std;
 
 const unsigned short N_CATEGORIES = 16;
 const string categoryNames[] = {
+    //inclusive
     "inclusive",
     "ss_inclusive",
     "os_inclusive",
     "3l_inclusive",
 
+    // flavor
     "ss_ee",
     "ss_emu",
     "ss_mumu",
@@ -75,9 +77,11 @@ const string categoryNames[] = {
     "3l_emumu",
     "3l_mumumu",
 
+    // WH 
     "3l_SSSF",
     "3l_OSSF",
 
+    // geometric
     //"ss_endcap",
     //"ss_mixed",
     //"ss_barrel",
@@ -90,8 +94,8 @@ const string categoryNames[] = {
     //"3l_barrel",
 };
 
-const unsigned short N_CUTS = 9;
-const string cutNames[] = {"preselection", "Z veto",  "MET selection", "jet selection", "BDT", "WZ_CR", "ttbar_CR", "ttZ_CR", "fakes_CR"};
+const unsigned short N_CUTS = 8;
+const string cutNames[] = {"preselection", "Z veto",  "MET selection", "jet selection", "BDT", "WZ_CR", "ttbar_CR", "ttZ_CR"};
 
 typedef vector<TCPhysObject> vObj;
 
@@ -118,6 +122,7 @@ class fcncAnalyzer : public TSelector {
 
         TLorentzVector dileptonP4;
         TLorentzVector lep1P4, lep2P4, lep3P4; // If event is zTagged, lep1 and lep2 are associated to the z
+        vObj fakeables;
 
         Float_t     MET;
         Float_t     metPhi;
@@ -267,7 +272,7 @@ class fcncAnalyzer : public TSelector {
         virtual void    MetPlots(TCMET, vObj);
         virtual void    DileptonPlots2D(vObj);
         virtual void    GenPlots(vector<TCGenParticle>, vObj);
-        virtual void    MiscPlots(unsigned);
+        virtual void    MiscPlots();
         virtual void    FillYieldHists(string, float, unsigned);
 
         // Set/Get methods
@@ -277,6 +282,7 @@ class fcncAnalyzer : public TSelector {
         virtual void    SetEventVariables(vObj, vector<TCJet>, vector<TCJet>, TCMET);
         virtual void    SetYields(unsigned);
         virtual int     GetHistCategory(unsigned);
+        virtual int     GetFakeCategory(unsigned);
 
         // helper functions
         virtual string  str(int i) {return static_cast<ostringstream*>( &(ostringstream() << i) )->str();}

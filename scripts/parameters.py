@@ -100,7 +100,7 @@ styleDict['FCNH']               = (3, r.kPink+3, 2, 22, 'FCNH')
 styleDict['SUM_EFF']            = (1, r.kBlue, 3018, 21, 'BG')
 styleDict['SIG_EFF']            = (1, r.kRed, 3018, 21, 'Signal')
 styleDict['RATIO']              = (0, r.kBlack, 3002, 21, 'Ratio')
-styleDict['fakes']              = (2, r.kBlack, 0, 21, 'fakes')
+styleDict['Fakes']              = (2, r.kRed, 3001, 1, 'Fakes')
 
 ### Set scales
 scaleDict = {'2011':{}, '2012':{}}
@@ -133,10 +133,11 @@ scaleDict['2011']['ZGToNuNu']           = 3.462
 
 scaleDict['2011']['FCNC_M125_t']        = 0.004#*20
 scaleDict['2011']['FCNC_M125_tbar']     = 0.004#*20
+
 scaleDict['2011']['DATA_MUON']          = 1.
 scaleDict['2011']['DATA_ELECTRON']      = 1.
 scaleDict['2011']['DATA_MUEG']          = 1.
-scaleDict['2011']['fakes']              = 1.
+scaleDict['2011']['Fakes']              = 1.
 
 ### 2012 x-sections
 scaleDict['2012']['WJets']              = 36257.2
@@ -218,7 +219,7 @@ scaleDict['2012']['FCNC_M125_t_semilep']    = 2*252*1.*0.01*0.215*3*0.68*0.3*0.3
 scaleDict['2012']['DATA_MUON']          = 1.
 scaleDict['2012']['DATA_ELECTRON']      = 1.
 scaleDict['2012']['DATA_MUEG']          = 1.
-scaleDict['2012']['fakes']              = 1.
+scaleDict['2012']['Fakes']              = 1.
 
 combineDict = {}
 combineDict['FCNH']             = ['FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_M125_t_semilep']

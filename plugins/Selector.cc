@@ -264,6 +264,10 @@ void Selector::MuonSelector(TClonesArray* muons)
             // analysis lepton selection
             if (MuonTightID(thisMuon) && muISO < 0.12) 
                 _selMuons["tight"].push_back(*thisMuon);
+            else if (
+                    thisMuon->IsPF()
+                    )
+                _selMuons["fakeable"].push_back(*thisMuon);
 
         } else if ( thisMuon->Pt() > _muPtCuts[1]  ) 
                 if (MuonLooseID(thisMuon)
