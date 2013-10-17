@@ -237,15 +237,17 @@ float WeightUtils::GetFakeWeight(TCPhysObject fakeable)
 {
     float fakeRate = 0;
 
+    //cout << fakeable.Type() << "\t" << fakeable.Pt() << "\t";
     if (fakeable.Type() == "muon") {
-        fakeRate = g_MuonFakesPtB->Eval(fakeable.Pt());
+        if (fakeable.Pt() < 100.) 
+            fakeRate = g_MuonFakesPtB->Eval(fakeable.Pt());
+        else
+            fakeRate = g_MuonFakesPtB->Eval(99.);
     } /*else if (fakeable.Type() == "electron") {
     }*/
+    //cout << fakeRate/(1-fakeRate) << endl;
 
-    if (fakeRate > 0.99)
-        return 0.;
-    else
-        return fakeRate / (1 - fakeRate);
+    return fakeRate / (1 - fakeRate);
 }
 
 float WeightUtils::GetQFlipWeight()

@@ -22,7 +22,7 @@ def ratio_1D(ratioDict, path, inFile, outFile):
         outFile.Add(g_Eff)
 
 
-def ratio_2D(ratioDict, path, inFile, outFile):
+def ratio_2D(ratioDict, path, inFile):
 
     h2_Eff = []
 
@@ -38,7 +38,6 @@ def ratio_2D(ratioDict, path, inFile, outFile):
                          h2_Numer.GetNbinsY(), h2_Numer.GetYaxis().GetXmin(), h2_Numer.GetYaxis().GetXmax()))
         h2_Eff[len(h2_Eff)-1].Divide(h2_Numer, h2_Denom)
 
-        outFile.Add(h2_Eff[len(h2_Eff)-1])
 
 
 if __name__ == '__main__':
@@ -74,7 +73,7 @@ if __name__ == '__main__':
         'MuonFake2D':('MuNumer', 'MuDenom')#,
         #'ElectronFake2D':('EleNumer', 'EleDenom')
     }
-    ratio_2D(fakeDict2D, 'inclusive/TEST', inFile, outFile)
+    #ratio_2D(fakeDict2D, 'inclusive/TEST', inFile, outFile)
 
     print 'Done!!!'
     outFile.Write()

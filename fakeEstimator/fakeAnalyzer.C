@@ -291,19 +291,16 @@ bool fakeAnalyzer::Process(Long64_t entry)
     // Verify that a tag/probe pair is found is found
     if (!isTP) return kTRUE;
 
-    // Match probe lepton to tight leptons
-    bool matched = false;
-    for (unsigned i = 0; i < leptons.size(); ++i) {
-        if (probeLep.DeltaR(leptons[i]) < 0.01) {
-            passLep = leptons[i];
-            matched = true;
-            break;
-        }
-    }
-
     // Require that there is only one tight lepton
     if (leptons.size() != 1)
         return kTRUE;
+
+    // Match probe lepton to tight leptons
+    bool matched = false;
+    if (probeLep.DeltaR(leptons[0]) < 0.01) {
+        passLep = leptons[0];
+        matched = true;
+    }
 
     histManager->Fill1DHist(leptons.size(),
             "h1_leptonMult", "lepton multiplicity; N_{leptons}; Entries / bin", 6, -0.5, 5.5);

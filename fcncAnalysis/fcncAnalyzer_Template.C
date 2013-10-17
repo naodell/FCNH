@@ -25,8 +25,8 @@ const bool      doMVATree   = false;
 const bool      doLepTree   = false;
 
 // Data-driven BG estimation switches
-bool doQFlips = false;    
-bool doFakes  = false;    
+bool doQFlips = true;
+bool doFakes  = true;
 
 
 /////////////////
@@ -387,7 +387,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
     extraLeptons.insert(extraLeptons.end(), looseMuons.begin(), looseMuons.end());
 
     // Get fakeable leptons
-    vObj fakeables;
+    fakeables.clear();
     //vector<TCElectron>  fakeableElectrons  = selector->GetSelectedElectrons("fakeable");
     vector<TCMuon>      fakeableMuons      = selector->GetSelectedMuons("fakeable");
     //fakeables.insert(fakeables.end(), fakeableElectrons.begin(), fakeableElectrons.end());
@@ -502,14 +502,20 @@ bool fcncAnalyzer::Process(Long64_t entry)
             && leptons[0].Charge() != leptons[1].Charge()
             && (leptons[0].Type() == "electron" && leptons[1].Type() == "electron")
        ) 
-        qFlipWeight = evtWeight*weighter->GetQFlipWeight();
+        qFlipWeight = weighter->GetQFlipWeight();
     else 
         qFlipWeight = 0;
 
     // Data-driven fake (non-prompt) lepton background estimation.  See
     // fakeEstimator for details of measurement
-    if (doFakes && fakeables.size() > 0)
-        fakeWeight *= evtWeight*weighter->GetFakeWeight(fakeables[0]);
+    if (
+            doFakes 
+            && fakeables.size() > 0 
+            && leptons.size() == 2
+            ) {
+        fakeWeight = weighter->GetFakeWeight(fakeables[0]);
+    } else
+        fakeWeight = 0;
 
     // Pre-selection mc-truth plots
     if (!isRealData) {
@@ -791,11 +797,13 @@ void fcncAnalyzer::MakePlots(vObj leptons, vector<TCJet> jets, vector<TCJet> bJe
         MetPlots(met, leptons);
         JetPlots(jets, bJets);
         DileptonPlots2D(leptons);
-        MiscPlots(histCategory);
+        MiscPlots();
 
         histManager->SetWeight(1);
         histManager->Fill1DHist(primaryVtx->GetSize(),
                 "h1_PvMultUnweighted", "Multiplicity of PVs", 51, -0.5, 50.);
+
+        if (i == 0) continue;
 
         if (doQFlips && qFlipWeight != 0) {
             if (categoryNames[histCategory] == "os_inclusive") 
@@ -811,21 +819,29 @@ void fcncAnalyzer::MakePlots(vObj leptons, vector<TCJet> jets, vector<TCJet> bJe
             MetPlots(met, leptons);
             JetPlots(jets, bJets);
             DileptonPlots2D(leptons);
-            MiscPlots(histCategory);
+            MiscPlots();
 
             histManager->SetWeight(evtWeight);
         }
 
         if (doFakes && fakeWeight != 0) {
-            //SetFakeCategory(fakeables, histCategory);
+
+            histManager->SetDirectory(categoryNames[GetFakeCategory(histCategory)] + "/Fakes");
+
+            //cout << categoryNames[histCategory] << "\t" << categoryNames[GetFakeCategory(histCategory)] << endl;
 
             histManager->SetWeight(evtWeight*fakeWeight);
 
-            LeptonPlots(leptons, met, jets, bJets, PV);
-            MetPlots(met, leptons);
+            vObj leptonPlusFakes;
+            leptonPlusFakes.insert(leptonPlusFakes.end(), leptons.begin(), leptons.end());
+            leptonPlusFakes.push_back(fakeables[0]);
+            sort(leptonPlusFakes.begin(), leptonPlusFakes.end(), P4SortCondition);
+
+            LeptonPlots(leptonPlusFakes, met, jets, bJets, PV);
+            MetPlots(met, leptonPlusFakes);
             JetPlots(jets, bJets);
-            DileptonPlots2D(leptons);
-            MiscPlots(histCategory);
+            DileptonPlots2D(leptonPlusFakes);
+            MiscPlots();
 
             histManager->SetWeight(evtWeight);
         }
@@ -936,14 +952,25 @@ void fcncAnalyzer::LeptonPlots(vObj leptons, TCMET met, vector<TCJet> jets, vect
                 "h1_TrileptonPt", "p_{T,3l};p_{T,3l};Entries / 5 GeV", 39, 10., 400.);
 
 
-        histManager->Fill1DHist(dileptonP4.DeltaR(lep3P4), 
-                "h1_DileptonLepDeltaR", "#Delta R(OS,l3);#Delta R(ll,l);Entries / bin", 70, 0., 7.);
-        histManager->Fill1DHist(fabs(dileptonP4.DeltaPhi(lep3P4)), 
-                "h1_DileptonLepDeltaPhi", "#Delta #phi(OS,l3);#Delta #phi(ll,l);Entries / bin", 36, 0., TMath::Pi());
-        histManager->Fill1DHist(fabs(dileptonP4.Eta() - lep3P4.Eta()), 
-                "h1_DileptonLepDeltaEta", "#Delta #eta(OS,l3);#Delta #eta(ll,l);Entries / bin", 60, 0., 6.);
-        histManager->Fill1DHist(MT,
-                "h1_Lep3MetMT", ";MT_{l3,MET};Entries / 5 GeV", 60, 0., 300.);
+        if (evtCategory.test(3)) {
+            histManager->Fill1DHist(dileptonP4.DeltaR(lep3P4), 
+                    "h1_DileptonLepDeltaR", "#Delta R(OS,l3);#Delta R(ll,l);Entries / bin", 70, 0., 7.);
+            histManager->Fill1DHist(fabs(dileptonP4.DeltaPhi(lep3P4)), 
+                    "h1_DileptonLepDeltaPhi", "#Delta #phi(OS,l3);#Delta #phi(ll,l);Entries / bin", 36, 0., TMath::Pi());
+            histManager->Fill1DHist(fabs(dileptonP4.Eta() - lep3P4.Eta()), 
+                    "h1_DileptonLepDeltaEta", "#Delta #eta(OS,l3);#Delta #eta(ll,l);Entries / bin", 60, 0., 6.);
+            histManager->Fill1DHist(MT,
+                    "h1_Lep3MetMT", ";MT_{l3,MET};Entries / 5 GeV", 60, 0., 300.);
+        } else {
+            histManager->Fill1DHist(dileptonP4.DeltaR(leptons[2]), 
+                    "h1_DileptonLepDeltaR", "#Delta R(OS,l3);#Delta R(ll,l);Entries / bin", 70, 0., 7.);
+            histManager->Fill1DHist(fabs(dileptonP4.DeltaPhi(leptons[2])), 
+                    "h1_DileptonLepDeltaPhi", "#Delta #phi(OS,l3);#Delta #phi(ll,l);Entries / bin", 36, 0., TMath::Pi());
+            histManager->Fill1DHist(fabs(dileptonP4.Eta() - leptons[2].Eta()), 
+                    "h1_DileptonLepDeltaEta", "#Delta #eta(OS,l3);#Delta #eta(ll,l);Entries / bin", 60, 0., 6.);
+            histManager->Fill1DHist(MT,
+                    "h1_Lep3MetMT", ";MT_{l3,MET};Entries / 5 GeV", 60, 0., 300.);
+        }
     }
 
     if (leptons.size() == 2) {
@@ -1140,7 +1167,7 @@ void fcncAnalyzer::DileptonPlots2D(vObj leptons)
     }
 }
 
-void fcncAnalyzer::MiscPlots(unsigned histCategory)
+void fcncAnalyzer::MiscPlots()
 {
         histManager->Fill1DHist(chargeCat, 
                 "h1_LeptonCharge", "lepton charge categories;charge category;Entries / bin", 12, 0.5, 12.5);
@@ -1413,22 +1440,21 @@ void fcncAnalyzer::SetEventCategory(vObj leptons)
 
 int fcncAnalyzer::GetHistCategory(unsigned shift)
 {
-    /*
-       Returns an index that maps onto category names.  Categories are done
-       in groups of 4 bits so each shift switches the category type.  As of now, 
-       the standard categories go as following (in bits),
 
-       0 - 3:    set bit, empty, os/ss, dilepton/trilepton
-       4 - 7:    eta categories
-       8 - 11:   flavor categories
-       12 - 15:  charge categores
+    // Returns an index that maps onto category names.  Categories are done in
+    // groups of 4 bits so each shift switches the category type.  As of now,
+    // the standard categories go as following (in bits),
 
-       Additionally there is OSSF and SSSF 3 lepton categories for syncing with
-       the WH analysis.  
+    // 0 - 3:    set bit, empty, os/ss, dilepton/trilepton
+    // 4 - 7:    eta categories
+    // 8 - 11:   flavor categories
+    // 12 - 15:  charge categores
 
-        16: OSSF
-        17: SSSF
-     */
+    // Additionally there is OSSF and SSSF 3 lepton categories for syncing with
+    // the WH analysis.  
+
+    //  16: OSSF
+    //  17: SSSF
 
     //unsigned lepCat     = (evtCategory.to_ulong() >> 2) & 0x3;
     unsigned lepCat     = evtCategory.test(2) + 2*evtCategory.test(3);
@@ -1452,8 +1478,33 @@ int fcncAnalyzer::GetHistCategory(unsigned shift)
     return histCategory;
 }
 
-int fcncAnalyzer::GetFakeCategory(unsigned shift)
+int fcncAnalyzer::GetFakeCategory(unsigned histCategory)
 {
+    // Determines category of event based on inclusion of faked lepton.  Only
+    // works for converting dilepton flavor categories to trilepton flavor
+    // categories for now...
+
+    unsigned fakeCat = 0;
+    if (histCategory == 1 || histCategory == 2) { // inclusive categories
+        fakeCat = 3;
+    } else if (histCategory == 4 || histCategory == 7) { // os_ee and ss_ee 
+        if (fakeables[0].Type() == "electron")
+            fakeCat = 10;
+        else if (fakeables[0].Type() == "muon")
+            fakeCat = 11;
+    } else if (histCategory == 5 || histCategory == 8) { // os_emu and ss_emu 
+        if (fakeables[0].Type() == "electron")
+            fakeCat = 11;
+        else if (fakeables[0].Type() == "muon")
+            fakeCat = 12;
+    } else if (histCategory == 6 || histCategory == 9) { // os_mumu and ss_mumu 
+        if (fakeables[0].Type() == "electron")
+            fakeCat = 12;
+        else if (fakeables[0].Type() == "muon")
+            fakeCat = 13;
+    }
+    return fakeCat;
+}
 
 void fcncAnalyzer::FillYieldHists(string directory, float weight, unsigned cut)
 {
