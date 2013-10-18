@@ -107,6 +107,11 @@ class fcncAnalyzer : public TSelector {
         TTree* thisTree;
         ofstream fout[8];
 
+        // Job setup
+        string  suffix;
+        string  selection;
+        string  period;
+
         // Random number generator
         TRandom3* rnGenerator;
 

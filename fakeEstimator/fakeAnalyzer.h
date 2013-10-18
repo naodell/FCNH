@@ -68,6 +68,8 @@ class fakeAnalyzer : public TSelector {
         TriggerSelector *triggerSelector;
 
         // Useful global variables
+        string  suffix;
+
         bool    zTagged;
         bool    ossfTagged;
         bool    isTP;

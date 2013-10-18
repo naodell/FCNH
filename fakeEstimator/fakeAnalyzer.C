@@ -8,8 +8,6 @@ using namespace std;
 //Analysis cuts//
 /////////////////
 
-const string suffix = "TEST";
-
 const bool  doQCDDileptonCR = true;
 const bool  doGenPrint      = false;
 
@@ -29,6 +27,9 @@ bool BTagSortCondition(TCJet j1, TCJet j2) {return (j1.BDiscriminatorMap("CSV") 
 
 void fakeAnalyzer::Begin(TTree* tree) 
 {
+    TObjString *tmpObj =  (TObjString*)fOption.Tokenize(" ")->At(0);
+    suffix = (string)tmpObj->GetString();
+
     // Get trigger names from jobTree
     vector<string>* triggerNames = 0;
     TFile   *inFile         = tree->GetCurrentFile();
@@ -312,6 +313,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
         matched = true;
     }
 
+    histManager->SetDirectory("inclusive/" + suffix);
     histManager->Fill1DHist(leptons.size(),
             "h1_leptonMult", "lepton multiplicity; N_{leptons}; Entries / bin", 6, -0.5, 5.5);
     histManager->Fill1DHist(jets.size(),
@@ -386,7 +388,7 @@ void fakeAnalyzer::DoZTag(vObj leptons)
 
 void fakeAnalyzer::FillDenominatorHists(string cat)
 {
-    histManager->SetDirectory((cat + "/" + suffix).c_str());
+    histManager->SetDirectory(cat + "/" + suffix);
 
     // Sanity check plots
     histManager->Fill1DHist(recoMET->Mod(),
@@ -429,7 +431,7 @@ void fakeAnalyzer::FillDenominatorHists(string cat)
 
 void fakeAnalyzer::FillNumeratorHists(string cat)
 {
-    histManager->SetDirectory((cat + "/" + suffix).c_str());
+    histManager->SetDirectory(cat + "/" + suffix);
 
     string lepType = passLep.Type();
     if (lepType == "muon") {

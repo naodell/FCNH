@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void run(Long64_t nEntries = 1e9) {
+void run(Long64_t nEntries = 1e4, string args = "TEST muon 2012") {
 
     //container classes
     gROOT->LoadMacro("../src/TCPhysObject.cc+");
@@ -45,7 +45,7 @@ void run(Long64_t nEntries = 1e9) {
     TStopwatch timer;
     timer.Start();
 
-    fChain->Process("fcncAnalyzer.C+", "", nEntries, 0);
+    fChain->Process("fcncAnalyzer.C+", args.c_str(), nEntries, 0);
 
     cout << "\n\nDone!" << endl;
     cout << "CPU Time : " << timer.CpuTime() << endl;
