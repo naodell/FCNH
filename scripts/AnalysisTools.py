@@ -136,7 +136,7 @@ class AnalysisTools():
 
         if doScale:
             self._scale
-            if dataName[:4] == 'DATA' or dataName in ['fakes']:
+            if dataName[:4] == 'DATA' or dataName in ['Fakes', 'QFlips']:
                 hist.Scale(self._scaleDict[self._period][dataName])
             else:
                 hist.Scale(self._scale*self._scaleDict[self._period][dataName]) 

@@ -163,8 +163,8 @@ class fakeAnalyzer : public TSelector {
         //virtual void    SlaveTerminate() {};
         virtual void    Terminate();
 
-        virtual void    FillDenominatorHists();
-        virtual void    FillNumeratorHists();
+        virtual void    FillDenominatorHists(string);
+        virtual void    FillNumeratorHists(string);
         virtual void    DoZTag(vObj leptons);
 
         virtual string  str(int i) {return static_cast<ostringstream*>( &(ostringstream() << i) )->str();}

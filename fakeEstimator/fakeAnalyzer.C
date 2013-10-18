@@ -14,8 +14,8 @@ const bool  doQCDDileptonCR = true;
 const bool  doGenPrint      = false;
 
 const float jetPtCut[]        = {25., 15.};
-const float muPtCut[]         = {10., 3.};
-const float elePtCut[]        = {10., 10.};
+const float muPtCut[]         = {5., 3.};
+const float elePtCut[]        = {5., 10.};
 const float phoPtCut[]        = {10., 10.};
 
 unsigned  nPtBins     = 6;
@@ -65,6 +65,10 @@ void fakeAnalyzer::Begin(TTree* tree)
 
     histoFile->mkdir("inclusive", "inclusive");
     histoFile->GetDirectory("inclusive", "inclusive")->mkdir(suffix.c_str(), suffix.c_str());
+    histoFile->mkdir("low_met", "low_met");
+    histoFile->GetDirectory("low_met", "low_met")->mkdir(suffix.c_str(), suffix.c_str());
+    histoFile->mkdir("high_met", "high_met");
+    histoFile->GetDirectory("high_met", "high_met")->mkdir(suffix.c_str(), suffix.c_str());
 
     histManager->AddFile(histoFile);
     histManager->SetFileNumber(0);
@@ -276,13 +280,19 @@ bool fakeAnalyzer::Process(Long64_t entry)
             histManager->Fill1DHist(fabs(tpBalance),
                     "h1_TagProbePtBalance", "balance (tag,probe);balance (tag,probe);Entries / bin", 40, -2., 2.);
 
-            if (fabs(tpDeltaPhi) < 2.5 || tpBalance > 1) 
-                return kTRUE;
-            else {
-                // Fakeable object is found!!! Now fill histograms for parameterizing fake rates by pt and eta
-                isTP = true;
-                FillDenominatorHists();
-            }
+            if (fabs(tpDeltaPhi) < 2.5 || tpBalance > 1) return kTRUE;
+
+            // Correct for prompt lepton contamination for low pt probes
+            if (probeLep.Pt() < 10 && recoMET->Mod() > 15) return kTRUE;
+
+            // Fakeable object is found!!! Now fill histograms for parameterizing fake rates by pt and eta
+            isTP = true;
+            FillDenominatorHists("inclusive");
+
+            if (recoMET->Mod() < 20)
+                FillDenominatorHists("low_met");
+            else if (recoMET->Mod() > 45 && recoMET->Mod() < 80)
+                FillDenominatorHists("high_met");
         } else
             return kTRUE;
     } else
@@ -309,9 +319,13 @@ bool fakeAnalyzer::Process(Long64_t entry)
     histManager->Fill1DHist(bJetsM.size(),
             "h1_bJetMult", "b-jet multiplicity; N_{b-jet}; Entries / bin", 10, -0.5, 9.5);
 
-    if (matched)
-        FillNumeratorHists();
-    else
+    if (matched) {
+        FillNumeratorHists("inclusive");
+        if (recoMET->Mod() < 20)
+            FillNumeratorHists("low_met");
+        else if (recoMET->Mod() > 45 && recoMET->Mod() < 80)
+            FillNumeratorHists("high_met");
+    } else
         return kTRUE;
 }
 
@@ -365,27 +379,20 @@ void fakeAnalyzer::DoZTag(vObj leptons)
                     zTagged = true;
                     zCandidateMass = (leptons[i] + leptons[j]).M();
                 }
-
-                // Select the pairing that is closest to the mass of the Z.
-                //if (zTagged && (fabs(dileptonMassOS - 91.2) > fabs(zCandidateMass - 91.2))) {
-                //    dileptonP4      = leptons[i] + leptons[j];
-                //    lep1P4          = leptons[j];
-                //    lep2P4          = leptons[i];
-
-                //    // If 3 leptons present, try to reconstruct a W from the unpaired lepton
-                //    if (leptons.size() == 3) {
-                //        lep3P4  = leptons[3 - (i + j)];
-                //    }
-                //    // Pick the highest mass OS pairing
-                //}
             }
         }
     }
 }
 
-void fakeAnalyzer::FillDenominatorHists()
+void fakeAnalyzer::FillDenominatorHists(string cat)
 {
+    histManager->SetDirectory((cat + "/" + suffix).c_str());
 
+    // Sanity check plots
+    histManager->Fill1DHist(recoMET->Mod(),
+            "h1_Met", "MET;MET;Entries / 4 GeV", 25, 0., 100.);
+
+    // fake rate measurement plots
     histManager->Fill1DHist(tagLep.Pt(),
             "h1_TagLepPt", "tag lepton p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
     histManager->Fill1DHist(tagLep.Eta(),
@@ -420,8 +427,9 @@ void fakeAnalyzer::FillDenominatorHists()
     }
 }
 
-void fakeAnalyzer::FillNumeratorHists()
+void fakeAnalyzer::FillNumeratorHists(string cat)
 {
+    histManager->SetDirectory((cat + "/" + suffix).c_str());
 
     string lepType = passLep.Type();
     if (lepType == "muon") {

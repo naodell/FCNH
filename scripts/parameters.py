@@ -101,6 +101,7 @@ styleDict['SUM_EFF']            = (1, r.kBlue, 3018, 21, 'BG')
 styleDict['SIG_EFF']            = (1, r.kRed, 3018, 21, 'Signal')
 styleDict['RATIO']              = (0, r.kBlack, 3002, 21, 'Ratio')
 styleDict['Fakes']              = (2, r.kRed, 3001, 1, 'Fakes')
+styleDict['QFlips']             = (2, r.kBlue+2, 3001, 1, 'QFlips')
 
 ### Set scales
 scaleDict = {'2011':{}, '2012':{}}
@@ -138,6 +139,7 @@ scaleDict['2011']['DATA_MUON']          = 1.
 scaleDict['2011']['DATA_ELECTRON']      = 1.
 scaleDict['2011']['DATA_MUEG']          = 1.
 scaleDict['2011']['Fakes']              = 1.
+scaleDict['2011']['QFlips']             = 1.
 
 ### 2012 x-sections
 scaleDict['2012']['WJets']              = 36257.2
@@ -220,6 +222,7 @@ scaleDict['2012']['DATA_MUON']          = 1.
 scaleDict['2012']['DATA_ELECTRON']      = 1.
 scaleDict['2012']['DATA_MUEG']          = 1.
 scaleDict['2012']['Fakes']              = 1.
+scaleDict['2012']['QFlips']             = 1.
 
 combineDict = {}
 combineDict['FCNH']             = ['FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_M125_t_semilep']
