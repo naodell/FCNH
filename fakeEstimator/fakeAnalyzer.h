@@ -69,6 +69,8 @@ class fakeAnalyzer : public TSelector {
 
         // Useful global variables
         string  suffix;
+        string  selection;
+        string  period;
 
         bool    zTagged;
         bool    ossfTagged;

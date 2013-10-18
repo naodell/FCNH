@@ -27,8 +27,14 @@ bool BTagSortCondition(TCJet j1, TCJet j2) {return (j1.BDiscriminatorMap("CSV") 
 
 void fakeAnalyzer::Begin(TTree* tree) 
 {
-    TObjString *tmpObj =  (TObjString*)fOption.Tokenize(" ")->At(0);
-    suffix = (string)tmpObj->GetString();
+    // Job config
+    TObjArray *args = (TObjArray*)fOption.Tokenize(" ");
+
+    suffix      = (string)((TObjString*)args->At(0))->GetString();
+    selection   = (string)((TObjString*)args->At(1))->GetString();
+    period      = (string)((TObjString*)args->At(2))->GetString();
+
+    cout << suffix << " " << selection << " " << period << endl;
 
     // Get trigger names from jobTree
     vector<string>* triggerNames = 0;
