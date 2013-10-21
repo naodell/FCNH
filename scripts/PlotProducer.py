@@ -328,13 +328,13 @@ class PlotProducer(AnalysisTools):
             stacks, sums = self.get_stack_dict(directory)
 
             if directory is self._directoryList1D[0]: 
-                legend.AddEntry(sums[sums.keys()[0]], 'BG error')
+                legend.AddEntry(sums.values()[0], 'BG error')
 
             self.make_save_path(self._savePath + '/' + self._category + '/' + directory)
 
             for var in self._variableDict[directory]:
 
-                if var not in hists.keys() or var not in stacks.keys(): continue
+                if var not in hists.keys() + stacks.keys(): continue
 
                 pad1.cd()
 

@@ -28,7 +28,8 @@ bool BTagSortCondition(TCJet j1, TCJet j2) {return (j1.BDiscriminatorMap("CSV") 
 void fakeAnalyzer::Begin(TTree* tree) 
 {
     // Job config
-    TObjArray *args = (TObjArray*)fOption.Tokenize(" ");
+    TString     option  = GetOption();
+    TObjArray   *args   = (TObjArray*)option.Tokenize(" ");
 
     suffix      = (string)((TObjString*)args->At(0))->GetString();
     selection   = (string)((TObjString*)args->At(1))->GetString();
@@ -63,7 +64,6 @@ void fakeAnalyzer::Begin(TTree* tree)
     //rnGenerator = new TRandom3();
 
     // Initialize histograms //
-    TString option = GetOption();
     TH1::SetDefaultSumw2(kTRUE);
     TH2::SetDefaultSumw2(kTRUE);
 

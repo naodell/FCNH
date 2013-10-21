@@ -76,7 +76,7 @@ class AnalysisTools():
         return err
 
 
-    def get_scale_factors(self, addData = []):
+    def get_scale_factors(self, addData = [], corrected = True):
         '''
         Gets the initial number of events for each
         dataset being run over
@@ -91,24 +91,26 @@ class AnalysisTools():
                     print data,
 
                     nInit       = self._histFile.GetDirectory('inclusive/' + data).Get('h1_YieldByCut').GetBinContent(1)
-                    nRaw        = self._histFile.GetDirectory('inclusive/' + data).Get('h1_YieldByCutRaw').GetBinContent(6)
-                    nWeighted   = self._histFile.GetDirectory('inclusive/' + data).Get('h1_YieldByCut').GetBinContent(6)
+                    if corrected:
+                        nRaw        = self._histFile.GetDirectory('inclusive/' + data).Get('h1_YieldByCutRaw').GetBinContent(6)
+                        nWeighted   = self._histFile.GetDirectory('inclusive/' + data).Get('h1_YieldByCut').GetBinContent(6)
 
-                    nInitWeight = nInit - (nRaw - nWeighted)
+                        nInit = nInit - (nRaw - nWeighted)
 
-                    self._scaleDict[self._period][data] = 1e3*self._scaleDict[self._period][data]/nInitWeight 
+                    self._scaleDict[self._period][data] = 1e3*self._scaleDict[self._period][data]/nInit 
 
             else:
                 if dataName in self._scaleDict[self._period]:
                     print dataName,
 
                     nInit       = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCut').GetBinContent(1)
-                    nRaw        = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCutRaw').GetBinContent(6)
-                    nWeighted   = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCut').GetBinContent(6)
+                    if corrected:
+                        nRaw        = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCutRaw').GetBinContent(6)
+                        nWeighted   = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCut').GetBinContent(6)
 
-                    nInitWeight = nInit - (nRaw - nWeighted)
+                        nInitWeight = nInit - (nRaw - nWeighted)
 
-                    self._scaleDict[self._period][dataName] = 1e3*self._scaleDict[self._period][dataName]/nInitWeight
+                    self._scaleDict[self._period][dataName] = 1e3*self._scaleDict[self._period][dataName]/nInit
 
                 else:
                     print '{0} not found in scale dictionary; setting to 0'.format(dataName)

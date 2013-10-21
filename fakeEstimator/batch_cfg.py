@@ -48,10 +48,10 @@ if period == '2012':
         cfg('muon_2012C', dCache+'/naodell/nuTuples_v7_4/DoubleMu_Run2012C', 10, 'DATA_MUON muon 2012'),
         cfg('muon_2012D', dCache+'/naodell/nuTuples_v7_4/DoubleMu_Run2012D', 15, 'DATA_MUON muon 2012'),
 
-        #cfg('electron_2012A', dCache+'/naodell/nuTuples_v7_4/DoubleElectron_Run2012A', 10, 'DATA_ELECTRON electron 2012')
-        #cfg('electron_2012B', dCache+'/naodell/nuTuples_v7_4/DoubleElectron_Run2012B', 10, 'DATA_ELECTRON electron 2012'),
-        #cfg('electron_2012C', dCache+'/naodell/nuTuples_v7_4/DoubleElectron_Run2012C', 10, 'DATA_ELECTRON electron 2012'),
-        #cfg('electron_2012D', dCache+'/naodell/nuTuples_v7_4/DoubleElectron_Run2012D', 15, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012A', dCache+'/naodell/nuTuples_v7_4/DoubleElectron_Run2012A', 10, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012B', dCache+'/naodell/nuTuples_v7_4/DoubleElectron_Run2012B', 10, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012C', dCache+'/naodell/nuTuples_v7_4/DoubleElectron_Run2012C', 10, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012D', dCache+'/naodell/nuTuples_v7_4/DoubleElectron_Run2012D', 15, 'DATA_ELECTRON electron 2012'),
 
         cfg('muEG_2012A', dCache+'/naodell/nuTuples_v7_4/MuEG_Run2012A', 10, 'DATA_MUEG muEG 2012'),
         cfg('muEG_2012B', dCache+'/naodell/nuTuples_v7_4/MuEG_Run2012B', 10, 'DATA_MUEG muEG 2012'),
