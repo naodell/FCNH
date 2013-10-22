@@ -21,7 +21,6 @@ tar -xzf source.tar.gz
 cd Analysis_CMS/fakeEstimator
 cp ../../../../input_${dataName}_${count}.txt input.txt
 
-root -l -b -q run.C
-ls
+root -l -b -q 'run.C(1e9, "'$suffix' '$selection' '$period'")'
 
 cp fakeHistograms.root ${_CONDOR_SCRATCH_DIR}/fakeHistograms_${dataName}_${count}.root

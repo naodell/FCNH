@@ -29,6 +29,9 @@ class AnalysisTools():
     def set_save_path(self, savePath):
         self._savePath = savePath
 
+    def set_category(self, category):
+        self._category = category
+
     def set_period(self, period):
         self._period = period
 
@@ -76,7 +79,7 @@ class AnalysisTools():
         return err
 
 
-    def get_scale_factors(self, addData = []):
+    def get_scale_factors(self, addData = [], corrected = True):
         '''
         Gets the initial number of events for each
         dataset being run over
@@ -91,24 +94,26 @@ class AnalysisTools():
                     print data,
 
                     nInit       = self._histFile.GetDirectory('inclusive/' + data).Get('h1_YieldByCut').GetBinContent(1)
-                    nRaw        = self._histFile.GetDirectory('inclusive/' + data).Get('h1_YieldByCutRaw').GetBinContent(6)
-                    nWeighted   = self._histFile.GetDirectory('inclusive/' + data).Get('h1_YieldByCut').GetBinContent(6)
+                    if corrected:
+                        nRaw        = self._histFile.GetDirectory('inclusive/' + data).Get('h1_YieldByCutRaw').GetBinContent(6)
+                        nWeighted   = self._histFile.GetDirectory('inclusive/' + data).Get('h1_YieldByCut').GetBinContent(6)
 
-                    nInitWeight = nInit - (nRaw - nWeighted)
+                        nInit = nInit - (nRaw - nWeighted)
 
-                    self._scaleDict[self._period][data] = 1e3*self._scaleDict[self._period][data]/nInitWeight 
+                    self._scaleDict[self._period][data] = 1e3*self._scaleDict[self._period][data]/nInit 
 
             else:
                 if dataName in self._scaleDict[self._period]:
                     print dataName,
 
                     nInit       = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCut').GetBinContent(1)
-                    nRaw        = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCutRaw').GetBinContent(6)
-                    nWeighted   = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCut').GetBinContent(6)
+                    if corrected:
+                        nRaw        = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCutRaw').GetBinContent(6)
+                        nWeighted   = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCut').GetBinContent(6)
 
-                    nInitWeight = nInit - (nRaw - nWeighted)
+                        nInitWeight = nInit - (nRaw - nWeighted)
 
-                    self._scaleDict[self._period][dataName] = 1e3*self._scaleDict[self._period][dataName]/nInitWeight
+                    self._scaleDict[self._period][dataName] = 1e3*self._scaleDict[self._period][dataName]/nInit
 
                 else:
                     print '{0} not found in scale dictionary; setting to 0'.format(dataName)
@@ -119,7 +124,7 @@ class AnalysisTools():
         print '\n'
 
 
-    def get_hist(self, var, dataName, histType, doScale = True):
+    def get_hist(self, var, dataName, histType = '1D', doScale = True):
         '''
         Get histogram from ROOT file
         '''
@@ -128,7 +133,7 @@ class AnalysisTools():
             histogramName = 'h1_' + var  
         if histType == '2D':
             histogramName = 'h2_' + var  
-
+        
         hist = self._histFile.GetDirectory(self._category + '/' + dataName).Get(histogramName)
 
         if not hist:
@@ -136,7 +141,7 @@ class AnalysisTools():
 
         if doScale:
             self._scale
-            if dataName[:4] == 'DATA' or dataName in ['fakes']:
+            if dataName[:4] == 'DATA' or dataName in ['Fakes', 'QFlips']:
                 hist.Scale(self._scaleDict[self._period][dataName])
             else:
                 hist.Scale(self._scale*self._scaleDict[self._period][dataName]) 
@@ -159,3 +164,4 @@ class AnalysisTools():
                 outHist.Add(hist)
 
         return outHist
+

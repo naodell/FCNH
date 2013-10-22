@@ -52,7 +52,7 @@ cat3l.extend(['3l_OSSF', '3l_SSSF'])
 cat3l.extend(['3l_eee', '3l_eemu', '3l_emumu', '3l_mumumu'])
 
 ### Samples to be included in stacks ###
-samples     = {'all':[], 'inclusive':[], '3l':[], 'ss':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[], 'fakes':[]}
+samples     = {'all':[], 'inclusive':[], '3l':[], 'ss':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[]}
 
 samples['all'].append('higgs')
 samples['all'].append('Triboson')
@@ -87,10 +87,11 @@ samples['3l'].append('Fakes')
 
 samples['ss'].append('higgs')
 samples['ss'].append('ttV')
-samples['ss'].append('top')
+#samples['ss'].append('top')
 samples['ss'].append('Diboson')
-samples['ss'].append('ZJets')
-samples['ss'].append('QCD')
+#samples['ss'].append('ZJets')
+#samples['ss'].append('QCD')
+samples['ss'].append('QFlips')
 #samples['ss'].append('QCD_EM')
 #samples['ss'].append('QCD_20_MU')
 #samples['ss'].extend(['ZbbToLL', 'WbbToLNu'])

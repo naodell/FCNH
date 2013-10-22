@@ -68,6 +68,10 @@ class fakeAnalyzer : public TSelector {
         TriggerSelector *triggerSelector;
 
         // Useful global variables
+        string  suffix;
+        string  selection;
+        string  period;
+
         bool    zTagged;
         bool    ossfTagged;
         bool    isTP;
@@ -163,8 +167,8 @@ class fakeAnalyzer : public TSelector {
         //virtual void    SlaveTerminate() {};
         virtual void    Terminate();
 
-        virtual void    FillDenominatorHists();
-        virtual void    FillNumeratorHists();
+        virtual void    FillDenominatorHists(string);
+        virtual void    FillNumeratorHists(string);
         virtual void    DoZTag(vObj leptons);
 
         virtual string  str(int i) {return static_cast<ostringstream*>( &(ostringstream() << i) )->str();}
