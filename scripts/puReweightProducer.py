@@ -4,13 +4,13 @@ from decimal import *
 
 
 r.gStyle.SetOptStat(0)
-dataFile    = r.TFile('histos/DataABCD_53X_True.root', 'OPEN')
-mcFile      = r.TFile('histos/fcnc_cut1_2012.root', 'OPEN')
-savePath    = '../plots/TEST'
+dataFile    = r.TFile('data/puHistograms.root', 'OPEN')
+mcFile      = r.TFile('histos/fcnh_cut1_2012_20131010_115501.root', 'OPEN')
+savePath    = 'plots'
 canvas      = r.TCanvas()
 
 h1_Data = dataFile.Get('pileup')
-h1_MC   = mcFile.GetDirectory('inclusive/ZJets').Get('h1_SimVertexMultTrue')
+h1_MC   = mcFile.GetDirectory('inclusive/ZJets_M-50').Get('h1_SimVertexMultTrue')
 
 r.TH1.SetDefaultSumw2(r.kTRUE)
 
@@ -41,7 +41,7 @@ canvas.SaveAs(savePath+'/puPVMult.png')
 outFile = r.TFile('puReweight.root', 'RECREATE') 
 canvas.SetGridy()
 
-h1_PU  = r.TH1D("h1_PU", "2012AB PU reweight factors;PU;#omega_{PU}", 500, 0., 100.)
+h1_PU  = r.TH1D("h1_PU", "2012ABCD PU reweight factors;PU;#omega_{PU}", 500, 0., 100.)
 h1_PU.Divide(h1_Data, h1_MC)
 
 for i in range(500): 
