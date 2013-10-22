@@ -177,14 +177,14 @@ class PlotProducer(AnalysisTools):
 
         nBins = hist1.GetNbinsX()
         xAxisName = hist1.GetXaxis().GetTitle()
-        hRatio = r.TH1D('hRatio', ';'+xAxisName+';Data/BG', nBins, hist1.GetBinLowEdge(1), hist1.GetBinLowEdge(nBins + 1))
+        hRatio = r.TH1D('hRatio', ';{0};Data/BG'.format(xAxisName), nBins, hist1.GetBinLowEdge(1), hist1.GetBinLowEdge(nBins + 1))
         hRatio.Divide(hist1, hist2)
 
         set_hist_style(hRatio, 'RATIO', self._styleDict)
         prep_hist(hRatio, (0, 2.499))
 
         ### a fudge to get labels for category hists
-        if nBins == 12:
+        if hist1.GetName() in ['h1_LeptonFlavor', 'h1_LeptonCharge']:
             hRatio.GetXaxis().SetLabelSize(0.15);
             for i in range(nBins):
                 hRatio.GetXaxis().SetBinLabel(i+1, hist1.GetXaxis().GetBinLabel(i+1))
@@ -330,7 +330,7 @@ class PlotProducer(AnalysisTools):
             if directory is self._directoryList1D[0]: 
                 legend.AddEntry(sums.values()[0], 'BG error')
 
-            self.make_save_path(self._savePath + '/' + self._category + '/' + directory)
+            self.make_save_path('{0}/{1}/{2}'.format(self._savePath, self._category, directory))
 
             for var in self._variableDict[directory]:
 
@@ -547,9 +547,11 @@ class PlotProducer(AnalysisTools):
                 sums[var].Draw('COLZ')
 
 
-                canvas.SaveAs(self._savePath + '/' + self._category + '/' + directory + '/' + var + self._plotType)
+                #canvas.SaveAs(self._savePath + '/' + self._category + '/' + directory + '/' + var + self._plotType)
+                canvas.SaveAs('{0}/{1}/{2}/{3}{4}'.format(self._savePath, self._category, directory, var, self._plotType))
 
                 #legend.Draw()
+
 
 ####                                      ####  
 #### End of PlotProducer class definition ####
@@ -559,7 +561,7 @@ def plotter_wrapper(plotter, category, inputPath, outputPath, do1D, do2D, doLog)
 
     plotter.set_input_file(inputPath)
     plotter.set_save_path(outputPath)
-    plotter._category = category
+    plotter.set_category(category)
 
     if do1D:
         plotter.make_overlays_1D(logScale = doLog, doRatio = True, doEff = False)

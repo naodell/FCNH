@@ -29,6 +29,9 @@ class AnalysisTools():
     def set_save_path(self, savePath):
         self._savePath = savePath
 
+    def set_category(self, category):
+        self._category = category
+
     def set_period(self, period):
         self._period = period
 
@@ -121,7 +124,7 @@ class AnalysisTools():
         print '\n'
 
 
-    def get_hist(self, var, dataName, histType, doScale = True):
+    def get_hist(self, var, dataName, histType = '1D', doScale = True):
         '''
         Get histogram from ROOT file
         '''
@@ -130,7 +133,7 @@ class AnalysisTools():
             histogramName = 'h1_' + var  
         if histType == '2D':
             histogramName = 'h2_' + var  
-
+        
         hist = self._histFile.GetDirectory(self._category + '/' + dataName).Get(histogramName)
 
         if not hist:
@@ -161,3 +164,4 @@ class AnalysisTools():
                 outHist.Add(hist)
 
         return outHist
+
