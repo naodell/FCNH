@@ -85,7 +85,7 @@ class WeightUtils: public TObject {
         TH2D    *h2_DielectronMisQ;
 
         TGraphAsymmErrors *g_MuonFakesPtB;
-        //TGraphAsymmErrors *g_MuonFakesPtE;
+        TGraphAsymmErrors *g_MuonFakesPtE;
         //TGraphAsymmErrors *g_ElectronFakesPtB;
         //TGraphAsymmErrors *g_ElectronFakesPtE;
 

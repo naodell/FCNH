@@ -10,7 +10,7 @@ def make_graph_ratio_1D(outName, h1_Numer, h1_Denom):
     g_Eff = r.TGraphAsymmErrors()
     g_Eff.Divide(h1_Numer, h1_Denom)
     g_Eff.SetName('g_{0}'.format(outName))
-    g_Eff.SetTitle('{0};{1};{2}'.format(outName, h1_Numer.GetXaxis().GetTitle(), h1_Numer.GetYaxis().GetTitle()))
+    g_Eff.SetTitle('{0};{1};#varepsilon'.format(outName, h1_Numer.GetXaxis().GetTitle(), h1_Numer.GetYaxis().GetTitle()))
 
     return g_Eff
 
@@ -20,11 +20,12 @@ def make_graph_ratio_2D(outName, h2_Numer, h2_Denom):
 
     gList = []
 
-    for i in range(h2_Numer.GetXaxis().GetNbins()):
-        g_Eff.apppend(r.TGraphAsymmErrors())
-        g_Eff[i].Divide(h1_Numer, h1_Denom)
-        g_Eff[i].SetName('g_{0}'.format(key))
-        g_Eff[i].SetTitle('{0};{1};{2}'.format(outName, h1_Numer.GetXaxis().GetTitle(), h1_Numer.GetYaxis().GetTitle()))
+    for i in range(h2_Numer.GetYaxis().GetNbins()):
+
+        gList.append(r.TGraphAsymmErrors())
+        gList[i].Divide(h2_Numer.ProjectionX('numer_{0}'.format(i+1), i, i+1), h2_Denom.ProjectionX('denom_{0}'.format(i+1), i, i+1))
+        gList[i].SetName('g_{0}_{1}'.format(outName, i+1))
+        gList[i].SetTitle('{0}_{1};{2};#varepsilon'.format(outName, i+1, h2_Numer.GetXaxis().GetTitle()))
 
     return gList
 
@@ -36,6 +37,10 @@ class RatioMaker(AnalysisTools):
         self._outFile       = r.TFile(outFileName, 'RECREATE')
         self._ratioDict1D   = {}
         self._ratioDict2D   = {}
+
+    def write_outfile(self):
+        self._outFile.Write()
+        self._outFile.Close()
 
     def set_ratio_1D(self, ratioDict):
         self._ratioDict1D = ratioDict
@@ -60,16 +65,30 @@ class RatioMaker(AnalysisTools):
                 h1_Numer.Add(h1_bgNumer, -1)
                 h1_Denom.Add(h1_bgDenom, -1)
 
-                g_Ratio = make_graph_ratio_1D(key, h1_Numer, h1_Denom)
-
-            else:
-                g_Ratio = make_graph_ratio_1D(key, h1_Numer, h1_Denom)
+            g_Ratio = make_graph_ratio_1D(key, h1_Numer, h1_Denom)
 
             self._outFile.Add(g_Ratio)
 
-    def write_outfile(self):
-        self._outFile.Write()
-        self._outFile.Close()
+    def make_2D_ratios(self, ratioSample, bgSample = ''): 
+        ### make ratios for all variables specified in ratioDict2D.  Sample
+        ### combinations should be specified in combineDict in parameters.py.
+        ### bgSample is subtracted off of the inputs for the ratio. Produces a
+        ### graph for each row in the input 2D histogram
+
+        for key,value in self._ratioDict2D.iteritems():
+            h2_Numer    = self.combine_samples(value[0], ratioSample, histType = '2D') 
+            h2_Denom    = self.combine_samples(value[1], ratioSample, histType = '2D') 
+
+            if bgSample is not '':
+                h2_bgNumer  = self.combine_samples(value[0], bgSample, histType = '2D') 
+                h2_bgDenom  = self.combine_samples(value[1], bgSample, histType = '2D') 
+                h2_Numer.Add(h2_bgNumer, -1)
+                h2_Denom.Add(h2_bgDenom, -1)
+
+            g_RatioList = make_graph_ratio_2D(key, h2_Numer, h2_Denom)
+
+            for g_Ratio in g_RatioList:
+                self._outFile.Add(g_Ratio)
 
 
 if __name__ == '__main__':
@@ -97,7 +116,7 @@ if __name__ == '__main__':
     inFile  = 'fakeEstimator/histos/{0}.root'.format(batch)
     outFile = 'data/fakeRates_TEST.root'
 
-    ratioMaker = RatioMaker(inFile, outFile)
+    ratioMaker = RatioMaker(inFile, outFile, scale = 19.7)
     ratioMaker.set_category('inclusive')
     ratioMaker.get_scale_factors(['FAKE_BG'], corrected = False)
 
@@ -110,4 +129,14 @@ if __name__ == '__main__':
 
     ratioMaker.set_ratio_1D(fakeDict1D)
     ratioMaker.make_1D_ratios('DATA', 'FAKE_BG')
+
+    fakeDict2D = {
+        #'MuonFakePt_Even':('MuPassLepPt', 'MuProbeLepPt'),
+        #'MuonFakeEta_Even':('MuPassLepEta', 'MuProbeLepEta'),
+        'MuonFake':('MuNumer', 'MuDenom'),
+    }
+
+    ratioMaker.set_ratio_2D(fakeDict2D)
+    ratioMaker.make_2D_ratios('DATA', 'FAKE_BG')
+
     ratioMaker.write_outfile()
