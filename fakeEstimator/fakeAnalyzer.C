@@ -12,8 +12,8 @@ const bool  doQCDDileptonCR = true;
 const bool  doGenPrint      = false;
 
 const float jetPtCut[]        = {25., 15.};
-const float muPtCut[]         = {5., 3.};
-const float elePtCut[]        = {5., 10.};
+const float muPtCut[]         = {10., 3.};
+const float elePtCut[]        = {10., 10.};
 const float phoPtCut[]        = {10., 10.};
 
 unsigned  nPtBins     = 6;
@@ -248,16 +248,20 @@ bool fakeAnalyzer::Process(Long64_t entry)
         // is anti-isolated.  The probe is a lepton passing loose
         // identification requirement without any isolation requirement
 
-        UInt_t nTags    = selector->GetSelectedMuons("QCD2l_CR_tag").size();
-        UInt_t nProbes  = selector->GetSelectedMuons("QCD2l_CR_probe").size();
+        UInt_t nTags        = selector->GetSelectedMuons("QCD2l_CR_tag").size();
+        UInt_t nMuProbes    = selector->GetSelectedMuons("QCD2l_CR_probe").size();
+        UInt_t nEleProbes   = selector->GetSelectedMuons("QCD2l_CR_probe").size();
 
-        if (nTags == 1 && nProbes == 1) {
+        if (nTags == 1 && (nMuProbes + nEleProbes) == 1) {
 
             tagLep    = (TCPhysObject)selector->GetSelectedMuons("QCD2l_CR_tag")[0];
-            probeLep  = (TCPhysObject)selector->GetSelectedMuons("QCD2l_CR_probe")[0];
 
-            // Next we  make sure event is consistent with bbbar production
-            //probes.push_back(selector->GetSelectedElectrons("QCD2l_CR_probe")); // <-- Add these
+            if (nMuProbes > 0)
+                probeLep  = (TCPhysObject)selector->GetSelectedMuons("QCD2l_CR_probe")[0];
+            else if (nEleProbes > 0)
+                probeLep  = (TCPhysObject)selector->GetSelectedMuons("QCD2l_CR_probe")[0];
+
+            // Next we  make sure event is consistent with bbbar production //
 
             // Match the tag to a loose b-jet
             bool jetMatched = false;
@@ -268,12 +272,6 @@ bool fakeAnalyzer::Process(Long64_t entry)
                     jetMatched = true;
                     continue;
                 }
-
-                if (
-                        tagJets.size() > 1 
-                        && (probeLep.DeltaR(tagJets[i]) < 0.7 || tagLep.DeltaR(tagJets[i]) < 0.7 )
-                   )
-                    jetVeto = true;
             }
 
             if (!jetMatched) return kTRUE;
@@ -314,7 +312,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
     // Match probe lepton to tight leptons
     bool matched = false;
-    if (probeLep.DeltaR(leptons[0]) < 0.01) {
+    if (probeLep.DeltaR(leptons[0]) < 0.01 and probeLep.Type() == passLep.Type()) {
         passLep = leptons[0];
         matched = true;
     }

@@ -12,21 +12,20 @@ currentDate = '{0:02d}/{1:02d}/{2:02d}'.format(now.year, now.month, now.day)
 ### Get command line arguements
 
 if len(sys.argv) > 1:
-    batch = '_' + sys.argv[1]
+    batch   = sys.argv[1]
+    suffix  = sys.argv[2]
 else:
-    batch = ''
+    batch   = 'TEST'
+    suffix  = 'TEST'
 
 ### This is the config file for manipulating 
 ### histograms using the PlotProducer class.  
 
 plotType    = '.png'
 selection   = 'fcnh'
-suffix      = sys.argv[1]
-#suffix      = 'TEST'
 
 cutList     = ['1_preselection']
 cutList.extend(['2_Z_veto', '3_MET', '4_HT', '5_bjet'])
-
 crList      = ['CR_WZ', 'CR_ttbar', 'CR_ttZ']#, 'CR_fakes']
 
 period      = '2012'
@@ -36,11 +35,11 @@ doLog       = True
 doPlots     = True
 doYields    = False
 
-doOS        = True
-doSS        = True
-do3l        = True
-do1D        = True
-do2D        = True
+doOS        = False
+doSS        = False
+do3l        = False
+do1D        = False
+do2D        = False
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive']
@@ -75,10 +74,10 @@ samples['3l'].append('Triboson')
 samples['3l'].append('ttV')
 samples['3l'].append('ZZ4l')
 samples['3l'].append('WZJets3LNu')
-samples['3l'].append('Fakes')
-#samples['3l'].append('WW')
-#samples['3l'].append('top')
-#samples['3l'].append('ZJets')
+#samples['3l'].append('Fakes')
+samples['3l'].append('WW')
+samples['3l'].append('top')
+samples['3l'].append('ZJets')
 #samples['3l'].append('ZGstar')
 
 #samples['3l'].append('Diboson')
@@ -112,7 +111,7 @@ if doPlots:
     r.gROOT.SetBatch()
 
     ### Initialize plot producer ###
-    plotter = PlotProducer(inputFile = 'fcncAnalysis/combined_histos/' + selection + '_cut1_' + period + batch + '.root', savePath = '', scale = LUMIDATA, isAFS = False)
+    plotter = PlotProducer(inputFile = 'fcncAnalysis/combined_histos/{0}_cut1_{1}_{2}.root'.format(selection, period, batch), savePath = '', scale = LUMIDATA, isAFS = False)
     plotter.set_period(period)
     plotter.set_output_type(plotType)
 
@@ -213,11 +212,11 @@ if doPlots:
     inclusive_plotter._overlayList = ['DATA'] # overlaySamples
 
     for i, cut in enumerate(cutList):
-        inFile  = 'fcncAnalysis/combined_histos/' + selection + '_cut' + str(i+1) + '_' + period + batch + '.root'
+        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
         if doLog:
-            outFile = 'plots/' + currentDate + '/' + selection + '_' + suffix + '/log/' + cut
+            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, cut)
         else:
-            outFile = 'plots/' + currentDate + '/' + selection + '_' + suffix + '/linear/' + cut
+            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
 
         inclusive_plotter.make_save_path(outFile, clean=True)
         p_plot.append(Process(name = cut[2:] + '/inclusive', target = plotter_wrapper, args=(inclusive_plotter, 'inclusive', inFile, outFile, do1D, do2D, doLog)))
@@ -231,12 +230,12 @@ if doPlots:
         plotter_3l._overlayList = ['DATA', 'FCNH']
 
         for i, cut in enumerate(cutList):
-            inFile  = 'fcncAnalysis/combined_histos/' + selection + '_cut' + str(i+1) + '_' + period + batch + '.root'
+            inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
 
             if doLog:
-                outFile = 'plots/' + currentDate + '/' + selection + '_' + suffix + '/log/' + cut
+                outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, cut)
             else:
-                outFile = 'plots/' + currentDate + '/' + selection + '_' + suffix + '/linear/' + cut
+                outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
 
             plotter_3l.make_save_path(outFile, clean=True)
 
@@ -250,12 +249,12 @@ if doPlots:
         ss_plotter._overlayList = ['DATA', 'FCNH']
 
         for i, cut in enumerate(cutList):
-            inFile  = 'fcncAnalysis/combined_histos/' + selection + '_cut' + str(i+1) + '_' + period + batch + '.root'
+            inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
 
             if doLog:
-                outFile = 'plots/' + currentDate + '/' + selection + '_' + suffix + '/log/' + cut
+                outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, cut)
             else:
-                outFile = 'plots/' + currentDate + '/' + selection + '_' + suffix + '/linear/' + cut
+                outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
 
             ss_plotter.make_save_path(outFile, clean=True)
 
@@ -270,12 +269,12 @@ if doPlots:
         os_plotter._overlayList = ['DATA']
 
         for i, cut in enumerate(cutList):
-            inFile  = 'fcncAnalysis/combined_histos/' + selection + '_cut' + str(i+1) + '_' + period + batch + '.root'
+            inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
 
             if doLog:
-                outFile = 'plots/' + currentDate + '/' + selection + '_' + suffix + '/log/' + cut
+                outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, cut)
             else:
-                outFile = 'plots/' + currentDate + '/' + selection + '_' + suffix + '/linear/' + cut
+                outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
 
             os_plotter.make_save_path(outFile, clean=True)
 
@@ -290,11 +289,12 @@ if doPlots:
         wz_plotter.add_datasets(samples['WZ'], Clear=True)
         wz_plotter._overlayList = ['DATA']
 
-        inFile  = 'fcncAnalysis/combined_histos/' + selection + '_cut6_' + period + batch + '.root'
+        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
+
         if doLog:
-            outFile = 'plots/' + currentDate + '/' + selection + '_' + suffix + '/log/CR_WZ'
+            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, cut)
         else:
-            outFile = 'plots/' + currentDate + '/' + selection + '_' + suffix + '/linear/CR_WZ'
+            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
 
         wz_plotter.make_save_path(outFile, clean=True)
 
@@ -307,12 +307,12 @@ if doPlots:
         ttbar_plotter.add_datasets(samples['ttbar'],  Clear=True)
         ttbar_plotter._overlayList = ['DATA']
 
-        inFile  = 'fcncAnalysis/combined_histos/' + selection + '_cut7_' + period + batch + '.root'
+        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
+
         if doLog:
-            outFile = 'plots/' + currentDate + '/' + selection + '_' + suffix + '/log/CR_ttbar'
+            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, cut)
         else:
-            outFile = 'plots/' + currentDate + '/' + selection + '_' + suffix + '/linear/CR_ttbar'
-        ttbar_plotter.make_save_path(outFile, clean=True)
+            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
 
         p_plot.append(Process(name = 'CR_ttbar/os_emu', target = plotter_wrapper, args=(ttbar_plotter, 'os_emu', inFile, outFile, do1D, False, doLog)))
 
@@ -322,11 +322,12 @@ if doPlots:
         ttZ_plotter.add_datasets(samples['ttZ'],  Clear=True)
         ttZ_plotter._overlayList = ['DATA']
 
-        inFile  = 'fcncAnalysis/combined_histos/' + selection + '_cut8_' + period + batch + '.root'
+        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
+
         if doLog:
-            outFile = 'plots/' + currentDate + '/' + selection + '_' + suffix + '/log/CR_ttZ'
+            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, cut)
         else:
-            outFile = 'plots/' + currentDate + '/' + selection + '_' + suffix + '/linear/CR_ttZ'
+            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
 
         ttZ_plotter.make_save_path(outFile, clean=True)
 

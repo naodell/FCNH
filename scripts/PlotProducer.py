@@ -334,7 +334,7 @@ class PlotProducer(AnalysisTools):
 
             for var in self._variableDict[directory]:
 
-                if var not in hists.keys() + stacks.keys(): continue
+                if var not in hists.keys() or var not in stacks.keys(): continue
 
                 pad1.cd()
 

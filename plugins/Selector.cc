@@ -413,13 +413,16 @@ void Selector::ElectronSelector(TClonesArray* electrons)
         // analysis electrons
         //if (ElectronTightID(thisElec)) 
 
-        if (thisElec->IdMap("preSelPassV1")) _selElectrons["fakeable"].push_back(*thisElec);
+        if (thisElec->IdMap("preSelPassV1")) 
+                _selElectrons["QCD2l_CR_probe"].push_back(*thisElec);
 
         if (thisElec->IdMap("preSelPassV1") && ElectronMVA(thisElec)) {
             _selElectrons["premva"].push_back(*thisElec);
 
             if (eleISO < 0.15) 
                 _selElectrons["tight"].push_back(*thisElec);			
+            else 
+                _selElectrons["fakeable"].push_back(*thisElec);
 
         } else if (
                 ElectronLooseID(thisElec)
