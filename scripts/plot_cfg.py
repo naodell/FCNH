@@ -26,7 +26,7 @@ selection   = 'fcnh'
 
 cutList     = ['1_preselection']
 cutList.extend(['2_Z_veto', '3_MET', '4_HT', '5_bjet'])
-crList      = ['CR_WZ', 'CR_ttbar', 'CR_ttZ']#, 'CR_fakes']
+crList      = []#'CR_WZ', 'CR_ttbar', 'CR_ttZ']
 
 period      = '2012'
 LUMIDATA    = 19.712 
@@ -212,11 +212,18 @@ if doPlots:
     inclusive_plotter._overlayList = ['DATA'] # overlaySamples
 
     for i, cut in enumerate(cutList):
-        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
+        inFile = 'fcncAnalysis/combined_histos/' + selection + '_cut' + str(i+1) + '_' + period + '_' + batch + '.root'
         if doLog:
-            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, cut)
+            outFile = 'plots/' + currentDate + '/' + selection + '_' + batch + '/log/' + cut
         else:
-            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
+            outFile = 'plots/' + currentDate + '/' + selection + '_' + batch + '/linear/' + cut
+
+        #inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
+
+        #if doLog:
+        #    outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, cut)
+        #else:
+        #    outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
 
         inclusive_plotter.make_save_path(outFile, clean=True)
         p_plot.append(Process(name = cut[2:] + '/inclusive', target = plotter_wrapper, args=(inclusive_plotter, 'inclusive', inFile, outFile, do1D, do2D, doLog)))
