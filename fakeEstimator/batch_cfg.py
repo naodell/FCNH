@@ -5,7 +5,7 @@ import sys
 cfg = b.JobConfig
 
 ''' Specify parameters '''
-dCache      = '/pnfs/cms/WAX/11/store/user'
+#dCache      = '/pnfs/cms/WAX/11/store/user'
 executable  = 'execBatch.csh'
 
 selection   = 'fcnc'

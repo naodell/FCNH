@@ -250,16 +250,17 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
         UInt_t nTags        = selector->GetSelectedMuons("QCD2l_CR_tag").size();
         UInt_t nMuProbes    = selector->GetSelectedMuons("QCD2l_CR_probe").size();
-        UInt_t nEleProbes   = selector->GetSelectedMuons("QCD2l_CR_probe").size();
+        UInt_t nEleProbes   = selector->GetSelectedElectrons("QCD2l_CR_probe").size();
 
         if (nTags == 1 && (nMuProbes + nEleProbes) == 1) {
+            //cout << nTags << ", " << nEleProbes << endl;
 
             tagLep    = (TCPhysObject)selector->GetSelectedMuons("QCD2l_CR_tag")[0];
 
             if (nMuProbes > 0)
                 probeLep  = (TCPhysObject)selector->GetSelectedMuons("QCD2l_CR_probe")[0];
             else if (nEleProbes > 0)
-                probeLep  = (TCPhysObject)selector->GetSelectedMuons("QCD2l_CR_probe")[0];
+                probeLep  = (TCPhysObject)selector->GetSelectedElectrons("QCD2l_CR_probe")[0];
 
             // Next we  make sure event is consistent with bbbar production //
 
