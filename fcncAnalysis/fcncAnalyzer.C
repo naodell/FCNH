@@ -271,7 +271,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
         histManager->SetWeight(1);
 
         histManager->Fill1DHist(nPUVertices,
-                "h1_SimVertexMult", "Multiplicity of simulated vertices", 500, 0., 100.);
+                "h1_SimVertexMult", "Multiplicity of simulated vertices", 100, 0.5, 100.5);
         histManager->Fill1DHist(nPUVerticesTrue,
                 "h1_SimVertexMultTrue", "True simulated PU", 500, 0., 100.);
     }

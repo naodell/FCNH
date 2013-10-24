@@ -37,6 +37,7 @@ class RatioMaker(AnalysisTools):
         self._outFile       = r.TFile(outFileName, 'RECREATE')
         self._ratioDict1D   = {}
         self._ratioDict2D   = {}
+        self._hists         = []
 
     def write_outfile(self):
         self._outFile.Write()
@@ -69,7 +70,7 @@ class RatioMaker(AnalysisTools):
 
             self._outFile.Add(g_Ratio)
 
-    def make_2D_ratios(self, ratioSample, bgSample = ''): 
+    def make_2D_ratios(self, ratioSample, bgSample = '', doProjections = True): 
         ### make ratios for all variables specified in ratioDict2D.  Sample
         ### combinations should be specified in combineDict in parameters.py.
         ### bgSample is subtracted off of the inputs for the ratio. Produces a
@@ -85,10 +86,22 @@ class RatioMaker(AnalysisTools):
                 h2_Numer.Add(h2_bgNumer, -1)
                 h2_Denom.Add(h2_bgDenom, -1)
 
-            g_RatioList = make_graph_ratio_2D(key, h2_Numer, h2_Denom)
+            if doProjections:
+                g_RatioList = make_graph_ratio_2D(key, h2_Numer, h2_Denom)
 
-            for g_Ratio in g_RatioList:
-                self._outFile.Add(g_Ratio)
+                for g_Ratio in g_RatioList:
+                    self._outFile.Add(g_Ratio)
+
+            else:
+                h2_Eff = r.TH2D('h2_{0}'.format(key), '{0};;'.format(key),
+                                 h2_Numer.GetNbinsX(), h2_Numer.GetXaxis().GetXmin(), h2_Numer.GetXaxis().GetXmax(),
+                                 h2_Numer.GetNbinsY(), h2_Numer.GetYaxis().GetXmin(), h2_Numer.GetYaxis().GetXmax())
+
+                h2_Eff.Divide(h2_Numer, h2_Denom, 1., 1., 'B')
+
+                self._hists.append(h2_Eff)
+
+
 
 
 if __name__ == '__main__':
@@ -99,44 +112,57 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         batch = sys.argv[1]
     else:
-        batch = '20131021_120020'
+        batch = '20131024_004428'
+
+    doQFlips    = True
+    doFakes     = False
 
     ### For electron charge misID efficiencies ###
-    #inFile  = r.TFile('fcncAnalysis/combined_histos/fcnh_cut1_2012_20131003_171426.root', 'OPEN')
-    #outFile = r.TFile('data/electronQMisID.root', 'RECREATE')
+    if doQFlips:
+        inFile  = 'fcncAnalysis/combined_histos/fcnh_cut1_2012_{0}.root'.format(batch)
+        outFile = 'data/eleQMisID.root'
 
-    #eMisQDict = {
-    #    'LeadElectronMisQ':('LeadElecQMisIDNumer', 'LeadElecQMisIDDenom'),
-    #    'TrailingElectronMisQ':('TrailingElecQMisIDNumer', 'TrailingElecQMisIDDenom'),
-    #    'DielectronMisQ':('DileptonQMisIDNumer', 'DileptonQMisIDDenom')}
+        ratioMaker = RatioMaker(inFile, outFile, scale = 19.7)
+        ratioMaker.set_category('inclusive')
 
-    #ratio_2D(eMisQDict, 'inclusive/DATA_ELECTRON', inFile)
+        eMisQDict = {
+            #'LeadElectronMisQ':('LeadElecQMisIDNumer', 'LeadElecQMisIDDenom'),
+            #'TrailingElectronMisQ':('TrailingElecQMisIDNumer', 'TrailingElecQMisIDDenom'),
+            'DielectronMisQ':('DileptonQMisIDNumer', 'DileptonQMisIDDenom')
+            }
+
+        ratioMaker.set_ratio_2D(eMisQDict)
+        ratioMaker.make_2D_ratios('DATA', doProjections = False)
+
+        ratioMaker.write_outfile()
 
     ### For lepton fake rate measurement ###
-    inFile  = 'fakeEstimator/histos/{0}.root'.format(batch)
-    outFile = 'data/fakeRates_TEST.root'
 
-    ratioMaker = RatioMaker(inFile, outFile, scale = 19.7)
-    ratioMaker.set_category('inclusive')
-    ratioMaker.get_scale_factors(['FAKE_BG'], corrected = False)
+    if doFakes:
+        inFile  = 'fakeEstimator/histos/{0}.root'.format(batch)
+        outFile = 'data/fakeRates_TEST.root'
 
-    fakeDict1D = {
-        #'MuonFakePt_Even':('MuPassLepPt', 'MuProbeLepPt'),
-        #'MuonFakeEta_Even':('MuPassLepEta', 'MuProbeLepEta'),
-        'MuonFakePt':('MuNumerPt', 'MuDenomPt'),
-        'MuonFakeEta':('MuNumerEta', 'MuDenomEta')
-    }
+        ratioMaker = RatioMaker(inFile, outFile, scale = 19.7)
+        ratioMaker.set_category('inclusive')
+        ratioMaker.get_scale_factors(['FAKE_BG'], corrected = False)
 
-    ratioMaker.set_ratio_1D(fakeDict1D)
-    ratioMaker.make_1D_ratios('DATA', 'FAKE_BG')
+        fakeDict1D = {
+            #'MuonFakePt_Even':('MuPassLepPt', 'MuProbeLepPt'),
+            #'MuonFakeEta_Even':('MuPassLepEta', 'MuProbeLepEta'),
+            'MuonFakePt':('MuNumerPt', 'MuDenomPt'),
+            'MuonFakeEta':('MuNumerEta', 'MuDenomEta')
+        }
 
-    fakeDict2D = {
-        #'MuonFakePt_Even':('MuPassLepPt', 'MuProbeLepPt'),
-        #'MuonFakeEta_Even':('MuPassLepEta', 'MuProbeLepEta'),
-        'MuonFake':('MuNumer', 'MuDenom'),
-    }
+        ratioMaker.set_ratio_1D(fakeDict1D)
+        ratioMaker.make_1D_ratios('DATA', 'FAKE_BG')
 
-    ratioMaker.set_ratio_2D(fakeDict2D)
-    ratioMaker.make_2D_ratios('DATA', 'FAKE_BG')
+        fakeDict2D = {
+            #'MuonFakePt_Even':('MuPassLepPt', 'MuProbeLepPt'),
+            #'MuonFakeEta_Even':('MuPassLepEta', 'MuProbeLepEta'),
+            'MuonFake':('MuNumer', 'MuDenom'),
+        }
 
-    ratioMaker.write_outfile()
+        ratioMaker.set_ratio_2D(fakeDict2D)
+        ratioMaker.make_2D_ratios('DATA', 'FAKE_BG')
+
+        ratioMaker.write_outfile()

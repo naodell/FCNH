@@ -538,7 +538,7 @@ void Selector::JetSelector(TClonesArray* jets)
                         _selJets["tight"].push_back(corJet);
                 }
             }
-        } else if (fabs(corJet.Eta()) < 4.7) {
+        } else if (fabs(corJet.Eta()) < 3.5) {
             if (
                     corJet.Pt() > _jetPtCuts[0]
                     && corJet.NumConstit() > 1

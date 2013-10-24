@@ -30,13 +30,15 @@ crList      = ['CR_WZ', 'CR_ttbar', 'CR_ttZ']
 
 period      = '2012'
 LUMIDATA    = 19.712 
-doLog       = True
 
-doPlots     = True
+doPlots     = False
+doLog       = True
+doEff       = False
+doRatio     = True
 do1D        = True
 do2D        = False
 
-doYields    = False
+doYields    = True
 
 doOS        = True
 doSS        = True
@@ -75,13 +77,12 @@ samples['3l'].append('Triboson')
 samples['3l'].append('ttV')
 samples['3l'].append('ZZ4l')
 samples['3l'].append('WZJets3LNu')
-#samples['3l'].append('Fakes')
-#samples['3l'].append('WW')
 samples['3l'].append('top')
 samples['3l'].append('ZJets')
-#samples['3l'].append('ZGstar')
+#samples['3l'].append('Fakes')
 
 #samples['3l'].append('Diboson')
+#samples['3l'].append('ZGstar')
 #samples['3l'].append('WGStar')
 #samples['3l'].extend(['WGStarLNu2E', 'WGStarLNu2Mu', 'WGStarLNu2Tau'])
 
@@ -92,6 +93,7 @@ samples['ss'].append('Diboson')
 samples['ss'].append('ZJets')
 samples['ss'].append('QCD')
 #samples['ss'].append('QFlips')
+
 #samples['ss'].append('QCD_EM')
 #samples['ss'].append('QCD_20_MU')
 #samples['ss'].extend(['ZbbToLL', 'WbbToLNu'])
@@ -222,7 +224,7 @@ if doPlots:
             outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
 
         inclusive_plotter.make_save_path(outFile, clean=True)
-        p_plot.append(Process(name = cut[2:] + '/inclusive', target = plotter_wrapper, args=(inclusive_plotter, 'inclusive', inFile, outFile, do1D, do2D, doLog)))
+        p_plot.append(Process(name = cut[2:] + '/inclusive', target = plotter_wrapper, args=(inclusive_plotter, 'inclusive', inFile, outFile, do1D, do2D, doLog, doRatio, doEff)))
 
 
     ### 3l selection ###
@@ -243,7 +245,7 @@ if doPlots:
             plotter_3l.make_save_path(outFile, clean=True)
 
             for category in cat3l:
-                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(plotter_3l, category, inFile, outFile, do1D, do2D, doLog)))
+                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(plotter_3l, category, inFile, outFile, do1D, do2D, doLog, doRatio, doEff)))
 
     ### ss selection ###
     if doSS:
@@ -262,7 +264,7 @@ if doPlots:
             ss_plotter.make_save_path(outFile, clean=True)
 
             for category in catSS:
-                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(ss_plotter, category, inFile, outFile, do1D, do2D, doLog)))
+                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(ss_plotter, category, inFile, outFile, do1D, do2D, doLog, doRatio, doEff)))
 
 
     ### os selection ###
@@ -282,7 +284,7 @@ if doPlots:
             os_plotter.make_save_path(outFile, clean=True)
 
             for category in catOS:
-                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(os_plotter, category, inFile, outFile, do1D, do2D, doLog)))
+                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(os_plotter, category, inFile, outFile, do1D, do2D, doLog, doRatio, doEff)))
 
     doLog = False
 
@@ -302,7 +304,7 @@ if doPlots:
         wz_plotter.make_save_path(outFile, clean=True)
 
         for category in cat3l:
-            p_plot.append(Process(name = 'CR_WZ/' + category, target = plotter_wrapper, args=(wz_plotter, category, inFile, outFile, do1D, False, doLog)))
+            p_plot.append(Process(name = 'CR_WZ/' + category, target = plotter_wrapper, args=(wz_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, doEff)))
 
     ### ttbar control region
     if 'CR_ttbar' in crList:
@@ -319,7 +321,7 @@ if doPlots:
 
         ttbar_plotter.make_save_path(outFile, clean=True)
 
-        p_plot.append(Process(name = 'CR_ttbar/os_emu', target = plotter_wrapper, args=(ttbar_plotter, 'os_emu', inFile, outFile, do1D, False, doLog)))
+        p_plot.append(Process(name = 'CR_ttbar/os_emu', target = plotter_wrapper, args=(ttbar_plotter, 'os_emu', inFile, outFile, do1D, False, doLog, doRatio, doEff)))
 
     ### ttZ control region
     if 'CR_ttZ' in crList:
@@ -337,7 +339,7 @@ if doPlots:
         ttZ_plotter.make_save_path(outFile, clean=True)
 
         for category in cat3l:
-            p_plot.append(Process(name = 'CR_ttZ/' + category, target = plotter_wrapper, args=(ttZ_plotter, category, inFile, outFile, do1D, False, doLog)))
+            p_plot.append(Process(name = 'CR_ttZ/' + category, target = plotter_wrapper, args=(ttZ_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, doEff)))
 
 
 ### End of configuration for PlotProducer ###
@@ -354,7 +356,7 @@ print '\n'
 if doYields:
     ### Initialize table maker ###
     tableFile       = file('yields/.yields_tmp.tex', 'w')
-    yieldTable      = TableMaker('fcncAnalysis/combined_histos/' + selection + '_cut1_' + period + batch + '.root', tableFile, scale = LUMIDATA, delimiter = '&', doSumBG = True)
+    yieldTable      = TableMaker('fcncAnalysis/combined_histos/{0}_cut1_{1}_{2}.root'.format(selection, period, batch), tableFile, scale = LUMIDATA, delimiter = '&', doSumBG = True)
     yieldTable.set_period(period)
 
     yieldTable.add_datasets(samples['all'], Clear = True)
@@ -396,7 +398,7 @@ if doYields:
     crCats = {'CR_WZ':'3l_inclusive', 'CR_ttbar':'os_emu', 'CR_ttZ':'3l_inclusive'}
     for i,CR in enumerate(crList):
 
-        yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut{1}_{2}{3}.root'.format(selection, i+5, period, batch))
+        yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, i+5, period, batch))
         yieldTable._columnList  = samples[CR[3:]] + ['BG', 'DATA']
 
         yieldTable.add_datasets(samples[CR[3:]], Clear = True)
@@ -409,7 +411,7 @@ if doYields:
         yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 6)
 
     ### Special case for ZZ->4l control region ###
-    yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut1_{1}{2}.root'.format(selection, period, batch))
+    yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut1_{1}_{2}.root'.format(selection, period, batch))
     yieldTable.add_datasets(['ZZ4l', 'DATA'], Clear = True)
     yieldTable._columnList  = ['ZZ4l'] + ['BG', 'DATA']
     yieldTable._rowList = 8*['.'] + ['ZZ4l']
@@ -421,5 +423,5 @@ if doYields:
     tableFile.close()
 
     subprocess.call('pdflatex -output-dir=yields yields/yields.tex', shell = True)
-    subprocess.call('cp yields/yields.pdf plots/{0}/{1}_{2}/.'.format(currentDate, selection, suffix), shell = True)
-    subprocess.call('cp yields/.yields_tmp.tex plots/{0}/{1}_{2}/yields.tex'.format(currentDate, selection, suffix), shell = True)
+    subprocess.call('cp yields/yields.pdf plots/{0}/{1}_{2}_{3}/.'.format(currentDate, selection, batch, suffix), shell = True)
+    subprocess.call('cp yields/.yields_tmp.tex plots/{0}/{1}_{2}_{3}/yields.tex'.format(currentDate, selection, batch, suffix), shell = True)

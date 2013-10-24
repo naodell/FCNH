@@ -558,14 +558,14 @@ class PlotProducer(AnalysisTools):
 #### End of PlotProducer class definition ####
 ####                                      ####  
 
-def plotter_wrapper(plotter, category, inputPath, outputPath, do1D, do2D, doLog):
+def plotter_wrapper(plotter, category, inputPath, outputPath, do1D, do2D, log, ratios, eff):
 
     plotter.set_input_file(inputPath)
     plotter.set_save_path(outputPath)
     plotter.set_category(category)
 
     if do1D:
-        plotter.make_overlays_1D(logScale = doLog, doRatio = True, doEff = False)
+        plotter.make_overlays_1D(logScale = log, doRatio = ratios, doEff = eff)
     if do2D:
         plotter.make_overlays_2D(logScale = False, doProjection = False)
 

@@ -4,8 +4,8 @@ from decimal import *
 
 
 r.gStyle.SetOptStat(0)
-dataFile    = r.TFile('data/puHistograms.root', 'OPEN')
-mcFile      = r.TFile('fcncAnalysis/combined_histos/fcnh_cut1_2012_20131010_115501.root', 'OPEN')
+dataFile    = r.TFile('data/puHistograms_default_MB.root', 'OPEN')
+mcFile      = r.TFile('fcncAnalysis/combined_histos/fcnh_cut1_2012_20131024_004428.root', 'OPEN')
 savePath    = 'plots'
 canvas      = r.TCanvas()
 
@@ -25,6 +25,8 @@ h1_MC.SetMaximum(max(h1_Data.GetMaximum(), h1_MC.GetMaximum())*1.2)
 h1_MC.SetAxisRange(0., 60.)
 h1_Data.SetAxisRange(0., 60.)
 
+#canvas.SetLogy()
+
 h1_MC.Draw('HIST')
 h1_Data.Draw('HIST SAME')
 
@@ -32,7 +34,7 @@ legend = r.TLegend(0.7, 0.75, 0.89, 0.89)
 legend.SetFillStyle(4001)
 legend.SetFillColor(0)
 legend.SetTextSize(0.035)
-legend.AddEntry(h1_Data, 'Run2012AB')
+legend.AddEntry(h1_Data, 'Run2012ABCD')
 legend.AddEntry(h1_MC, 'S10 PU')
 legend.Draw()
 
@@ -54,6 +56,7 @@ line = r.TLine(0., 1., 100., 1.)
 line.SetLineWidth(2)
 line.SetLineColor(r.kRed)
 
+h1_PU.SetMaximum(4)
 h1_PU.Draw('E0')
 line.Draw('SAME')
 canvas.SaveAs(savePath+'/puWeights_2012.png')
