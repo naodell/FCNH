@@ -134,6 +134,7 @@ class AnalysisTools():
         if histType == '2D':
             histogramName = 'h2_' + var  
         
+        #print self._category, dataName, histogramName
         hist = self._histFile.GetDirectory(self._category + '/' + dataName).Get(histogramName)
 
         if not hist:

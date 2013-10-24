@@ -5,7 +5,7 @@ from decimal import *
 
 r.gStyle.SetOptStat(0)
 dataFile    = r.TFile('data/puHistograms.root', 'OPEN')
-mcFile      = r.TFile('histos/fcnh_cut1_2012_20131010_115501.root', 'OPEN')
+mcFile      = r.TFile('fcncAnalysis/combined_histos/fcnh_cut1_2012_20131010_115501.root', 'OPEN')
 savePath    = 'plots'
 canvas      = r.TCanvas()
 

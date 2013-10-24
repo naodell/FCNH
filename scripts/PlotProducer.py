@@ -336,6 +336,7 @@ class PlotProducer(AnalysisTools):
 
                 if var not in hists.keys() or var not in stacks.keys(): continue
 
+
                 pad1.cd()
 
                 if logScale:

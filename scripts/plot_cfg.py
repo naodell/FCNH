@@ -26,20 +26,21 @@ selection   = 'fcnh'
 
 cutList     = ['1_preselection']
 cutList.extend(['2_Z_veto', '3_MET', '4_HT', '5_bjet'])
-crList      = []#'CR_WZ', 'CR_ttbar', 'CR_ttZ']
+crList      = ['CR_WZ', 'CR_ttbar', 'CR_ttZ']
 
 period      = '2012'
 LUMIDATA    = 19.712 
 doLog       = True
 
 doPlots     = True
+do1D        = True
+do2D        = False
+
 doYields    = False
 
-doOS        = False
-doSS        = False
-do3l        = False
-do1D        = False
-do2D        = False
+doOS        = True
+doSS        = True
+do3l        = True
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive']
@@ -75,7 +76,7 @@ samples['3l'].append('ttV')
 samples['3l'].append('ZZ4l')
 samples['3l'].append('WZJets3LNu')
 #samples['3l'].append('Fakes')
-samples['3l'].append('WW')
+#samples['3l'].append('WW')
 samples['3l'].append('top')
 samples['3l'].append('ZJets')
 #samples['3l'].append('ZGstar')
@@ -86,11 +87,11 @@ samples['3l'].append('ZJets')
 
 samples['ss'].append('higgs')
 samples['ss'].append('ttV')
-#samples['ss'].append('top')
+samples['ss'].append('top')
 samples['ss'].append('Diboson')
-#samples['ss'].append('ZJets')
-#samples['ss'].append('QCD')
-samples['ss'].append('QFlips')
+samples['ss'].append('ZJets')
+samples['ss'].append('QCD')
+#samples['ss'].append('QFlips')
 #samples['ss'].append('QCD_EM')
 #samples['ss'].append('QCD_20_MU')
 #samples['ss'].extend(['ZbbToLL', 'WbbToLNu'])
@@ -212,18 +213,13 @@ if doPlots:
     inclusive_plotter._overlayList = ['DATA'] # overlaySamples
 
     for i, cut in enumerate(cutList):
-        inFile = 'fcncAnalysis/combined_histos/' + selection + '_cut' + str(i+1) + '_' + period + '_' + batch + '.root'
+
+        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
+
         if doLog:
-            outFile = 'plots/' + currentDate + '/' + selection + '_' + batch + '/log/' + cut
+            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, cut)
         else:
-            outFile = 'plots/' + currentDate + '/' + selection + '_' + batch + '/linear/' + cut
-
-        #inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
-
-        #if doLog:
-        #    outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, cut)
-        #else:
-        #    outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
+            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
 
         inclusive_plotter.make_save_path(outFile, clean=True)
         p_plot.append(Process(name = cut[2:] + '/inclusive', target = plotter_wrapper, args=(inclusive_plotter, 'inclusive', inFile, outFile, do1D, do2D, doLog)))
@@ -299,9 +295,9 @@ if doPlots:
         inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
 
         if doLog:
-            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, cut)
+            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'CR_WZ')
         else:
-            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
+            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'CR_WZ')
 
         wz_plotter.make_save_path(outFile, clean=True)
 
@@ -317,9 +313,11 @@ if doPlots:
         inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
 
         if doLog:
-            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, cut)
+            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'CR_ttbar')
         else:
-            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
+            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'CR_ttbar')
+
+        ttbar_plotter.make_save_path(outFile, clean=True)
 
         p_plot.append(Process(name = 'CR_ttbar/os_emu', target = plotter_wrapper, args=(ttbar_plotter, 'os_emu', inFile, outFile, do1D, False, doLog)))
 
@@ -332,9 +330,9 @@ if doPlots:
         inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
 
         if doLog:
-            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, cut)
+            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'CR_ttZ')
         else:
-            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
+            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'CR_ttZ')
 
         ttZ_plotter.make_save_path(outFile, clean=True)
 

@@ -124,6 +124,7 @@ class fcncAnalyzer : public TSelector {
         //Event variables
         bool zTagged;
         bool ossfTagged;
+        string subdir;
 
         TLorentzVector dileptonP4;
         TLorentzVector lep1P4, lep2P4, lep3P4; // If event is zTagged, lep1 and lep2 are associated to the z
@@ -268,11 +269,13 @@ class fcncAnalyzer : public TSelector {
         //virtual void    SlaveTerminate() {};
         virtual void    Terminate();
 
+        virtual bool    AnalysisSelection(vObj, vector<TCJet>, vector<TCJet>, TVector3, string);
+
         // Plot methods
         virtual void    MakePlots(vObj, vector<TCJet>, vector<TCJet>, TCMET, TVector3, unsigned);
         virtual void    MakeQMisIDPlots(vObj);
-        virtual void    Make4lPlots(vObj, TCMET, vector<TCJet>, vector<TCJet>);
-        virtual void    LeptonPlots(vObj, TCMET, vector<TCJet>, vector<TCJet>, TVector3);
+        virtual void    Make4lPlots(vObj, TCMET); //, vector<TCJet>, vector<TCJet>);
+        virtual void    LeptonPlots(vObj, vector<TCJet>, vector<TCJet>, TVector3);
         virtual void    JetPlots(vector<TCJet>, vector<TCJet>);
         virtual void    MetPlots(TCMET, vObj);
         virtual void    DileptonPlots2D(vObj);
@@ -287,7 +290,6 @@ class fcncAnalyzer : public TSelector {
         virtual void    SetEventVariables(vObj, vector<TCJet>, vector<TCJet>, TCMET);
         virtual void    SetYields(unsigned);
         virtual int     GetHistCategory(unsigned);
-        virtual int     GetFakeCategory(unsigned);
 
         // helper functions
         virtual string  str(int i) {return static_cast<ostringstream*>( &(ostringstream() << i) )->str();}
