@@ -250,7 +250,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
         UInt_t nTags        = selector->GetSelectedMuons("QCD2l_CR_tag").size();
         UInt_t nMuProbes    = selector->GetSelectedMuons("QCD2l_CR_probe").size();
-        UInt_t nEleProbes   = selector->GetSelectedElectrons("QCD2l_CR_probe").size();
+        //UInt_t nEleProbes   = selector->GetSelectedElectrons("QCD2l_CR_probe").size();
 
         if (nTags == 1 && (nMuProbes + nEleProbes) == 1) {
             //cout << nTags << ", " << nEleProbes << endl;
@@ -313,7 +313,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
     // Match probe lepton to tight leptons
     bool matched = false;
-    if (probeLep.DeltaR(leptons[0]) < 0.01 and probeLep.Type() == passLep.Type()) {
+    if (probeLep.DeltaR(leptons[0]) < 0.01 && probeLep.Type() == passLep.Type()) {
         passLep = leptons[0];
         matched = true;
     }
@@ -398,6 +398,8 @@ void fakeAnalyzer::FillDenominatorHists(string cat)
     // Sanity check plots
     histManager->Fill1DHist(recoMET->Mod(),
             "h1_Met", "MET;MET;Entries / 4 GeV", 25, 0., 100.);
+    histManager->Fill2DHist(probeLep.Pt(), probeLep.IsoMap("IsoRel"),
+            "h2_ProbeLepPtVsIso", "probe lepton p_{T} vs ISO_{rel};p_{T};ISO_{rel}", 50, 0., 150., 25, 0., 1.);
 
     // fake rate measurement plots
     histManager->Fill1DHist(tagLep.Pt(),

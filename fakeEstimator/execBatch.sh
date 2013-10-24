@@ -16,17 +16,16 @@ export OSG_APP=/software/tier3/osg
 export SCRAM_ARCH=slc5_amd64_gcc462
 source /software/tier3/osg/cmsset_default.sh
 
-scram p CMSSW CMSSW_5_3_2
-cd ./CMSSW_5_3_2/src
+scram p CMSSW CMSSW_5_3_10
+cd ./CMSSW_5_3_10/src
 cmsenv 
 
 cp ../../source.tar.gz .
 tar -xzf source.tar.gz
-cd Analysis_CMS/fcncAnalysis
+cd Analysis_CMS/fakeEstimator
 cp ../../../../input_${DATANAME}_${COUNT}.txt input.txt
-rm histos/*root
 
-root -l -b -q 'run.C(1e9, "'$suffix' '$selection' '$period'")'
+root -l -b -q 'run.C(1e9, "'$SUFFIX' '$SELECTION' '$PERIOD'")'
 
 ### Copy output and cleanup ###
-cp fakeHistograms.root ${_CONDOR_SCRATCH_DIR}/fakeHistograms_${dataName}_${count}.root
+cp fakeHistograms.root ${_CONDOR_SCRATCH_DIR}/fakeHistograms_${DATANAME}_${COUNT}.root

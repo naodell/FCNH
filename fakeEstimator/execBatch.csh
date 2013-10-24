@@ -27,7 +27,4 @@ rm histos/*root
 root -l -b -q 'run.C(1e9, "'$suffix' '$selection' '$period'")'
 
 ### Copy output and cleanup ###
-rename .root _${dataName}_$count.root histos/fcncHistograms*
-
-#cp histos/fcncHistograms_*.root $outDir/.
-cp histos/fcncHistograms_*.root ${_CONDOR_SCRATCH_DIR}
+cp fakeHistograms.root ${_CONDOR_SCRATCH_DIR}/fakeHistograms_${dataName}_${count}.root
