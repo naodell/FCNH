@@ -128,7 +128,6 @@ class fcncAnalyzer : public TSelector {
 
         TLorentzVector dileptonP4;
         TLorentzVector lep1P4, lep2P4, lep3P4; // If event is zTagged, lep1 and lep2 are associated to the z
-        vObj fakeables;
 
         Float_t     MET;
         Float_t     metPhi;

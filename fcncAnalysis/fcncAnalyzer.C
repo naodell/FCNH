@@ -393,7 +393,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
     extraLeptons.insert(extraLeptons.end(), looseMuons.begin(), looseMuons.end());
 
     // Get fakeable leptons
-    fakeables.clear();
+    vObj fakeables;
     //vector<TCElectron>  fakeableElectrons  = selector->GetSelectedElectrons("fakeable");
     vector<TCMuon>      fakeableMuons      = selector->GetSelectedMuons("fakeable");
     //fakeables.insert(fakeables.end(), fakeableElectrons.begin(), fakeableElectrons.end());
@@ -462,7 +462,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
     //    return kTRUE;
 
     //}
-        
+
     if (leptons.size() == 2) {
         //!!! Dilepton selection !!!//
         if ( leptons[0].Pt() < leptonPtCut[0] || leptons[1].Pt() < leptonPtCut[1]) return kTRUE;
@@ -540,22 +540,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
     //!!!!!!!!!!!!!!!!!!!!!!!!!!//
 
 
-    // Data-driven fake (non-prompt) lepton background estimation.  See
-    // fakeEstimator for details of measurement
-    if (
-            doFakes 
-            && fakeables.size() > 0 
-            && leptons.size() == 2
-            ) {
-        fakeWeight = weighter->GetFakeWeight(fakeables[0]);
-    } else
-        fakeWeight = 0;
-
-
-    // Preselection Plots
-    MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 0);
-    SetYields(5);
-
 
     //!!!!!!!!!!!!!!!!!!!!!//
     // Do preselection MVA //
@@ -624,7 +608,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
     }
 
 
-
     //!!!!!!!!!!!!!!!!!!!!!!//
     //                      //
     //  Analysis selection  //
@@ -646,7 +629,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
             qFlipWeight = weighter->GetQFlipWeight();
         else 
             return kTRUE;
-        
+
         evtWeight *= qFlipWeight;
         vObj flipLeptons = leptons;
 
@@ -659,6 +642,28 @@ bool fcncAnalyzer::Process(Long64_t entry)
         SetEventVariables(flipLeptons, jets, bJetsM, *recoMET); 
 
         AnalysisSelection(flipLeptons, jets, bJetsM, selectedVtx, "QFlips");
+
+        evtWeight /= qFlipWeight; // Remove charge flip weight
+    }
+
+    if (doFakes) {
+
+        // Fakes fakes fakes
+        if ( fakeables.size() > 0 && leptons.size() == 2) 
+            fakeWeight = weighter->GetFakeWeight(fakeables[0]);
+        else 
+            return kTRUE;
+
+        evtWeight *= fakeWeight;
+        vObj leptonsPlusFakes = leptons;
+        leptonsPlusFakes.insert(leptonsPlusFakes.end(), fakeables.begin(), fakeables.end());
+        sort(leptonsPlusFakes.begin(), leptonsPlusFakes.end(), P4SortCondition);
+
+        SetEventCategory(leptonsPlusFakes);
+        SetEventVariables(leptonsPlusFakes, jets, bJetsM, *recoMET); 
+
+        AnalysisSelection(leptonsPlusFakes, jets, bJetsM, selectedVtx, "Fakes");
+        evtWeight /= fakeWeight; // Remove fake weight
     }
 
     return kTRUE;
@@ -722,16 +727,20 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
 {
     subdir = histDir;
 
+    // Preselection Plots
+    MakePlots(leptons, jets, bJets, *recoMET, PV, 0);
+    SetYields(5);
+
     //!! Z-veto !!//
     if (
             leptons.size() == 2 
             && leptons[0].Charge() == leptons[1].Charge()
             && selector->IsZCandidate(&leptons[0], &leptons[1], 10.) 
-       ) return true;
-    else if (
-            leptons.size() == 3
-            && (zTagged || (dileptonMassOS > 40 && fabs(trileptonMass - 90.) < 7.5))
-            ) return true;
+       ) 
+        return true;
+    else if (leptons.size() == 3 && (zTagged || (dileptonMassOS > 40 && fabs(trileptonMass - 90.) < 7.5))) 
+        return true;
+
 
     MakePlots(leptons, jets, bJets, *recoMET, PV, 1);
     SetYields(6);
@@ -1147,20 +1156,20 @@ void fcncAnalyzer::DileptonPlots2D(vObj leptons)
 
 void fcncAnalyzer::MiscPlots()
 {
-        histManager->Fill1DHist(chargeCat, 
-                "h1_LeptonCharge", "lepton charge categories;charge category;Entries / bin", 12, 0.5, 12.5);
-        histManager->Fill1DHist(flavorCat, 
-                "h1_LeptonFlavor", "lepton flavor categories;flavor category;Entries / bin", 12, 0.5, 12.5);
-        histManager->Fill2DHist(chargeCat, flavorCat, 
-                "h2_LepChargeVsFlavor", "lepton flavor vs. charge;charge category;flavor category", 12, 0.5, 12.5, 12, 0.5, 12.5);
+    histManager->Fill1DHist(chargeCat, 
+            "h1_LeptonCharge", "lepton charge categories;charge category;Entries / bin", 12, 0.5, 12.5);
+    histManager->Fill1DHist(flavorCat, 
+            "h1_LeptonFlavor", "lepton flavor categories;flavor category;Entries / bin", 12, 0.5, 12.5);
+    histManager->Fill2DHist(chargeCat, flavorCat, 
+            "h2_LepChargeVsFlavor", "lepton flavor vs. charge;charge category;flavor category", 12, 0.5, 12.5, 12, 0.5, 12.5);
 
 
-        histManager->Fill1DHist(evtWeight,
-                "h1_EventWeight", "event weight", 100, 0., 3.);
-        histManager->Fill1DHist(primaryVtx->GetSize(),
-                "h1_PvMult", "Multiplicity of PVs", 51, -0.5, 50.);
-        //histManager->Fill1DHist(primaryVtx[0].Z(),
-        //        "h1_PvZ", "z_{PV};z_{PV};Entries / bin" 50, 0.5, 50.5);
+    histManager->Fill1DHist(evtWeight,
+            "h1_EventWeight", "event weight", 100, 0., 3.);
+    histManager->Fill1DHist(primaryVtx->GetSize(),
+            "h1_PvMult", "Multiplicity of PVs", 51, -0.5, 50.);
+    //histManager->Fill1DHist(primaryVtx[0].Z(),
+    //        "h1_PvZ", "z_{PV};z_{PV};Entries / bin" 50, 0.5, 50.5);
 
 }
 
