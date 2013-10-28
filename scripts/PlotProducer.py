@@ -507,11 +507,11 @@ class PlotProducer(AnalysisTools):
 
                 textBox.Draw('same')
                   
-                #sigBox = r.TPaveText(0.95, 0.925, 0.7, 0.96, 'NDC')
-                #sigBox.SetFillColor(0)
-                #sigBox.SetFillStyle(0)
-                #sigBox.SetLineWidth(0)
-                #sigBox.SetLineColor(0)
+                idBox = r.TPaveText(0.95, 0.925, 0.7, 0.96, 'NDC')
+                idBox.SetFillColor(0)
+                idBox.SetFillStyle(0)
+                idBox.SetLineWidth(0)
+                idBox.SetLineColor(0)
 
                 for (hist, data) in hists[var]:
                     if data in ['Signal', 'FCNH']:
@@ -523,6 +523,10 @@ class PlotProducer(AnalysisTools):
                         hist.GetXaxis().SetTitle('')
                         hist.GetXaxis().SetLabelSize(0.)
                         hist.Draw('COLZ')
+
+                        sigBox = idBox.Clone()
+                        sigBox.AddText(data)
+                        sigBox.Draw('SAME')
 
                     if data in ['DATA', 'DATA_MUON','DATA_ELECTRON', 'DATA_MUEG']:
                         pad2.cd()
@@ -536,6 +540,10 @@ class PlotProducer(AnalysisTools):
                         hist.GetXaxis().SetLabelSize(0.)
                         hist.Draw('COLZ')
 
+                        dataBox = idBox.Clone()
+                        dataBox.AddText(data)
+                        dataBox.Draw('SAME')
+
                 pad3.cd()
                 sums[var].GetYaxis().SetTitle('')
                 sums[var].GetYaxis().SetLabelOffset(0.01)
@@ -546,6 +554,10 @@ class PlotProducer(AnalysisTools):
                 sums[var].GetXaxis().SetTitleSize(0.09)
                 sums[var].GetXaxis().SetTitleOffset(1.)
                 sums[var].Draw('COLZ')
+
+                bgBox = idBox.Clone()
+                bgBox.AddText(bg)
+                bgBox.Draw('SAME')
 
 
                 #canvas.SaveAs(self._savePath + '/' + self._category + '/' + directory + '/' + var + self._plotType)

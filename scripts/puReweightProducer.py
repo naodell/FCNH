@@ -4,7 +4,7 @@ from decimal import *
 
 
 r.gStyle.SetOptStat(0)
-dataFile    = r.TFile('data/puHistograms_default_MB.root', 'OPEN')
+dataFile    = r.TFile('data/puHistograms_XS_71000.root', 'OPEN')
 mcFile      = r.TFile('fcncAnalysis/combined_histos/fcnh_cut1_2012_20131024_004428.root', 'OPEN')
 savePath    = 'plots'
 canvas      = r.TCanvas()
@@ -40,7 +40,7 @@ legend.Draw()
 
 canvas.SaveAs(savePath+'/puPVMult.png')
 
-outFile = r.TFile('puReweight.root', 'RECREATE') 
+outFile = r.TFile('data/puReweight_71000.root', 'RECREATE') 
 canvas.SetGridy()
 
 h1_PU  = r.TH1D("h1_PU", "2012ABCD PU reweight factors;PU;#omega_{PU}", 500, 0., 100.)

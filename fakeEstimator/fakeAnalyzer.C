@@ -250,7 +250,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
         UInt_t nTags        = selector->GetSelectedMuons("QCD2l_CR_tag").size();
         UInt_t nMuProbes    = selector->GetSelectedMuons("QCD2l_CR_probe").size();
-        //UInt_t nEleProbes   = selector->GetSelectedElectrons("QCD2l_CR_probe").size();
+        UInt_t nEleProbes   = selector->GetSelectedElectrons("QCD2l_CR_probe").size();
 
         if (nTags == 1 && (nMuProbes + nEleProbes) == 1) {
             //cout << nTags << ", " << nEleProbes << endl;

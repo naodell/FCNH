@@ -27,14 +27,16 @@ LUMIDATA    = 19.712
 doLog       = True
 
 doPlots     = True
-doRates     = False
+doLog       = True
+doEff       = False
+doRatio     = False
 
 ### Categories to be plotted ###
 catList = ['inclusive', 'low_met', 'high_met']
 #catList = ['low_met']
 
 ### Samples to be included in stacks ###
-samples = ['ZJets', 'ttbar']
+samples = ['FAKE_BG'] # ['ZJets', 'ttbar']
 
 if doPlots:
 
@@ -51,7 +53,7 @@ if doPlots:
     ### DATASETS ###
 
     plotter.add_datasets(samples)
-    plotter._overlayList.extend(['DATA'])
+    plotter._overlayList.extend(['DATA_FAKES'])
 
     plotter.get_scale_factors(corrected = False)
 
@@ -77,5 +79,5 @@ if doPlots:
 
     for category in catList:
         plotter.set_category(category)
-        plotter.make_overlays_1D(logScale = doLog, doRatio = True, doEff = False)
+        plotter.make_overlays_1D(logScale = doLog, doRatio = doRatio, doEff = doEff)
 
