@@ -2,17 +2,17 @@
 	 Category ss_inclusive
 
 
-exp_limit = 0.0368433
-	1-sigma range: 0.0509841	0.0224071
-	2-sigma range: 0.0705584	0.0184604
+exp_limit = 0.357199
+	1-sigma range: 0.408461	0.261282
+	2-sigma range: 0.47238	0.220101
 
-obs_limit = 0.0657435
+obs_limit = 0.845782
 
-crude check: 0.0256314
+crude check: 0.260668
 
 Convert to upper limit on BR(t->Hq) :
-	expected:	0.0116369
-	observed:	0.020765
+	expected:	0.00417982
+	observed:	0.00989705
 
-	1-sigma on expected: 0.0161032	0.00707725
-	2-sigma on expected: 0.0222858	0.0058307
+	1-sigma on expected: 0.00477967	0.00305743
+	2-sigma on expected: 0.00552763	0.00257555

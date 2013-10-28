@@ -6,7 +6,7 @@
 
 using namespace std;
 
-const Int_t N_CATEGORIES = 5;
+const Int_t N_CATEGORIES = 2;
 const unsigned nToys = 10;
 const string categoryNames[] = {
     "3l_inclusive",
@@ -16,42 +16,48 @@ const string categoryNames[] = {
     //"3l_eemu",
     //"3l_emumu", 
     //"3l_mumumu", 
-    "ss_inclusive",
+    "ss_inclusive"
     //"ss_mumu", 
     //"ss_ee"
     //"ss_emu", 
-    "3l_BDT",
-    "3l_BDT_OSSF",
-    "3l_BDT_SSSF"
+    //"3l_BDT",
+    //"3l_BDT_OSSF",
+    //"3l_BDT_SSSF"
 };
 
 const Double_t cs_ttbar     = 252.;
 const Double_t br_tWb       = 1.;
 const Double_t br_tHj       = 0.01;
 const Double_t br_HWW       = 0.215;
+const Double_t br_HZZ       = 0.215;
+const Double_t br_HTauTau   = 0.063;
 const Double_t br_Wlnu      = 0.308;
-const Double_t br_total     = cs_ttbar*(2*br_tWb*br_tHj)*br_HWW*(br_Wlnu*br_Wlnu*br_Wlnu + br_Wlnu*br_Wlnu*(1-br_Wlnu));
+const Double_t br_Zll       = 0.1;
+const Double_t br_Znunu     = 0.2;
+const Double_t br_Zjj       = 0.7;
+const Double_t br_total     = cs_ttbar*(2*br_tWb*br_tHj)*br_Wlnu*(br_HWW*(br_Wlnu*br_Wlnu) + 2*br_Wlnu*(1-br_Wlnu) + br_HZZ*(br_Zll*br_Zll + 2*br_Zll*br_Znunu + 2*br_Zll*br_Zjj) + br_HTauTau);
 
 void simpleLimit()
 {
 
     Double_t lumi       = 19.71e3;                   // luminosity of gathered data
     Double_t lumiErr    = 0.02;                     // luminosity of gathered data
-    //Double_t sigInit    = 291.6;                  // initial number of signal events accounting for cross-section
+    Double_t sigInit    = 6500;                     // initial number of signal events accounting for cross-section
     //Double_t sigInitErr = 24.99;                  // error on initial number of events
-    Double_t sigInit    = br_total*lumi;            // initial number of signal events accounting for cross-section
+    //Double_t sigInit    = br_total*lumi;            // initial number of signal events accounting for cross-section
     Double_t sigInitErr = 0.1*sqrt(sigInit);            // error on initial number of events
 
-    Double_t sigList[]  = {6.47, 13.05, 35.65, 26.21, 9.44};           // Final yields for signal
-    Double_t sSigList[] = {0.22, 0.32, 0.5, 0.43, 0.25};           // Errors on final yields of signal
-    Double_t bckList[]  = {33.9, 134.43, 140.89, 123.42, 17.47};          // Final yields for background
-    Double_t sbckList[] = {3.78, 14.67, 8.94, 8.42, 3.01};           // Errors on final yields of background
+    Double_t sigList[]  = {9.11, 49.84};           // Final yields for signal
+    Double_t sSigList[] = {1.15, 3.28};           // Errors on final yields of signal
+    Double_t bckList[]  = {33.41, 408.14};          // Final yields for background
+    Double_t sbckList[] = {3.71, 16.01};           // Errors on final yields of background
 
-    Int_t    nObs[]     = {36, 161, 196, 173, 23};
+    cout << sigInit << endl;
+
+    Int_t    nObs[]     = {29, 488};
 
     for (unsigned i = 0; i < N_CATEGORIES; ++i) {
         //if (categoryNames[i] != "ss_inclusive") continue;
-        if (categoryNames[i] != "3l_BDT_SSSF") continue;
 
         Double_t eff    = sigList[i]/sigInit;
 
@@ -81,14 +87,16 @@ void set_limit(Double_t ilum, Double_t slum,
 
     // Why C++!? Why!?!?
     string category = categoryNames[iCat];
-    string outName = "test_limits_" + category + ".txt";
+    string outName = "limits_" + category + ".txt";
 
     ofstream outFile(outName.c_str(), ofstream::binary);
 
     outFile << "\n\t Category " << category << "\n\n";
 
+    cout << ilum << ", " << slum << ", " << eff << ", " << seff << ", " << bck << ", " << sbck << endl;
+
     Double_t limit0   = roostats_cl95(ilum,slum,eff,seff,bck,sbck,nObs);
-    LimitResult limit = roostats_clm(ilum,slum,eff,seff,bck,sbck,nToys);
+    LimitResult limit = GetExpectedLimit(ilum, slum, eff, seff, bck, sbck, 10, "bayesian");
 
     Double_t exp_limit = limit.GetExpectedLimit();
     Double_t exp_up    = limit.GetOneSigmaHighRange();
