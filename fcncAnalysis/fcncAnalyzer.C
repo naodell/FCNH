@@ -35,7 +35,7 @@ const float   elePtCut[]        = {10., 7.};
 const float   phoPtCut[]        = {10., 10.};
 const float   leptonPtCut[]     = {20., 10.};
 const float   metCut[]          = {60., 50.};
-const float   htCut[]           = {100., 100.};
+const float   htCut[]           = {13., 14.};
 const float   bJetVeto          = 1e9;
 
 bool P4SortCondition(const TLorentzVector& p1, const TLorentzVector& p2) {return (p1.Pt() > p2.Pt());} 
@@ -608,6 +608,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
     }
 
 
+
     //!!!!!!!!!!!!!!!!!!!!!!//
     //                      //
     //  Analysis selection  //
@@ -625,45 +626,56 @@ bool fcncAnalyzer::Process(Long64_t entry)
                 leptons.size() == 2 
                 && leptons[0].Charge() != leptons[1].Charge()
                 && (leptons[0].Type() == "electron" && leptons[1].Type() == "electron")
-           ) 
+           ) { 
             qFlipWeight = weighter->GetQFlipWeight();
-        else 
-            return kTRUE;
 
-        evtWeight *= qFlipWeight;
-        vObj flipLeptons = leptons;
+            evtWeight *= qFlipWeight;
+            vObj flipLeptons = leptons;
 
-        if (runNumber%2 == 0)
-            flipLeptons[0].SetCharge(flipLeptons[1].Charge());
-        else
-            flipLeptons[1].SetCharge(flipLeptons[0].Charge());
+            if (runNumber%2 == 0)
+                flipLeptons[0].SetCharge(flipLeptons[1].Charge());
+            else
+                flipLeptons[1].SetCharge(flipLeptons[0].Charge());
 
-        SetEventCategory(flipLeptons);
-        SetEventVariables(flipLeptons, jets, bJetsM, *recoMET); 
+            SetEventCategory(flipLeptons);
+            SetEventVariables(flipLeptons, jets, bJetsM, *recoMET); 
 
-        AnalysisSelection(flipLeptons, jets, bJetsM, selectedVtx, "QFlips");
+            AnalysisSelection(flipLeptons, jets, bJetsM, selectedVtx, "QFlips");
 
-        evtWeight /= qFlipWeight; // Remove charge flip weight
+            evtWeight /= qFlipWeight; // Remove charge flip weight
+        }
     }
 
     if (doFakes) {
 
         // Fakes fakes fakes
-        if ( fakeables.size() > 0 && leptons.size() == 2) 
+        if (fakeables.size() > 0 && leptons.size() == 2 && leptons[0].Charge() != leptons[1].Charge()) {
             fakeWeight = weighter->GetFakeWeight(fakeables[0]);
-        else 
-            return kTRUE;
 
-        evtWeight *= fakeWeight;
-        vObj leptonsPlusFakes = leptons;
-        leptonsPlusFakes.insert(leptonsPlusFakes.end(), fakeables.begin(), fakeables.end());
-        sort(leptonsPlusFakes.begin(), leptonsPlusFakes.end(), P4SortCondition);
+            evtWeight *= fakeWeight;
+            vObj leptonsPlusFakes = leptons;
+            leptonsPlusFakes.insert(leptonsPlusFakes.end(), fakeables.begin(), fakeables.end());
+            sort(leptonsPlusFakes.begin(), leptonsPlusFakes.end(), P4SortCondition);
 
-        SetEventCategory(leptonsPlusFakes);
-        SetEventVariables(leptonsPlusFakes, jets, bJetsM, *recoMET); 
+            // remove fakeable from jet collection
+            vector<TCJet> fJets, fBJets;
 
-        AnalysisSelection(leptonsPlusFakes, jets, bJetsM, selectedVtx, "Fakes");
-        evtWeight /= fakeWeight; // Remove fake weight
+            for (unsigned i = 0; i < fakeables.size(); ++i) {
+
+                for (unsigned j = 0; j < jets.size(); ++j) 
+                    if (fakeables[i].DeltaR(jets[j]) > 0.5) fJets.push_back(jets[j]);
+
+                for (unsigned j = 0; j < bJetsM.size(); ++j) 
+                    if (fakeables[i].DeltaR(bJetsM[j]) < 0.5) fBJets.push_back(bJetsM[j]);
+
+            }
+
+            SetEventCategory(leptonsPlusFakes);
+            SetEventVariables(leptonsPlusFakes, fJets, fBJets, *recoMET); 
+
+            AnalysisSelection(leptonsPlusFakes, fJets, fBJets, selectedVtx, "Fakes");
+            evtWeight /= fakeWeight; // Remove fake weight
+        }
     }
 
     return kTRUE;
@@ -735,7 +747,7 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
     if (
             leptons.size() == 2 
             && leptons[0].Charge() == leptons[1].Charge()
-            && selector->IsZCandidate(&leptons[0], &leptons[1], 10.) 
+            && fabs((leptons[0] + leptons[1]).M() - 91.2) < 10. 
        ) 
         return true;
     else if (leptons.size() == 3 && (zTagged || (dileptonMassOS > 40 && fabs(trileptonMass - 90.) < 7.5))) 
@@ -762,10 +774,10 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
     //!! HT cut !!//
     if (leptons.size() == 2){
         if (leptons[0].Charge() == leptons[1].Charge()) 
-            if (HT < htCut[0])
+            if (sqrt(HT) < htCut[0])
                 return true;
     } else if (leptons.size() == 3) {
-        if (HT < htCut[1]) 
+        if (sqrt(HT) < htCut[1]) 
             return true;
     }
 

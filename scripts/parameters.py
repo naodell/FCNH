@@ -10,6 +10,7 @@ styleDict['DATA']               = (2, r.kBlack, 0, 21, 'Observed')
 styleDict['DATA_MUON']          = (2, r.kGray, 0, 21, 'Observed (#mu#mu)')
 styleDict['DATA_ELECTRON']      = (2, r.kGray+1, 0, 21, 'Observed (ee)')
 styleDict['DATA_MUEG']          = (2, r.kGray+2, 0, 21, 'Observed (e#mu)')
+styleDict['DATA_FAKES']         = (2, r.kBlack, 0, 21, 'Fakes')
 
 #V+jets
 styleDict['VJets']              = (0, r.kRed, 1, 1, 'V+jets') # Vector boson combination
@@ -102,6 +103,7 @@ styleDict['SIG_EFF']            = (1, r.kRed, 3018, 21, 'Signal')
 styleDict['RATIO']              = (0, r.kBlack, 3002, 21, 'Ratio')
 styleDict['Fakes']              = (2, r.kRed, 3001, 1, 'Fakes')
 styleDict['QFlips']             = (2, r.kBlue+2, 3001, 1, 'QFlips')
+styleDict['FAKE_BG']            = (2, r.kRed, 3004, 1, 'Prompt')
 
 ### Set scales
 scaleDict = {'2011':{}, '2012':{}}
@@ -217,6 +219,8 @@ scaleDict['2012']['TTH_M-125']          = .1032
 scaleDict['2012']['FCNC_M125_t']            = 252*1.*0.01*0.215*0.3*0.3*0.3
 scaleDict['2012']['FCNC_M125_tbar']         = 252*1.*0.01*0.215*0.3*0.3*0.3
 scaleDict['2012']['FCNC_M125_t_semilep']    = 2*252*1.*0.01*0.215*3*0.68*0.3*0.3
+scaleDict['2012']['FCNC_M125_t_ZZ']         = 2*252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.3
+scaleDict['2012']['FCNC_M125_t_TauTau']     = 2*252*1.*0.01*0.063*0.3
 
 scaleDict['2012']['DATA_MUON']          = 1.
 scaleDict['2012']['DATA_ELECTRON']      = 1.
@@ -225,8 +229,9 @@ scaleDict['2012']['Fakes']              = 1.
 scaleDict['2012']['QFlips']             = 1.
 
 combineDict = {}
-combineDict['FCNH']             = ['FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_M125_t_semilep']
+combineDict['FCNH']             = ['FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau']
 combineDict['DATA']             = ['DATA_MUON', 'DATA_ELECTRON', 'DATA_MUEG']
+combineDict['DATA_FAKES']       = ['DATA_MUON', 'DATA_ELECTRON', 'DATA_MUEG']
 combineDict['VJets']            = ['ZJets_M-50', 'ZJets_M-10To50', 'WJets']
 combineDict['ZJets']            = ['ZJets_M-50', 'ZJets_M-10To50']
 combineDict['WGStar']           = ['WGStarLNu2E', 'WGStarLNu2Mu', 'WGStarLNu2Tau']

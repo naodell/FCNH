@@ -15,8 +15,8 @@ if len(sys.argv) > 1:
     batch   = sys.argv[1]
     suffix  = sys.argv[2]
 else:
-    batch   = 'TEST'
-    suffix  = 'TEST'
+    print 'Need to specify input batch and suffix!!!  Exiting...'
+    exit()
 
 ### This is the config file for manipulating 
 ### histograms using the PlotProducer class.  
@@ -31,12 +31,12 @@ crList      = ['CR_WZ', 'CR_ttbar', 'CR_ttZ']
 period      = '2012'
 LUMIDATA    = 19.712 
 
-doPlots     = False
+doPlots     = True
 doLog       = True
 doEff       = False
 doRatio     = True
 do1D        = True
-do2D        = False
+do2D        = True
 
 doYields    = True
 
@@ -138,7 +138,7 @@ if doPlots:
     ### plot while giving a key value which is the 
     ### directory that they are located in as a key.
 
-    plotter._directoryList1D            = ['Misc', 'Lepton', 'Dilepton', 'DileptonOS', 'MET', 'Jet', 'GEN', '4l']
+    plotter._directoryList1D            = ['Misc', 'Lepton', 'Dilepton', 'DileptonOS', 'Trilepton', 'MET', 'Jet', 'GEN', '4l']
     plotter._directoryList2D            = ['2D']
 
     plotter._variableDict['Misc']       = ['PvMult', 'YieldByCut', 'YieldByCutRaw', 'EventWeight', 'TriggerStatus', 
@@ -165,9 +165,7 @@ if doPlots:
                                            'DileptonOSDeltaEta', 'DileptonOSDeltaPhi',
                                            'DileptonLepDeltaR', 'DileptonLepDeltaPhi', 'DileptonLepDeltaEta'] 
 
-    plotter._variableDict['top']        = ['Top1Mass', 'Top1TransMass', 'Top1Pt', 'DeltaPhiTop1Met',
-                                           'Top2TransMass', 'Top2Pt', 'DeltaPhiTop2Met', 'DeltaPhiTop1Top2Met',
-                                           'DeltaPhiWZ', 'DileptonMassWZ']
+    plotter._variableDict['Trilepton']  = ['DileptonLepDeltaR', 'DileptonLepDeltaPhi', 'DileptonLepDeltaEta', 'Lep3MetMT']
 
     plotter._variableDict['Lep+Jet']    = ['Lepton1BJetDeltaPhi', 'Lepton1BJetDeltaEta', 'Lepton1BJetDeltaR', 'Lepton1BJetDeltaPt',
                                            'Lepton2BJetDeltaPhi', 'Lepton2BJetDeltaEta', 'Lepton2BJetDeltaR', 'Lepton2BJetDeltaPt',
@@ -388,7 +386,7 @@ if doYields:
         yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
 
-        yieldTable._rowList = ['.', '.', '.', '.', '.','ss lepton', '.', 'MET', 'HT', 'b-jet']
+        yieldTable._rowList = ['.', '.', '.', '.', '.','ss lepton', 'Z removal', 'MET', 'HT', 'b-jet']
 
         for category in catSS:
             yieldTable._category = category
