@@ -72,6 +72,7 @@ class fakeAnalyzer : public TSelector {
         string  selection;
         string  period;
 
+        string  crType;
         bool    zTagged;
         bool    ossfTagged;
         bool    isTP;
@@ -170,6 +171,7 @@ class fakeAnalyzer : public TSelector {
         virtual void    FillDenominatorHists(string);
         virtual void    FillNumeratorHists(string);
         virtual void    DoZTag(vObj leptons);
+        virtual bool    CheckQCD2lCR(vector<TCJet>);
 
         virtual string  str(int i) {return static_cast<ostringstream*>( &(ostringstream() << i) )->str();}
 

@@ -60,19 +60,19 @@ if period == '2012':
         ])
 
     bg.extend([
-        #cfg('ZJets_M-50', dCache+'/naodell/nuTuples_v7_4/DYJets', 30, 'ZJets_M-50 muon 2012'),
-        #cfg('ZJets_M-10To50', dCache+'/naodell/nuTuples_v7_4/DYJets_M-10To50', 10, 'ZJets_M-10To50 muon 2012'),
+        cfg('ZJets_M-50', dCache+'/naodell/nuTuples_v7_4/DYJets', 30, 'ZJets_M-50 muon 2012'),
+        cfg('ZJets_M-10To50', dCache+'/naodell/nuTuples_v7_4/DYJets_M-10To50', 10, 'ZJets_M-10To50 muon 2012'),
         #cfg('ZbbToLL', dCache+'/naodell/nuTuples_v7_4/ZbbToLL', 20, 'ZbbToLL muon 2012'),
         #cfg('ZG', dCache+'/naodell/nuTuples_v7_4/ZGToLLG', 10, 'ZG muon 2012'),
         #cfg('WJets', dCache+'/naodell/nuTuples_v7_4/WJetsToLNu', 20, 'WJets muon 2012'),
         #cfg('WbbToLNu', dCache+'/naodell/nuTuples_v7_4/WbbJetsToLNu', 20, 'WbbToLNu muon 2012'),
         #cfg('WG', dCache+'/naodell/nuTuples_v7_4/WGToLNuG', 10, 'WG muon 2012'),
 
-        #cfg('ttbar', dCache+'/naodell/nuTuples_v7_4/TTJets', 30, 'ttbar muon 2012'),
-        #cfg('tbarW', dCache+'/naodell/nuTuples_v7_4/Tbar_tW', 5, 'tbarW muon 2012'),
-        #cfg('tW', dCache+'/naodell/nuTuples_v7_4/T_tW', 5, 'tW muon 2012'),
-        #cfg('WWJets2L2Nu', dCache+'/naodell/nuTuples_v7_4/WWJetsTo2L2Nu', 5, 'WWJets2L2Nu muon 2012'),
-        #cfg('ZZJets2L2Nu', dCache+'/naodell/nuTuples_v7_4/ZZJetsTo2L2Nu', 5, 'ZZJets2L2Nu muon 2012'),
+        cfg('ttbar', dCache+'/naodell/nuTuples_v7_4/TTJets', 30, 'ttbar muon 2012'),
+        cfg('tbarW', dCache+'/naodell/nuTuples_v7_4/Tbar_tW', 5, 'tbarW muon 2012'),
+        cfg('tW', dCache+'/naodell/nuTuples_v7_4/T_tW', 5, 'tW muon 2012'),
+        cfg('WWJets2L2Nu', dCache+'/naodell/nuTuples_v7_4/WWJetsTo2L2Nu', 5, 'WWJets2L2Nu muon 2012'),
+        cfg('ZZJets2L2Nu', dCache+'/naodell/nuTuples_v7_4/ZZJetsTo2L2Nu', 5, 'ZZJets2L2Nu muon 2012'),
         cfg('ZZJets2L2Q', dCache+'/naodell/nuTuples_v7_4/ZZJetsTo2L2Q', 5, 'ZZJets2L2Q muon 2012')
 
         #cfg('QCD_20-30_EM', dCache+'/naodell/nuTuples_v7_4/QCD_Pt_20_30_EMEnriched', 10, 'QCD_20-30_EM muon 2012'),
