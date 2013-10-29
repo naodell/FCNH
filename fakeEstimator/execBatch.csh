@@ -20,7 +20,7 @@ cmsenv
 
 cp ../../source.tar.gz .
 tar -xzf source.tar.gz
-cd Analysis_CMS/fakeAnalysis
+cd Analysis_CMS/fakeEstimator
 cp ../../../../input_${dataName}_${count}.txt input.txt
 
 root -l -b -q 'run.C(1e9, "'$suffix' '$selection' '$period'")'
