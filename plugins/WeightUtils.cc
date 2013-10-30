@@ -28,8 +28,10 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
 
     // weights for fake background
     TFile* f_fakeFile = new TFile("../data/fakeRates.root", "OPEN");
-    g_MuonFakesPtB = (TGraphAsymmErrors*)f_fakeFile->Get("g_MuonFake_1");
-    g_MuonFakesPtE = (TGraphAsymmErrors*)f_fakeFile->Get("g_MuonFake_2");
+    g_MuonFakesPtB      = (TGraphAsymmErrors*)f_fakeFile->Get("g_MuonFake_1");
+    g_MuonFakesPtE      = (TGraphAsymmErrors*)f_fakeFile->Get("g_MuonFake_2");
+    g_ElectronFakesPtB  = (TGraphAsymmErrors*)f_fakeFile->Get("g_ElectronFake_1");
+    g_ElectronFakesPtE  = (TGraphAsymmErrors*)f_fakeFile->Get("g_ElectronFake_2");
 
     TFile* f_misQFile = new TFile("../data/electronQMisID.root", "OPEN");
     h2_DielectronMisQ = (TH2D*)f_misQFile->Get("h2_DielectronMisQ");
@@ -238,22 +240,28 @@ float WeightUtils::GetFakeWeight(TCPhysObject fakeable)
 {
     float fakeRate = 0;
 
+    float fakeablePt;  
+    if (fakeable.Pt() < 100)
+        fakeablePt = fakeable.Pt();
+    else 
+        fakeablePt = 99.;
+
     //cout << fakeable.Type() << "\t" << fakeable.Pt() << "\t";
     if (fakeable.Type() == "muon") {
-        float fakeablePt;  
-        if (fakeable.Pt() < 100)
-            fakeablePt = fakeable.Pt();
-        else 
-            fakeablePt = 99.;
 
         if (fabs(fakeable.Eta()) < 1.5)
             fakeRate = g_MuonFakesPtB->Eval(fakeablePt);
         else if (fabs(fakeable.Eta()) >= 1.5)
             fakeRate = g_MuonFakesPtE->Eval(fakeablePt);
 
-    } /*else if (fakeable.Type() == "electron") {
-    }*/
-    //cout << fakeRate/(1-fakeRate) << endl;
+    } else if (fakeable.Type() == "electron") {
+
+        if (fabs(fakeable.Eta()) < 1.5)
+            fakeRate = g_ElectronFakesPtB->Eval(fakeablePt);
+        else if (fabs(fakeable.Eta()) >= 1.5)
+            fakeRate = g_ElectronFakesPtE->Eval(fakeablePt);
+
+    }
 
     return fakeRate / (1 - fakeRate);
 }

@@ -86,8 +86,8 @@ class WeightUtils: public TObject {
 
         TGraphAsymmErrors *g_MuonFakesPtB;
         TGraphAsymmErrors *g_MuonFakesPtE;
-        //TGraphAsymmErrors *g_ElectronFakesPtB;
-        //TGraphAsymmErrors *g_ElectronFakesPtE;
+        TGraphAsymmErrors *g_ElectronFakesPtB;
+        TGraphAsymmErrors *g_ElectronFakesPtE;
 
         //weights
         float _puWeight;
