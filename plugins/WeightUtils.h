@@ -59,8 +59,8 @@ class WeightUtils: public TObject {
         float GetMuEff(TLorentzVector) const; 
 
         // lepton trigger efficiencies
-        float GetMuTriggerEff(TLorentzVector) const;
-        float GetElTriggerEff(TLorentzVector) const {return 0;}
+        float GetMuTriggerEff(TLorentzVector, TLorentzVector) const;
+        float GetEleTriggerEff(TLorentzVector, TLorentzVector) const;
 
         ClassDef(WeightUtils, 0);
 

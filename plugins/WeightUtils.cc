@@ -110,20 +110,23 @@ float WeightUtils::RecoWeight()
     _triggerWeight = 1.;
     _recoWeight    = 1.;
 
+    // selection efficiencies
     for (vector<TCPhysObject>::const_iterator iLep = _leptons.begin(); iLep != _leptons.end(); ++iLep) {
-        if (iLep->Type() == "muon") {
-            //_triggerWeight *= GetMuTriggerEff((TLorentzVector)*iLep);
+        if (iLep->Type() == "muon") 
             _recoWeight    *= GetMuEff((TLorentzVector)*iLep);
-        }
-        if (iLep->Type() == "electron") {
-            //_triggerWeight *= 1.;
+        if (iLep->Type() == "electron") 
             _recoWeight    *= GetElectronEff((TLorentzVector)*iLep);
-        }
-
-        //cout << iLep->Type() << ", " << _recoWeight << "\t";
     }
 
-    if (_leptons.size() != 2) _triggerWeight = 1.;
+    // trigger efficiencies
+    if (_leptons.size() == 2) {
+        if (_leptons[0].Type() == "muon" && _leptons[1].Type() == "muon") 
+            _triggerWeight = GetMuTriggerEff(_leptons[0], _leptons[1]);
+        if (_leptons[0].Type() == "electron" && _leptons[1].Type() == "electron") 
+            _triggerWeight = 1;//GetEleTriggerEff(_leptons[0], _leptons[1]);
+    } else {
+        _triggerWeight = 1.;
+    }
 
     //cout << endl;
 
@@ -145,29 +148,201 @@ float WeightUtils::VBFHiggsWeight(float genMass, int higgsMass)
     return _vbfWeight;
 }
 
-float WeightUtils::GetMuTriggerEff(TLorentzVector lep) const
+float WeightUtils::GetMuTriggerEff(TLorentzVector lep1, TLorentzVector lep2) const
 {
-    //float trigEff[4][4]; 
-    int etaBin  = 0;
-    int ptBin   = 0;
+
+    float _DataEff_HLTMu17Mu8_8Leg2012[9][3] = {
+        //|eta|<0.9 , 0.9<|eta|<1.2 , 1.2<|eta|<2.4
+        {0.967172 , 0.930476 , 0.916004}, // 10<pt<20
+        {0.967066 , 0.93713 , 0.920873}, // 20<pt<30
+        {0.965728 , 0.935549 , 0.916849}, // 30<pt<35
+        {0.965991 , 0.932407 , 0.915271}, // 35<pt<40
+        {0.965568 , 0.935851 , 0.918777}, // 40<pt<50
+        {0.964775 , 0.937591 , 0.917744}, // 50<pt<60
+        {0.96494 , 0.933094 , 0.918446}, // 60<pt<90
+        {0.960397 , 0.939106 , 0.909972}, // 90<pt<140
+        {0.961868 , 0.92921 , 0.937057} // 140<pt<500
+    };
+
+    float _MCEff_HLTMu17Mu8_8Leg2012[9][3] = {
+        //|eta|<0.9 , 0.9<|eta|<1.2 , 1.2<|eta|<2.4
+        {0.969444 , 0.925885 , 0.921075} , // 10<pt<20
+        {0.976136 , 0.945697 , 0.927715} , // 20<pt<30
+        {0.976453 , 0.948453 , 0.926418} , // 30<pt<35
+        {0.975895 , 0.944976 , 0.925758} , // 35<pt<40
+        {0.976162 , 0.946528 , 0.928904} , // 40<pt<50
+        {0.975507 , 0.950925 , 0.931956} , // 50<pt<60
+        {0.976274 , 0.951396 , 0.926831} , // 60<pt<90
+        {0.972801 , 0.951352 , 0.932385} , // 90<pt<140
+        {0.971679 , 0.973072 , 0.939368} // 140<pt<500
+    };
+
+    float _DataEff_HLTMu17Mu8_17Leg2012[9][3] = {
+        //|eta|<0.9 , 0.9<|eta|<1.2 , 1.2<|eta|<2.4
+        {0.609746 , 0.496018 , 0.428991} , // 10<pt<20
+        {0.964723 , 0.923791 , 0.892096} , // 20<pt<30
+        {0.964065 , 0.924091 , 0.896823} , // 30<pt<35
+        {0.964584 , 0.923641 , 0.898797} , // 35<pt<40
+        {0.964363 , 0.928434 , 0.90573} , // 40<pt<50
+        {0.963617 , 0.930997 , 0.907169} , // 50<pt<60
+        {0.963878 , 0.925745 , 0.908756} , // 60<pt<90
+        {0.960051 , 0.935225 , 0.901006} , // 90<pt<140
+        {0.959271 , 0.92921 , 0.937057} // 140<pt<500
+    };
+
+    float _MCEff_HLTMu17Mu8_17Leg2012[9][3] = {
+        //|eta|<0.9 , 0.9<|eta|<1.2 , 1.2<|eta|<2.4
+        {0.617508 , 0.488784 , 0.428354} , // 10<pt<20
+        {0.97418 , 0.935211 , 0.893312} , // 20<pt<30
+        {0.975246 , 0.93891 , 0.903676} , // 30<pt<35
+        {0.974711 , 0.93787 , 0.907107} , // 35<pt<40
+        {0.975291 , 0.939777 , 0.915754} , // 40<pt<50
+        {0.974371 , 0.94515 , 0.920956} , // 50<pt<60
+        {0.975252 , 0.946933 , 0.917094} , // 60<pt<90
+        {0.972801 , 0.945771 , 0.92517} , // 90<pt<140
+        {0.971679 , 0.973072 , 0.931013} // 140<pt<500
+    };
+
+
+    float _HLTMu17Mu8_2012[3][10] = {
+        //10<pt<20 , 20<pt<25 , 25<pt<30 , 30<pt<35 , 35<pt<40 , 40<pt<50 , 50<pt<60 , 60<pt<90 , 90<pt<140 , 140<pt<500
+        {0.991 , 0.989 , 0.989 , 0.988 , 0.989 , 0.988 , 0.987 , 0.989 , 0.990 , 0.982}, // |eta| < 0.9
+        {1.00 , 0.985 , 0.986 , 0.983 , 0.984 , 0.984 , 0.986 , 0.983 , 0.982 , 0.964}, // 0.9 < |eta| < 1.2
+        {1.01 , 1.00 , 0.994 , 0.991 , 0.987 , 0.986 , 0.985 , 0.984 , 0.972 , 1.01} // |eta| > 1.2
+    };
+
+
+    float muTrigSF1 = 1.0;
+    float muTrigSF2 = 1.0;
+
+    float muTrigDataA8  = 1.0;
+    float muTrigDataA17 = 1.0;
+    float muTrigDataB8  = 1.0;
+    float muTrigDataB17 = 1.0;
+
+    float muTrigMCA8    = 1.0;
+    float muTrigMCA17   = 1.0;
+    float muTrigMCB8    = 1.0;
+    float muTrigMCB17   = 1.0;
+
+    // 2012 use the 2D arrays
+
+    int ptBinV1 = 0;
+    int ptBinV2 = 0;
+    int etaBin = 0;
+    float binningPtV1[] = {10., 20., 25., 30., 35., 40., 50., 60., 90., 140., 500.};
+    float binningPtV2[] = {10., 20., 30., 35., 40., 50., 60., 90., 140., 500.};
+
+    if (fabs(lep1.Eta()) < 0.9) {
+        etaBin = 0;
+    }else if (fabs(lep1.Eta()) < 1.2){
+        etaBin = 1;
+    }else{
+        etaBin = 2;
+    }
+    for (int i = 0; i < 10; ++i) {
+        if (lep1.Pt() >= binningPtV1[i] && lep1.Pt() < binningPtV1[i+1]) {
+            ptBinV1 = i;
+            break;
+        }
+    }
+    for (int i = 0; i < 9; ++i) {
+        if (lep1.Pt() >= binningPtV2[i] && lep1.Pt() < binningPtV2[i+1]) {
+            ptBinV2 = i;
+            break;
+        }
+    }
+    muTrigSF1 = _HLTMu17Mu8_2012[etaBin][ptBinV1];
+    muTrigDataA17 = _DataEff_HLTMu17Mu8_17Leg2012[etaBin][ptBinV2];
+    muTrigDataA8 = _DataEff_HLTMu17Mu8_8Leg2012[etaBin][ptBinV2];
+    muTrigMCA17 = _MCEff_HLTMu17Mu8_17Leg2012[etaBin][ptBinV2];
+    muTrigMCA8 = _MCEff_HLTMu17Mu8_8Leg2012[etaBin][ptBinV2];
+
+
+    if (fabs(lep2.Eta()) < 0.9) {
+        etaBin = 0;
+    }else if (fabs(lep2.Eta()) < 1.2){
+        etaBin = 1;
+    }else{
+        etaBin = 2;
+    }
+    for (int i = 0; i < 10; ++i) {
+        if (lep2.Pt() >= binningPtV1[i] && lep2.Pt() < binningPtV1[i+1]) {
+            ptBinV1 = i;
+            break;
+        }
+    }
+    for (int i = 0; i < 9; ++i) {
+        if (lep2.Pt() >= binningPtV2[i] && lep2.Pt() < binningPtV2[i+1]) {
+            ptBinV2 = i;
+            break;
+        }
+    }
+
+    muTrigSF2 = _HLTMu17Mu8_2012[etaBin][ptBinV1];
+    muTrigDataB17 = _DataEff_HLTMu17Mu8_17Leg2012[etaBin][ptBinV2];
+    muTrigDataB8 = _DataEff_HLTMu17Mu8_8Leg2012[etaBin][ptBinV2];
+    muTrigMCB17 = _MCEff_HLTMu17Mu8_17Leg2012[etaBin][ptBinV2];
+    muTrigMCB8 = _MCEff_HLTMu17Mu8_8Leg2012[etaBin][ptBinV2];
+
+    //return muTrigSF1*muTrigSF2;
+    return (muTrigDataA8*muTrigDataB17 + muTrigDataA17*muTrigDataB8 - muTrigDataA17*muTrigDataB17)/
+        (muTrigMCA8*muTrigMCB17 + muTrigMCA17*muTrigMCB8 - muTrigMCA17*muTrigMCB17);
+}
+
+float WeightUtils::GetEleTriggerEff(TLorentzVector lep1, TLorentzVector lep2) const
+{
+    int etaBin[]  = {0,0};
+    int ptBin[]   = {0,0};
     float weight = 1.;
-    float etaBins[] = {0., 0.8, 1.2, 2.1, 2.4};
-    float ptBins[]  = {20., 30., 40., 50., 1e5};
+    float ptBins1[]  = {10., 15., 20., 30., 40., 50., 9999.};
+    float ptBins2[]  = {20., 30., 40., 50., 9999.};
 
     for (int i = 0; i < 4; ++i) {
-        if (fabs(lep.Eta()) > etaBins[i] && fabs(lep.Eta()) <= etaBins[i+1]) {
-            etaBin = i;
-            break;
-        }
-    }
-    for (int i = 0; i < 4; ++i) {
-        if (lep.Pt() > ptBins[i] && lep.Pt() <= ptBins[i+1]) {
-            ptBin = i;
+        if (lep1.Pt() > ptBins1[i] && lep1.Pt() <= ptBins1[i+1]) {
+            ptBin[0] = i;
             break;
         }
     }
 
-    return weight; //trigEff[etaBin][ptBin];
+    if (fabs(lep1.Eta()) < 1.4442) 
+        etaBin[0] = 0;
+    else if (fabs(lep1.Eta()) < 1.566)
+        etaBin[0] = 1;
+    else
+        etaBin[0] = 2;
+
+
+    for (int i = 0; i < 4; ++i) {
+        if (lep2.Pt() > ptBins2[i] && lep2.Pt() <= ptBins2[i+1]) {
+            ptBin[1] = i;
+            break;
+        }
+    }
+
+    if (fabs(lep2.Eta()) < 1.4442) 
+        etaBin[1] = 0;
+    else if (fabs(lep2.Eta()) < 1.566)
+        etaBin[1] = 1;
+    else
+        etaBin[1] = 2;
+
+    // scale factors from Brian
+    float _HLTEl17El8_8Leg2012[3][6] = {
+        //10<pt<15 15<pt<20 20<pt<30 30<pt<40 40<pt<50 50<pt
+        { 0.9085 , 0.9750 , 0.9869 , 0.9908 , 0.9914 , 0.9929 }, // |eta| < 1.4442, trailing
+        { 0.9493 , 1.0459 , 1.0033 , 0.9929 , 0.9940 , 0.9944 }, // 1.4442 > |eta| > 1.566
+        { 0.9010 , 0.9715 , 0.9966 , 0.9954 , 0.9977 , 0.9979 } // |eta| > 1.566, trailing
+    };
+
+    float _HLTEl17El8_17Leg2012[3][4] = {
+        //20<pt<30 30<pt<40 40<pt<60 50<pt
+        { 0.9863 , 0.9910 , 0.9920 , 0.9933 }, // |eta| < 1.4442, leading
+        { 0.9664 , 0.9645 , 0.9752 , 0.9868 }, // 1.4442 > |eta| > 1.566
+        { 0.9892 , 0.9965 , 0.9991 , 0.9998 } // |eta| > 1.566, leading
+    };
+
+    return _HLTEl17El8_8Leg2012[etaBin[0]][ptBin[0]]*_HLTEl17El8_17Leg2012[etaBin[1]][ptBin[1]];
 }
 
 float WeightUtils::GetElectronEff(TLorentzVector lep) const

@@ -414,7 +414,7 @@ void Selector::ElectronSelector(TClonesArray* electrons)
         //if (ElectronTightID(thisElec)) 
 
         if (thisElec->IdMap("preSelPassV1")) {
-            //if (eleISO < 0.3)
+
             _selElectrons["QCD2l_CR_probe"].push_back(*thisElec);
 
             if (ElectronMVA(thisElec)) {

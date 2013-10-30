@@ -20,9 +20,8 @@ cmsenv
 
 cp ../../source.tar.gz .
 tar -xzf source.tar.gz
-cd Analysis_CMS/fcncAnalysis
+cd Analysis_CMS/fakeEstimator
 cp ../../../../input_${dataName}_${count}.txt input.txt
-rm histos/*root
 
 root -l -b -q 'run.C(1e9, "'$suffix' '$selection' '$period'")'
 
