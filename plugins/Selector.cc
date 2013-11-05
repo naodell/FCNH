@@ -417,13 +417,12 @@ void Selector::ElectronSelector(TClonesArray* electrons)
 
             _selElectrons["QCD2l_CR_probe"].push_back(*thisElec);
 
-            if (ElectronMVA(thisElec)) {
+            if (ElectronMVA(thisElec)) 
                 _selElectrons["premva"].push_back(*thisElec);
 
-                if (eleISO < 0.15) 
-                    _selElectrons["tight"].push_back(*thisElec);			
-
-            } else 
+            if (ElectronMVA(thisElec) && eleISO < 0.15) 
+                _selElectrons["tight"].push_back(*thisElec);			
+            else 
                 _selElectrons["fakeable"].push_back(*thisElec);
 
         } else if (

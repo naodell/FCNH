@@ -88,15 +88,15 @@ void fcncAnalyzer::Begin(TTree* tree)
             histoFile[iCut]->mkdir(categoryNames[i].c_str(), categoryNames[i].c_str());
             histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir(suffix.c_str(), suffix.c_str());
 
-            if (doQFlips && (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "TEST")) {
+            if (doQFlips && (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "TEST")) 
                 histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir("QFlips", "QFlips");
-            } else
+            else
                 doQFlips = false;
 
-            if (doFakes && (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON" || suffix == "TEST")) {
+            if (doFakes && (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON" || suffix == "TEST")) 
                 histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir("Fakes", "Fakes");
-            } else
-                doFakes == false;
+            else
+                histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir(("Fakes_"+suffix).c_str(), ("Fakes_"+suffix).c_str());
         }
     }
 
@@ -131,34 +131,19 @@ void fcncAnalyzer::Begin(TTree* tree)
         // make base tree for 3l and ss selections
         mvaTree = new TTree(("mvaTree_" + suffix).c_str(), "Tree for cut MVA");
 
+        mvaTree->Branch("evtWeight", &evtWeight, "evtWeight/F");
+
         mvaTree->Branch("met", &MET, "met/F");
-        //mvaTree->Branch("metPhi", &metPhi, "metPhi/F");
         mvaTree->Branch("HT", &HT, "HT/F");
         mvaTree->Branch("MT", &MT, "MT/F");
 
-        //mvaTree->Branch("lep1Pt", &lep1Pt, "lep1Pt/F");
-        //mvaTree->Branch("lep1Eta", &lep1Eta, "lep1Eta/F");
-        //mvaTree->Branch("lep1Phi", &lep1Phi, "lep1Phi/F");
-        //mvaTree->Branch("lep2Pt", &lep2Pt, "lep2Pt/F");
-        //mvaTree->Branch("lep2Eta", &lep2Eta, "lep2Eta/F");
-        //mvaTree->Branch("lep2Phi", &lep2Phi, "lep2Phi/F");
-
         mvaTree->Branch("jetMult", &jetMult, "jetMult/I");
         mvaTree->Branch("bJetMult", &bJetMult, "bJetMult/I");
-        //mvaTree->Branch("bJetPt", &bJetPt, "bJetPt/F");
-        //mvaTree->Branch("bJetEta", &bJetEta, "bJetEta/F");
-        //mvaTree->Branch("bJetPhi", &bJetPhi, "bJetPhi/F");
-
-        mvaTree->Branch("evtWeight", &evtWeight, "evtWeight/F");
 
         // Do 3l selection branches //
         mvaTree->Branch("trileptonMass", &trileptonMass, "trileptonMass/F");
         mvaTree->Branch("dileptonMassOS", &dileptonMassOS, "dileptonMassOS/F");
         mvaTree->Branch("dileptonDROS", &dileptonDROS, "dileptonDROS/F");
-
-        //mvaTree->Branch("lep3Pt", &lep3Pt, "lep3Pt/F");
-        //mvaTree->Branch("lep3Eta", &lep3Eta, "lep3Eta/F");
-        //mvaTree->Branch("lep3Phi", &lep3Phi, "lep3Phi/F");
 
         // Do ss selection branches //
 
@@ -168,26 +153,11 @@ void fcncAnalyzer::Begin(TTree* tree)
         mvaReader = new TMVA::Reader("!Color:!Silent");
 
         mvaReader->AddVariable("met", &MET);
-        //mvaReader->AddVariable("metPhi", &metPhi);
         mvaReader->AddVariable("HT", &HT);
         mvaReader->AddVariable("MT", &MT);
 
-        //mvaReader->AddVariable("lep1Pt", &lep1Pt);
-        //mvaReader->AddVariable("lep1Eta", &lep1Eta);
-        //mvaReader->AddVariable("lep1Phi", &lep1Phi);
-        //mvaReader->AddVariable("lep2Pt", &lep2Pt);
-        //mvaReader->AddVariable("lep2Eta", &lep2Eta);
-        //mvaReader->AddVariable("lep2Phi", &lep2Phi);
-
-        //mvaReader->AddVariable("bJetPt", &bJetPt);
-        //mvaReader->AddVariable("bJetEta", &bJetEta);
-        //mvaReader->AddVariable("bJetPhi", &bJetPhi);
         mvaReader->AddVariable("jetMult", &f_jetMult);
         mvaReader->AddVariable("bJetMult", &f_bJetMult);
-
-        //mvaReader->AddVariable("lep3Pt", &lep3Pt);
-        //mvaReader->AddVariable("lep3Eta", &lep3Eta);
-        //mvaReader->AddVariable("lep3Phi", &lep3Phi);
 
         mvaReader->AddVariable("trileptonMass", &trileptonMass);
         mvaReader->AddVariable("dileptonMassOS", &dileptonMassOS);
@@ -394,9 +364,9 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
     // Get fakeable leptons
     vObj fakeables;
-    //vector<TCElectron>  fakeableElectrons  = selector->GetSelectedElectrons("fakeable");
+    vector<TCElectron>  fakeableElectrons  = selector->GetSelectedElectrons("fakeable");
     vector<TCMuon>      fakeableMuons      = selector->GetSelectedMuons("fakeable");
-    //fakeables.insert(fakeables.end(), fakeableElectrons.begin(), fakeableElectrons.end());
+    fakeables.insert(fakeables.end(), fakeableElectrons.begin(), fakeableElectrons.end());
     fakeables.insert(fakeables.end(), fakeableMuons.begin(), fakeableMuons.end());
 
     // Get jets
@@ -451,23 +421,33 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
     histManager->Fill1DHist(leptons.size(), "h1_LeptonMult", "lepton multiplicity;N_{leptons};Events / bin", 6, -0.5, 5.5);
 
+
     if (!isRealData) {
         GenPlots(gLeptons, leptons);
     }
 
-    //if (leptons.size() == 1) {
-    //    //!!! Single leptons just for fakes !!!//
-    //    if (fakeables.size() == 1) return kTRUE;
-    //    if (leptons[0].Pt() < leptonPtCut[0] || fakeables[0].Pt() < leptonPtCut[1]) return kTRUE;
-    //    return kTRUE;
 
-    //}
+    if (leptons.size() == 1) {
 
-    if (leptons.size() == 2) {
+        //!!! Single leptons just for fakes !!!//
+        if (leptons[0].Pt() < leptonPtCut[0]) 
+            return kTRUE;
+
+    } else if (leptons.size() == 2) {
+        // Electron charge misid control region needs a lower lead lepton pt cut //
+        if (
+                leptons[0].Pt() > 10. && leptons[1].Pt() > 10.  // pt cut
+                && leptons[0].Type() == "electron" && leptons[1].Type() == "electron" // get electrons
+                && (fabs((leptons[0] + leptons[1]).M() - 91.2) < 10) // Z mass window
+           ) 
+            MakeQMisIDPlots(leptons);
+
         //!!! Dilepton selection !!!//
-        if ( leptons[0].Pt() < leptonPtCut[0] || leptons[1].Pt() < leptonPtCut[1]) return kTRUE;
+        if ( leptons[0].Pt() < leptonPtCut[0] || leptons[1].Pt() < leptonPtCut[1]) 
+            return kTRUE;
 
     } else if (leptons.size() == 3) {
+
         //!!! Trilepton selection !!!//
         if ( 
                 leptons[0].Pt() < leptonPtCut[0] 
@@ -478,203 +458,250 @@ bool fcncAnalyzer::Process(Long64_t entry)
             return kTRUE;
 
     } else if (leptons.size() == 4) {
+
         //!!! Tetralepton selection !!!//
-        if (leptons[0].Pt() < leptonPtCut[0] || leptons[1].Pt() < leptonPtCut[1]) return kTRUE;
-    } else
+        if (leptons[0].Pt() < leptonPtCut[0] || leptons[1].Pt() < leptonPtCut[1]) 
+            return kTRUE;
+
+    } else if (leptons.size() > 4)
         return kTRUE;
 
+    if (leptons.size() > 1) { // Only do signal extraction if there are at least two leptons
 
-    //!! low mass resonance rejection !!//
-    bool lowMassOS  = false;
-    bool isCosmics  = false;
+        //!! low mass resonance rejection !!//
+        bool lowMassOS  = false;
+        bool isCosmics  = false;
 
-    for (unsigned i = 1; i < leptons.size(); ++i) {
-        for (unsigned j = 0; j < i; ++j) {
-            if ((leptons[i] + leptons[j]).M() < 12) lowMassOS = true;
+        for (unsigned i = 1; i < leptons.size(); ++i) {
+            for (unsigned j = 0; j < i; ++j) {
+                if ((leptons[i] + leptons[j]).M() < 12) 
+                    lowMassOS = true;
 
-            if (isRealData && leptons[i].Type() == "muon" && leptons[j].Type() == "muon")
-                if (CosmicMuonFilter(leptons[i], leptons[j]))
-                    isCosmics = true;
-        }
-    }
-
-    if (lowMassOS || isCosmics) return kTRUE;
-
-    weighter->SetObjects(leptons, jets, nPUVerticesTrue, passNames[0]);
-    evtWeight *= weighter->GetTotalWeight();
-    histManager->SetWeight(evtWeight);
-
-    SetEventCategory(leptons);
-    SetEventVariables(leptons, jets, bJetsM, *recoMET); 
-
-    // Pre-selection mc-truth plots
-    if (!isRealData) {
-        unsigned cat = 1 + ((evtCategory.to_ulong() >> 2) & 0x3);
-        histManager->SetDirectory(categoryNames[cat] + "/" + subdir);
-        GenPlots(gLeptons, leptons);
-
-        cat = GetHistCategory(2) - 10;
-        histManager->SetDirectory(categoryNames[cat] + "/" + subdir);
-        GenPlots(gLeptons, leptons);
-    }
-
-    // Electron charge misid control region //
-    if (leptons.size() == 2) 
-        if (
-                leptons[0].Type() == "electron" && leptons[1].Type() == "electron"
-                && (fabs((leptons[0] + leptons[1]).M() - 91.2) < 10)
-           ) 
-            MakeQMisIDPlots(leptons);
-
-    // ZZ control region //
-    if (leptons.size() == 4) {
-        if ( bJetsM.size() == 0) {
-            Make4lPlots(leptons, *recoMET);
-            SetYields(14);
-        }
-        return kTRUE; 
-    }
-
-    //!!!!!!!!!!!!!!!!!!!!!!!!!!//
-    // End of preselection cuts //
-    //!!!!!!!!!!!!!!!!!!!!!!!!!!//
-
-
-
-    //!!!!!!!!!!!!!!!!!!!!!//
-    // Do preselection MVA //
-    //!!!!!!!!!!!!!!!!!!!!!//
-
-
-    if (leptons.size() == 3 && doPreMVA) {
-
-        // Fill MVA ntuples //
-        SetVarsMVA(leptons, bJetsM, jets);
-        if (doMVATree) mvaTree->Fill();
-
-        if (doMVACut) {
-            float mvaValue = mvaReader->EvaluateMVA("test");
-
-            histManager->SetFileNumber(4);
-            histManager->SetDirectory("3l_inclusive/" + subdir);
-            histManager->Fill1DHist(mvaValue, "h1_BDT", "BDT value;Entries / bin;BDT", 36, -1., 0.2);
-
-            if (mvaValue > 0.) {
-                //MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 5);
-                SetYields(15);
+                if (isRealData && leptons[i].Type() == "muon" && leptons[j].Type() == "muon")
+                    if (CosmicMuonFilter(leptons[i], leptons[j]))
+                        isCosmics = true;
             }
         }
-    }
+
+        if (lowMassOS || isCosmics) return kTRUE;
 
 
-    //!!!!!!!!!!!!!!!!!//
-    // Control regions //
-    //!!!!!!!!!!!!!!!!!//
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!//
+        // End of preselection cuts //
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!//
 
 
-    // WZ control region //
-    if (
-            zTagged 
-            && leptons.size() == 3 
-            && bJetsM.size() == 0
-            && jets.size() > 1
-            && METLD > 0.3
-       ) {
-        MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 5);
-        SetYields(10);
-    }
+        weighter->SetObjects(leptons, jets, nPUVerticesTrue, passNames[0]);
+        evtWeight *= weighter->GetTotalWeight();
+        histManager->SetWeight(evtWeight);
 
-    // ttbar control region //
-    if (
-            leptons.size() == 2 
-            && (bJetsM.size() == 1 || bJetsL.size() == 2)
-            && leptons[0].Type() != leptons[1].Type()
-            && leptons[0].Charge() != leptons[1].Charge()
-            && MET > 30
-       ) {
-        MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 6);
-        SetYields(11);
-    }
+        SetEventCategory(leptons);
+        SetEventVariables(leptons, jets, bJetsM, *recoMET); 
 
-    // ttZ control region //
-    if (
-            leptons.size() == 3 
-            && zTagged
-            && (bJetsM.size() == 1 || bJetsL.size() == 2)
-            && METLD > 0.2 
-       ) {
-        MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 7);
-        SetYields(12);
-    }
+        // Pre-selection mc-truth plots
+        if (!isRealData) {
+            unsigned cat = 1 + ((evtCategory.to_ulong() >> 2) & 0x3);
+            histManager->SetDirectory(categoryNames[cat] + "/" + subdir);
+            GenPlots(gLeptons, leptons);
+
+            cat = GetHistCategory(2) - 10;
+            histManager->SetDirectory(categoryNames[cat] + "/" + subdir);
+            GenPlots(gLeptons, leptons);
+        }
+
+        // ZZ control region //
+        if (leptons.size() == 4) {
+            if ( bJetsM.size() == 0) {
+                Make4lPlots(leptons, *recoMET);
+                SetYields(14);
+            }
+            return kTRUE; 
+        }
+
+        //!!!!!!!!!!!!!!!!!!!!!//
+        // Do preselection MVA //
+        //!!!!!!!!!!!!!!!!!!!!!//
 
 
+        if (leptons.size() == 3 && doPreMVA) {
 
-    //!!!!!!!!!!!!!!!!!!!!!!//
-    //                      //
-    //  Analysis selection  //
-    //  Cut n' Count!!!     //
-    //                      //
-    //!!!!!!!!!!!!!!!!!!!!!!//
+            // Fill MVA ntuples //
+            SetVarsMVA(leptons, bJetsM, jets);
+            if (doMVATree) mvaTree->Fill();
 
-    AnalysisSelection(leptons, jets, bJetsM, selectedVtx, suffix);
+            if (doMVACut) {
+                float mvaValue = mvaReader->EvaluateMVA("test");
 
-    if (doQFlips) {
+                histManager->SetFileNumber(4);
+                histManager->SetDirectory("3l_inclusive/" + subdir);
+                histManager->Fill1DHist(mvaValue, "h1_BDT", "BDT value;Entries / bin;BDT", 36, -1., 0.2);
 
-        // Electron charge flip background estimation: applies weights based on
-        // Z->ee flips.
+                if (mvaValue > 0.) {
+                    //MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 5);
+                    SetYields(15);
+                }
+            }
+        }
+
+
+        //!!!!!!!!!!!!!!!!!//
+        // Control regions //
+        //!!!!!!!!!!!!!!!!!//
+
+
+        // WZ control region //
+        if (
+                zTagged 
+                && leptons.size() == 3 
+                && bJetsM.size() == 0
+                && jets.size() > 1
+                && METLD > 0.3
+           ) {
+            MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 5);
+            SetYields(10);
+        }
+
+        // ttbar control region //
         if (
                 leptons.size() == 2 
+                && (bJetsM.size() == 1 || bJetsL.size() == 2)
+                && leptons[0].Type() != leptons[1].Type()
                 && leptons[0].Charge() != leptons[1].Charge()
-                && (leptons[0].Type() == "electron" && leptons[1].Type() == "electron")
-           ) { 
-            qFlipWeight = weighter->GetQFlipWeight();
-
-            evtWeight *= qFlipWeight;
-            vObj flipLeptons = leptons;
-
-            if (runNumber%2 == 0)
-                flipLeptons[0].SetCharge(flipLeptons[1].Charge());
-            else
-                flipLeptons[1].SetCharge(flipLeptons[0].Charge());
-
-            SetEventCategory(flipLeptons);
-            SetEventVariables(flipLeptons, jets, bJetsM, *recoMET); 
-
-            AnalysisSelection(flipLeptons, jets, bJetsM, selectedVtx, "QFlips");
-
-            evtWeight /= qFlipWeight; // Remove charge flip weight
+                && MET > 30
+           ) {
+            MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 6);
+            SetYields(11);
         }
-    }
+
+        // ttZ control region //
+        if (
+                leptons.size() == 3 
+                && zTagged
+                && (bJetsM.size() == 1 || bJetsL.size() == 2)
+                && METLD > 0.2 
+           ) {
+            MakePlots(leptons, jets, bJetsM, *recoMET, selectedVtx, 7);
+            SetYields(12);
+        }
+
+
+        //!!!!!!!!!!!!!!!!!!!!!!//
+        //                      //
+        //  Analysis selection  //
+        //  Cut n' Count!!!     //
+        //                      //
+        //!!!!!!!!!!!!!!!!!!!!!!//
+
+        AnalysisSelection(leptons, jets, bJetsM, selectedVtx, suffix);
+
+        if (doQFlips) {
+
+            // Electron charge flip background estimation: applies weights based on
+            // charge flip probability in Z->ee events.
+            if (
+                    leptons.size() == 2 
+                    && leptons[0].Charge() != leptons[1].Charge()
+                    && (leptons[0].Type() == "electron" || leptons[1].Type() == "electron")
+               ) { 
+
+                qFlipWeight = weighter->GetQFlipWeight();
+
+                evtWeight *= qFlipWeight;
+                vObj flipLeptons = leptons;
+
+                if (runNumber%2 == 0)
+                    flipLeptons[0].SetCharge(flipLeptons[1].Charge());
+                else
+                    flipLeptons[1].SetCharge(flipLeptons[0].Charge());
+
+                SetEventCategory(flipLeptons);
+                SetEventVariables(flipLeptons, jets, bJetsM, *recoMET); 
+
+                AnalysisSelection(flipLeptons, jets, bJetsM, selectedVtx, "QFlips");
+
+                evtWeight /= qFlipWeight; // Remove charge flip weight
+            }
+        }
+    } //Allow for the case of one or no leptons for fakes
 
     if (doFakes) {
 
-        // Fakes fakes fakes
-        if (fakeables.size() > 0 && leptons.size() == 2 && leptons[0].Charge() != leptons[1].Charge()) {
-            fakeWeight = weighter->GetFakeWeight(fakeables[0]);
+        // Do application of fake rates here.  This is done for the case of
+        // ppf, pff, pf and ff events.  
+        if (
+                (fakeables.size() == 1 && ((leptons.size() == 2 && leptons[0].Charge() != leptons[1].Charge()) || leptons.size() == 1))
+                || fakeables.size() == 2 
+                ) {
 
-            evtWeight *= fakeWeight;
-            vObj leptonsPlusFakes = leptons;
-            leptonsPlusFakes.insert(leptonsPlusFakes.end(), fakeables.begin(), fakeables.end());
-            sort(leptonsPlusFakes.begin(), leptonsPlusFakes.end(), P4SortCondition);
 
-            // remove fakeable from jet collection
+            // Do clean-up that's only done for analysis leptons 
+
+            // remove fakeable from jet collection and make sure fakeable
+            // object does not overlap with passing object
             vector<TCJet> fJets, fBJets;
-
+            bool leptonMatched      = false;
+            bool lowMassResonance   = false;
+            
             for (unsigned i = 0; i < fakeables.size(); ++i) {
 
                 for (unsigned j = 0; j < jets.size(); ++j) 
-                    if (fakeables[i].DeltaR(jets[j]) > 0.5) fJets.push_back(jets[j]);
+                    if (fakeables[i].DeltaR(jets[j]) > 0.4) fJets.push_back(jets[j]);
 
                 for (unsigned j = 0; j < bJetsM.size(); ++j) 
-                    if (fakeables[i].DeltaR(bJetsM[j]) < 0.5) fBJets.push_back(bJetsM[j]);
+                    if (fakeables[i].DeltaR(bJetsM[j]) > 0.4) fBJets.push_back(bJetsM[j]);
 
+                for (unsigned j = 0; j < leptons.size(); ++j) {
+                    if (fakeables[i].DeltaR(leptons[j]) < 0.1) {
+                        leptonMatched = true;
+                        break;
+                    }
+
+                    if ((fakeables[i] + leptons[j]).M() < 10.) {
+                        lowMassResonance = true;
+                        break;
+                    }
+                }
+
+                for (unsigned j = fakeables.size() - 1; j > i; --j) {
+                    if (fakeables[i].DeltaR(fakeables[j]) < 0.1) {
+                        leptonMatched = true;
+                        break;
+                    }
+
+                    if ((fakeables[i] + fakeables[j]).M() < 10.) {
+                        lowMassResonance = true;
+                        break;
+                    }
+                }
             }
 
-            SetEventCategory(leptonsPlusFakes);
-            SetEventVariables(leptonsPlusFakes, fJets, fBJets, *recoMET); 
+            if (!leptonMatched && !lowMassResonance) {
+                fakeWeight = weighter->GetFakeWeight(fakeables);
 
-            AnalysisSelection(leptonsPlusFakes, fJets, fBJets, selectedVtx, "Fakes");
-            evtWeight /= fakeWeight; // Remove fake weight
+                evtWeight *= fakeWeight;
+                vObj leptonsPlusFakes = leptons;
+                leptonsPlusFakes.insert(leptonsPlusFakes.end(), fakeables.begin(), fakeables.end());
+                sort(leptonsPlusFakes.begin(), leptonsPlusFakes.end(), P4SortCondition);
+
+                SetEventCategory(leptonsPlusFakes);
+                SetEventVariables(leptonsPlusFakes, fJets, fBJets, *recoMET); 
+
+                // Enforce same-sign dilepton/trilepton selection with fake leptons
+                if (
+                        (leptonsPlusFakes.size() == 2 && leptonsPlusFakes[0].Charge() == leptonsPlusFakes[1].Charge())
+                        || leptonsPlusFakes.size() == 3
+                   ) {
+
+                    //cout << fakeWeight << "\t" << leptonsPlusFakes.size() << endl;
+
+                    if (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON" || suffix == "TEST") 
+                        AnalysisSelection(leptonsPlusFakes, fJets, fBJets, selectedVtx, "Fakes");
+                    else
+                        AnalysisSelection(leptonsPlusFakes, fJets, fBJets, selectedVtx, "Fakes_"+suffix);
+
+                    evtWeight /= fakeWeight; // Remove fake weight
+                }
+            }
         }
     }
 
@@ -743,6 +770,7 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
     MakePlots(leptons, jets, bJets, *recoMET, PV, 0);
     SetYields(5);
 
+
     //!! Z-veto !!//
     if (
             leptons.size() == 2 
@@ -771,6 +799,7 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
     MakePlots(leptons, jets, bJets, *recoMET, PV, 2);
     SetYields(7);
 
+
     //!! HT cut !!//
     if (leptons.size() == 2){
         if (leptons[0].Charge() == leptons[1].Charge()) 
@@ -783,6 +812,7 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
 
     MakePlots(leptons, jets, bJets, *recoMET, PV, 3);
     SetYields(8);
+
 
     //!! Require at least one b-jet !!//
     if (bJets.size() == 0) return true;
@@ -951,25 +981,14 @@ void fcncAnalyzer::LeptonPlots(vObj leptons, vector<TCJet> jets, vector<TCJet> b
                 "h1_TrileptonPt", "p_{T,3l};p_{T,3l};Entries / 5 GeV", 39, 10., 400.);
 
 
-        if (evtCategory.test(3)) {
-            histManager->Fill1DHist(dileptonP4.DeltaR(lep3P4), 
-                    "h1_DileptonLepDeltaR", "#Delta R(OS,l3);#Delta R(ll,l);Entries / bin", 70, 0., 7.);
-            histManager->Fill1DHist(fabs(dileptonP4.DeltaPhi(lep3P4)), 
-                    "h1_DileptonLepDeltaPhi", "#Delta #phi(OS,l3);#Delta #phi(ll,l);Entries / bin", 36, 0., TMath::Pi());
-            histManager->Fill1DHist(fabs(dileptonP4.Eta() - lep3P4.Eta()), 
-                    "h1_DileptonLepDeltaEta", "#Delta #eta(OS,l3);#Delta #eta(ll,l);Entries / bin", 60, 0., 6.);
-            histManager->Fill1DHist(MT,
-                    "h1_Lep3MetMT", ";MT_{l3,MET};Entries / 5 GeV", 60, 0., 300.);
-        } else {
-            histManager->Fill1DHist(dileptonP4.DeltaR(leptons[2]), 
-                    "h1_DileptonLepDeltaR", "#Delta R(OS,l3);#Delta R(ll,l);Entries / bin", 70, 0., 7.);
-            histManager->Fill1DHist(fabs(dileptonP4.DeltaPhi(leptons[2])), 
-                    "h1_DileptonLepDeltaPhi", "#Delta #phi(OS,l3);#Delta #phi(ll,l);Entries / bin", 36, 0., TMath::Pi());
-            histManager->Fill1DHist(fabs(dileptonP4.Eta() - leptons[2].Eta()), 
-                    "h1_DileptonLepDeltaEta", "#Delta #eta(OS,l3);#Delta #eta(ll,l);Entries / bin", 60, 0., 6.);
-            histManager->Fill1DHist(MT,
-                    "h1_Lep3MetMT", ";MT_{l3,MET};Entries / 5 GeV", 60, 0., 300.);
-        }
+        histManager->Fill1DHist(dileptonP4.DeltaR(lep3P4), 
+                "h1_DileptonLepDeltaR", "#Delta R(OS,l3);#Delta R(ll,l);Entries / bin", 70, 0., 7.);
+        histManager->Fill1DHist(fabs(dileptonP4.DeltaPhi(lep3P4)), 
+                "h1_DileptonLepDeltaPhi", "#Delta #phi(OS,l3);#Delta #phi(ll,l);Entries / bin", 36, 0., TMath::Pi());
+        histManager->Fill1DHist(fabs(dileptonP4.Eta() - lep3P4.Eta()), 
+                "h1_DileptonLepDeltaEta", "#Delta #eta(OS,l3);#Delta #eta(ll,l);Entries / bin", 60, 0., 6.);
+        histManager->Fill1DHist(MT,
+                "h1_Lep3MetMT", ";MT_{l3,MET};Entries / 5 GeV", 60, 0., 300.);
     }
 
     if (leptons.size() == 2) {
@@ -1556,11 +1575,11 @@ void fcncAnalyzer::SetEventVariables(vObj leptons, vector<TCJet> jets, vector<TC
     else if (leptons.size() == 2)
         trileptonMass   = -1.;
 
+
     // Reset OS variables for each event //
     zTagged     = false;
     ossfTagged  = false;
     dileptonMassOS = -1.;
-
 
     float zCandidateMass = 0.;
     for (unsigned i = 0; i < leptons.size(); ++i) {

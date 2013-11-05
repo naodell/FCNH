@@ -17,10 +17,13 @@ const float muPtCut[]         = {10., 3.};
 const float elePtCut[]        = {10., 10.};
 const float phoPtCut[]        = {10., 10.};
 
-unsigned  nPtBins     = 6;
-unsigned  nEtaBins    = 2;
-float     ptBins[]    = {5., 10., 20., 35., 50., 70., 100.}; 
-float     etaBins[]   = {0., 1.5, 2.5};
+
+unsigned  nMetBins      = 10;
+unsigned  nPtBins       = 6;
+unsigned  nEtaBins      = 2;
+float     metBins[]     = {0., 10., 20., 30., 40., 50., 60., 70., 80., 100., 300.}; 
+float     ptBins[]      = {5., 10., 20., 35., 50., 70., 100.}; 
+float     etaBins[]     = {0., 1.5, 2.5};
 
 // Do something about these: should just have one sort condition function
 bool P4SortCondition(const TLorentzVector& p1, const TLorentzVector& p2) {return (p1.Pt() > p2.Pt());} 
@@ -450,14 +453,14 @@ void fakeAnalyzer::DoZTag(vObj leptons)
 
             // Select the pairing that is closest to the mass of the Z.
             if (zTagged && fabs(dileptonMass - 91.2) > fabs(zCandidateMass - 91.2)) {
-                    dileptonMass = zCandidateMass;
-                    lep1P4 = leptons[i];
-                    lep2P4 = leptons[j];
-                    ZP4 = (TLorentzVector)(leptons[i] + leptons[j]);
+                dileptonMass = zCandidateMass;
+                lep1P4 = leptons[i];
+                lep2P4 = leptons[j];
+                ZP4 = (TLorentzVector)(leptons[i] + leptons[j]);
 
-                    if (leptons.size() == 3) {
-                        lep3P4 = leptons[3-i-j];
-                    }
+                if (leptons.size() == 3) {
+                    lep3P4 = leptons[3-i-j];
+                }
             }
         }
     }
@@ -493,6 +496,9 @@ void fakeAnalyzer::FillDenominatorHists(string cat)
         histManager->Fill2DHistUnevenBins(probe.Pt(), probe.Eta(),
                 "h2_MuDenom", "probe muon p_{T};p_{T};#eta", nPtBins, ptBins, nEtaBins, etaBins);
 
+        histManager->Fill1DHistUnevenBins(recoMET->Mod(),
+                "h1_MuDenomMet", "probe muon Met;Met;Entries", nMetBins, metBins);
+
     }   else if (lepType == "electron") {
         histManager->Fill1DHist(probe.Pt(),
                 "h1_EleProbeLepPt", "probe electron p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
@@ -505,6 +511,9 @@ void fakeAnalyzer::FillDenominatorHists(string cat)
                 "h1_EleDenomEta", "probe electron #eta;#eta;Entries / 3 GeV", nEtaBins, etaBins);
         histManager->Fill2DHistUnevenBins(probe.Pt(), probe.Eta(),
                 "h2_EleDenom", "probe electron p_{T};p_{T};#eta", nPtBins, ptBins, nEtaBins, etaBins);
+
+        histManager->Fill1DHistUnevenBins(recoMET->Mod(),
+                "h1_EleDenomMet", "probe electron Met;Met;Entries", nMetBins, metBins);
     }
 }
 
@@ -520,11 +529,14 @@ void fakeAnalyzer::FillNumeratorHists(string cat)
                 "h1_MuPassLepEta", "pass muon #eta;#eta;Entries / bin", 25, -2.5, 2.5);
 
         histManager->Fill1DHistUnevenBins(passLep.Pt(),
-                "h1_MuNumerPt", "pass muon p_{T};p_{T};Entries / 3 GeV", nPtBins, ptBins);
+                "h1_MuNumerPt", "pass muon p_{T};p_{T};Entries", nPtBins, ptBins);
         histManager->Fill1DHistUnevenBins(passLep.Eta(),
-                "h1_MuNumerEta", "pass muon #eta;#eta;Entries / 3 GeV", nEtaBins, etaBins);
+                "h1_MuNumerEta", "pass muon #eta;#eta;Entries", nEtaBins, etaBins);
         histManager->Fill2DHistUnevenBins(passLep.Pt(), passLep.Eta(),
                 "h2_MuNumer", "pass muon p_{T};p_{T};#eta", nPtBins, ptBins, nEtaBins, etaBins);
+
+        histManager->Fill1DHistUnevenBins(recoMET->Mod(),
+                "h1_MuNumerMet", "pass muon Met;Met;Entries", nMetBins, metBins);
 
     } else if (lepType == "electron") {
         histManager->Fill1DHist(passLep.Pt(),
@@ -538,6 +550,9 @@ void fakeAnalyzer::FillNumeratorHists(string cat)
                 "h1_EleNumerEta", "pass electron #eta;#eta;Entries / 3 GeV", nEtaBins, etaBins);
         histManager->Fill2DHistUnevenBins(passLep.Pt(), passLep.Eta(),
                 "h2_EleNumer", "pass electron p_{T};p_{T};#eta", nPtBins, ptBins, nEtaBins, etaBins);
+
+        histManager->Fill1DHistUnevenBins(recoMET->Mod(),
+                "h1_EleNumerMet", "pass electron Met;Met;Entries", nMetBins, metBins);
     }
 }
 

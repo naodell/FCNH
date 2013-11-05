@@ -32,11 +32,18 @@ doEff       = False
 doRatio     = False
 
 ### Categories to be plotted ###
-catList = ['inclusive', 'low_met', 'high_met']
-#catList = ['low_met']
+catList = [
+           'inclusive', 
+           'QCD2l_inclusive', 'ZPlusJet_inclusive' 
+           #'QCD2l_low_met', 'QCD2l_high_met', 
+           #'ZPlusJet_low_met', 'ZPlusJet_high_met'
+           ]
 
 ### Samples to be included in stacks ###
-samples = ['FAKE_BG'] # ['ZJets', 'ttbar']
+samples = {}
+samples['inclusive']    = ['FAKE_2l', 'FAKE_3l'] # ['ZJets', 'ttbar']
+samples['QCD2l']        = ['FAKE_2l']
+samples['ZPlusJet']     = ['FAKE_3l']
 
 if doPlots:
 
@@ -52,7 +59,7 @@ if doPlots:
 
     ### DATASETS ###
 
-    plotter.add_datasets(samples)
+    plotter.add_datasets(samples['inclusive'])
     plotter._overlayList.extend(['DATA_FAKES'])
 
     plotter.get_scale_factors(corrected = False)
@@ -63,6 +70,10 @@ if doPlots:
                                            'MuProbeLepPt', 'MuProbeLepEta', 
                                            'MuDenomPt', 'MuDenomEta', 
                                            'MuNumerPt', 'MuNumerEta', 
+                                           'ElePassLepPt', 'ElePassLepEta', 
+                                           'EleProbeLepPt', 'EleProbeLepEta', 
+                                           'EleDenomPt', 'EleDenomEta', 
+                                           'EleNumerPt', 'EleNumerEta', 
                                            'TagLepPt', 'TagLepEta' ] 
 
 
@@ -78,6 +89,7 @@ if doPlots:
     plotter.add_datasets(samples, Clear=True)
 
     for category in catList:
+        plotter.add_datasets(samples[category.split('_', 1)[0]], Clear=True)
         plotter.set_category(category)
         plotter.make_overlays_1D(logScale = doLog, doRatio = doRatio, doEff = doEff)
 
