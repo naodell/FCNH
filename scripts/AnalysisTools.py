@@ -14,7 +14,7 @@ class AnalysisTools():
     '''
     def __init__(self, inputFile, scale, savePath = ''):
         self._histFile      = r.TFile(inputFile, 'OPEN')
-        self._period        = '2011'
+        self._period        = '2012'
         self._savePath      = savePath
         self._scale         = scale
         self._scaleDict     = scales
@@ -134,14 +134,16 @@ class AnalysisTools():
         if histType == '2D':
             histogramName = 'h2_' + var  
         
-        #print self._category, dataName, histogramName
         hist = self._histFile.GetDirectory(self._category + '/' + dataName).Get(histogramName)
+        #print self._category, dataName, histogramName, hist
 
         if not hist:
             return None
 
+        if dataName.split('_', 1)[0] == 'Fakes' and dataName != 'Fakes':
+            dataName = dataName.split('_', 1)[1]
+
         if doScale:
-            self._scale
             if dataName[:4] == 'DATA' or dataName in ['Fakes', 'QFlips']:
                 hist.Scale(self._scaleDict[self._period][dataName])
             else:
@@ -155,14 +157,29 @@ class AnalysisTools():
         '''
 
         outHist = None
-        for data in self._combineDict[dataName]:
+        doFakes = False
+        if dataName.split('_', 1)[0] == 'Fakes' and dataName != 'Fakes':
+            dataName = dataName.split('_', 1)[1]
+            doFakes  = True
 
-            hist = self.get_hist(var, data, histType)
+        if dataName not in self._combineDict:
+            if doFakes:
+                outHist = self.get_hist(var, 'Fakes_' + dataName, histType)
+            else:
+                outHist = self.get_hist(var, dataName, histType)
 
-            if outHist is None and hist is not None:
-                outHist = hist
-            elif hist is not None:
-                outHist.Add(hist)
+        else:
+            for data in self._combineDict[dataName]:
+
+                if doFakes:
+                    hist = self.get_hist(var, 'Fakes_' + data, histType)
+                else:
+                    hist = self.get_hist(var, data, histType)
+
+                if outHist is None and hist is not None:
+                    outHist = hist
+                elif hist is not None:
+                    outHist.Add(hist)
 
         return outHist
 

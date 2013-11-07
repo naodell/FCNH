@@ -48,6 +48,9 @@ def set_hist_style(hist, dataType, styleDict, histType = '1D'):
     Set styles of histograms to be stacked
     '''
 
+    if dataType.split('_', 1)[0] == 'Fakes' and dataType != 'Fakes':
+        dataType = dataType.split('_', 1)[1]
+
     hist.SetMarkerStyle(styleDict[dataType][3])
     hist.SetMarkerColor(styleDict[dataType][1])
     #hist.SetMarkerSize(styleDict[dataType][4])
@@ -68,7 +71,12 @@ def build_legend(hists, dataList, var, styleDict):
     legend.SetTextSize(0.045)
 
     for data in dataList[::-1]:
-        legend.AddEntry(hists[data], styleDict[data][4])
+        if data.split('_', 1)[0] == 'Fakes' and data != 'Fakes':
+            dataName = data.split('_', 1)[1]
+        else:
+            dataName = data
+
+        legend.AddEntry(hists[data], styleDict[dataName][4])
 
     return legend
 
@@ -102,10 +110,7 @@ class PlotProducer(AnalysisTools):
             histList = []
 
             for data in self._overlayList:
-                if data in self._combineDict:
-                    hist = self.combine_samples(var, data, histType)
-                else:
-                    hist =  self.get_hist(var, data, histType)
+                hist = self.combine_samples(var, data, histType)
 
                 if hist is None: continue
 
@@ -131,11 +136,7 @@ class PlotProducer(AnalysisTools):
             histList = []
 
             for data in self._datasets:
-                if data in self._combineDict:
-                    hist = self.combine_samples(var, data, histType)
-                else:
-                    hist =  self.get_hist(var, data, histType)
-
+                hist = self.combine_samples(var, data, histType)
 
                 if hist is None: continue
 
@@ -336,7 +337,6 @@ class PlotProducer(AnalysisTools):
 
                 if var not in hists.keys() or var not in stacks.keys(): continue
 
-
                 pad1.cd()
 
                 if logScale:
@@ -525,7 +525,7 @@ class PlotProducer(AnalysisTools):
                         hist.Draw('COLZ')
 
                         sigBox = idBox.Clone()
-                        sigBox.AddText(data)
+                        sigBox.AddText('signal')
                         sigBox.Draw('SAME')
 
                     if data in ['DATA', 'DATA_MUON','DATA_ELECTRON', 'DATA_MUEG']:
@@ -541,7 +541,7 @@ class PlotProducer(AnalysisTools):
                         hist.Draw('COLZ')
 
                         dataBox = idBox.Clone()
-                        dataBox.AddText(data)
+                        dataBox.AddText('data')
                         dataBox.Draw('SAME')
 
                 pad3.cd()
@@ -556,7 +556,7 @@ class PlotProducer(AnalysisTools):
                 sums[var].Draw('COLZ')
 
                 bgBox = idBox.Clone()
-                bgBox.AddText(bg)
+                bgBox.AddText('background')
                 bgBox.Draw('SAME')
 
 

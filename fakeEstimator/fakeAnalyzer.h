@@ -77,9 +77,10 @@ class fakeAnalyzer : public TSelector {
         bool    ossfTagged;
         bool    isTP;
 
-        TCPhysObject   tagLep, probeLep, passLep;
+        TLorentzVector ZP4;
+        TCPhysObject   tag, probe, passLep, lep1, lep2, lep3;
 
-        Float_t dileptonMassOS;
+        Float_t dileptonMass;
 
     public :
         TTree          *fChain;   //!pointer to the analyzed TTree or TChain
@@ -172,6 +173,7 @@ class fakeAnalyzer : public TSelector {
         virtual void    FillNumeratorHists(string);
         virtual void    DoZTag(vObj leptons);
         virtual bool    CheckQCD2lCR(vector<TCJet>);
+        virtual bool    CheckZPlusJetCR();
 
         virtual string  str(int i) {return static_cast<ostringstream*>( &(ostringstream() << i) )->str();}
 

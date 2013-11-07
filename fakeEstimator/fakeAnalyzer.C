@@ -17,10 +17,13 @@ const float muPtCut[]         = {10., 3.};
 const float elePtCut[]        = {10., 10.};
 const float phoPtCut[]        = {10., 10.};
 
-unsigned  nPtBins     = 6;
-unsigned  nEtaBins    = 2;
-float     ptBins[]    = {5., 10., 20., 35., 50., 70., 100.}; 
-float     etaBins[]   = {0., 1.5, 2.5};
+
+unsigned  nMetBins      = 10;
+unsigned  nPtBins       = 6;
+unsigned  nEtaBins      = 2;
+float     metBins[]     = {0., 10., 20., 30., 40., 50., 60., 70., 80., 100., 300.}; 
+float     ptBins[]      = {5., 10., 20., 35., 50., 70., 100.}; 
+float     etaBins[]     = {0., 1.5, 2.5};
 
 // Do something about these: should just have one sort condition function
 bool P4SortCondition(const TLorentzVector& p1, const TLorentzVector& p2) {return (p1.Pt() > p2.Pt());} 
@@ -73,12 +76,20 @@ void fakeAnalyzer::Begin(TTree* tree)
 
     histoFile->mkdir("inclusive", "inclusive");
     histoFile->GetDirectory("inclusive", "inclusive")->mkdir(suffix.c_str(), suffix.c_str());
+
     histoFile->mkdir("QCD2l_inclusive", "QCD2l_inclusive");
     histoFile->GetDirectory("QCD2l_inclusive", "QCD2l_inclusive")->mkdir(suffix.c_str(), suffix.c_str());
     histoFile->mkdir("QCD2l_low_met", "QCD2l_low_met");
     histoFile->GetDirectory("QCD2l_low_met", "QCD2l_low_met")->mkdir(suffix.c_str(), suffix.c_str());
     histoFile->mkdir("QCD2l_high_met", "QCD2l_high_met");
     histoFile->GetDirectory("QCD2l_high_met", "QCD2l_high_met")->mkdir(suffix.c_str(), suffix.c_str());
+
+    histoFile->mkdir("ZPlusJet_inclusive", "ZPlusJet_inclusive");
+    histoFile->GetDirectory("ZPlusJet_inclusive", "ZPlusJet_inclusive")->mkdir(suffix.c_str(), suffix.c_str());
+    histoFile->mkdir("ZPlusJet_low_met", "ZPlusJet_low_met");
+    histoFile->GetDirectory("ZPlusJet_low_met", "ZPlusJet_low_met")->mkdir(suffix.c_str(), suffix.c_str());
+    histoFile->mkdir("ZPlusJet_high_met", "ZPlusJet_high_met");
+    histoFile->GetDirectory("ZPlusJet_high_met", "ZPlusJet_high_met")->mkdir(suffix.c_str(), suffix.c_str());
 
     histManager->AddFile(histoFile);
     histManager->SetFileNumber(0);
@@ -246,15 +257,13 @@ bool fakeAnalyzer::Process(Long64_t entry)
     // The control region is largely defined by the tag, but we'll first check
     // for any probes since they will be the same for both regions of interest
 
-    UInt_t nMuProbes    = selector->GetSelectedMuons("QCD2l_CR_probe").size();
-    UInt_t nEleProbes   = selector->GetSelectedElectrons("QCD2l_CR_probe").size();
+    vector<TCMuon>      muProbes    = selector->GetSelectedMuons("QCD2l_CR_probe");
+    vector<TCElectron>  eleProbes   = selector->GetSelectedElectrons("QCD2l_CR_probe");
 
-    if (nMuProbes > 0)
-        probeLep  = (TCPhysObject)selector->GetSelectedMuons("QCD2l_CR_probe")[0];
-    else if (nEleProbes > 0)
-        probeLep  = (TCPhysObject)selector->GetSelectedElectrons("QCD2l_CR_probe")[0];
+    UInt_t nMuProbes    = muProbes.size();
+    UInt_t nEleProbes   = eleProbes.size();
 
-    if (doQCDDileptonCR) {
+    if (doQCDDileptonCR && leptons.size() < 2) {
         // For description of QCD dilepton control region, see section 7.4.1 of
         // ttH note (AN-13-159).
         // First thing is to find the tag lepton and the probe lepton. For this
@@ -264,23 +273,40 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
         UInt_t nTags = selector->GetSelectedMuons("QCD2l_CR_tag").size();
 
-        if (nTags == 1 && (nMuProbes + nEleProbes) == 1) {
+        if (nTags == 1) { 
 
-            tagLep = (TCPhysObject)selector->GetSelectedMuons("QCD2l_CR_tag")[0];
+            tag = (TCPhysObject)selector->GetSelectedMuons("QCD2l_CR_tag")[0];
 
-            if (CheckQCD2lCR(tagJets)) {
+            // Make sure there is only one probe lepton and that it does not overlap with the tag 
+            if (nMuProbes == 1)
+                // Overlap between muon probe and tag ensure by selector
+                probe  = (TCPhysObject)muProbes[0];
+            else if (nEleProbes > 0) {
+                nEleProbes = 0;
+                for (unsigned i = 0; i < eleProbes.size(); ++i) {
+                    TCPhysObject eleProbe = (TCPhysObject)eleProbes[i];
+                    if (tag.DeltaR(eleProbe) > 0.1) {
+                        probe = eleProbe;
+                        ++nEleProbes;
+                    }
+                }
+            }
 
-                // Probe object is found and event is consistent with QCD 2l
-                // control region requirements. Now fill histograms for
-                // parameterizing fake rates by pt and eta.
+            if (nMuProbes + nEleProbes == 1) {
+                if (CheckQCD2lCR(tagJets) && recoMET->Mod() < 50.) {
 
-                isTP    = true;
-                crType  = "QCD2l";
+                    // Probe object is found and event is consistent with QCD 2l
+                    // control region requirements. Now fill histograms for
+                    // parameterizing fake rates by pt and eta.
+
+                    isTP    = true;
+                    crType  = "QCD2l";
+                }
             }
         } 
     } 
 
-    if (doZPlusJetCR) {
+    if (doZPlusJetCR && leptons.size() >= 2) {
         // For description of Z plus jet control region, see section 7.4.1 of
         // ttH note (AN-13-159).  The main difference between this control
         // region and the dilepton control region is the replacement of
@@ -289,7 +315,44 @@ bool fakeAnalyzer::Process(Long64_t entry)
         // remove contamination from real trilepton events originating from
         // WZ->3l+nu events.
 
+        DoZTag(leptons);
+
+        if (zTagged) {
+
+            tag = TCPhysObject(ZP4, 0, "Zed");
+
+            nMuProbes = 0;
+            for (unsigned i = 0; i < muProbes.size(); ++i) {
+                TCPhysObject muProbe = (TCPhysObject)muProbes[i];
+                if (lep1.DeltaR(muProbe) > 0.1 && lep2.DeltaR(muProbe) > 0.1) {
+                    probe = muProbe;
+                    ++nMuProbes;
+                }
+            }
+
+            nEleProbes = 0;
+            for (unsigned i = 0; i < eleProbes.size(); ++i) {
+                TCPhysObject eleProbe = (TCPhysObject)eleProbes[i];
+                if (lep1.DeltaR(eleProbe) > 0.1 && lep2.DeltaR(eleProbe) > 0.1) {
+                    probe = eleProbe;
+                    ++nEleProbes;
+                }
+            }
+
+            if (nEleProbes + nMuProbes == 1) {
+                if (CheckZPlusJetCR()) {
+
+                    // Probe object is found and event is consistent with QCD 2l
+                    // control region requirements. Now fill histograms for
+                    // parameterizing fake rates by pt and eta.
+
+                    isTP    = true;
+                    crType  = "ZPlusJet";
+                }
+            }
+        }
     }
+
 
     // Verify that a tag/probe pair is found is found and require that there is
     // only one tight lepton and no more than one b-jet.  Fill tag and
@@ -306,7 +369,11 @@ bool fakeAnalyzer::Process(Long64_t entry)
     } else
         return kTRUE;
 
-    if (leptons.size() == 1 && bJetsM.size() < 2) {
+    if (
+            (crType == "QCD2l" && leptons.size() <= 1)
+            || (crType == "ZPlusJet" && leptons.size() <= 3)
+            && bJetsM.size() < 2 // kills ttbar contamination
+       ) {
         FillDenominatorHists(crType + "_inclusive");
 
         if (recoMET->Mod() < 20)
@@ -318,10 +385,18 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
     // Match probe lepton to tight leptons
     bool matched = false;
-    if (probeLep.DeltaR(leptons[0]) < 0.01 && probeLep.Type() == passLep.Type()) {
-        passLep = leptons[0];
-        matched = true;
-    }
+    if (crType == "QCD2l" && leptons.size() == 1) {
+        if (probe.DeltaR(leptons[0]) < 0.01 && probe.Type() == leptons[0].Type()) {
+            passLep = leptons[0];
+            matched = true;
+        }
+    } else if (crType == "ZPlusJet" && leptons.size() == 3) {
+
+        if (probe.DeltaR(lep3) < 0.01 && probe.Type() == lep3.Type()) {
+            passLep = lep3;
+            matched = true;
+        }
+    } 
 
     if (matched) {
         FillNumeratorHists(crType + "_inclusive");
@@ -361,28 +436,33 @@ void fakeAnalyzer::Terminate()
 
 void fakeAnalyzer::DoZTag(vObj leptons)
 {
-    // Reset OS variables for each event //
-    zTagged     = false;
-    ossfTagged  = false;
-    dileptonMassOS = -1.;
-
-    //cout << leptons.size() << ":\t";
+    // Reset OS variables for each event of interest//
+    zTagged      = false;
+    dileptonMass = -1.;
 
     float zCandidateMass = 0.;
     for (unsigned i = 0; i < leptons.size(); ++i) {
         for (unsigned j = leptons.size()-1; j > i; --j) {
 
-            // Check for opposite-sign pair //
-            if (leptons[i].Charge() != leptons[j].Charge()) {
-                ossfTagged = true;
+            //Find lepton pair that is consisten with a Z in +- 10 GeV window
+            if (
+                    fabs((leptons[i] + leptons[j]).M() - 91.2) < 10 
+                    && leptons[i].Type() == leptons[j].Type()
+                    && leptons[i].Charge() != leptons[j].Charge()
+               ) {
+                zTagged = true;
+                zCandidateMass = (leptons[i] + leptons[j]).M();
+            }
 
-                // Is the pair mass consistent with the Z mass within a 20 GeV window?
-                if (
-                        fabs((leptons[i] + leptons[j]).M() - 91.2) < 10 
-                        && leptons[i].Type() == leptons[j].Type()
-                   ) {
-                    zTagged = true;
-                    zCandidateMass = (leptons[i] + leptons[j]).M();
+            // Select the pairing that is closest to the mass of the Z.
+            if (zTagged && fabs(dileptonMass - 91.2) > fabs(zCandidateMass - 91.2)) {
+                dileptonMass = zCandidateMass;
+                lep1 = leptons[i];
+                lep2 = leptons[j];
+                ZP4 = (TLorentzVector)(leptons[i] + leptons[j]);
+
+                if (leptons.size() == 3) {
+                    lep3 = leptons[3-i-j];
                 }
             }
         }
@@ -396,41 +476,47 @@ void fakeAnalyzer::FillDenominatorHists(string cat)
     // Sanity check plots
     histManager->Fill1DHist(recoMET->Mod(),
             "h1_Met", "MET;MET;Entries / 4 GeV", 25, 0., 100.);
-    histManager->Fill2DHist(probeLep.Pt(), probeLep.IsoMap("IsoRel"),
+    histManager->Fill2DHist(probe.Pt(), probe.IsoMap("IsoRel"),
             "h2_ProbeLepPtVsIso", "probe lepton p_{T} vs ISO_{rel};p_{T};ISO_{rel}", 50, 0., 150., 25, 0., 1.);
 
     // fake rate measurement plots
-    histManager->Fill1DHist(tagLep.Pt(),
+    histManager->Fill1DHist(tag.Pt(),
             "h1_TagLepPt", "tag lepton p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
-    histManager->Fill1DHist(tagLep.Eta(),
+    histManager->Fill1DHist(tag.Eta(),
             "h1_TagLepEta", "tag lepton #eta;#eta;Entries / bin", 25, -2.5, 2.5);
 
-    string lepType = probeLep.Type();
+    string lepType = probe.Type();
     if (lepType == "muon") {
-        histManager->Fill1DHist(probeLep.Pt(),
+        histManager->Fill1DHist(probe.Pt(),
                 "h1_MuProbeLepPt", "probe muon p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
-        histManager->Fill1DHist(probeLep.Eta(),
+        histManager->Fill1DHist(probe.Eta(),
                 "h1_MuProbeLepEta", "probe muon #eta;#eta;Entries / bin", 25, -2.5, 2.5);
 
-        histManager->Fill1DHistUnevenBins(probeLep.Pt(),
+        histManager->Fill1DHistUnevenBins(probe.Pt(),
                 "h1_MuDenomPt", "probe muon p_{T};p_{T};Entries / 3 GeV", nPtBins, ptBins);
-        histManager->Fill1DHistUnevenBins(probeLep.Eta(),
+        histManager->Fill1DHistUnevenBins(probe.Eta(),
                 "h1_MuDenomEta", "probe muon #eta;#eta;Entries / 3 GeV", nEtaBins, etaBins);
-        histManager->Fill2DHistUnevenBins(probeLep.Pt(), probeLep.Eta(),
+        histManager->Fill2DHistUnevenBins(probe.Pt(), probe.Eta(),
                 "h2_MuDenom", "probe muon p_{T};p_{T};#eta", nPtBins, ptBins, nEtaBins, etaBins);
 
+        histManager->Fill1DHistUnevenBins(recoMET->Mod(),
+                "h1_MuDenomMet", "probe muon Met;Met;Entries", nMetBins, metBins);
+
     }   else if (lepType == "electron") {
-        histManager->Fill1DHist(probeLep.Pt(),
+        histManager->Fill1DHist(probe.Pt(),
                 "h1_EleProbeLepPt", "probe electron p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
-        histManager->Fill1DHist(probeLep.Eta(),
+        histManager->Fill1DHist(probe.Eta(),
                 "h1_EleProbeLepEta", "probe electron #eta;#eta;Entries / bin", 25, -2.5, 2.5);
 
-        histManager->Fill1DHistUnevenBins(probeLep.Pt(),
+        histManager->Fill1DHistUnevenBins(probe.Pt(),
                 "h1_EleDenomPt", "probe electron p_{T};p_{T};Entries / 3 GeV", nPtBins, ptBins);
-        histManager->Fill1DHistUnevenBins(probeLep.Eta(),
+        histManager->Fill1DHistUnevenBins(probe.Eta(),
                 "h1_EleDenomEta", "probe electron #eta;#eta;Entries / 3 GeV", nEtaBins, etaBins);
-        histManager->Fill2DHistUnevenBins(probeLep.Pt(), probeLep.Eta(),
+        histManager->Fill2DHistUnevenBins(probe.Pt(), probe.Eta(),
                 "h2_EleDenom", "probe electron p_{T};p_{T};#eta", nPtBins, ptBins, nEtaBins, etaBins);
+
+        histManager->Fill1DHistUnevenBins(recoMET->Mod(),
+                "h1_EleDenomMet", "probe electron Met;Met;Entries", nMetBins, metBins);
     }
 }
 
@@ -446,13 +532,16 @@ void fakeAnalyzer::FillNumeratorHists(string cat)
                 "h1_MuPassLepEta", "pass muon #eta;#eta;Entries / bin", 25, -2.5, 2.5);
 
         histManager->Fill1DHistUnevenBins(passLep.Pt(),
-                "h1_MuNumerPt", "pass muon p_{T};p_{T};Entries / 3 GeV", nPtBins, ptBins);
+                "h1_MuNumerPt", "pass muon p_{T};p_{T};Entries", nPtBins, ptBins);
         histManager->Fill1DHistUnevenBins(passLep.Eta(),
-                "h1_MuNumerEta", "pass muon #eta;#eta;Entries / 3 GeV", nEtaBins, etaBins);
+                "h1_MuNumerEta", "pass muon #eta;#eta;Entries", nEtaBins, etaBins);
         histManager->Fill2DHistUnevenBins(passLep.Pt(), passLep.Eta(),
                 "h2_MuNumer", "pass muon p_{T};p_{T};#eta", nPtBins, ptBins, nEtaBins, etaBins);
 
-    }   else if (lepType == "electron") {
+        histManager->Fill1DHistUnevenBins(recoMET->Mod(),
+                "h1_MuNumerMet", "pass muon Met;Met;Entries", nMetBins, metBins);
+
+    } else if (lepType == "electron") {
         histManager->Fill1DHist(passLep.Pt(),
                 "h1_ElePassLepPt", "pass electron p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
         histManager->Fill1DHist(passLep.Eta(),
@@ -464,6 +553,9 @@ void fakeAnalyzer::FillNumeratorHists(string cat)
                 "h1_EleNumerEta", "pass electron #eta;#eta;Entries / 3 GeV", nEtaBins, etaBins);
         histManager->Fill2DHistUnevenBins(passLep.Pt(), passLep.Eta(),
                 "h2_EleNumer", "pass electron p_{T};p_{T};#eta", nPtBins, ptBins, nEtaBins, etaBins);
+
+        histManager->Fill1DHistUnevenBins(recoMET->Mod(),
+                "h1_EleNumerMet", "pass electron Met;Met;Entries", nMetBins, metBins);
     }
 }
 
@@ -475,8 +567,8 @@ bool fakeAnalyzer::CheckQCD2lCR(vector<TCJet> tagJets)
     bool jetMatched = false;
     bool jetVeto    = false;
     for (unsigned i = 0; i < tagJets.size(); ++i) {
-        //cout << tagLep.DeltaR(tagJets[i]) << "\t" << probeLep.DeltaR(tagJets[i]) << endl;
-        if (tagLep.DeltaR(tagJets[i]) < 0.3) {
+        //cout << tag.DeltaR(tagJets[i]) << "\t" << probe.DeltaR(tagJets[i]) << endl;
+        if (tag.DeltaR(tagJets[i]) < 0.3) {
             jetMatched = true;
             continue;
         }
@@ -486,8 +578,8 @@ bool fakeAnalyzer::CheckQCD2lCR(vector<TCJet> tagJets)
         return false;
 
     // Check tag/probe pair is back-to-back
-    Float_t tpDeltaPhi  = tagLep.DeltaPhi(probeLep);
-    Float_t tpBalance   = probeLep.Pt()/(tagLep.Pt()*(1 + tagLep.IsoMap("IsoRel"))); 
+    Float_t tpDeltaPhi  = tag.DeltaPhi(probe);
+    Float_t tpBalance   = probe.Pt()/(tag.Pt()*(1 + tag.IsoMap("IsoRel"))); 
 
     histManager->Fill1DHist(fabs(tpDeltaPhi),
             "h1_TagProbeDeltaPhi", "#Delta #phi (tag,probe);#Delta #phi (tag,probe);Entries / bin", 36, 0., TMath::Pi());
@@ -498,8 +590,16 @@ bool fakeAnalyzer::CheckQCD2lCR(vector<TCJet> tagJets)
         return false;
 
     // Correct for prompt lepton contamination for low pt probes
-    if (probeLep.Pt() < 10 && recoMET->Mod() > 15) 
+    if (probe.Pt() < 10 && recoMET->Mod() > 15) 
         return false;
 
     return true;
+}
+
+bool fakeAnalyzer::CheckZPlusJetCR()
+{
+    if (recoMET->Mod() > 30)
+        return false;
+    else
+        return true;
 }

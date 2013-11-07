@@ -123,7 +123,7 @@ class TableMaker(AnalysisTools):
                     error = histDict[column].GetBinError(count)
                     eff   = value/histDict[column].GetBinContent(1)
 
-                if column in ['FCNH', 'HIGGS', 'SIGNAL']:
+                if column in ['FCNH', 'HIGGS', 'SIGNAL'] or column[:4] == 'FCNC':
                     if doErrors:
                         self._outFile.write(' {3} {0:.2f} $\pm$ {1:.2f} ({2:.2f} \%) '.format(value, error, eff*100, delimiter))
                     else:

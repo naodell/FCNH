@@ -101,9 +101,10 @@ styleDict['FCNH']               = (3, r.kPink+3, 2, 22, 'FCNH')
 styleDict['SUM_EFF']            = (1, r.kBlue, 3018, 21, 'BG')
 styleDict['SIG_EFF']            = (1, r.kRed, 3018, 21, 'Signal')
 styleDict['RATIO']              = (0, r.kBlack, 3002, 21, 'Ratio')
-styleDict['Fakes']              = (2, r.kRed, 3001, 1, 'Fakes')
+styleDict['Fakes']              = (2, r.kBlack, 3001, 1, 'Fakes')
 styleDict['QFlips']             = (2, r.kBlue+2, 3001, 1, 'QFlips')
-styleDict['FAKE_BG']            = (2, r.kRed, 3004, 1, 'Prompt')
+styleDict['FAKE_2l']            = (2, r.kRed, 3001, 1, 'Prompt')
+styleDict['FAKE_3l']            = (2, r.kBlue, 3001, 1, 'Prompt')
 
 ### Set scales
 scaleDict = {'2011':{}, '2012':{}}
@@ -158,7 +159,7 @@ scaleDict['2012']['ZG']                 = 159.12
 scaleDict['2012']['ZZJets2L2Nu']        = 0.365
 scaleDict['2012']['ZZJets2L2Q']         = 1.28
 scaleDict['2012']['ZZJets4L']           = 0.0921
-scaleDict['2012']['WZJets3LNu']         = 1.086*1.309 #<-- WZ rescaled based on 3 lepton control region
+scaleDict['2012']['WZJets3LNu']         = 1.086#*1.309 #<-- WZ rescaled based on 3 lepton control region
 scaleDict['2012']['WZJets2L2Q']         = 5.09
 scaleDict['2012']['WWJets2L2Nu']        = 5.995
 
@@ -230,6 +231,7 @@ scaleDict['2012']['QFlips']             = 1.
 
 combineDict = {}
 combineDict['FCNH']             = ['FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau']
+#combineDict['FCNH']             = ['FCNC_M125_tbar', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau']
 combineDict['DATA']             = ['DATA_MUON', 'DATA_ELECTRON', 'DATA_MUEG']
 combineDict['DATA_FAKES']       = ['DATA_MUON', 'DATA_ELECTRON', 'DATA_MUEG']
 combineDict['VJets']            = ['ZJets_M-50', 'ZJets_M-10To50', 'WJets']
@@ -245,13 +247,16 @@ combineDict['Triboson']         = ['WWW', 'WWZ', 'WZZ', 'ZZZ', 'WWG']
 combineDict['QCD']              = ['QCD_20_MU', 'QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_EM', 'QCD_170-250_EM', 'QCD_250-350_EM', 'QCD_350_EM']
 combineDict['QCD_EM']           = ['QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_EM', 'QCD_170-250_EM', 'QCD_250-350_EM', 'QCD_350_EM']
 combineDict['higgs']            = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125']
-combineDict['FAKE_BG']          = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbar', 'tbarW', 'tW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'ZZJets2L2Q']
+combineDict['FAKE_2l']          = ['WbbToLNu', 'ZJets_M-50', 'ZJets_M-10To50', 'ttbar', 'tbarW', 'tW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'ZZJets2L2Q', 'WZJets3LNu']
+combineDict['FAKE_3l']          = ['WZJets3LNu']
 
 categoryDict = {'inclusive':'inclusive',
                 'ss_inclusive':'ss inclusive', 'ss_mumu':'#mu^{#pm}#mu^{#pm}', 'ss_ee':'e^{#pm}e^{#pm}', 'ss_emu':'e^{#pm}#mu^{#pm}',
                 'os_inclusive':'os inclusive', 'os_mumu':'#mu^{#pm}#mu^{#mp}', 'os_ee':'e^{#pm}e^{#mp}', 'os_emu':'e^{#pm}mu^{#mp}', 
                 '3l_inclusive':'3l inclusive', '3l_OSSF':'(l^{#pm}l^{#mp})l', '3l_SSSF':'(l^{#pm}l^{#pm})l',
                 '3l_eee':'eee', '3l_eemu':'ee#mu', '3l_emumu':'e#mu#mu','3l_mumumu':'#mu#mu#mu',
+                'QCD2l_inclusive':'QCD #ell#ell', 'QCD2l_low_met':'QCD #ell#ell (MET < 20)', 'QCD2l_high_met':'QCD #ell#ell (45 < MET < 80)',
+                'ZPlusJet_inclusive':'Z+jet', 'ZPlusJet_low_met':'Z+jet (MET < 20)', 'ZPlusJet_high_met':'Z+jet (45 < MET < 80)',
                 'low_met':'MET < 20', 'high_met':'45 < MET < 80'
                 }
 
