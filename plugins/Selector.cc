@@ -250,7 +250,7 @@ void Selector::MuonSelector(TClonesArray* muons)
         // pt cuts, identification, and isolation
         if (thisMuon->Pt() > _muPtCuts[0]) {
 
-            // QCD dilepton control retion tag and probe
+            // QCD dilepton control region tag and probe
             if (
                     sqrt(pow(thisMuon->Dz(_selVertices[0]), 2) + pow(thisMuon->Dxy(_selVertices[0]), 2)) > 1. // Replacement for SIP3D inverted cut -- needs to be tuned
                     && muISO > 0.2

@@ -263,7 +263,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
     UInt_t nMuProbes    = muProbes.size();
     UInt_t nEleProbes   = eleProbes.size();
 
-    if (doQCDDileptonCR) {
+    if (doQCDDileptonCR && leptons.size() < 2) {
         // For description of QCD dilepton control region, see section 7.4.1 of
         // ttH note (AN-13-159).
         // First thing is to find the tag lepton and the probe lepton. For this
@@ -293,7 +293,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
             }
 
             if (nMuProbes + nEleProbes == 1) {
-                if (CheckQCD2lCR(tagJets)) {
+                if (CheckQCD2lCR(tagJets) && recoMET->Mod() < 50.) {
 
                     // Probe object is found and event is consistent with QCD 2l
                     // control region requirements. Now fill histograms for
@@ -306,7 +306,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
         } 
     } 
 
-    if (doZPlusJetCR) {
+    if (doZPlusJetCR && leptons.size() >= 2) {
         // For description of Z plus jet control region, see section 7.4.1 of
         // ttH note (AN-13-159).  The main difference between this control
         // region and the dilepton control region is the replacement of
@@ -315,43 +315,41 @@ bool fakeAnalyzer::Process(Long64_t entry)
         // remove contamination from real trilepton events originating from
         // WZ->3l+nu events.
 
-        if (leptons.size() >= 2) {
-            DoZTag(leptons);
+        DoZTag(leptons);
 
-            if (zTagged) {
+        if (zTagged) {
 
-                tag = TCPhysObject(ZP4, 0, "Zed");
+            tag = TCPhysObject(ZP4, 0, "Zed");
 
-                nMuProbes = 0;
-                for (unsigned i = 0; i < muProbes.size(); ++i) {
-                    TCPhysObject muProbe = (TCPhysObject)muProbes[i];
-                    if (lep1P4.DeltaR(muProbe) > 0.1 && lep2P4.DeltaR(muProbe) > 0.1) {
-                        probe = muProbe;
-                        ++nMuProbes;
-                    }
+            nMuProbes = 0;
+            for (unsigned i = 0; i < muProbes.size(); ++i) {
+                TCPhysObject muProbe = (TCPhysObject)muProbes[i];
+                if (lep1.DeltaR(muProbe) > 0.1 && lep2.DeltaR(muProbe) > 0.1) {
+                    probe = muProbe;
+                    ++nMuProbes;
                 }
+            }
 
-                nEleProbes = 0;
-                for (unsigned i = 0; i < eleProbes.size(); ++i) {
-                    TCPhysObject eleProbe = (TCPhysObject)eleProbes[i];
-                    if (lep1P4.DeltaR(eleProbe) > 0.1 && lep2P4.DeltaR(eleProbe) > 0.1) {
-                        probe = eleProbe;
-                        ++nEleProbes;
-                    }
+            nEleProbes = 0;
+            for (unsigned i = 0; i < eleProbes.size(); ++i) {
+                TCPhysObject eleProbe = (TCPhysObject)eleProbes[i];
+                if (lep1.DeltaR(eleProbe) > 0.1 && lep2.DeltaR(eleProbe) > 0.1) {
+                    probe = eleProbe;
+                    ++nEleProbes;
                 }
+            }
 
-                if (nEleProbes + nMuProbes == 1) {
-                    if (CheckZPlusJetCR()) {
+            if (nEleProbes + nMuProbes == 1) {
+                if (CheckZPlusJetCR()) {
 
-                        // Probe object is found and event is consistent with QCD 2l
-                        // control region requirements. Now fill histograms for
-                        // parameterizing fake rates by pt and eta.
+                    // Probe object is found and event is consistent with QCD 2l
+                    // control region requirements. Now fill histograms for
+                    // parameterizing fake rates by pt and eta.
 
-                        isTP    = true;
-                        crType  = "ZPlusJet";
-                    }
+                    isTP    = true;
+                    crType  = "ZPlusJet";
                 }
-            } 
+            }
         }
     }
 
@@ -387,13 +385,18 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
     // Match probe lepton to tight leptons
     bool matched = false;
-    for (unsigned i = 0; i < leptons.size(); ++i) {
-        if (probe.DeltaR(leptons[i]) < 0.01 && probe.Type() == leptons[i].Type()) {
-            passLep = leptons[i];
+    if (crType == "QCD2l" && leptons.size() == 1) {
+        if (probe.DeltaR(leptons[0]) < 0.01 && probe.Type() == leptons[0].Type()) {
+            passLep = leptons[0];
             matched = true;
-            break;
         }
-    }
+    } else if (crType == "ZPlusJet" && leptons.size() == 3) {
+
+        if (probe.DeltaR(lep3) < 0.01 && probe.Type() == lep3.Type()) {
+            passLep = lep3;
+            matched = true;
+        }
+    } 
 
     if (matched) {
         FillNumeratorHists(crType + "_inclusive");
@@ -454,12 +457,12 @@ void fakeAnalyzer::DoZTag(vObj leptons)
             // Select the pairing that is closest to the mass of the Z.
             if (zTagged && fabs(dileptonMass - 91.2) > fabs(zCandidateMass - 91.2)) {
                 dileptonMass = zCandidateMass;
-                lep1P4 = leptons[i];
-                lep2P4 = leptons[j];
+                lep1 = leptons[i];
+                lep2 = leptons[j];
                 ZP4 = (TLorentzVector)(leptons[i] + leptons[j]);
 
                 if (leptons.size() == 3) {
-                    lep3P4 = leptons[3-i-j];
+                    lep3 = leptons[3-i-j];
                 }
             }
         }

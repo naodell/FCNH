@@ -434,6 +434,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
             return kTRUE;
 
     } else if (leptons.size() == 2) {
+
         // Electron charge misid control region needs a lower lead lepton pt cut //
         if (
                 leptons[0].Pt() > 10. && leptons[1].Pt() > 10.  // pt cut
@@ -630,7 +631,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
         // ppf, pff, pf and ff events.  
         if (
                 (fakeables.size() == 1 && ((leptons.size() == 2 && leptons[0].Charge() != leptons[1].Charge()) || leptons.size() == 1))
-                || fakeables.size() == 2 
+                || (fakeables.size() == 2 && leptons.size() == 0)
                 ) {
 
 
@@ -686,21 +687,39 @@ bool fcncAnalyzer::Process(Long64_t entry)
                 SetEventCategory(leptonsPlusFakes);
                 SetEventVariables(leptonsPlusFakes, fJets, fBJets, *recoMET); 
 
-                // Enforce same-sign dilepton/trilepton selection with fake leptons
-                if (
-                        (leptonsPlusFakes.size() == 2 && leptonsPlusFakes[0].Charge() == leptonsPlusFakes[1].Charge())
-                        || leptonsPlusFakes.size() == 3
-                   ) {
-
-                    //cout << fakeWeight << "\t" << leptonsPlusFakes.size() << endl;
-
-                    if (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON" || suffix == "TEST") 
-                        AnalysisSelection(leptonsPlusFakes, fJets, fBJets, selectedVtx, "Fakes");
-                    else
-                        AnalysisSelection(leptonsPlusFakes, fJets, fBJets, selectedVtx, "Fakes_"+suffix);
-
-                    evtWeight /= fakeWeight; // Remove fake weight
+                if (fakeables.size() == 1) {
+                    histManager->SetFileNumber(0);
+                    histManager->SetDirectory("inclusive/" + suffix);
+                    histManager->Fill1DHist(recoMET->DeltaPhi(fakeables[0].P2()),
+                            "h1_MetFakeableDeltaPhi", "#Delta#phi(fakeable, MET);#Delta#phi(fakeable, MET);Entries / bin", 36, 0., TMath::Pi());
                 }
+
+                // Enforce same-sign dilepton/trilepton selection with fake leptons
+                if (leptonsPlusFakes.size() == 2) { 
+                    if (
+                            leptonsPlusFakes[0].Charge() == leptonsPlusFakes[1].Charge()
+                            && leptonsPlusFakes[0].Pt() > leptonPtCut[0] && leptonsPlusFakes[1].Pt() > leptonPtCut[1]
+                       ) {
+                        if (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON" || suffix == "TEST") 
+                            AnalysisSelection(leptonsPlusFakes, fJets, fBJets, selectedVtx, "Fakes");
+                        else
+                            AnalysisSelection(leptonsPlusFakes, fJets, fBJets, selectedVtx, "Fakes_"+suffix);
+                    }
+                } else if ( leptonsPlusFakes.size() == 3) {
+                    if (
+                            leptonsPlusFakes[0].Pt() > leptonPtCut[0] 
+                            && leptonsPlusFakes[1].Pt() > leptonPtCut[1]
+                            && leptonsPlusFakes[2].Pt() > leptonPtCut[1]
+                            && fabs(leptonsPlusFakes[0].Charge() + leptonsPlusFakes[1].Charge() + leptonsPlusFakes[2].Charge()) == 1
+                       ) {
+                        if (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON" || suffix == "TEST") 
+                            AnalysisSelection(leptonsPlusFakes, fJets, fBJets, selectedVtx, "Fakes");
+                        else
+                            AnalysisSelection(leptonsPlusFakes, fJets, fBJets, selectedVtx, "Fakes_"+suffix);
+                    }
+                }
+                //cout << fakeWeight << "\t" << leptonsPlusFakes.size() << endl;
+                evtWeight /= fakeWeight; // Remove fake weight
             }
         }
     }
@@ -1209,7 +1228,7 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj electrons)
     histManager->SetFileNumber(0);
     histManager->SetDirectory("inclusive/" + subdir);
 
-    float ptBins[] = {0., 20., 50., 100.};
+    float ptBins[] = {0., 20., 30., 45., 70., 100., 150.};
     float etaBins[] = {0., 1.5, 2.5};
 
     unsigned iEta1, iPt1, iEta2, iPt2;
@@ -1228,17 +1247,29 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj electrons)
     // Set iPt bins for leading and trailing electrons
     if (electrons[0].Pt() < 20.)
         iPt1 = 1;
-    else if (electrons[0].Pt() > 20 && electrons[0].Pt() < 50)
+    else if (electrons[0].Pt() > 20 && electrons[0].Pt() < 30)
         iPt1 = 2;
-    else if (electrons[0].Pt() > 50)
+    else if (electrons[0].Pt() > 30 && electrons[0].Pt() < 45)
         iPt1 = 3;
+    else if (electrons[0].Pt() > 45 && electrons[0].Pt() < 70)
+        iPt1 = 4;
+    else if (electrons[0].Pt() > 70 && electrons[0].Pt() < 100)
+        iPt1 = 5;
+    else if (electrons[0].Pt() > 100)
+        iPt1 = 6;
 
     if (electrons[1].Pt() < 20.)
-        iPt2 = 1;
-    else if (electrons[1].Pt() > 20 && electrons[1].Pt() < 50)
-        iPt2 = 2;
-    else if (electrons[1].Pt() > 50) 
-        iPt2 = 3;
+        iPt1 = 1;
+    else if (electrons[1].Pt() > 20 && electrons[1].Pt() < 30)
+        iPt1 = 2;
+    else if (electrons[1].Pt() > 30 && electrons[1].Pt() < 45)
+        iPt1 = 3;
+    else if (electrons[1].Pt() > 45 && electrons[1].Pt() < 70)
+        iPt1 = 4;
+    else if (electrons[1].Pt() > 70 && electrons[1].Pt() < 100)
+        iPt1 = 5;
+    else if (electrons[1].Pt() > 100)
+        iPt1 = 6;
 
     //cout << "===========================" << endl;
     //cout << iPt1 << ", " << iEta1 << "\t\t" << electrons[0].Pt() << ", " << electrons[0].Eta() << "\t\t" << 3*iEta1 + iPt1 << endl;
@@ -1247,22 +1278,22 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj electrons)
 
     if (electrons[0].Charge() == electrons[1].Charge()) {
         histManager->Fill2DHistUnevenBins(electrons[0].Pt(), electrons[0].Eta(),
-                "h2_LeadElecQMisIDNumer", "lead e charge misID (numerator);p_{T};#eta", 3, ptBins, 2, etaBins); 
+                "h2_LeadElecQMisIDNumer", "lead e charge misID (numerator);p_{T};#eta", 6, ptBins, 2, etaBins); 
         histManager->Fill2DHistUnevenBins(electrons[1].Pt(), electrons[1].Eta(),
-                "h2_TrailingElecQMisIDNumer", "trailing e charge misID (numerator);p_{T};#eta", 3, ptBins, 2, etaBins); 
+                "h2_TrailingElecQMisIDNumer", "trailing e charge misID (numerator);p_{T};#eta", 6, ptBins, 2, etaBins); 
 
         histManager->Fill2DHist(3*iEta1 + iPt1, 3*iEta2 + iPt2,
-                "h2_DileptonQMisIDNumer", "e charge misID (numerator);e_{leading};e_{trailing}", 6, 0.5, 6.5, 6, 0.5, 6.5);
+                "h2_DileptonQMisIDNumer", "e charge misID (numerator);e_{leading};e_{trailing}", 12, 0.5, 12.5, 12, 0.5, 12.5);
     }
 
     if (electrons[0].Charge() != electrons[1].Charge()) {
         histManager->Fill2DHistUnevenBins(electrons[0].Pt(), electrons[0].Eta(),
-                "h2_LeadElecQMisIDDenom", "lead e charge misID (denominator);p_{T};#eta", 3, ptBins, 2, etaBins); 
+                "h2_LeadElecQMisIDDenom", "lead e charge misID (denominator);p_{T};#eta", 6, ptBins, 2, etaBins); 
         histManager->Fill2DHistUnevenBins(electrons[1].Pt(), electrons[1].Eta(),
-                "h2_TrailingElecQMisIDDenom", "trailing e charge misID (denominator);p_{T};#eta", 3, ptBins, 2, etaBins); 
+                "h2_TrailingElecQMisIDDenom", "trailing e charge misID (denominator);p_{T};#eta", 6, ptBins, 2, etaBins); 
 
-        histManager->Fill2DHist(3*iEta1 + iPt1, 3*iEta2 + iPt2,
-                "h2_DileptonQMisIDDenom", "e charge misID (numerator);e_{leading};e_{trailing}", 6, 0.5, 6.5, 6, 0.5, 6.5);
+        histManager->Fill2DHist(5*iEta1 + iPt1, 3*iEta2 + iPt2,
+                "h2_DileptonQMisIDDenom", "e charge misID (numerator);e_{leading};e_{trailing}", 12, 0.5, 12.5, 12, 0.5, 12.5);
     }
 }
 

@@ -103,8 +103,8 @@ styleDict['SIG_EFF']            = (1, r.kRed, 3018, 21, 'Signal')
 styleDict['RATIO']              = (0, r.kBlack, 3002, 21, 'Ratio')
 styleDict['Fakes']              = (2, r.kBlack, 3001, 1, 'Fakes')
 styleDict['QFlips']             = (2, r.kBlue+2, 3001, 1, 'QFlips')
-styleDict['FAKE_2l']            = (2, r.kRed, 3001, 1, 'Prompt (2l)')
-styleDict['FAKE_3l']            = (2, r.kBlue, 3001, 1, 'Prompt (3l)')
+styleDict['FAKE_2l']            = (2, r.kRed, 3001, 1, 'Prompt')
+styleDict['FAKE_3l']            = (2, r.kBlue, 3001, 1, 'Prompt')
 
 ### Set scales
 scaleDict = {'2011':{}, '2012':{}}
@@ -247,7 +247,7 @@ combineDict['Triboson']         = ['WWW', 'WWZ', 'WZZ', 'ZZZ', 'WWG']
 combineDict['QCD']              = ['QCD_20_MU', 'QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_EM', 'QCD_170-250_EM', 'QCD_250-350_EM', 'QCD_350_EM']
 combineDict['QCD_EM']           = ['QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_EM', 'QCD_170-250_EM', 'QCD_250-350_EM', 'QCD_350_EM']
 combineDict['higgs']            = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125']
-combineDict['FAKE_2l']          = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbar', 'tbarW', 'tW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'ZZJets2L2Q', 'WZJets3LNu']
+combineDict['FAKE_2l']          = ['WbbToLNu', 'ZJets_M-50', 'ZJets_M-10To50', 'ttbar', 'tbarW', 'tW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'ZZJets2L2Q', 'WZJets3LNu']
 combineDict['FAKE_3l']          = ['WZJets3LNu']
 
 categoryDict = {'inclusive':'inclusive',

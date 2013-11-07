@@ -38,7 +38,7 @@ doRatio     = True
 do1D        = True
 do2D        = True
 
-doYields    = False
+doYields    = True
 
 doOS        = True
 doSS        = True
@@ -77,9 +77,9 @@ samples['3l'].append('Triboson')
 samples['3l'].append('ttV')
 samples['3l'].append('ZZ4l')
 samples['3l'].append('WZJets3LNu')
-samples['3l'].append('top')
-samples['3l'].append('ZJets')
-#samples['3l'].append('Fakes')
+#samples['3l'].append('top')
+#samples['3l'].append('ZJets')
+samples['3l'].append('Fakes')
 
 #samples['3l'].append('Diboson')
 #samples['3l'].append('ZGstar')
@@ -90,11 +90,11 @@ samples['ss'].append('higgs')
 samples['ss'].append('ttV')
 samples['ss'].append('ZZ4l')
 samples['ss'].append('WZJets3LNu')
-samples['ss'].append('Diboson')
-samples['ss'].append('top')
-samples['ss'].append('ZJets')
-#samples['ss'].append('Fakes')
-#samples['ss'].append('QFlips')
+#samples['ss'].append('Diboson')
+#samples['ss'].append('top')
+#samples['ss'].append('ZJets')
+samples['ss'].append('Fakes')
+samples['ss'].append('QFlips')
 #samples['ss'].append('QCD')
 
 #samples['ss'].append('QCD_EM')
@@ -368,7 +368,8 @@ if doYields:
 
     if do3l:
         #yieldTable._columnList  = samples['3l'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
-        yieldTable._columnList  = ['BG', 'DATA', 'FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau','FCNH']# 'Significance'] 
+        #yieldTable._columnList  = ['BG', 'DATA', 'FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau','FCNH']# 'Significance'] 
+        yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
         yieldTable.add_datasets(samples['3l'], Clear = True)
         yieldTable.add_datasets('FCNH')

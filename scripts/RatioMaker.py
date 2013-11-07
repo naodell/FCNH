@@ -91,8 +91,8 @@ class RatioMaker(AnalysisTools):
             if bgSample is not '':
                 h2_bgNumer  = self.combine_samples(value[0], bgSample, histType = '2D') 
                 h2_bgDenom  = self.combine_samples(value[1], bgSample, histType = '2D') 
-                h2_Numer.Add(h2_bgNumer, -1)
-                h2_Denom.Add(h2_bgDenom, -1)
+                h2_Numer.Add(h2_bgNumer, -1.)
+                h2_Denom.Add(h2_bgDenom, -1.)
 
             if doProjections:
                 g_RatioList = make_graph_ratio_2D(key, h2_Numer, h2_Denom)
@@ -154,10 +154,12 @@ if __name__ == '__main__':
         ratioMaker.get_scale_factors(['FAKE_2l', 'FAKE_3l'], corrected = False)
 
         fakeDict1D = {
+            #'ElectronFakeMet':('EleNumerMet', 'EleDenomMet'),
             'ElectronFakePt':('EleNumerPt', 'EleDenomPt'),
             'ElectronFakeEta':('EleNumerEta', 'EleDenomEta'),
             #'MuonFakePt_Even':('MuPassLepPt', 'MuProbeLepPt'),
             #'MuonFakeEta_Even':('MuPassLepEta', 'MuProbeLepEta'),
+            #'MuonFakeMet':('MuNumerMet', 'MuDenomMet'),
             'MuonFakePt':('MuNumerPt', 'MuDenomPt'),
             'MuonFakeEta':('MuNumerEta', 'MuDenomEta')
         }

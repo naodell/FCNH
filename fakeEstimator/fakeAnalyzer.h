@@ -77,8 +77,8 @@ class fakeAnalyzer : public TSelector {
         bool    ossfTagged;
         bool    isTP;
 
-        TLorentzVector ZP4, lep1P4, lep2P4, lep3P4;
-        TCPhysObject   tag, probe, passLep;
+        TLorentzVector ZP4;
+        TCPhysObject   tag, probe, passLep, lep1, lep2, lep3;
 
         Float_t dileptonMass;
 
