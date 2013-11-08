@@ -150,10 +150,12 @@ if doPlots:
     plotter._variableDict['Lepton']     = ['LeptonCharge', 'LeptonFlavor', 
                                            'Lepton1Pt', 'Lepton2Pt','Lepton3Pt',
                                            'Lepton1Eta', 'Lepton2Eta', 'Lepton3Eta',
+                                           'ElectronPt', 'ElectronEta',
+                                           'MuonPt', 'MuonEta',
                                            'Lepton1 dxy', 'Lepton1 dz',
                                            'Lepton2 dxy', 'Lepton2 dz',
                                            'Lepton3 dxy', 'Lepton3 dz',
-                                           'TrileptonMass', 'LeptonMult']
+                                           'LeptonMult']
                                            #'Lepton1Phi', 'Lepton2Phi', 'Lepton3Phi']
 
     plotter._variableDict['Dilepton']   = ['DileptonMass21', 'DileptonTransMass21', 'DileptonQt21',
@@ -165,10 +167,9 @@ if doPlots:
 
     plotter._variableDict['DileptonOS'] = ['DileptonOSMass', 'DileptonOSTransMass', 'DileptonOSBalance',
                                            'DileptonOSQt', 'DileptonOSDeltaPt', 'DileptonOSDeltaR', 
-                                           'DileptonOSDeltaEta', 'DileptonOSDeltaPhi',
-                                           'DileptonLepDeltaR', 'DileptonLepDeltaPhi', 'DileptonLepDeltaEta'] 
+                                           'DileptonOSDeltaEta', 'DileptonOSDeltaPhi'] 
 
-    plotter._variableDict['Trilepton']  = ['DileptonLepDeltaR', 'DileptonLepDeltaPhi', 'DileptonLepDeltaEta', 'Lep3MetMT']
+    plotter._variableDict['Trilepton']  = ['DileptonLepDeltaR', 'DileptonLepDeltaPhi', 'DileptonLepDeltaEta', 'Lep3MetMT', 'TrileptonMass']
 
     plotter._variableDict['Lep+Jet']    = ['Lepton1BJetDeltaPhi', 'Lepton1BJetDeltaEta', 'Lepton1BJetDeltaR', 'Lepton1BJetDeltaPt',
                                            'Lepton2BJetDeltaPhi', 'Lepton2BJetDeltaEta', 'Lepton2BJetDeltaR', 'Lepton2BJetDeltaPt',
@@ -184,7 +185,7 @@ if doPlots:
                                            'HT', 'HTs', 'EventBalance', 'Centrality',
                                            'JetMultCharge', 'JetMult', 'BJetMult']
 
-    plotter._variableDict['MET']        = ['Met', 'MHT', 'METLD', 'MET-MHT', 'MetPhi', 'MetSumEt',
+    plotter._variableDict['MET']        = ['Met', 'MHT', 'METLD', 'MHT-MET', 'MetPhi', 'MetSumEt',
                                            'MetLepton1DeltaPhi', 'MetLepton2DeltaPhi'
                                            'MetLepDeltaPhiMin', 'nearLepIndex', 'ProjectedMet', 'MetLepton3DeltaPhi'] 
 
