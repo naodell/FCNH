@@ -97,18 +97,19 @@ class RatioMaker(AnalysisTools):
             h2_Numer    = self.combine_samples(value[0], ratioSample, histType = '2D') 
             h2_Denom    = self.combine_samples(value[1], ratioSample, histType = '2D') 
 
-            if removePass:
-                h2_Denom.Add(h2_Numer, -1)
+            #print h2_Numer.Integral(),h2_Denom.Integral(), 
+
+            print h2_Denom.Integral() 
 
             if bgSample is not '':
                 h2_bgNumer  = self.combine_samples(value[0], bgSample, histType = '2D') 
                 h2_bgDenom  = self.combine_samples(value[1], bgSample, histType = '2D') 
 
-                if removePass:
-                    h2_bgDenom.Add(h2_bgNumer, -1)
-
                 h2_Numer.Add(h2_bgNumer, -1.)
                 h2_Denom.Add(h2_bgDenom, -1.)
+
+            if removePass:
+                h2_Denom.Add(h2_Numer, -1)
 
             if doProjections:
                 g_RatioList = make_graph_ratio_2D(key, h2_Numer, h2_Denom)
@@ -124,7 +125,6 @@ class RatioMaker(AnalysisTools):
                 h2_Eff.Divide(h2_Numer, h2_Denom, 1., 1., 'B')
 
                 self._hists.append(h2_Eff)
-
 
 
 
