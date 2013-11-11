@@ -480,12 +480,12 @@ float WeightUtils::GetQFlipWeight()
     if (_leptons[0].Type() == "electron" && _leptons[1].Type() == "muon") {
         iEta2   = iEta1;
         iPt2    = iPt1;
+        weight = h2_DielectronMisQ->GetBinContent(3*iEta1 + iPt1, 3*iEta2 + iPt2);
     } else if (_leptons[1].Type() == "electron" && _leptons[0].Type() == "muon") {
         iEta1   = iEta2;
         iPt1    = iPt2;
+        weight = h2_DielectronMisQ->GetBinContent(3*iEta1 + iPt1, 3*iEta2 + iPt2)/2;
     }
-
-    weight = h2_DielectronMisQ->GetBinContent(3*iEta1 + iPt1, 3*iEta2 + iPt2)/2;
 
 
     //cout << weight << endl;

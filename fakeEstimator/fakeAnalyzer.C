@@ -372,7 +372,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
     if (
             (crType == "QCD2l" && leptons.size() <= 1)
             || (crType == "ZPlusJet" && leptons.size() <= 3)
-            && bJetsM.size() < 2 // kills ttbar contamination
+            //&& bJetsM.size() < 2 // kills ttbar contamination
        ) {
         FillDenominatorHists(crType + "_inclusive");
 
