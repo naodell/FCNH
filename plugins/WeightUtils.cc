@@ -443,7 +443,7 @@ float WeightUtils::GetFakeWeight(vector<TCPhysObject> fakeables)
 
     //cout << fakeRate/(1-fakeRate) << endl;
 
-    return fakeRate / (1 - fakeRate);
+    return fakeRate; // / (1 - fakeRate);
 }
 
 float WeightUtils::GetQFlipWeight()
@@ -480,12 +480,13 @@ float WeightUtils::GetQFlipWeight()
     if (_leptons[0].Type() == "electron" && _leptons[1].Type() == "muon") {
         iEta2   = iEta1;
         iPt2    = iPt1;
-        weight = h2_DielectronMisQ->GetBinContent(3*iEta1 + iPt1, 3*iEta2 + iPt2);
+        weight = h2_DielectronMisQ->GetBinContent(3*iEta1 + iPt1, 3*iEta2 + iPt2)/2;
     } else if (_leptons[1].Type() == "electron" && _leptons[0].Type() == "muon") {
         iEta1   = iEta2;
         iPt1    = iPt2;
         weight = h2_DielectronMisQ->GetBinContent(3*iEta1 + iPt1, 3*iEta2 + iPt2)/2;
-    }
+    } else
+        weight = h2_DielectronMisQ->GetBinContent(3*iEta1 + iPt1, 3*iEta2 + iPt2);
 
 
     //cout << weight << endl;

@@ -47,6 +47,7 @@
 #include "../interface/TCTriggerObject.h"
 
 // plugins
+#include "../plugins/WeightUtils.h"
 #include "../plugins/Selector.h"
 #include "../plugins/TriggerSelector.h"
 #include "../plugins/HistManager.h"
@@ -63,8 +64,9 @@ class fakeAnalyzer : public TSelector {
         TTree* thisTree;
 
         // Utilities and selectors
-        HistManager *histManager;
-        Selector    *selector;
+        WeightUtils     *weighter;
+        HistManager     *histManager;
+        Selector        *selector;
         TriggerSelector *triggerSelector;
 
         // Useful global variables
@@ -78,7 +80,7 @@ class fakeAnalyzer : public TSelector {
         bool    isTP;
 
         TLorentzVector ZP4;
-        TCPhysObject   tag, probe, passLep, lep1, lep2, lep3;
+        TCPhysObject   tag, lep1, lep2, lep3;
 
         Float_t dileptonMass;
 
@@ -169,10 +171,11 @@ class fakeAnalyzer : public TSelector {
         //virtual void    SlaveTerminate() {};
         virtual void    Terminate();
 
-        virtual void    FillDenominatorHists(string);
-        virtual void    FillNumeratorHists(string);
+        virtual void    FillDenominatorHists(string, TCPhysObject);
+        virtual void    FillNumeratorHists(string, TCPhysObject);
+        virtual void    FillClosureHists(string, TCPhysObject);
         virtual void    DoZTag(vObj leptons);
-        virtual bool    CheckQCD2lCR(vector<TCJet>);
+        virtual bool    CheckQCD2lCR(vector<TCJet>, TCPhysObject);
         virtual bool    CheckZPlusJetCR();
 
         virtual string  str(int i) {return static_cast<ostringstream*>( &(ostringstream() << i) )->str();}
