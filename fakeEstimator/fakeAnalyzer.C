@@ -51,6 +51,7 @@ void fakeAnalyzer::Begin(TTree* tree)
 
     // Initialize utilities and selectors here //
     selector        = new Selector(muPtCut, elePtCut, jetPtCut, phoPtCut);
+    weighter        = new WeightUtils(suffix, period, selection, isRealData);
     triggerSelector = new TriggerSelector("mc", "2012", *triggerNames, true);
 
     // Add single lepton triggers for fake rates //
@@ -109,7 +110,9 @@ bool fakeAnalyzer::Process(Long64_t entry)
     histManager->SetDirectory("inclusive/" + suffix);
 
     if (eventCount[1] == 0) {
+        weighter->SetDataBit(isRealData);
         triggerSelector->SetDataBit(isRealData);
+        selector->SetDataBit(isRealData);
     }
 
     ++eventCount[1];
@@ -260,6 +263,9 @@ bool fakeAnalyzer::Process(Long64_t entry)
     vector<TCMuon>      muProbes    = selector->GetSelectedMuons("QCD2l_CR_probe");
     vector<TCElectron>  eleProbes   = selector->GetSelectedElectrons("QCD2l_CR_probe");
 
+    TCPhysObject   muProbe, muPass; 
+    TCPhysObject   eleProbe, elePass; 
+
     UInt_t nMuProbes    = muProbes.size();
     UInt_t nEleProbes   = eleProbes.size();
 
@@ -278,30 +284,35 @@ bool fakeAnalyzer::Process(Long64_t entry)
             tag = (TCPhysObject)selector->GetSelectedMuons("QCD2l_CR_tag")[0];
 
             // Make sure there is only one probe lepton and that it does not overlap with the tag 
-            if (nMuProbes == 1)
+            // Consider probes that are both muons and electrons
+            bool isQCD2l = false;
+            if (nMuProbes == 1) {
                 // Overlap between muon probe and tag ensure by selector
-                probe  = (TCPhysObject)muProbes[0];
-            else if (nEleProbes > 0) {
+                muProbe = (TCPhysObject)muProbes[0];
+                isQCD2l = CheckQCD2lCR(tagJets, muProbe); 
+            }
+
+            if (nEleProbes >= 1) {
                 nEleProbes = 0;
                 for (unsigned i = 0; i < eleProbes.size(); ++i) {
-                    TCPhysObject eleProbe = (TCPhysObject)eleProbes[i];
-                    if (tag.DeltaR(eleProbe) > 0.1) {
-                        probe = eleProbe;
+                    TCPhysObject testProbe = (TCPhysObject)eleProbes[i];
+                    if (tag.DeltaR(testProbe) > 0.3) {
+                        eleProbe = testProbe;
                         ++nEleProbes;
                     }
                 }
+                if (nEleProbes == 1) isQCD2l = CheckQCD2lCR(tagJets, eleProbe); 
             }
 
-            if (nMuProbes + nEleProbes == 1) {
-                if (CheckQCD2lCR(tagJets) && recoMET->Mod() < 50.) {
+            if (isQCD2l && recoMET->Mod() < 50.) {
 
-                    // Probe object is found and event is consistent with QCD 2l
-                    // control region requirements. Now fill histograms for
-                    // parameterizing fake rates by pt and eta.
+                // Probe object is found and event is consistent with QCD 2l
+                // control region requirements. Now fill histograms for
+                // parameterizing fake rates by pt and eta.
 
-                    isTP    = true;
-                    crType  = "QCD2l";
-                }
+                isTP    = true;
+                crType  = "QCD2l";
+
             }
         } 
     } 
@@ -323,23 +334,23 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
             nMuProbes = 0;
             for (unsigned i = 0; i < muProbes.size(); ++i) {
-                TCPhysObject muProbe = (TCPhysObject)muProbes[i];
-                if (lep1.DeltaR(muProbe) > 0.1 && lep2.DeltaR(muProbe) > 0.1) {
-                    probe = muProbe;
+                TCPhysObject testProbe = (TCPhysObject)muProbes[i];
+                if (lep1.DeltaR(testProbe) > 0.1 && lep2.DeltaR(testProbe) > 0.1) {
+                    muProbe = testProbe;
                     ++nMuProbes;
                 }
             }
 
             nEleProbes = 0;
             for (unsigned i = 0; i < eleProbes.size(); ++i) {
-                TCPhysObject eleProbe = (TCPhysObject)eleProbes[i];
-                if (lep1.DeltaR(eleProbe) > 0.1 && lep2.DeltaR(eleProbe) > 0.1) {
-                    probe = eleProbe;
+                TCPhysObject testProbe = (TCPhysObject)eleProbes[i];
+                if (lep1.DeltaR(testProbe) > 0.1 && lep2.DeltaR(testProbe) > 0.1) {
+                    eleProbe = testProbe;
                     ++nEleProbes;
                 }
             }
 
-            if (nEleProbes + nMuProbes == 1) {
+            if (nEleProbes == 1 || nMuProbes == 1) {
                 if (CheckZPlusJetCR()) {
 
                     // Probe object is found and event is consistent with QCD 2l
@@ -374,37 +385,80 @@ bool fakeAnalyzer::Process(Long64_t entry)
             || (crType == "ZPlusJet" && leptons.size() <= 3)
             //&& bJetsM.size() < 2 // kills ttbar contamination
        ) {
-        FillDenominatorHists(crType + "_inclusive");
 
-        if (recoMET->Mod() < 20)
-            FillDenominatorHists(crType + "_low_met");
-        else if (recoMET->Mod() > 45 && recoMET->Mod() < 80)
-            FillDenominatorHists(crType + "_high_met");
+        if (nEleProbes == 1) {
+            FillDenominatorHists(crType + "_inclusive", eleProbe);
+
+            if (recoMET->Mod() < 20)
+                FillDenominatorHists(crType + "_low_met", eleProbe);
+            else if (recoMET->Mod() > 45 && recoMET->Mod() < 80)
+                FillDenominatorHists(crType + "_high_met", eleProbe);
+        }
+
+        if (nMuProbes == 1) {
+            FillDenominatorHists(crType + "_inclusive", muProbe);
+
+            if (recoMET->Mod() < 20)
+                FillDenominatorHists(crType + "_low_met", muProbe);
+            else if (recoMET->Mod() > 45 && recoMET->Mod() < 80)
+                FillDenominatorHists(crType + "_high_met", muProbe);
+        }
     } else
         return kTRUE;
 
-    // Match probe lepton to tight leptons
-    bool matched = false;
+
+    // Match probe leptons to tight leptons
+    bool eleMatched = false;
+    bool muMatched  = false;
     if (crType == "QCD2l" && leptons.size() == 1) {
-        if (probe.DeltaR(leptons[0]) < 0.01 && probe.Type() == leptons[0].Type()) {
-            passLep = leptons[0];
-            matched = true;
+        if (nEleProbes == 1) {
+            if (eleProbe.DeltaR(leptons[0]) < 0.05 && eleProbe.Type() == leptons[0].Type()) {
+                elePass = leptons[0];
+                eleMatched = true;
+            }
+        }
+
+        if (nMuProbes == 1) {
+            if (muProbe.DeltaR(leptons[0]) < 0.05 && muProbe.Type() == leptons[0].Type()) {
+                muPass = leptons[0];
+                muMatched = true;
+            }
         }
     } else if (crType == "ZPlusJet" && leptons.size() == 3) {
+        if (nEleProbes == 1) {
+            if (eleProbe.DeltaR(lep3) < 0.05 && eleProbe.Type() == lep3.Type()) {
+                elePass = lep3;
+                eleMatched = true;
+            }
+        }
 
-        if (probe.DeltaR(lep3) < 0.01 && probe.Type() == lep3.Type()) {
-            passLep = lep3;
-            matched = true;
+        if (nMuProbes == 1) {
+            if (muProbe.DeltaR(lep3) < 0.05 && muProbe.Type() == lep3.Type()) {
+                muPass = lep3;
+                muMatched = true;
+            }
         }
     } 
 
-    if (matched) {
-        FillNumeratorHists(crType + "_inclusive");
+
+    if (eleMatched) {
+        FillNumeratorHists(crType + "_inclusive", elePass);
         if (recoMET->Mod() < 20)
-            FillNumeratorHists(crType + "_low_met");
+            FillNumeratorHists(crType + "_low_met", elePass);
         else if (recoMET->Mod() > 45 && recoMET->Mod() < 80)
-            FillNumeratorHists(crType + "_high_met");
-    } 
+            FillNumeratorHists(crType + "_high_met", elePass);
+    } else if (nEleProbes == 1)
+        FillClosureHists(crType + "_inclusive", eleProbe);
+
+    if (muMatched) {
+        FillNumeratorHists(crType + "_inclusive", muPass);
+        if (recoMET->Mod() < 20)
+            FillNumeratorHists(crType + "_low_met", muPass);
+        else if (recoMET->Mod() > 45 && recoMET->Mod() < 80)
+            FillNumeratorHists(crType + "_high_met", muPass);
+    } else  if (nMuProbes == 1)
+        FillClosureHists(crType + "_inclusive", muProbe);
+
 
     return kTRUE;
 }
@@ -469,7 +523,7 @@ void fakeAnalyzer::DoZTag(vObj leptons)
     }
 }
 
-void fakeAnalyzer::FillDenominatorHists(string cat)
+void fakeAnalyzer::FillDenominatorHists(string cat, TCPhysObject probe)
 {
     histManager->SetDirectory(cat + "/" + suffix);
 
@@ -520,7 +574,7 @@ void fakeAnalyzer::FillDenominatorHists(string cat)
     }
 }
 
-void fakeAnalyzer::FillNumeratorHists(string cat)
+void fakeAnalyzer::FillNumeratorHists(string cat, TCPhysObject passLep)
 {
     histManager->SetDirectory(cat + "/" + suffix);
 
@@ -541,6 +595,7 @@ void fakeAnalyzer::FillNumeratorHists(string cat)
         histManager->Fill1DHistUnevenBins(recoMET->Mod(),
                 "h1_MuNumerMet", "pass muon Met;Met;Entries", nMetBins, metBins);
 
+
     } else if (lepType == "electron") {
         histManager->Fill1DHist(passLep.Pt(),
                 "h1_ElePassLepPt", "pass electron p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
@@ -559,7 +614,27 @@ void fakeAnalyzer::FillNumeratorHists(string cat)
     }
 }
 
-bool fakeAnalyzer::CheckQCD2lCR(vector<TCJet> tagJets) 
+void fakeAnalyzer::FillClosureHists(string cat, TCPhysObject probe)
+{
+    vector<TCPhysObject> tmpObj;
+    tmpObj.push_back(probe);
+
+    histManager->SetWeight(weighter->GetFakeWeight(tmpObj));
+    histManager->SetDirectory(cat + "/" + suffix);
+
+    //cout << weighter->GetFakeWeight(tmpObj) << endl;
+
+    if (probe.Type() == "electron") {
+        histManager->Fill1DHist(probe.Pt(),
+                "h1_ElePtClosure", "electron p_{T} (closure);p_{T};Entries / 3 GeV", 50, 0., 150);
+    } else if (probe.Type() == "muon") {
+        histManager->Fill1DHist(probe.Pt(),
+                "h1_MuPtClosure", "muon p_{T} (closure);p_{T};Entries / 3 GeV", 50, 0., 150);
+    }
+    histManager->SetWeight(1.);
+}
+
+bool fakeAnalyzer::CheckQCD2lCR(vector<TCJet> tagJets, TCPhysObject probe) 
 {
     // Make sure event is consistent with bbbar production //
 

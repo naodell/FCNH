@@ -583,10 +583,10 @@ bool fcncAnalyzer::Process(Long64_t entry)
                 }
 
                 for (unsigned j = fakeables.size() - 1; j > i; --j) {
-                    if (fakeables[i].DeltaR(fakeables[j]) < 0.1) {
-                        leptonMatched = true;
-                        break;
-                    }
+                    //if (fakeables[i].DeltaR(fakeables[j]) < 0.1) {
+                    //    leptonMatched = true;
+                    //    break;
+                    //}
 
                     if ((fakeables[i] + fakeables[j]).M() < 10.) {
                         lowMassResonance = true;

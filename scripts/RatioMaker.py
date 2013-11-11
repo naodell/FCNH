@@ -55,7 +55,8 @@ class RatioMaker(AnalysisTools):
             self._outFile.mkdir(self._category)
             self._outFile.cd(self._category)
 
-    def make_1D_ratios(self, ratioSample, bgSample = ''): 
+                
+    def make_1D_ratios(self, ratioSample, bgSample = '', removePass = True): 
         ### make ratios for all variables specified in ratioDict1D.  Sample
         ### combinations should be specified in combineDict in parameters.py.
         ### bgSample is subtracted off of the inputs for the ratio.
@@ -66,9 +67,16 @@ class RatioMaker(AnalysisTools):
             h1_Numer    = self.combine_samples(value[0], ratioSample) 
             h1_Denom    = self.combine_samples(value[1], ratioSample) 
 
+            if removePass:
+                h1_Denom.Add(h1_Numer, -1)
+
             if bgSample is not '':
                 h1_bgNumer  = self.combine_samples(value[0], bgSample) 
                 h1_bgDenom  = self.combine_samples(value[1], bgSample) 
+
+                if removePass:
+                    h1_bgDenom.Add(h1_bgNumer, -1)
+
                 h1_Numer.Add(h1_bgNumer, -1)
                 h1_Denom.Add(h1_bgDenom, -1)
 
@@ -76,7 +84,8 @@ class RatioMaker(AnalysisTools):
 
             self._outFile.GetDirectory(self._category).Add(g_Ratio)
 
-    def make_2D_ratios(self, ratioSample, bgSample = '', doProjections = True): 
+
+    def make_2D_ratios(self, ratioSample, bgSample = '', doProjections = True, removePass = True): 
         ### make ratios for all variables specified in ratioDict2D.  Sample
         ### combinations should be specified in combineDict in parameters.py.
         ### bgSample is subtracted off of the inputs for the ratio. Produces a
@@ -88,9 +97,16 @@ class RatioMaker(AnalysisTools):
             h2_Numer    = self.combine_samples(value[0], ratioSample, histType = '2D') 
             h2_Denom    = self.combine_samples(value[1], ratioSample, histType = '2D') 
 
+            if removePass:
+                h2_Denom.Add(h2_Numer, -1)
+
             if bgSample is not '':
                 h2_bgNumer  = self.combine_samples(value[0], bgSample, histType = '2D') 
                 h2_bgDenom  = self.combine_samples(value[1], bgSample, histType = '2D') 
+
+                if removePass:
+                    h2_bgDenom.Add(h2_bgNumer, -1)
+
                 h2_Numer.Add(h2_bgNumer, -1.)
                 h2_Denom.Add(h2_bgDenom, -1.)
 
