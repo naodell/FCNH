@@ -247,7 +247,7 @@ combineDict['Triboson']         = ['WWW', 'WWZ', 'WZZ', 'ZZZ', 'WWG']
 combineDict['QCD']              = ['QCD_20_MU', 'QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_EM', 'QCD_170-250_EM', 'QCD_250-350_EM', 'QCD_350_EM']
 combineDict['QCD_EM']           = ['QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_EM', 'QCD_170-250_EM', 'QCD_250-350_EM', 'QCD_350_EM']
 combineDict['higgs']            = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125']
-combineDict['FAKE_2l']          = ['WbbToLNu', 'ZJets_M-50', 'ZJets_M-10To50', 'ttbar', 'tbarW', 'tW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'ZZJets2L2Q', 'WZJets3LNu']
+combineDict['FAKE_2l']          = ['WbbToLNu', 'ZJets_M-50', 'ZJets_M-10To50', 'ttbar', 'tbarW', 'tW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'ZZJets2L2Q']
 combineDict['FAKE_3l']          = ['WZJets3LNu']
 
 categoryDict = {'inclusive':'inclusive',

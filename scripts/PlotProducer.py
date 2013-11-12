@@ -279,7 +279,45 @@ class PlotProducer(AnalysisTools):
 
                 legend.Draw()
 
-                canvas.SaveAs(self._savePath + '/' + self._category + '/' + directory + '/' + var + self._plotType)
+                canvas.SaveAs('{0}/{1}/{2}/{3}{4}'.format(self._savePath, self._category, directory, var, self._plotType))
+
+
+    #def make_overlays_diff(self, logScale = False, doRatio = True, doEff = False, histDict):
+    #    '''
+    #    Process to produce overlays of different histograms.
+    #    '''
+
+    #    ### Setting up the canvas and splitting
+    #    ### if doing complimentary plotting
+    #    canvas = r.TCanvas('canvas', 'canvas', 650, 700)
+
+    #    if doRatio:
+    #        pad1 = r.TPad('pad1', '', 0.02, 0.34, 0.89, 0.98, 0)
+    #        pad2 = r.TPad('pad2', '', 0.02, 0.02, 0.89, 0.35, 0)
+
+    #        pad1.SetBottomMargin(0.)
+    #        pad2.SetTopMargin(0.)
+    #        pad2.SetBottomMargin(0.2)
+    #        pad1.Draw()
+    #        pad2.Draw()
+    #        pad2.SetGridx()
+    #        pad2.SetGridy()
+    #    else:
+    #        pad1 = r.TPad('pad1', '', 0.06, 0.02, 0.89, 0.98, 0)
+    #        pad1.Draw()
+    #        pad1.SetGridx()
+    #        pad1.SetGridy()
+
+    #    if logScale:
+    #        pad1.SetLogy()
+
+
+    #    for hist in histList:
+    #        tmpHists[data] = r.TH1D('h1_tmp_' + data, ';;', 1, 0, 1)
+    #        tmpHists[data].Fill(1)
+    #        set_hist_style(tmpHists[data], data, self._styleDict)
+
+    #    legend = build_legend(tmpHists, self._datasets, 'YieldByCut', self._styleDict)
 
 
     def make_overlays_1D(self, logScale = False, doRatio = True, doEff = False):
