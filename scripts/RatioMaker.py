@@ -23,7 +23,7 @@ def make_graph_ratio_2D(outName, h2_Numer, h2_Denom):
     for i in range(h2_Numer.GetYaxis().GetNbins()):
 
         gList.append(r.TGraphAsymmErrors())
-        gList[i].Divide(h2_Numer.ProjectionX('numer_{0}'.format(i+1), i, i+1), h2_Denom.ProjectionX('denom_{0}'.format(i+1), i, i+1))
+        gList[i].Divide(h2_Numer.ProjectionX('h_Numer_{0}_{1}'.format(outName, i+1), i, i+1), h2_Denom.ProjectionX('h_Denom_{0}_{1}'.format(outName, i+1), i, i+1))
         gList[i].SetName('g_{0}_{1}'.format(outName, i+1))
         gList[i].SetTitle('{0}_{1};{2};#varepsilon'.format(outName, i+1, h2_Numer.GetXaxis().GetTitle()))
 
@@ -85,7 +85,7 @@ class RatioMaker(AnalysisTools):
             self._outFile.GetDirectory(self._category).Add(g_Ratio)
 
 
-    def make_2D_ratios(self, ratioSample, bgSample = '', doProjections = True, removePass = True): 
+    def make_2D_ratios(self, ratioSample, bgSample = '', doProjections = True, removePass = False): 
         ### make ratios for all variables specified in ratioDict2D.  Sample
         ### combinations should be specified in combineDict in parameters.py.
         ### bgSample is subtracted off of the inputs for the ratio. Produces a
@@ -99,9 +99,7 @@ class RatioMaker(AnalysisTools):
 
             #print h2_Numer.Integral(),h2_Denom.Integral(), 
 
-            print h2_Denom.Integral() 
-
-            if bgSample is not '':
+            if bgSample != '':
                 h2_bgNumer  = self.combine_samples(value[0], bgSample, histType = '2D') 
                 h2_bgDenom  = self.combine_samples(value[1], bgSample, histType = '2D') 
 
@@ -137,6 +135,7 @@ if __name__ == '__main__':
         batch = sys.argv[1]
     else:
         print 'A batch must specified.  Otherwise, do some hacking so this thing knows about your inputs.'
+        exit()
 
     doQFlips    = False
     doFakes     = True
@@ -170,21 +169,21 @@ if __name__ == '__main__':
         ratioMaker.get_scale_factors(['FAKE_2l', 'FAKE_3l'], corrected = False)
 
         fakeDict1D = {
-            #'ElectronFakeMet':('EleNumerMet', 'EleDenomMet'),
-            'ElectronFakePt':('EleNumerPt', 'EleDenomPt'),
-            'ElectronFakeEta':('EleNumerEta', 'EleDenomEta'),
             #'MuonFakePt_Even':('MuPassLepPt', 'MuProbeLepPt'),
             #'MuonFakeEta_Even':('MuPassLepEta', 'MuProbeLepEta'),
-            #'MuonFakeMet':('MuNumerMet', 'MuDenomMet'),
+            'MuonFakeMet':('MuNumerMet', 'MuDenomMet'),
             'MuonFakePt':('MuNumerPt', 'MuDenomPt'),
-            'MuonFakeEta':('MuNumerEta', 'MuDenomEta')
+            'MuonFakeEta':('MuNumerEta', 'MuDenomEta'),
+            'ElectronFakeMet':('EleNumerMet', 'EleDenomMet'),
+            'ElectronFakePt':('EleNumerPt', 'EleDenomPt'),
+            'ElectronFakeEta':('EleNumerEta', 'EleDenomEta')
         }
 
         fakeDict2D = {
             #'MuonFakePt_Even':('MuPassLepPt', 'MuProbeLepPt'),
             #'MuonFakeEta_Even':('MuPassLepEta', 'MuProbeLepEta'),
             'MuonFake':('MuNumer', 'MuDenom'),
-            'ElectronFake':('EleNumer', 'EleDenom'),
+            'ElectronFake':('EleNumer', 'EleDenom')
         }
 
         fakeCategories = [
@@ -206,6 +205,6 @@ if __name__ == '__main__':
             ratioMaker.make_1D_ratios('DATA', bgType)
 
             ratioMaker.set_ratio_2D(fakeDict2D)
-            ratioMaker.make_2D_ratios('DATA', bgType)
+            #ratioMaker.make_2D_ratios('DATA', bgType, doProjections = True, removePass = False)
 
         ratioMaker.write_outfile()

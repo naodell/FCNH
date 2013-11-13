@@ -61,7 +61,12 @@ def set_hist_style(hist, dataType, styleDict, histType = '1D'):
     hist.SetLineColor(styleDict[dataType][1])
 
 
-def build_legend(hists, dataList, var, styleDict):
+def build_legend(hists, dataList, styleDict):
+
+    for data in dataList:
+        hists[data] = r.TH1D('h1_tmp_' + data, ';;', 1, 0, 1)
+        hists[data].Fill(1)
+        set_hist_style(hists[data], data, styleDict)
 
     legend = r.TLegend(0.91,0.45,1.0,0.89)
     legend.SetFillColor(0)
@@ -79,6 +84,7 @@ def build_legend(hists, dataList, var, styleDict):
         legend.AddEntry(hists[data], styleDict[dataName][4])
 
     return legend
+
 
 ####                                      ####  
 #### Beginning of PlotProducer definition ####
@@ -257,12 +263,7 @@ class PlotProducer(AnalysisTools):
 
         ### Build the legend from the list of samples
         tmpHists = {}
-        for data in self._datasets + self._overlayList:
-            tmpHists[data] = r.TH1D('h1_tmp_' + data, ';;', 1, 0, 1)
-            tmpHists[data].Fill(1)
-            set_hist_style(tmpHists[data], data, self._styleDict)
-
-        legend = build_legend(tmpHists, self._datasets, 'YieldByCut', self._styleDict)
+        legend = build_legend(tmpHists, self._datasets+self._overlayList, self._styleDict)
 
         for directory in self._directoryList1D:
             stacks, sums = self.get_stack_dict(directory)
@@ -274,12 +275,81 @@ class PlotProducer(AnalysisTools):
                     stacks[var].SetMaximum(stacks[var].GetMaximum()*10)
                 else:
                     stacks[var].SetMaximum(stacks[var].GetMaximum()*1.5)
-                stacks[var].SetMinimum(0.01)
+                stacks[var].SetMinimum(0.09)
                 stacks[var].Draw('HIST')
 
                 legend.Draw()
 
-                canvas.SaveAs(self._savePath + '/' + self._category + '/' + directory + '/' + var + self._plotType)
+                canvas.SaveAs('{0}/{1}/{2}/{3}{4}'.format(self._savePath, self._category, directory, var, self._plotType))
+
+
+    def make_overlays_diff(self, histPairs, directory, logScale = False, doRatio = True, doEff = False):
+        '''
+        Process to produce overlays of different histograms.
+        '''
+
+        ### Setting up the canvas and splitting
+        ### if doing complimentary plotting
+        canvas = r.TCanvas('canvas', 'canvas', 650, 700)
+
+        if doRatio:
+            pad1 = r.TPad('pad1', '', 0.02, 0.34, 0.89, 0.98, 0)
+            pad2 = r.TPad('pad2', '', 0.02, 0.02, 0.89, 0.35, 0)
+
+            pad1.SetBottomMargin(0.)
+            pad2.SetTopMargin(0.)
+            pad2.SetBottomMargin(0.2)
+            pad1.Draw()
+            pad2.Draw()
+            pad2.SetGridx()
+            pad2.SetGridy()
+        else:
+            pad1 = r.TPad('pad1', '', 0.06, 0.02, 0.89, 0.98, 0)
+            pad1.Draw()
+            pad1.SetGridx()
+            pad1.SetGridy()
+
+        if logScale:
+            pad1.SetLogy()
+
+        self.make_save_path('{0}/{1}/{2}'.format(self._savePath, self._category, directory))
+
+        #tmpHists = {}
+        #legend = build_legend(tmpHists, dataList, self._styleDict)
+
+        for i, (data, var) in enumerate(histPairs):
+
+            hists   = self.get_hist_dict(directory)
+            hist    = self.combine_samples(var, data)
+
+            if hist is None: 
+                continue
+
+            set_hist_style(hist, data, self._styleDict)
+
+            pad1.cd()
+            if i == 0:
+                hist.Draw('E')
+            else:
+                hist.Draw('E SAME')
+
+        ## Draw info box ##
+        r.gStyle.SetOptTitle(0)
+        textBox = r.TPaveText(0.09, 0.91, 0.79, 0.96, 'NDC')
+        textBox.SetFillColor(0)
+        textBox.SetFillStyle(0)
+        textBox.SetLineWidth(0)
+        textBox.SetLineColor(0)
+
+        if self._period is '2011':
+            textBox.AddText('#scale[1.2]{CMS preliminary, #sqrt{s} = 7 TeV, #it{L}_{int}' + ' = {0:.1f}'.format(self._scale) + ' fb^{-1}       #bf{#color[2]{' + categories[self._category] + '}}}')
+        elif self._period is '2012':
+            textBox.AddText('#scale[1.2]{CMS preliminary, #sqrt{s} = 8 TeV, #it{L}_{int}' + ' = {0:.1f}'.format(self._scale) + ' fb^{-1}       #bf{#color[2]{' + categories[self._category] + '}}}')
+
+        legend.Draw('SAME')
+        textBox.Draw('SAME')
+
+        canvas.SaveAs('{0}/{1}/{2}/{3}{4}'.format(self._savePath, self._category, directory, var, self._plotType))
 
 
     def make_overlays_1D(self, logScale = False, doRatio = True, doEff = False):
@@ -313,15 +383,7 @@ class PlotProducer(AnalysisTools):
 
         ### Build the legend from the list of samples
         tmpHists = {}
-        for data in self._datasets + self._overlayList:
-            tmpHists[data] = r.TH1D('h1_tmp_' + data, ';;', 1, 0, 1)
-            tmpHists[data].Fill(1)
-            set_hist_style(tmpHists[data], data, self._styleDict)
-
-        legend = build_legend(tmpHists, self._datasets, 'YieldByCut', self._styleDict)
-
-        for data in self._overlayList:
-            legend.AddEntry(tmpHists[data], self._styleDict[data][4])
+        legend = build_legend(tmpHists, self._datasets+self._overlayList, self._styleDict)
 
         ### Starting loop over directories in histogram file
         for directory in self._directoryList1D:
@@ -341,7 +403,7 @@ class PlotProducer(AnalysisTools):
 
                 if logScale:
                     stacks[var].SetMaximum(max(stacks[var].GetMaximum(), hists[var][0][0].GetMaximum())*5)
-                    stacks[var].SetMinimum(0.05)
+                    stacks[var].SetMinimum(0.09)
                 else:
                     stacks[var].SetMaximum(max(stacks[var].GetMaximum(), hists[var][0][0].GetMaximum())*1.25)
                     stacks[var].SetMinimum(0.00001)
@@ -356,7 +418,7 @@ class PlotProducer(AnalysisTools):
                 stacks[var].Draw('HIST')
                 sums[var].Draw('E2 SAME')
 
-                if not logScale:
+                if not logScale or not (doRatio):
                     stacks[var].GetYaxis().SetTitleOffset(1.00);
 
                 for (hist, data) in hists[var]:
@@ -365,9 +427,7 @@ class PlotProducer(AnalysisTools):
                 legend.Draw()
 
                 ## Draw info box ##
-
                 r.gStyle.SetOptTitle(0)
-
                 textBox = r.TPaveText(0.09, 0.91, 0.79, 0.96, 'NDC')
                 textBox.SetFillColor(0)
                 textBox.SetFillStyle(0)
@@ -507,8 +567,8 @@ class PlotProducer(AnalysisTools):
 
                 textBox.Draw('same')
                   
-                idBox = r.TPaveText(0.95, 0.925, 0.7, 0.96, 'NDC')
-                idBox.SetFillColor(0)
+                idBox = r.TPaveText(0.8, 0.85, 0.9, 0.95, 'NDC')
+                idBox.SetFillColor(1)
                 idBox.SetFillStyle(0)
                 idBox.SetLineWidth(0)
                 idBox.SetLineColor(0)

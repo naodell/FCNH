@@ -448,7 +448,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
         else if (recoMET->Mod() > 45 && recoMET->Mod() < 80)
             FillNumeratorHists(crType + "_high_met", elePass);
     } else if (nEleProbes == 1)
-        FillClosureHists(crType + "_inclusive", eleProbe);
+        FillClosureHists(crType, eleProbe);
 
     if (muMatched) {
         FillNumeratorHists(crType + "_inclusive", muPass);
@@ -457,7 +457,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
         else if (recoMET->Mod() > 45 && recoMET->Mod() < 80)
             FillNumeratorHists(crType + "_high_met", muPass);
     } else  if (nMuProbes == 1)
-        FillClosureHists(crType + "_inclusive", muProbe);
+        FillClosureHists(crType, muProbe);
 
 
     return kTRUE;
@@ -619,17 +619,21 @@ void fakeAnalyzer::FillClosureHists(string cat, TCPhysObject probe)
     vector<TCPhysObject> tmpObj;
     tmpObj.push_back(probe);
 
-    histManager->SetWeight(weighter->GetFakeWeight(tmpObj));
-    histManager->SetDirectory(cat + "/" + suffix);
+    histManager->SetWeight(weighter->GetFakeWeight(tmpObj, cat));
+    histManager->SetDirectory(cat + "_inclusive/" + suffix);
 
     //cout << weighter->GetFakeWeight(tmpObj) << endl;
 
     if (probe.Type() == "electron") {
         histManager->Fill1DHist(probe.Pt(),
                 "h1_ElePtClosure", "electron p_{T} (closure);p_{T};Entries / 3 GeV", 50, 0., 150);
+        histManager->Fill1DHistUnevenBins(probe.Pt(),
+                "h1_EleUnevenPtClosure", "electron p_{T} (closure);p_{T};Entries / Bin", nPtBins, ptBins);
     } else if (probe.Type() == "muon") {
         histManager->Fill1DHist(probe.Pt(),
                 "h1_MuPtClosure", "muon p_{T} (closure);p_{T};Entries / 3 GeV", 50, 0., 150);
+        histManager->Fill1DHistUnevenBins(probe.Pt(),
+                "h1_MuUnevenPtClosure", "muon p_{T} (closure);p_{T};Entries / Bin", nPtBins, ptBins);
     }
     histManager->SetWeight(1.);
 }
