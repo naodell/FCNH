@@ -99,7 +99,7 @@ class RatioMaker(AnalysisTools):
 
             #print h2_Numer.Integral(),h2_Denom.Integral(), 
 
-            if bgSample is not '':
+            if bgSample != '':
                 h2_bgNumer  = self.combine_samples(value[0], bgSample, histType = '2D') 
                 h2_bgDenom  = self.combine_samples(value[1], bgSample, histType = '2D') 
 
@@ -171,10 +171,10 @@ if __name__ == '__main__':
         fakeDict1D = {
             #'MuonFakePt_Even':('MuPassLepPt', 'MuProbeLepPt'),
             #'MuonFakeEta_Even':('MuPassLepEta', 'MuProbeLepEta'),
-            #'MuonFakeMet':('MuNumerMet', 'MuDenomMet'),
+            'MuonFakeMet':('MuNumerMet', 'MuDenomMet'),
             'MuonFakePt':('MuNumerPt', 'MuDenomPt'),
             'MuonFakeEta':('MuNumerEta', 'MuDenomEta'),
-            #'ElectronFakeMet':('EleNumerMet', 'EleDenomMet'),
+            'ElectronFakeMet':('EleNumerMet', 'EleDenomMet'),
             'ElectronFakePt':('EleNumerPt', 'EleDenomPt'),
             'ElectronFakeEta':('EleNumerEta', 'EleDenomEta')
         }
@@ -202,9 +202,9 @@ if __name__ == '__main__':
                 bgType = 'FAKE_3l'
 
             ratioMaker.set_ratio_1D(fakeDict1D)
-            #ratioMaker.make_1D_ratios('DATA', bgType)
+            ratioMaker.make_1D_ratios('DATA', bgType)
 
             ratioMaker.set_ratio_2D(fakeDict2D)
-            ratioMaker.make_2D_ratios('DATA', bgType, doProjections = False, removePass = False)
+            #ratioMaker.make_2D_ratios('DATA', bgType, doProjections = True, removePass = False)
 
         ratioMaker.write_outfile()

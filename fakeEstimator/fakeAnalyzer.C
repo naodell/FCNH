@@ -448,7 +448,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
         else if (recoMET->Mod() > 45 && recoMET->Mod() < 80)
             FillNumeratorHists(crType + "_high_met", elePass);
     } else if (nEleProbes == 1)
-        FillClosureHists(crType + "_inclusive", eleProbe);
+        FillClosureHists(crType, eleProbe);
 
     if (muMatched) {
         FillNumeratorHists(crType + "_inclusive", muPass);
@@ -457,7 +457,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
         else if (recoMET->Mod() > 45 && recoMET->Mod() < 80)
             FillNumeratorHists(crType + "_high_met", muPass);
     } else  if (nMuProbes == 1)
-        FillClosureHists(crType + "_inclusive", muProbe);
+        FillClosureHists(crType, muProbe);
 
 
     return kTRUE;
@@ -620,7 +620,7 @@ void fakeAnalyzer::FillClosureHists(string cat, TCPhysObject probe)
     tmpObj.push_back(probe);
 
     histManager->SetWeight(weighter->GetFakeWeight(tmpObj, cat));
-    histManager->SetDirectory(cat + "/" + suffix);
+    histManager->SetDirectory(cat + "_inclusive/" + suffix);
 
     //cout << weighter->GetFakeWeight(tmpObj) << endl;
 

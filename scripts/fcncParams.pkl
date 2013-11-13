@@ -1141,7 +1141,7 @@ p3
 g3
 sS'QCD2l_high_met'
 p4
-S'QCD #ell#ell (45 < MET < 80)'
+S'QCD ll (45 < MET < 80)'
 p5
 sS'ZPlusJet_low_met'
 p6
@@ -1149,7 +1149,7 @@ S'Z+jet (MET < 20)'
 p7
 sS'QCD2l_low_met'
 p8
-S'QCD #ell#ell (MET < 20)'
+S'QCD ll (MET < 20)'
 p9
 sS'os_inclusive'
 p10
@@ -1165,7 +1165,7 @@ S'e#mu#mu'
 p15
 sS'QCD2l_inclusive'
 p16
-S'QCD #ell#ell'
+S'QCD ll'
 p17
 sS'os_emu'
 p18
