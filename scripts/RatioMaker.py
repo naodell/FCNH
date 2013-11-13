@@ -163,6 +163,6 @@ if __name__ == '__main__':
         }
 
         ratioMaker.set_ratio_2D(fakeDict2D)
-        ratioMaker.make_2D_ratios('DATA', 'FAKE_BG')
+        ratioMaker.make_2D_ratios('DATA', 'FAKE_BG', doProjections = True)
 
         ratioMaker.write_outfile()
