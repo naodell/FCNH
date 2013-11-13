@@ -77,9 +77,9 @@ samples['3l'].append('Triboson')
 samples['3l'].append('ttV')
 samples['3l'].append('ZZ4l')
 samples['3l'].append('WZJets3LNu')
-samples['3l'].append('top')
-samples['3l'].append('ZJets')
-#samples['3l'].append('Fakes')
+#samples['3l'].append('top')
+#samples['3l'].append('ZJets')
+samples['3l'].append('Fakes')
 
 #samples['3l'].append('Diboson')
 #samples['3l'].append('ZGstar')
@@ -88,11 +88,14 @@ samples['3l'].append('ZJets')
 
 samples['ss'].append('higgs')
 samples['ss'].append('ttV')
-samples['ss'].append('top')
-samples['ss'].append('Diboson')
-samples['ss'].append('ZJets')
-samples['ss'].append('QCD')
-#samples['ss'].append('QFlips')
+samples['ss'].append('ZZ4l')
+samples['ss'].append('WZJets3LNu')
+#samples['ss'].append('Diboson')
+#samples['ss'].append('top')
+#samples['ss'].append('ZJets')
+samples['ss'].append('Fakes')
+samples['ss'].append('QFlips')
+#samples['ss'].append('QCD')
 
 #samples['ss'].append('QCD_EM')
 #samples['ss'].append('QCD_20_MU')
@@ -147,10 +150,12 @@ if doPlots:
     plotter._variableDict['Lepton']     = ['LeptonCharge', 'LeptonFlavor', 
                                            'Lepton1Pt', 'Lepton2Pt','Lepton3Pt',
                                            'Lepton1Eta', 'Lepton2Eta', 'Lepton3Eta',
+                                           'ElectronPt', 'ElectronEta',
+                                           'MuonPt', 'MuonEta',
                                            'Lepton1 dxy', 'Lepton1 dz',
                                            'Lepton2 dxy', 'Lepton2 dz',
                                            'Lepton3 dxy', 'Lepton3 dz',
-                                           'TrileptonMass', 'LeptonMult']
+                                           'LeptonMult']
                                            #'Lepton1Phi', 'Lepton2Phi', 'Lepton3Phi']
 
     plotter._variableDict['Dilepton']   = ['DileptonMass21', 'DileptonTransMass21', 'DileptonQt21',
@@ -162,10 +167,9 @@ if doPlots:
 
     plotter._variableDict['DileptonOS'] = ['DileptonOSMass', 'DileptonOSTransMass', 'DileptonOSBalance',
                                            'DileptonOSQt', 'DileptonOSDeltaPt', 'DileptonOSDeltaR', 
-                                           'DileptonOSDeltaEta', 'DileptonOSDeltaPhi',
-                                           'DileptonLepDeltaR', 'DileptonLepDeltaPhi', 'DileptonLepDeltaEta'] 
+                                           'DileptonOSDeltaEta', 'DileptonOSDeltaPhi'] 
 
-    plotter._variableDict['Trilepton']  = ['DileptonLepDeltaR', 'DileptonLepDeltaPhi', 'DileptonLepDeltaEta', 'Lep3MetMT']
+    plotter._variableDict['Trilepton']  = ['DileptonLepDeltaR', 'DileptonLepDeltaPhi', 'DileptonLepDeltaEta', 'Lep3MetMT', 'TrileptonMass']
 
     plotter._variableDict['Lep+Jet']    = ['Lepton1BJetDeltaPhi', 'Lepton1BJetDeltaEta', 'Lepton1BJetDeltaR', 'Lepton1BJetDeltaPt',
                                            'Lepton2BJetDeltaPhi', 'Lepton2BJetDeltaEta', 'Lepton2BJetDeltaR', 'Lepton2BJetDeltaPt',
@@ -181,7 +185,7 @@ if doPlots:
                                            'HT', 'HTs', 'EventBalance', 'Centrality',
                                            'JetMultCharge', 'JetMult', 'BJetMult']
 
-    plotter._variableDict['MET']        = ['Met', 'MHT', 'METLD', 'MET-MHT', 'MetPhi', 'MetSumEt',
+    plotter._variableDict['MET']        = ['Met', 'MHT', 'METLD', 'MHT-MET', 'MetPhi', 'MetSumEt',
                                            'MetLepton1DeltaPhi', 'MetLepton2DeltaPhi'
                                            'MetLepDeltaPhiMin', 'nearLepIndex', 'ProjectedMet', 'MetLepton3DeltaPhi'] 
 
@@ -292,7 +296,7 @@ if doPlots:
         wz_plotter.add_datasets(samples['WZ'], Clear=True)
         wz_plotter._overlayList = ['DATA']
 
-        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
+        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 6, period, batch)
 
         if doLog:
             outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'CR_WZ')
@@ -310,7 +314,7 @@ if doPlots:
         ttbar_plotter.add_datasets(samples['ttbar'],  Clear=True)
         ttbar_plotter._overlayList = ['DATA']
 
-        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
+        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 7, period, batch)
 
         if doLog:
             outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'CR_ttbar')
@@ -327,7 +331,7 @@ if doPlots:
         ttZ_plotter.add_datasets(samples['ttZ'],  Clear=True)
         ttZ_plotter._overlayList = ['DATA']
 
-        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
+        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 8, period, batch)
 
         if doLog:
             outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'CR_ttZ')
@@ -365,6 +369,7 @@ if doYields:
 
     if do3l:
         #yieldTable._columnList  = samples['3l'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
+        #yieldTable._columnList  = ['BG', 'DATA', 'FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau','FCNH']# 'Significance'] 
         yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
         yieldTable.add_datasets(samples['3l'], Clear = True)

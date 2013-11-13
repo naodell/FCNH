@@ -250,7 +250,7 @@ void Selector::MuonSelector(TClonesArray* muons)
         // pt cuts, identification, and isolation
         if (thisMuon->Pt() > _muPtCuts[0]) {
 
-            // QCD dilepton control retion tag and probe
+            // QCD dilepton control region tag and probe
             if (
                     sqrt(pow(thisMuon->Dz(_selVertices[0]), 2) + pow(thisMuon->Dxy(_selVertices[0]), 2)) > 1. // Replacement for SIP3D inverted cut -- needs to be tuned
                     && muISO > 0.2
@@ -264,9 +264,7 @@ void Selector::MuonSelector(TClonesArray* muons)
             // analysis lepton selection
             if (MuonTightID(thisMuon) && muISO < 0.12) 
                 _selMuons["tight"].push_back(*thisMuon);
-            else if (
-                    thisMuon->IsPF()
-                    )
+            else if ( thisMuon->IsPF())
                 _selMuons["fakeable"].push_back(*thisMuon);
 
         } else if ( thisMuon->Pt() > _muPtCuts[1]  ) 
@@ -417,13 +415,12 @@ void Selector::ElectronSelector(TClonesArray* electrons)
 
             _selElectrons["QCD2l_CR_probe"].push_back(*thisElec);
 
-            if (ElectronMVA(thisElec)) {
+            if (ElectronMVA(thisElec)) 
                 _selElectrons["premva"].push_back(*thisElec);
 
-                if (eleISO < 0.15) 
-                    _selElectrons["tight"].push_back(*thisElec);			
-
-            } else 
+            if (ElectronMVA(thisElec) && eleISO < 0.15) 
+                _selElectrons["tight"].push_back(*thisElec);			
+            else 
                 _selElectrons["fakeable"].push_back(*thisElec);
 
         } else if (
