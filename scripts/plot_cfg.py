@@ -38,11 +38,11 @@ doRatio     = True
 do1D        = True
 do2D        = True
 
-doYields    = True
-
 doOS        = True
 doSS        = True
 do3l        = True
+
+doYields    = True
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive']
@@ -77,10 +77,10 @@ samples['3l'].append('Triboson')
 samples['3l'].append('ttV')
 samples['3l'].append('ZZ4l')
 samples['3l'].append('WZJets3LNu')
-#samples['3l'].append('top')
-#samples['3l'].append('ZJets')
 samples['3l'].append('Fakes')
 
+#samples['3l'].append('top')
+#samples['3l'].append('ZJets')
 #samples['3l'].append('Diboson')
 #samples['3l'].append('ZGstar')
 #samples['3l'].append('WGStar')
@@ -90,13 +90,13 @@ samples['ss'].append('higgs')
 samples['ss'].append('ttV')
 samples['ss'].append('ZZ4l')
 samples['ss'].append('WZJets3LNu')
+samples['ss'].append('Fakes')
+samples['ss'].append('QFlips')
+
 #samples['ss'].append('Diboson')
 #samples['ss'].append('top')
 #samples['ss'].append('ZJets')
-samples['ss'].append('Fakes')
-samples['ss'].append('QFlips')
 #samples['ss'].append('QCD')
-
 #samples['ss'].append('QCD_EM')
 #samples['ss'].append('QCD_20_MU')
 #samples['ss'].extend(['ZbbToLL', 'WbbToLNu'])
@@ -141,7 +141,7 @@ if doPlots:
     ### plot while giving a key value which is the 
     ### directory that they are located in as a key.
 
-    plotter._directoryList1D            = ['Misc', 'Lepton', 'Dilepton', 'DileptonOS', 'Trilepton', 'MET', 'Jet', 'GEN', '4l']
+    plotter._directoryList1D            = ['Misc', 'Lepton', 'Lep+Jet', 'Dilepton', 'DileptonOS', 'Trilepton', 'MET', 'Jet', 'GEN', '4l']
     plotter._directoryList2D            = ['2D']
 
     plotter._variableDict['Misc']       = ['PvMult', 'YieldByCut', 'YieldByCutRaw', 'EventWeight', 'TriggerStatus', 

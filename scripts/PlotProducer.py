@@ -263,7 +263,7 @@ class PlotProducer(AnalysisTools):
 
         ### Build the legend from the list of samples
         tmpHists = {}
-        legend = build_legend(tmpHists, self._datasets+self._overlayList, self._styleDict)
+        legend = build_legend(tmpHists, self._overlayList+self._datasets, self._styleDict)
 
         for directory in self._directoryList1D:
             stacks, sums = self.get_stack_dict(directory)
@@ -383,7 +383,7 @@ class PlotProducer(AnalysisTools):
 
         ### Build the legend from the list of samples
         tmpHists = {}
-        legend = build_legend(tmpHists, self._datasets+self._overlayList, self._styleDict)
+        legend = build_legend(tmpHists, self._overlayList+self._datasets, self._styleDict)
 
         ### Starting loop over directories in histogram file
         for directory in self._directoryList1D:

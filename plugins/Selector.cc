@@ -499,10 +499,10 @@ void Selector::JetSelector(TClonesArray* jets)
         // Prevent lepton overlap //
         std::bitset<4> overlap;
         for (int j = 0; j < (int)_selMuons["tight"].size(); ++j) 
-            if (thisJet->DeltaR(_selMuons["tight"][j]) < 0.4) overlap.set(0);
+            if (thisJet->DeltaR(_selMuons["tight"][j]) < 0.5) overlap.set(0);
 
         for (int j = 0; j < (int)_selElectrons["tight"].size(); ++j) 
-            if (thisJet->DeltaR(_selElectrons["tight"][j]) < 0.4) overlap.set(1);
+            if (thisJet->DeltaR(_selElectrons["tight"][j]) < 0.5) overlap.set(1);
 
         // Apply JER corrections; maybe better to do in the analysis code...
         TCJet corJet = this->JERCorrections(thisJet);

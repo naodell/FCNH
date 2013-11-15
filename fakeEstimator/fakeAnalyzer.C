@@ -370,6 +370,19 @@ bool fakeAnalyzer::Process(Long64_t entry)
     // denominator/probe distributions
 
     if (isTP) {
+
+        vObj triggerLeps;
+        if (crType == "QCD2l") {
+            triggerLeps.push_back(tag);
+            triggerLeps.push_back(probe);
+        } else if (crType == "ZPlusJet") {
+            triggerLeps = leptons;
+        }
+
+        weighter->SetObjects(triggerLeps, jets, nPUVerticesTrue, passNames[0]);
+        evtWeight *= weighter->GetTotalWeight();
+        histManager->SetWeight(evtWeight);
+
         histManager->SetDirectory(crType + "_inclusive/" + suffix);
         histManager->Fill1DHist(leptons.size(),
                 "h1_leptonMult", "lepton multiplicity; N_{leptons}; Entries / bin", 6, -0.5, 5.5);

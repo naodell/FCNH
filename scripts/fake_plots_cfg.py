@@ -40,10 +40,10 @@ catList = [
 
 ### Samples to be included in stacks ###
 samples = {}
-samples['inclusive']    = ['FAKE_2l', 'FAKE_3l'] # ['ZJets', 'ttbar']
-samples['ZPlusJet']     = ['FAKE_3l']
+samples['inclusive']    = ['Fakes_ss', 'Fakes_3l'] # ['ZJets', 'ttbar']
+samples['ZPlusJet']     = ['Fakes_3l']
 
-samples['QCD2l']        = ['FAKE_2l']
+samples['QCD2l']        = ['Fakes_ss']
 
 if doPlots:
 
