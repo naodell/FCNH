@@ -69,14 +69,14 @@ samples['3l'].append('Fakes_WZJets3LNu')
 samples['3l'].append('Fakes_top')
 samples['3l'].append('Fakes_ZJets')
 
-samples['ss'].append('Fakes_Triboson')
-samples['ss'].append('Fakes_ttV')
-samples['ss'].append('Fakes_ZZ4l')
-samples['ss'].append('Fakes_WZJets3LNu')
+#samples['ss'].append('Fakes_Triboson')
+#samples['ss'].append('Fakes_ttV')
+#samples['ss'].append('Fakes_ZZ4l')
+#samples['ss'].append('Fakes_WZJets3LNu')
 samples['ss'].append('Fakes_top')
-samples['ss'].append('Fakes_ZJets')
 samples['ss'].append('Fakes_WJets')
 samples['ss'].append('Fakes_QCD')
+samples['ss'].append('Fakes_ZJets')
 
 p_plot = []
 

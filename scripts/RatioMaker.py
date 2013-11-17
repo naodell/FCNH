@@ -166,7 +166,7 @@ if __name__ == '__main__':
         outFile = 'data/fakeRates_TEST.root'
 
         ratioMaker = RatioMaker(inFile, outFile, scale = 19.7)
-        ratioMaker.get_scale_factors(['FAKE_2l', 'FAKE_3l'], corrected = False)
+        ratioMaker.get_scale_factors(['Fakes_ss', 'Fakes_3l'], corrected = False)
 
         fakeDict1D = {
             #'MuonFakePt_Even':('MuPassLepPt', 'MuProbeLepPt'),
@@ -186,25 +186,54 @@ if __name__ == '__main__':
             'ElectronFake':('EleNumer', 'EleDenom')
         }
 
-        fakeCategories = [
-                            'QCD2l_inclusive', 'ZPlusJet_inclusive',
-                            #'QCD2l_low_met', 'QCD2l_high_met',
-                            #'ZPlusJet_low_met', 'ZPlusJet_high_met'
-                         ]
+        fakeCategories = ['QCD2l_inclusive', 'ZPlusJet_inclusive']
 
         for category in fakeCategories:
             ratioMaker.set_category(category)
 
             bgType =''
             if category.split('_', 1)[0] == 'QCD2l':
-                bgType = 'FAKE_2l'
+                bgType = 'Fakes_ss'
             elif category.split('_', 1)[0] == 'ZPlusJet':
-                bgType = 'FAKE_3l'
+                bgType = 'Fakes_3l'
 
             ratioMaker.set_ratio_1D(fakeDict1D)
             ratioMaker.make_1D_ratios('DATA', bgType)
 
             ratioMaker.set_ratio_2D(fakeDict2D)
-            #ratioMaker.make_2D_ratios('DATA', bgType, doProjections = True, removePass = False)
+            ratioMaker.make_2D_ratios('DATA', bgType, doProjections = True, removePass = False)
 
-        ratioMaker.write_outfile()
+        # ttH fake rate estimation using low/high met categories
+
+
+        #'QCD2l_low_met', 'QCD2l_high_met',
+
+        for key,value in self._ratioDict2D.iteritems():
+            ratioMaker.set_category('QCD2l_low_met')
+            h2_Numer_lm    = self.combine_samples(value[0], ratioSample, histType = '2D') 
+            h2_Denom_lm    = self.combine_samples(value[1], ratioSample, histType = '2D') 
+            h2_bgNumer_lm  = self.combine_samples(value[0], bgSample, histType = '2D') 
+            h2_bgDenom_lm  = self.combine_samples(value[1], bgSample, histType = '2D') 
+
+            ratioMaker.set_category('QCD2l_high_met')
+            h2_Numer_hm    = self.combine_samples(value[0], ratioSample, histType = '2D') 
+            h2_Denom_hm    = self.combine_samples(value[1], ratioSample, histType = '2D') 
+            h2_bgNumer_hm  = self.combine_samples(value[0], bgSample, histType = '2D') 
+            h2_bgDenom_hm  = self.combine_samples(value[1], bgSample, histType = '2D') 
+
+            h2_bgNumer = h2_bgNumer_lm.Clone()
+            h2_bgNumer.Add(h2_bgNumer_hm)
+
+            print h2_bgNumer.Integral(), h2_bgNumer_lm.Integral(), h2_bgNumer_hm.Integral()
+
+            #gRatiosLM = make_graph_ratio_2D(key, h2_Numer_lm, h2_Denom_lm)
+            #gRatiosHM = make_graph_ratio_2D(key, h2_Numer_hm, h2_Denom_hm)
+
+
+            #for g_Ratio in g_RatioList:
+            #    self._outFile.GetDirectory(self._category).Add(g_Ratio)
+
+        #ratioMaker.set_category('TEST')
+        #self.make_category_directory()
+
+        #ratioMaker.write_outfile()

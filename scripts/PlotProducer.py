@@ -569,9 +569,9 @@ class PlotProducer(AnalysisTools):
                   
                 idBox = r.TPaveText(0.8, 0.85, 0.9, 0.95, 'NDC')
                 idBox.SetFillColor(1)
-                idBox.SetFillStyle(0)
+                idBox.SetFillStyle(1)
                 idBox.SetLineWidth(0)
-                idBox.SetLineColor(0)
+                idBox.SetLineColor(1)
 
                 for (hist, data) in hists[var]:
                     if data in ['Signal', 'FCNH']:
