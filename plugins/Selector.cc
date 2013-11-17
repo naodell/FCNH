@@ -264,7 +264,7 @@ void Selector::MuonSelector(TClonesArray* muons)
             // analysis lepton selection
             if (MuonTightID(thisMuon) && muISO < 0.12) 
                 _selMuons["tight"].push_back(*thisMuon);
-            else if ( thisMuon->IsPF())
+            else if (thisMuon->IsPF())
                 _selMuons["fakeable"].push_back(*thisMuon);
 
         } else if ( thisMuon->Pt() > _muPtCuts[1]  ) 
@@ -499,10 +499,16 @@ void Selector::JetSelector(TClonesArray* jets)
         // Prevent lepton overlap //
         std::bitset<4> overlap;
         for (int j = 0; j < (int)_selMuons["tight"].size(); ++j) 
-            if (thisJet->DeltaR(_selMuons["tight"][j]) < 0.4) overlap.set(0);
+            if (thisJet->DeltaR(_selMuons["tight"][j]) < 0.5) overlap.set(0);
 
         for (int j = 0; j < (int)_selElectrons["tight"].size(); ++j) 
-            if (thisJet->DeltaR(_selElectrons["tight"][j]) < 0.4) overlap.set(1);
+            if (thisJet->DeltaR(_selElectrons["tight"][j]) < 0.5) overlap.set(1);
+
+        for (int j = 0; j < (int)_selMuons["fakeables"].size(); ++j) 
+            if (thisJet->DeltaR(_selMuons["fakeables"][j]) < 0.5) overlap.set(2);
+
+        for (int j = 0; j < (int)_selElectrons["fakeables"].size(); ++j) 
+            if (thisJet->DeltaR(_selElectrons["fakeables"][j]) < 0.5) overlap.set(3);
 
         // Apply JER corrections; maybe better to do in the analysis code...
         TCJet corJet = this->JERCorrections(thisJet);
@@ -523,16 +529,26 @@ void Selector::JetSelector(TClonesArray* jets)
                 else if (overlap[1]) 
                     _selJets["eleJets"].push_back(corJet);
                 else {
-                    if (BTagModifier(corJet, "CSVM")) 
+                    if (BTagModifier(corJet, "CSVM")) {
                         _selJets["bJetsMedium"].push_back(corJet);
-                    else if (BTagModifier(corJet, "CSVL")) 
+                        if (!overlap[2] && !overlap[3])
+                            _selJets["bJetsM_Nofakes"].push_back(corJet);
+
+                    } else if (BTagModifier(corJet, "CSVL")) {
                         _selJets["bJetsLoose"].push_back(corJet);
-                    else if (
+                        if (!overlap[2] && !overlap[3])
+                            _selJets["bJetsL_Nofakes"].push_back(corJet);
+
+                    } else if (
                             corJet.VtxNTracks() > 0
                             && corJet.VtxSumPtFrac() > 0. 
                             && ((int)corJet.VtxSumPtIndex() == 1)
-                            ) 
+                            ) { 
                         _selJets["tight"].push_back(corJet);
+
+                        if (!overlap[2] && !overlap[3])
+                            _selJets["tight_Nofakes"].push_back(corJet);
+                    }
                 }
             }
         } else if (fabs(corJet.Eta()) < 3.5) {
@@ -541,7 +557,18 @@ void Selector::JetSelector(TClonesArray* jets)
                     && corJet.NumConstit() > 1
                     && corJet.NeuHadFrac() < 0.99
                     && corJet.NeuEmFrac() < 0.99
-               ) _selJets["forward"].push_back(corJet); 
+               ) { 
+                    if (overlap[0]) 
+                        _selJets["muJets"].push_back(corJet);
+                    else if (overlap[1]) 
+                        _selJets["eleJets"].push_back(corJet);
+                    else {
+                        _selJets["forward"].push_back(corJet); 
+
+                        if (!overlap[2] && !overlap[3])
+                            _selJets["tight_Nofakes"].push_back(corJet);
+                    }
+            }
         }
     }
 }

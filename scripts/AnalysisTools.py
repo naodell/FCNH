@@ -111,9 +111,11 @@ class AnalysisTools():
                         nRaw        = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCutRaw').GetBinContent(6)
                         nWeighted   = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCut').GetBinContent(6)
 
-                        nInitWeight = nInit - (nRaw - nWeighted)
+                        nInit = nInit - (nRaw - nWeighted)
 
                     self._scaleDict[self._period][dataName] = 1e3*self._scaleDict[self._period][dataName]/nInit
+
+                    print self._scaleDict[self._period][dataName],nInit
 
                 else:
                     print '{0} not found in scale dictionary; setting to 0'.format(dataName)
@@ -158,9 +160,19 @@ class AnalysisTools():
 
         outHist = None
         doFakes = False
+        const   = 1.
         if dataName.split('_', 1)[0] == 'Fakes' and dataName != 'Fakes':
             dataName = dataName.split('_', 1)[1]
             doFakes  = True
+        elif dataName == 'Fakes':
+            outHist     = self.get_hist(var, dataName, histType)
+
+            if outHist is None:
+                return outHist
+            else:
+                dataName    = 'Remove_{0}'.format(self._category.split('_', 1)[0])
+                doFakes     = True
+                const       = -1.
 
         if dataName not in self._combineDict:
             if doFakes:
@@ -179,7 +191,7 @@ class AnalysisTools():
                 if outHist is None and hist is not None:
                     outHist = hist
                 elif hist is not None:
-                    outHist.Add(hist)
+                    outHist.Add(hist, const)
 
         return outHist
 

@@ -28,10 +28,15 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
 
     // weights for fake background
     TFile* f_fakeFile = new TFile("../data/fakeRates.root", "OPEN");
-    g_MuonFakesPtB      = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l_inclusive/g_MuonFake_1");
-    g_MuonFakesPtE      = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l_inclusive/g_MuonFake_2");
-    g_ElectronFakesPtB  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet_inclusive/g_ElectronFake_1");
-    g_ElectronFakesPtE  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet_inclusive/g_ElectronFake_2");
+    g_MuonFakesPtB["QCD2l"]         = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l_inclusive/g_MuonFake_1");
+    g_MuonFakesPtE["QCD2l"]         = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l_inclusive/g_MuonFake_2");
+    g_ElectronFakesPtB["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l_inclusive/g_ElectronFake_1");
+    g_ElectronFakesPtE["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l_inclusive/g_ElectronFake_2");
+
+    g_MuonFakesPtB["ZPlusJet"]      = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet_inclusive/g_MuonFake_1");
+    g_MuonFakesPtE["ZPlusJet"]      = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet_inclusive/g_MuonFake_2");
+    g_ElectronFakesPtB["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet_inclusive/g_ElectronFake_1");
+    g_ElectronFakesPtE["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet_inclusive/g_ElectronFake_2");
 
     TFile* f_misQFile = new TFile("../data/electronQMisID.root", "OPEN");
     h2_DielectronMisQ = (TH2D*)f_misQFile->Get("inclusive/h2_DielectronMisQ");
@@ -411,7 +416,7 @@ float WeightUtils::GetMuEff(TLorentzVector lep) const
     return weight;
 }
 
-float WeightUtils::GetFakeWeight(vector<TCPhysObject> fakeables)
+float WeightUtils::GetFakeWeight(vector<TCPhysObject> fakeables, string controlRegion)
 {
     float fakeRate = 1;
 
@@ -428,22 +433,22 @@ float WeightUtils::GetFakeWeight(vector<TCPhysObject> fakeables)
         if (fakeable.Type() == "muon") {
 
             if (fabs(fakeable.Eta()) < 1.5)
-                fakeRate *= g_MuonFakesPtB->Eval(fakeablePt);
+                fakeRate *= g_MuonFakesPtB[controlRegion]->Eval(fakeablePt);
             else if (fabs(fakeable.Eta()) >= 1.5)
-                fakeRate *= g_MuonFakesPtE->Eval(fakeablePt);
+                fakeRate *= g_MuonFakesPtE[controlRegion]->Eval(fakeablePt);
 
         } else if (fakeable.Type() == "electron") {
 
             if (fabs(fakeable.Eta()) < 1.5)
-                fakeRate *= g_ElectronFakesPtB->Eval(fakeablePt);
+                fakeRate *= g_ElectronFakesPtB[controlRegion]->Eval(fakeablePt);
             else if (fabs(fakeable.Eta()) >= 1.5)
-                fakeRate *= g_ElectronFakesPtE->Eval(fakeablePt);
+                fakeRate *= g_ElectronFakesPtE[controlRegion]->Eval(fakeablePt);
         }
     }
 
     //cout << fakeRate/(1-fakeRate) << endl;
 
-    return fakeRate; // / (1 - fakeRate);
+    return fakeRate / (1 - fakeRate);
 }
 
 float WeightUtils::GetQFlipWeight()

@@ -11,7 +11,7 @@ currentDate = '{0:02d}/{1:02d}/{2:02d}'.format(now.year, now.month, now.day)
 
 ### Get command line arguements
 
-if len(sys.argv) > 2:
+if len(sys.argv) > 1:
     batch   = sys.argv[1]
     suffix  = sys.argv[2]
 else:
@@ -26,7 +26,6 @@ selection   = 'fcnh'
 
 cutList     = ['1_preselection']
 cutList.extend(['2_Z_veto', '3_MET', '4_HT', '5_bjet'])
-crList      = ['CR_WZ', 'CR_ttbar', 'CR_ttZ']
 
 period      = '2012'
 LUMIDATA    = 19.712 
@@ -36,25 +35,22 @@ doLog       = True
 doEff       = False
 doRatio     = True
 do1D        = True
-do2D        = True
+do2D        = False
 
-doOS        = True
+doYields    = False
+
 doSS        = True
 do3l        = True
-
-doYields    = True
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive']
 catSS.extend(['ss_mumu', 'ss_ee', 'ss_emu'])
-catOS       = ['os_inclusive']
-catOS.extend(['os_mumu', 'os_ee', 'os_emu']) 
 cat3l       = ['3l_inclusive']
 cat3l.extend(['3l_OSSF', '3l_SSSF'])
 cat3l.extend(['3l_eee', '3l_eemu', '3l_emumu', '3l_mumumu'])
 
 ### Samples to be included in stacks ###
-samples     = {'all':[], 'inclusive':[], '3l':[], 'ss':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[]}
+samples     = {'all':[], 'inclusive':[], '3l':[], 'ss':[]}
 
 samples['all'].append('higgs')
 samples['all'].append('Triboson')
@@ -62,53 +58,27 @@ samples['all'].append('ttV')
 samples['all'].append('Diboson')
 samples['all'].append('top')
 samples['all'].append('ZJets')
+samples['all'].append('WJets')
 samples['all'].append('QCD')
 #samples['all'].extend(['ZbbToLL', 'WbbToLNu']) #, 'ZGstar'])
 
-samples['inclusive'].append('higgs')
-samples['inclusive'].append('Triboson')
-samples['inclusive'].append('ttV')
-samples['inclusive'].append('Diboson')
-samples['inclusive'].append('top')
-samples['inclusive'].append('ZJets')
+samples['3l'].append('Fakes_Triboson')
+samples['3l'].append('Fakes_ttV')
+samples['3l'].append('Fakes_ZZ4l')
+samples['3l'].append('Fakes_WZJets3LNu')
+samples['3l'].append('Fakes_top')
+samples['3l'].append('Fakes_ZJets')
 
-samples['3l'].append('higgs')
-samples['3l'].append('Triboson')
-samples['3l'].append('ttV')
-samples['3l'].append('ZZ4l')
-samples['3l'].append('WZJets3LNu')
-samples['3l'].append('Fakes')
-
-#samples['3l'].append('top')
-#samples['3l'].append('ZJets')
-#samples['3l'].append('Diboson')
-#samples['3l'].append('ZGstar')
-#samples['3l'].append('WGStar')
-#samples['3l'].extend(['WGStarLNu2E', 'WGStarLNu2Mu', 'WGStarLNu2Tau'])
-
-samples['ss'].append('higgs')
-samples['ss'].append('ttV')
-samples['ss'].append('ZZ4l')
-samples['ss'].append('WZJets3LNu')
-samples['ss'].append('Fakes')
-samples['ss'].append('QFlips')
-
-#samples['ss'].append('Diboson')
-#samples['ss'].append('top')
-#samples['ss'].append('ZJets')
-#samples['ss'].append('QCD')
-#samples['ss'].append('QCD_EM')
-#samples['ss'].append('QCD_20_MU')
-#samples['ss'].extend(['ZbbToLL', 'WbbToLNu'])
-
-samples['os'].extend(['Diboson', 'top', 'ZJets'])
-
-samples['WZ'].extend(['WW/ZZ', 'top', 'ZJets', 'WZJets3LNu'])
-samples['ttbar'].extend(['single top', 'ZJets', 'ttbar'])
-samples['ttZ'].extend(['top', 'ZJets', 'WZJets3LNu', 'ttW', 'ttG', 'ttZ'])
+#samples['ss'].append('Fakes_Triboson')
+#samples['ss'].append('Fakes_ttV')
+#samples['ss'].append('Fakes_ZZ4l')
+#samples['ss'].append('Fakes_WZJets3LNu')
+samples['ss'].append('Fakes_top')
+samples['ss'].append('Fakes_WJets')
+samples['ss'].append('Fakes_QCD')
+samples['ss'].append('Fakes_ZJets')
 
 p_plot = []
-
 
 if doPlots:
 
@@ -126,12 +96,7 @@ if doPlots:
     ### and overlay accordingly. 
 
     plotter.add_datasets(samples['all'])
-    plotter._overlayList.extend(['DATA'])
-    plotter._overlayList.extend(['FCNH'])
-
-    plotter.get_scale_factors(['FCNH'])
-
-    #plotter.get_scale_factors()
+    plotter.get_scale_factors()
 
     ### VARIABLES ###
     ### First specify the directories in which your
@@ -141,8 +106,7 @@ if doPlots:
     ### plot while giving a key value which is the 
     ### directory that they are located in as a key.
 
-    plotter._directoryList1D            = ['Misc', 'Lepton', 'Lep+Jet', 'Dilepton', 'DileptonOS', 'Trilepton', 'MET', 'Jet', 'GEN', '4l']
-    plotter._directoryList2D            = ['2D']
+    plotter._directoryList1D            = ['Misc', 'Lepton', 'Dilepton', 'DileptonOS', 'Trilepton', 'MET', 'Jet']
 
     plotter._variableDict['Misc']       = ['PvMult', 'YieldByCut', 'YieldByCutRaw', 'EventWeight', 'TriggerStatus', 
                                             'BDT']
@@ -150,12 +114,10 @@ if doPlots:
     plotter._variableDict['Lepton']     = ['LeptonCharge', 'LeptonFlavor', 
                                            'Lepton1Pt', 'Lepton2Pt','Lepton3Pt',
                                            'Lepton1Eta', 'Lepton2Eta', 'Lepton3Eta',
-                                           'ElectronPt', 'ElectronEta',
-                                           'MuonPt', 'MuonEta',
                                            'Lepton1 dxy', 'Lepton1 dz',
                                            'Lepton2 dxy', 'Lepton2 dz',
                                            'Lepton3 dxy', 'Lepton3 dz',
-                                           'LeptonMult']
+                                           'TrileptonMass', 'LeptonMult']
                                            #'Lepton1Phi', 'Lepton2Phi', 'Lepton3Phi']
 
     plotter._variableDict['Dilepton']   = ['DileptonMass21', 'DileptonTransMass21', 'DileptonQt21',
@@ -167,19 +129,16 @@ if doPlots:
 
     plotter._variableDict['DileptonOS'] = ['DileptonOSMass', 'DileptonOSTransMass', 'DileptonOSBalance',
                                            'DileptonOSQt', 'DileptonOSDeltaPt', 'DileptonOSDeltaR', 
-                                           'DileptonOSDeltaEta', 'DileptonOSDeltaPhi'] 
+                                           'DileptonOSDeltaEta', 'DileptonOSDeltaPhi',
+                                           'DileptonLepDeltaR', 'DileptonLepDeltaPhi', 'DileptonLepDeltaEta'] 
 
-    plotter._variableDict['Trilepton']  = ['DileptonLepDeltaR', 'DileptonLepDeltaPhi', 'DileptonLepDeltaEta', 'Lep3MetMT', 'TrileptonMass']
+    plotter._variableDict['Trilepton']  = ['DileptonLepDeltaR', 'DileptonLepDeltaPhi', 'DileptonLepDeltaEta', 'Lep3MetMT']
 
     plotter._variableDict['Lep+Jet']    = ['Lepton1BJetDeltaPhi', 'Lepton1BJetDeltaEta', 'Lepton1BJetDeltaR', 'Lepton1BJetDeltaPt',
                                            'Lepton2BJetDeltaPhi', 'Lepton2BJetDeltaEta', 'Lepton2BJetDeltaR', 'Lepton2BJetDeltaPt',
-                                           'Lepton3BJetDeltaPhi', 'Lepton3BJetDeltaEta', 'Lepton3BJetDeltaR', 'Lepton3BJetDeltaPt',
-                                           'Lepton1JetDeltaPhi', 'Lepton1JetDeltaEta', 'Lepton1JetDeltaR', 'Lepton1JetDeltaPt',
-                                           'Lepton2JetDeltaPhi', 'Lepton2JetDeltaEta', 'Lepton2JetDeltaR', 'Lepton2JetDeltaPt',
-                                           'Lepton3JetDeltaPhi', 'Lepton3JetDeltaEta', 'Lepton3JetDeltaR', 'Lepton3JetDeltaPt',
-                                           'DileptonJetDeltaPhi', 'DileptonJetDeltaEta', 'DileptonJetDeltaR', 'DileptonJetDeltaPt',
-                                           'DileptonBJetDeltaPhi', 'DileptonBJetDeltaEta', 'DileptonBJetDeltaR', 'DileptonBJetDeltaPt',
-                                          ]
+                                           'Lepton3BJetDeltaPhi', 'Lepton3BJetDeltaEta', 'Lepton3BJetDeltaR', 'Lepton3BJetDeltaPt'
+                                           ]
+
 
     plotter._variableDict['Jet']        = ['Jet1Pt', 'Jet2Pt',# 'Jet3Pt',
                                            'Jet1Eta', 'Jet2Eta',# 'Jet3Eta',
@@ -189,20 +148,10 @@ if doPlots:
                                            'HT', 'HTs', 'EventBalance', 'Centrality',
                                            'JetMultCharge', 'JetMult', 'BJetMult']
 
-    plotter._variableDict['MET']        = ['Met', 'MHT', 'METLD', 'MHT-MET', 'MetPhi', 'MetSumEt',
+    plotter._variableDict['MET']        = ['Met', 'MHT', 'METLD', 'MET-MHT', 'MetPhi', 'MetSumEt',
                                            'MetLepton1DeltaPhi', 'MetLepton2DeltaPhi'
                                            'MetLepDeltaPhiMin', 'nearLepIndex', 'ProjectedMet', 'MetLepton3DeltaPhi'] 
 
-    plotter._variableDict['GEN']        = ['GenChargeMisId', 'GenMisIdPt', 'GenMisIdEta',
-                                           'GenDeltaR', 'GenBalance']
-
-    plotter._variableDict['4l']         = ['4lMass', '4lPt', '4lSumPt', '4lMet']
-
-    plotter._variableDict['2D']         = ['metVsHt', 'metVsSqrtHt', 'TrileptonMVsDileptonMOS',
-                                            'DileptonMVsDeltaROS', 'DileptonQtVsDeltaROS',
-                                            #'DileptonM13VsM21', 'DileptonM12VsM31', 'DileptonM21VsM32',
-                                            #'DalitzM13VsM21', 'DalitzM12VsM31', 'DalitzM21VsM32',
-                                            'LepChargeVsFlavor']
 
 
      ###################   
@@ -211,34 +160,13 @@ if doPlots:
 
     r.gROOT.SetStyle('Plain')
     r.gStyle.SetOptStat(0)
-    #r.gROOT.ProcessLine('.L ./tdrStyle.C')
-    #r.setTDRStyle()
-
-    ### inclusive ###
-
-    inclusive_plotter = copy.deepcopy(plotter)
-    inclusive_plotter.add_datasets(samples['inclusive'], Clear=True)
-    inclusive_plotter._overlayList = ['DATA'] # overlaySamples
-
-    for i, cut in enumerate(cutList):
-
-        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
-
-        if doLog:
-            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, cut)
-        else:
-            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
-
-        inclusive_plotter.make_save_path(outFile, clean=True)
-        p_plot.append(Process(name = cut[2:] + '/inclusive', target = plotter_wrapper, args=(inclusive_plotter, 'inclusive', inFile, outFile, do1D, do2D, doLog, doRatio, doEff)))
-
 
     ### 3l selection ###
     if do3l:
 
         plotter_3l = copy.deepcopy(plotter)
         plotter_3l.add_datasets(samples['3l'], Clear=True)
-        plotter_3l._overlayList = ['DATA', 'FCNH']
+        plotter_3l._overlayList = ['Fakes']
 
         for i, cut in enumerate(cutList):
             inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
@@ -257,7 +185,7 @@ if doPlots:
     if doSS:
         ss_plotter = copy.deepcopy(plotter)
         ss_plotter.add_datasets(samples['ss'], Clear=True)
-        ss_plotter._overlayList = ['DATA', 'FCNH']
+        ss_plotter._overlayList = ['Fakes']
 
         for i, cut in enumerate(cutList):
             inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
@@ -271,81 +199,6 @@ if doPlots:
 
             for category in catSS:
                 p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(ss_plotter, category, inFile, outFile, do1D, do2D, doLog, doRatio, doEff)))
-
-
-    ### os selection ###
-    if doOS:
-        os_plotter = copy.deepcopy(plotter)
-        os_plotter.add_datasets(samples['os'], Clear=True)
-        os_plotter._overlayList = ['DATA']
-
-        for i, cut in enumerate(cutList):
-            inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
-
-            if doLog:
-                outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, cut)
-            else:
-                outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
-
-            os_plotter.make_save_path(outFile, clean=True)
-
-            for category in catOS:
-                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(os_plotter, category, inFile, outFile, do1D, do2D, doLog, doRatio, doEff)))
-
-    doLog = False
-
-    ### WZ control region
-    if 'CR_WZ' in crList:
-        wz_plotter = copy.deepcopy(plotter)
-        wz_plotter.add_datasets(samples['WZ'], Clear=True)
-        wz_plotter._overlayList = ['DATA']
-
-        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 6, period, batch)
-
-        if doLog:
-            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'CR_WZ')
-        else:
-            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'CR_WZ')
-
-        wz_plotter.make_save_path(outFile, clean=True)
-
-        for category in cat3l:
-            p_plot.append(Process(name = 'CR_WZ/' + category, target = plotter_wrapper, args=(wz_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, doEff)))
-
-    ### ttbar control region
-    if 'CR_ttbar' in crList:
-        ttbar_plotter = copy.deepcopy(plotter)
-        ttbar_plotter.add_datasets(samples['ttbar'],  Clear=True)
-        ttbar_plotter._overlayList = ['DATA']
-
-        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 7, period, batch)
-
-        if doLog:
-            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'CR_ttbar')
-        else:
-            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'CR_ttbar')
-
-        ttbar_plotter.make_save_path(outFile, clean=True)
-
-        p_plot.append(Process(name = 'CR_ttbar/os_emu', target = plotter_wrapper, args=(ttbar_plotter, 'os_emu', inFile, outFile, do1D, False, doLog, doRatio, doEff)))
-
-    ### ttZ control region
-    if 'CR_ttZ' in crList:
-        ttZ_plotter = copy.deepcopy(plotter)
-        ttZ_plotter.add_datasets(samples['ttZ'],  Clear=True)
-        ttZ_plotter._overlayList = ['DATA']
-
-        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 8, period, batch)
-
-        if doLog:
-            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'CR_ttZ')
-        else:
-            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'CR_ttZ')
-
-        ttZ_plotter.make_save_path(outFile, clean=True)
-
-        for category in cat3l:
-            p_plot.append(Process(name = 'CR_ttZ/' + category, target = plotter_wrapper, args=(ttZ_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, doEff)))
 
 
 ### End of configuration for PlotProducer ###
@@ -373,7 +226,6 @@ if doYields:
 
     if do3l:
         #yieldTable._columnList  = samples['3l'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
-        #yieldTable._columnList  = ['BG', 'DATA', 'FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau','FCNH']# 'Significance'] 
         yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
         yieldTable.add_datasets(samples['3l'], Clear = True)
