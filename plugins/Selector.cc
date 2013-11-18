@@ -504,11 +504,11 @@ void Selector::JetSelector(TClonesArray* jets)
         for (int j = 0; j < (int)_selElectrons["tight"].size(); ++j) 
             if (thisJet->DeltaR(_selElectrons["tight"][j]) < 0.5) overlap.set(1);
 
-        for (int j = 0; j < (int)_selMuons["fakeables"].size(); ++j) 
-            if (thisJet->DeltaR(_selMuons["fakeables"][j]) < 0.5) overlap.set(2);
+        for (int j = 0; j < (int)_selMuons["fakeable"].size(); ++j) 
+            if (thisJet->DeltaR(_selMuons["fakeable"][j]) < 0.5) overlap.set(2);
 
-        for (int j = 0; j < (int)_selElectrons["fakeables"].size(); ++j) 
-            if (thisJet->DeltaR(_selElectrons["fakeables"][j]) < 0.5) overlap.set(3);
+        for (int j = 0; j < (int)_selElectrons["fakeable"].size(); ++j) 
+            if (thisJet->DeltaR(_selElectrons["fakeable"][j]) < 0.5) overlap.set(3);
 
         // Apply JER corrections; maybe better to do in the analysis code...
         TCJet corJet = this->JERCorrections(thisJet);
@@ -531,13 +531,14 @@ void Selector::JetSelector(TClonesArray* jets)
                 else {
                     if (BTagModifier(corJet, "CSVM")) {
                         _selJets["bJetsMedium"].push_back(corJet);
+
                         if (!overlap[2] && !overlap[3])
-                            _selJets["bJetsM_Nofakes"].push_back(corJet);
+                            _selJets["bJetsMedium_NoFakes"].push_back(corJet);
 
                     } else if (BTagModifier(corJet, "CSVL")) {
                         _selJets["bJetsLoose"].push_back(corJet);
                         if (!overlap[2] && !overlap[3])
-                            _selJets["bJetsL_Nofakes"].push_back(corJet);
+                            _selJets["bJetsLoose_NoFakes"].push_back(corJet);
 
                     } else if (
                             corJet.VtxNTracks() > 0
@@ -547,7 +548,7 @@ void Selector::JetSelector(TClonesArray* jets)
                         _selJets["tight"].push_back(corJet);
 
                         if (!overlap[2] && !overlap[3])
-                            _selJets["tight_Nofakes"].push_back(corJet);
+                            _selJets["tight_NoFakes"].push_back(corJet);
                     }
                 }
             }

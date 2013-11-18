@@ -591,12 +591,16 @@ bool fcncAnalyzer::Process(Long64_t entry)
         sort(fBJetsM.begin(), fBJetsM.end(), BTagSortCondition);
         sort(fBJetsL.begin(), fBJetsL.end(), BTagSortCondition);
 
-        for (unsigned i = 0; i < fakeables.size(); ++i) {
-            for (unsigned j = 0; j < fJets.size(); ++j) {
-                if (fakeables[i].DeltaR(fJets[j]) > 0.5)
-                    cout << fakeables[i].DeltaR(fJets[j]) << ", " << endl;;
-            }
-        }
+        //for (unsigned i = 0; i < fakeables.size(); ++i) {
+        //    for (unsigned j = 0; j < fJets.size(); ++j) {
+        //        if (fakeables[i].DeltaR(fJets[j]) < 0.5)
+        //            cout << fakeables[i].DeltaR(fJets[j]) << ", " << endl;;
+        //    }
+        //    for (unsigned j = 0; j < fBJetsM.size(); ++j) {
+        //        if (fakeables[i].DeltaR(fBJetsM[j]) < 0.5)
+        //            cout << fakeables[i].DeltaR(fBJetsM[j]) << ", " << endl;;
+        //    }
+        //}
 
         if (!lowMassResonance) {
             if (matchedFakeables.size() == 0) {
