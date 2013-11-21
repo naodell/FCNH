@@ -360,6 +360,9 @@ bool fcncAnalyzer::Process(Long64_t entry)
     extraLeptons.insert(extraLeptons.end(), looseElectrons.begin(), looseElectrons.end());
     extraLeptons.insert(extraLeptons.end(), looseMuons.begin(), looseMuons.end());
 
+    // Get overlap electrons
+    vector<TCElectron> olElectrons = selector->GetSelectedElectrons("tight_overlap");
+
     // Get fakeable leptons
     vObj fakeables;
     vector<TCElectron>  fakeableElectrons  = selector->GetSelectedElectrons("fakeable");
@@ -400,14 +403,18 @@ bool fcncAnalyzer::Process(Long64_t entry)
     histManager->SetDirectory("inclusive/" + subdir);
     histManager->SetWeight(1);
 
-    //!!!!!!!!!!!!!!!!//
-    //                //
-    //  Overlap Jets  //
-    //                //
-    //!!!!!!!!!!!!!!!!//
+    //!!!!!!!!!!!!!!!!!!!!!!!!//
+    //                        //
+    //  Overlap Jets/Leptons  //
+    //                        //
+    //!!!!!!!!!!!!!!!!!!!!!!!!//
 
     histManager->Fill1DHist(muJets.size() + eleJets.size(), 
             "h1_OverlapJetMult", "(e/#mu)-jet multiplicity;N_{jets};Entries / bin", 5, -0.5, 4.5);
+
+    if (muons.size() > 1)
+        histManager->Fill1DHist(olElectrons.size(), "h1_OverlapEleMu", ";(e/#mu) multiplicity;Entries", 4, -0.5, 3.5);
+
 
     //!!!!!!!!!!!!!!!!!!!!!!!!//
     //                        //
@@ -418,7 +425,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
 
     histManager->Fill1DHist(leptons.size(), "h1_LeptonMult", "lepton multiplicity;N_{leptons};Events / bin", 6, -0.5, 5.5);
-
 
     if (!isRealData) {
         GenPlots(gLeptons, leptons);
@@ -584,6 +590,10 @@ bool fcncAnalyzer::Process(Long64_t entry)
                 unmatchedFakeables.push_back(fakeables[i]);
         }
 
+        histManager->SetFileNumber(0);
+        histManager->SetDirectory("inclusive/" + suffix);
+        histManager->Fill1DHist(matchedFakeables.size()/2., "h1_fakeableOverlapMult", ";e #mu overlap pairs;Entries", 3, -0.5, 2.5);
+
         vector<TCJet> fJets     = selector->GetSelectedJets("tight_NoFakes");
         vector<TCJet> fBJetsM   = selector->GetSelectedJets("bJetsMedium_NoFakes");
         vector<TCJet> fBJetsL   = selector->GetSelectedJets("bJetsLoose_NoFakes");
@@ -591,16 +601,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
         sort(fBJetsM.begin(), fBJetsM.end(), BTagSortCondition);
         sort(fBJetsL.begin(), fBJetsL.end(), BTagSortCondition);
 
-        //for (unsigned i = 0; i < fakeables.size(); ++i) {
-        //    for (unsigned j = 0; j < fJets.size(); ++j) {
-        //        if (fakeables[i].DeltaR(fJets[j]) < 0.5)
-        //            cout << fakeables[i].DeltaR(fJets[j]) << ", " << endl;;
-        //    }
-        //    for (unsigned j = 0; j < fBJetsM.size(); ++j) {
-        //        if (fakeables[i].DeltaR(fBJetsM[j]) < 0.5)
-        //            cout << fakeables[i].DeltaR(fBJetsM[j]) << ", " << endl;;
-        //    }
-        //}
 
         if (!lowMassResonance) {
             if (matchedFakeables.size() == 0) {
@@ -642,7 +642,7 @@ void fcncAnalyzer::Terminate()
     cout<<"| WZ:                                |\t" << eventCount[10]  << "\t|\t" << eventCountWeighted[10] << "\t|"<<endl;
     cout<<"| ttbar:                             |\t" << eventCount[11]  << "\t|\t" << eventCountWeighted[11] << "\t|"<<endl;
     cout<<"| ttZ:                               |\t" << eventCount[12]  << "\t|\t" << eventCountWeighted[12] << "\t|"<<endl;
-    //cout<<"| fakes:                             |\t" << eventCount[13]  << "\t|\t" << eventCountWeighted[13] << "\t|"<<endl;
+    cout<<"| low eta:                           |\t" << eventCount[13]  << "\t|\t" << eventCountWeighted[13] << "\t|"<<endl;
     cout<<"| ZZ:                                |\t" << eventCount[14]  << "\t|\t" << eventCountWeighted[14] << "\t|"<<endl;
 
 
@@ -749,6 +749,31 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
        ) {
         MakePlots(leptons, jets, bJetsM, *recoMET, PV, 7);
         SetYields(12);
+    }
+
+    // low delta eta control region //
+    if (
+            leptons.size() == 2 
+            && leptons[0].Charge() == leptons[1].Charge()
+            && fabs(leptons[0].Eta() - leptons[1].Eta()) < 0.8
+       ) {
+        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 8);
+        SetYields(13);
+    }
+
+    // only barrel leptons control region //
+    if (
+            (leptons.size() == 2 
+            && leptons[0].Eta() < 1.4 
+            && leptons[1].Eta() < 1.4)
+            ||
+            (leptons.size() == 2 
+            && leptons[0].Eta() < 1.4 
+            && leptons[1].Eta() < 1.4
+            && leptons[2].Eta() < 1.4)
+       ) {
+        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 9);
+        //SetYields(13);
     }
 
 
@@ -1169,6 +1194,8 @@ void fcncAnalyzer::JetPlots(vector<TCJet> jets, vector<TCJet> bJets)
             "h1_JetMult", "Multiplicity of jets;N_{jets};Entries / bin", 11, -0.5, 10.5);
     histManager->Fill1DHist(bJets.size(),
             "h1_BJetMult", "Multiplicity of b-jets;N_{b-jets};Entries / bin", 6, -0.5, 5.5);
+    histManager->Fill1DHist(jets.size() + bJets.size(),
+            "h1_AllJetMult", "Multiplicity of all jets;N_{jets};Entries / bin", 11, -0.5, 10.5);
 
     for (unsigned i = 0; i < jets.size(); ++i) {
         string index = str(i+1);

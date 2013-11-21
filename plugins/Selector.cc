@@ -238,10 +238,8 @@ void Selector::MuonSelector(TClonesArray* muons)
         // isolation
         float muISO = 0.;
         muISO = (
-                thisMuon->IsoMap("pfChargedHadronPt_R04") 
-                + TMath::Max(0.0, (double)thisMuon->IsoMap("pfPhotonEt_R04") 
-                    + thisMuon->IsoMap("pfNeutralHadronEt_R04") 
-                    - TMath::Max(0.0, (double)_rho*EffectiveArea(thisMuon)))
+                thisMuon->IsoMap("pfChargedHadronPt_R04") + TMath::Max(0.0, (double)thisMuon->IsoMap("pfPhotonEt_R04") 
+                    + thisMuon->IsoMap("pfNeutralHadronEt_R04") - TMath::Max(0.0, (double)_rho*EffectiveArea(thisMuon)))
                 )/thisMuon->Pt();
 
         thisMuon->SetIsoMap("IsoRel", muISO);
@@ -397,11 +395,7 @@ void Selector::ElectronSelector(TClonesArray* electrons)
         //cout << "(" << thisElec->Pt() << ", " << thisElec->Eta() << "),\t";
 
         // electron preselection
-        if (
-                thisElec->Pt() < _elePtCuts[0] 
-                || fabs(thisElec->Eta()) > 2.5 
-                || muOverlap
-           ) continue;
+        if ( thisElec->Pt() < _elePtCuts[0] || fabs(thisElec->Eta()) > 2.5 ) continue;
 
         float eleISO = (thisElec->IsoMap("pfChIso_R04") + max(0., (double)(thisElec->IsoMap("pfPhoIso_R04") 
                         + thisElec->IsoMap("pfNeuIso_R04") - _rho*thisElec->IsoMap("EffArea_R04"))))/thisElec->Pt(); 
@@ -415,17 +409,21 @@ void Selector::ElectronSelector(TClonesArray* electrons)
 
             _selElectrons["QCD2l_CR_probe"].push_back(*thisElec);
 
-            if (ElectronMVA(thisElec)) 
+            if (ElectronMVA(thisElec) && !muOverlap)
                 _selElectrons["premva"].push_back(*thisElec);
 
             if (ElectronMVA(thisElec) && eleISO < 0.15) 
-                _selElectrons["tight"].push_back(*thisElec);			
-            else 
+                if (!muOverlap)
+                    _selElectrons["tight"].push_back(*thisElec);			
+                else
+                    _selElectrons["tight_overlap"].push_back(*thisElec);			
+            else if (!muOverlap)
                 _selElectrons["fakeable"].push_back(*thisElec);
 
         } else if (
                 ElectronLooseID(thisElec)
-                //&& (thisElec->Pt() > 20 && eleISO > 0.15)
+                && (thisElec->Pt() > 20 && eleISO > 0.20)
+                && !muOverlap
                 ) _selElectrons["loose"].push_back(*thisElec);
     }
     //cout << endl;
@@ -565,9 +563,7 @@ void Selector::JetSelector(TClonesArray* jets)
                         _selJets["eleJets"].push_back(corJet);
                     else {
                         _selJets["forward"].push_back(corJet); 
-
-                        if (!overlap[2] && !overlap[3])
-                            _selJets["tight_Nofakes"].push_back(corJet);
+                        _selJets["tight_NoFakes"].push_back(corJet);
                     }
             }
         }

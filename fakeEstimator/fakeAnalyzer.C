@@ -20,10 +20,10 @@ const float phoPtCut[]        = {10., 10.};
 
 unsigned  nMetBins      = 10;
 unsigned  nPtBins       = 6;
-unsigned  nEtaBins      = 2;
 float     metBins[]     = {0., 10., 20., 30., 40., 50., 60., 70., 80., 100., 300.}; 
 float     ptBins[]      = {5., 10., 20., 35., 50., 70., 100.}; 
-float     etaBins[]     = {0., 1.5, 2.5};
+float     etaBinsMu[]   = {0., 1.5, 2.5};
+float     etaBinsEle[]  = {0., 0.8, 1.479, 2.5};
 
 // Do something about these: should just have one sort condition function
 bool P4SortCondition(const TLorentzVector& p1, const TLorentzVector& p2) {return (p1.Pt() > p2.Pt());} 
@@ -87,10 +87,6 @@ void fakeAnalyzer::Begin(TTree* tree)
 
     histoFile->mkdir("ZPlusJet_inclusive", "ZPlusJet_inclusive");
     histoFile->GetDirectory("ZPlusJet_inclusive", "ZPlusJet_inclusive")->mkdir(suffix.c_str(), suffix.c_str());
-    histoFile->mkdir("ZPlusJet_low_met", "ZPlusJet_low_met");
-    histoFile->GetDirectory("ZPlusJet_low_met", "ZPlusJet_low_met")->mkdir(suffix.c_str(), suffix.c_str());
-    histoFile->mkdir("ZPlusJet_high_met", "ZPlusJet_high_met");
-    histoFile->GetDirectory("ZPlusJet_high_met", "ZPlusJet_high_met")->mkdir(suffix.c_str(), suffix.c_str());
 
     histManager->AddFile(histoFile);
     histManager->SetFileNumber(0);
@@ -210,6 +206,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
     // Get analysis leptons
     vector<TCMuon>      muons       = selector->GetSelectedMuons("tight");
     vector<TCElectron>  electrons   = selector->GetSelectedElectrons("tight");
+    vector<TCElectron>  olElectrons = selector->GetSelectedElectrons("tight_overlap");
 
     vObj leptons;
     leptons.insert(leptons.end(), muons.begin(), muons.end());
@@ -296,15 +293,25 @@ bool fakeAnalyzer::Process(Long64_t entry)
                 nEleProbes = 0;
                 for (unsigned i = 0; i < eleProbes.size(); ++i) {
                     TCPhysObject testProbe = (TCPhysObject)eleProbes[i];
-                    if (tag.DeltaR(testProbe) > 0.3) {
+                    if (tag.DeltaR(testProbe) > 0.1) {
                         eleProbe = testProbe;
                         ++nEleProbes;
                     }
                 }
-                if (nEleProbes == 1) isQCD2l = CheckQCD2lCR(tagJets, eleProbe); 
+                if (nEleProbes == 1) 
+                    isQCD2l = CheckQCD2lCR(tagJets, eleProbe); 
             }
 
-            if (isQCD2l) {// && recoMET->Mod() < 50.) {
+            bool singleProbe = true;
+            if (nEleProbes == 1 && nMuProbes == 1) {
+                // Only allow events with muon and electron probes 
+                // if they are the same object
+                if (eleProbe.DeltaR(muProbe) > 0.1)
+                    singleProbe = false;
+            }
+
+
+            if (isQCD2l && (nEleProbes == 1 || nMuProbes == 1) && singleProbe) {
 
                 // Probe object is found and event is consistent with QCD 2l
                 // control region requirements. Now fill histograms for
@@ -335,7 +342,11 @@ bool fakeAnalyzer::Process(Long64_t entry)
             nMuProbes = 0;
             for (unsigned i = 0; i < muProbes.size(); ++i) {
                 TCPhysObject testProbe = (TCPhysObject)muProbes[i];
-                if (lep1.DeltaR(testProbe) > 0.1 && lep2.DeltaR(testProbe) > 0.1) {
+                if (
+                        lep1.DeltaR(testProbe) > 0.1 
+                        && lep2.DeltaR(testProbe) > 0.1
+                        && (tag + testProbe).M() > 12
+                   ) {
                     muProbe = testProbe;
                     ++nMuProbes;
                 }
@@ -344,13 +355,25 @@ bool fakeAnalyzer::Process(Long64_t entry)
             nEleProbes = 0;
             for (unsigned i = 0; i < eleProbes.size(); ++i) {
                 TCPhysObject testProbe = (TCPhysObject)eleProbes[i];
-                if (lep1.DeltaR(testProbe) > 0.1 && lep2.DeltaR(testProbe) > 0.1) {
+                if (
+                        lep1.DeltaR(testProbe) > 0.1 
+                        && lep2.DeltaR(testProbe) > 0.1
+                        && (tag + testProbe).M() > 12
+                   ) {
                     eleProbe = testProbe;
                     ++nEleProbes;
                 }
             }
 
-            if (nEleProbes == 1 || nMuProbes == 1) {
+            bool singleProbe = true;
+            if (nEleProbes == 1 && nMuProbes == 1) {
+                // Only allow events with muon and electron probes to proceed
+                // if they are the same object
+                if (eleProbe.DeltaR(muProbe) > 0.1)
+                    singleProbe = false;
+            }
+
+            if ((nEleProbes == 1 || nMuProbes == 1) && singleProbe) {
                 if (CheckZPlusJetCR()) {
 
                     // Probe object is found and event is consistent with QCD 2l
@@ -372,16 +395,19 @@ bool fakeAnalyzer::Process(Long64_t entry)
     if (isTP) {
 
         vObj triggerLeps;
-        if (crType == "QCD2l") {
+        if (crType == "ZPlusJet") {
+            triggerLeps = leptons;
+        } /*else if (crType == "QCD2l") {
             triggerLeps.push_back(tag);
             triggerLeps.push_back(probe);
-        } else if (crType == "ZPlusJet") {
-            triggerLeps = leptons;
-        }
+            }*/ 
 
-        weighter->SetObjects(triggerLeps, jets, nPUVerticesTrue, passNames[0]);
-        evtWeight *= weighter->GetTotalWeight();
-        histManager->SetWeight(evtWeight);
+        if (!isRealData) {
+            weighter->SetObjects(triggerLeps, jets, nPUVerticesTrue, passNames[0]);
+            Float_t evtWeight = weighter->GetTotalWeight();
+            histManager->SetWeight(evtWeight);
+        } else
+            histManager->SetWeight(1.);
 
         histManager->SetDirectory(crType + "_inclusive/" + suffix);
         histManager->Fill1DHist(leptons.size(),
@@ -393,15 +419,10 @@ bool fakeAnalyzer::Process(Long64_t entry)
     } else
         return kTRUE;
 
-    if (
-            (crType == "QCD2l" && leptons.size() <= 1)
-            || (crType == "ZPlusJet" && leptons.size() <= 3)
-            //&& bJetsM.size() < 2 // kills ttbar contamination
-       ) {
+    if (crType == "QCD2l" && leptons.size() <= 1) {
 
         if (nEleProbes == 1) {
             FillDenominatorHists(crType + "_inclusive", eleProbe);
-
             if (recoMET->Mod() < 20)
                 FillDenominatorHists(crType + "_low_met", eleProbe);
             else if (recoMET->Mod() > 45 && recoMET->Mod() < 80)
@@ -410,12 +431,17 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
         if (nMuProbes == 1) {
             FillDenominatorHists(crType + "_inclusive", muProbe);
-
             if (recoMET->Mod() < 20)
                 FillDenominatorHists(crType + "_low_met", muProbe);
             else if (recoMET->Mod() > 45 && recoMET->Mod() < 80)
                 FillDenominatorHists(crType + "_high_met", muProbe);
         }
+    } else if (crType == "ZPlusJet" && leptons.size() <= 3) {
+        if (nEleProbes == 1) 
+            FillDenominatorHists(crType + "_inclusive", eleProbe);
+
+        if (nMuProbes == 1) 
+            FillDenominatorHists(crType + "_inclusive", muProbe);
     } else
         return kTRUE;
 
@@ -425,6 +451,9 @@ bool fakeAnalyzer::Process(Long64_t entry)
     bool muMatched  = false;
     if (crType == "QCD2l" && leptons.size() == 1) {
         if (nEleProbes == 1) {
+            if (leptons[0].Type() == "muon" && olElectrons.size() == 1)
+                leptons[0] = (TCPhysObject)olElectrons[0];
+
             if (eleProbe.DeltaR(leptons[0]) < 0.05 && eleProbe.Type() == leptons[0].Type()) {
                 elePass = leptons[0];
                 eleMatched = true;
@@ -439,6 +468,10 @@ bool fakeAnalyzer::Process(Long64_t entry)
         }
     } else if (crType == "ZPlusJet" && leptons.size() == 3) {
         if (nEleProbes == 1) {
+            if (lep3.Type() == "muon" && olElectrons.size() == 1)
+                if (lep3.DeltaR(olElectrons[0]) < 0.1)
+                    lep3 = (TCPhysObject)olElectrons[0];
+
             if (eleProbe.DeltaR(lep3) < 0.05 && eleProbe.Type() == lep3.Type()) {
                 elePass = lep3;
                 eleMatched = true;
@@ -456,19 +489,23 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
     if (eleMatched) {
         FillNumeratorHists(crType + "_inclusive", elePass);
-        if (recoMET->Mod() < 20)
-            FillNumeratorHists(crType + "_low_met", elePass);
-        else if (recoMET->Mod() > 45 && recoMET->Mod() < 80)
-            FillNumeratorHists(crType + "_high_met", elePass);
+        if (crType == "QCD2l") {
+            if (recoMET->Mod() < 20)
+                FillNumeratorHists(crType + "_low_met", elePass);
+            else if (recoMET->Mod() > 45 && recoMET->Mod() < 80)
+                FillNumeratorHists(crType + "_high_met", elePass);
+        }
     } else if (nEleProbes == 1)
         FillClosureHists(crType, eleProbe);
 
     if (muMatched) {
         FillNumeratorHists(crType + "_inclusive", muPass);
-        if (recoMET->Mod() < 20)
-            FillNumeratorHists(crType + "_low_met", muPass);
-        else if (recoMET->Mod() > 45 && recoMET->Mod() < 80)
-            FillNumeratorHists(crType + "_high_met", muPass);
+        if (crType == "QCD2l") {
+            if (recoMET->Mod() < 20)
+                FillNumeratorHists(crType + "_low_met", muPass);
+            else if (recoMET->Mod() > 45 && recoMET->Mod() < 80)
+                FillNumeratorHists(crType + "_high_met", muPass);
+        }
     } else  if (nMuProbes == 1)
         FillClosureHists(crType, muProbe);
 
@@ -562,9 +599,9 @@ void fakeAnalyzer::FillDenominatorHists(string cat, TCPhysObject probe)
         histManager->Fill1DHistUnevenBins(probe.Pt(),
                 "h1_MuDenomPt", "probe muon p_{T};p_{T};Entries / 3 GeV", nPtBins, ptBins);
         histManager->Fill1DHistUnevenBins(probe.Eta(),
-                "h1_MuDenomEta", "probe muon #eta;#eta;Entries / 3 GeV", nEtaBins, etaBins);
+                "h1_MuDenomEta", "probe muon #eta;#eta;Entries / 3 GeV", 2, etaBinsMu);
         histManager->Fill2DHistUnevenBins(probe.Pt(), probe.Eta(),
-                "h2_MuDenom", "probe muon p_{T};p_{T};#eta", nPtBins, ptBins, nEtaBins, etaBins);
+                "h2_MuDenom", "probe muon p_{T};p_{T};#eta", nPtBins, ptBins, 2, etaBinsMu);
 
         histManager->Fill1DHistUnevenBins(recoMET->Mod(),
                 "h1_MuDenomMet", "probe muon Met;Met;Entries", nMetBins, metBins);
@@ -578,9 +615,9 @@ void fakeAnalyzer::FillDenominatorHists(string cat, TCPhysObject probe)
         histManager->Fill1DHistUnevenBins(probe.Pt(),
                 "h1_EleDenomPt", "probe electron p_{T};p_{T};Entries / 3 GeV", nPtBins, ptBins);
         histManager->Fill1DHistUnevenBins(probe.Eta(),
-                "h1_EleDenomEta", "probe electron #eta;#eta;Entries / 3 GeV", nEtaBins, etaBins);
+                "h1_EleDenomEta", "probe electron #eta;#eta;Entries / 3 GeV", 3, etaBinsEle);
         histManager->Fill2DHistUnevenBins(probe.Pt(), probe.Eta(),
-                "h2_EleDenom", "probe electron p_{T};p_{T};#eta", nPtBins, ptBins, nEtaBins, etaBins);
+                "h2_EleDenom", "probe electron p_{T};p_{T};#eta", nPtBins, ptBins, 3, etaBinsEle);
 
         histManager->Fill1DHistUnevenBins(recoMET->Mod(),
                 "h1_EleDenomMet", "probe electron Met;Met;Entries", nMetBins, metBins);
@@ -601,9 +638,9 @@ void fakeAnalyzer::FillNumeratorHists(string cat, TCPhysObject passLep)
         histManager->Fill1DHistUnevenBins(passLep.Pt(),
                 "h1_MuNumerPt", "pass muon p_{T};p_{T};Entries", nPtBins, ptBins);
         histManager->Fill1DHistUnevenBins(passLep.Eta(),
-                "h1_MuNumerEta", "pass muon #eta;#eta;Entries", nEtaBins, etaBins);
+                "h1_MuNumerEta", "pass muon #eta;#eta;Entries", 2, etaBinsMu);
         histManager->Fill2DHistUnevenBins(passLep.Pt(), passLep.Eta(),
-                "h2_MuNumer", "pass muon p_{T};p_{T};#eta", nPtBins, ptBins, nEtaBins, etaBins);
+                "h2_MuNumer", "pass muon p_{T};p_{T};#eta", nPtBins, ptBins, 2, etaBinsMu);
 
         histManager->Fill1DHistUnevenBins(recoMET->Mod(),
                 "h1_MuNumerMet", "pass muon Met;Met;Entries", nMetBins, metBins);
@@ -618,9 +655,9 @@ void fakeAnalyzer::FillNumeratorHists(string cat, TCPhysObject passLep)
         histManager->Fill1DHistUnevenBins(passLep.Pt(),
                 "h1_EleNumerPt", "pass electron p_{T};p_{T};Entries / 3 GeV", nPtBins, ptBins);
         histManager->Fill1DHistUnevenBins(passLep.Eta(),
-                "h1_EleNumerEta", "pass electron #eta;#eta;Entries / 3 GeV", nEtaBins, etaBins);
+                "h1_EleNumerEta", "pass electron #eta;#eta;Entries / 3 GeV", 3, etaBinsEle);
         histManager->Fill2DHistUnevenBins(passLep.Pt(), passLep.Eta(),
-                "h2_EleNumer", "pass electron p_{T};p_{T};#eta", nPtBins, ptBins, nEtaBins, etaBins);
+                "h2_EleNumer", "pass electron p_{T};p_{T};#eta", nPtBins, ptBins, 3, etaBinsEle);
 
         histManager->Fill1DHistUnevenBins(recoMET->Mod(),
                 "h1_EleNumerMet", "pass electron Met;Met;Entries", nMetBins, metBins);

@@ -31,12 +31,14 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
     g_MuonFakesPtB["QCD2l"]         = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l_inclusive/g_MuonFake_1");
     g_MuonFakesPtE["QCD2l"]         = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l_inclusive/g_MuonFake_2");
     g_ElectronFakesPtB["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l_inclusive/g_ElectronFake_1");
-    g_ElectronFakesPtE["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l_inclusive/g_ElectronFake_2");
+    g_ElectronFakesPtG["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l_inclusive/g_ElectronFake_2");
+    g_ElectronFakesPtE["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l_inclusive/g_ElectronFake_3");
 
     g_MuonFakesPtB["ZPlusJet"]      = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet_inclusive/g_MuonFake_1");
     g_MuonFakesPtE["ZPlusJet"]      = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet_inclusive/g_MuonFake_2");
     g_ElectronFakesPtB["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet_inclusive/g_ElectronFake_1");
-    g_ElectronFakesPtE["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet_inclusive/g_ElectronFake_2");
+    g_ElectronFakesPtG["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet_inclusive/g_ElectronFake_2");
+    g_ElectronFakesPtE["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet_inclusive/g_ElectronFake_3");
 
     TFile* f_misQFile = new TFile("../data/electronQMisID.root", "OPEN");
     h2_DielectronMisQ = (TH2D*)f_misQFile->Get("inclusive/h2_DielectronMisQ");
@@ -128,7 +130,7 @@ float WeightUtils::RecoWeight()
         if (_leptons[0].Type() == "muon" && _leptons[1].Type() == "muon") 
             _triggerWeight = GetMuTriggerEff(_leptons[0], _leptons[1]);
         if (_leptons[0].Type() == "electron" && _leptons[1].Type() == "electron") 
-            _triggerWeight = 1;//GetEleTriggerEff(_leptons[0], _leptons[1]);
+            _triggerWeight = GetEleTriggerEff(_leptons[0], _leptons[1]);
     } else {
         _triggerWeight = 1.;
     }
@@ -439,9 +441,11 @@ float WeightUtils::GetFakeWeight(vector<TCPhysObject> fakeables, string controlR
 
         } else if (fakeable.Type() == "electron") {
 
-            if (fabs(fakeable.Eta()) < 1.5)
+            if (fabs(fakeable.Eta()) < 0.8)
                 fakeRate *= g_ElectronFakesPtB[controlRegion]->Eval(fakeablePt);
-            else if (fabs(fakeable.Eta()) >= 1.5)
+            if (fabs(fakeable.Eta()) >= 0.8 && fabs(fakeable.Eta()) < 1.479)
+                fakeRate *= g_ElectronFakesPtG[controlRegion]->Eval(fakeablePt);
+            else if (fabs(fakeable.Eta()) >= 1.479)
                 fakeRate *= g_ElectronFakesPtE[controlRegion]->Eval(fakeablePt);
         }
     }

@@ -10,7 +10,7 @@ styleDict['DATA']               = (2, r.kBlack, 0, 21, 'Observed')
 styleDict['DATA_MUON']          = (2, r.kGray, 0, 21, 'Observed (#mu#mu)')
 styleDict['DATA_ELECTRON']      = (2, r.kGray+1, 0, 21, 'Observed (ee)')
 styleDict['DATA_MUEG']          = (2, r.kGray+2, 0, 21, 'Observed (e#mu)')
-styleDict['DATA_FAKES']         = (2, r.kBlack, 0, 21, 'Fakes')
+styleDict['DATA_FAKES']         = (2, r.kBlack, 0, 21, 'Data')
 
 #V+jets
 styleDict['VJets']              = (0, r.kRed, 1, 1, 'V+jets') # Vector boson combination
@@ -103,8 +103,8 @@ styleDict['SIG_EFF']            = (1, r.kRed, 3018, 21, 'Signal')
 styleDict['RATIO']              = (0, r.kBlack, 3002, 21, 'Ratio')
 styleDict['Fakes']              = (2, r.kBlack, 3001, 1, 'Fakes')
 styleDict['QFlips']             = (2, r.kBlue+2, 3001, 1, 'QFlips')
-styleDict['FAKE_2l']            = (2, r.kRed, 3001, 1, 'Prompt')
-styleDict['FAKE_3l']            = (2, r.kBlue, 3001, 1, 'Prompt')
+styleDict['FAKES_2l']           = (2, r.kRed, 3001, 1, 'Prompt')
+styleDict['FAKES_3l']           = (2, r.kBlue, 3001, 1, 'Prompt')
 
 ### Set scales
 scaleDict = {'2011':{}, '2012':{}}
