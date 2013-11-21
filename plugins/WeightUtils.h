@@ -87,6 +87,7 @@ class WeightUtils: public TObject {
         map<string, TGraphAsymmErrors*> g_MuonFakesPtB;
         map<string, TGraphAsymmErrors*> g_MuonFakesPtE;
         map<string, TGraphAsymmErrors*> g_ElectronFakesPtB;
+        map<string, TGraphAsymmErrors*> g_ElectronFakesPtG;
         map<string, TGraphAsymmErrors*> g_ElectronFakesPtE;
 
         //weights

@@ -314,8 +314,8 @@ class PlotProducer(AnalysisTools):
 
         self.make_save_path('{0}/{1}/{2}'.format(self._savePath, self._category, directory))
 
-        #tmpHists = {}
-        #legend = build_legend(tmpHists, dataList, self._styleDict)
+        tmpHists = {}
+        legend = build_legend(tmpHists, self._overlayList+self._datasets, self._styleDict)
 
         for i, (data, var) in enumerate(histPairs):
 
@@ -414,13 +414,13 @@ class PlotProducer(AnalysisTools):
                     legend.SetY1(0.25)
                     legend.SetY2(0.89)
 
-
                 stacks[var].Draw('HIST')
-                sums[var].Draw('E2 SAME')
 
                 if not logScale or not (doRatio):
-                    stacks[var].GetYaxis().SetTitleOffset(1.00);
+                    stacks[var].GetYaxis().SetTitleOffset(2.0);
+                    stacks[var].Draw('HIST')
 
+                sums[var].Draw('E2 SAME')
                 for (hist, data) in hists[var]:
                     hist.Draw('E SAME')
 
