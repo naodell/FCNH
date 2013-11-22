@@ -94,5 +94,8 @@ if doPlots:
         plotter.add_datasets(samples[category.split('_', 1)[0]], Clear=True)
         plotter.set_category(category)
         plotter.make_overlays_1D(logScale = doLog, doRatio = doRatio, doEff = doEff)
-        plotter.make_overlays_diff([('DATA','MuNumerPt'), ('DATA','MuUnevenPtClosure')], 'Lepton', logScale = doLog, doRatio = doRatio)
+
+        plotter.make_overlays_diff([(['DATA'],['MuNumerPt']), (['DATA', 'FAKES_2l'], ['MuUnevenPtClosure', 'MuNumerPt'])], 'Lepton', 'MuClosurePt') 
+        #plotter.make_overlays_diff([(['DATA', 'FAKES_2l'], ['MuUnevenPtClosure', 'MuNumerPt']), (['DATA'],['MuNumerPt'])], 'Lepton', 'MuClosurePt') 
+        #plotter.make_overlays_diff([(['DATA', 'FAKES_2l'], ['EleUnevenPtClosure', 'EleNumerPt']), (['DATA'],['EleNumerPt'])], 'Lepton', 'EleClosurePt')
 
