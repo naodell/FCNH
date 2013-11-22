@@ -185,8 +185,8 @@ bool Selector::MuonTightID(TCMuon* muon)
             && muon->NumberOfMatchedStations() > 1
             && muon->NumberOfValidPixelHits() > 0
             && muon->TrackLayersWithMeasurement() > 5
-            && fabs(muon->Dz(_selVertices[0]))  < 0.5 
-            && fabs(muon->Dxy(_selVertices[0])) < 0.2
+            && fabs(muon->Dz(_selVertices[0]))  < 0.05 
+            && fabs(muon->Dxy(_selVertices[0])) < 0.01
 
             //&& muon->NumberOfMatches() > 1
             //&& muon->NumberOfValidTrackerHits() > 10 // Possibly not valid in 2012
@@ -301,21 +301,23 @@ bool Selector::ElectronMVA(TCElectron* electron)
 
     electron->SetIdMap("mva", mvaValue);
 
-    if (fabs(electron->Eta()) < 0.8) {
-        if (electron->Pt() > 20 && mvaValue > 0.94)
-            pass = true;
-        else if (electron->Pt() < 20 && mvaValue > 0.)
-            pass = true;
-    } else if (fabs(electron->Eta()) > 0.8 && fabs(electron->Eta()) < 1.48) {
-        if (electron->Pt() > 20 && mvaValue > 0.85)
-            pass = true;
-        else if (electron->Pt() < 20 && mvaValue > 0.1)
-            pass = true;
-    } else if (fabs(electron->Eta()) > 1.48 && fabs(electron->Eta()) < 2.5) {
-        if (electron->Pt() > 20 && mvaValue > 0.92)
-            pass = true;
-        else if (electron->Pt() < 20 && mvaValue > 0.62)
-            pass = true;
+    if (fabs(electron->Dz(_selVertices[0]))  < 0.1 && fabs(electron->Dxy(_selVertices[0])) < 0.015) {
+        if (fabs(electron->Eta()) < 0.8) {
+            if (electron->Pt() > 20 && mvaValue > 0.94)
+                pass = true;
+            else if (electron->Pt() < 20 && mvaValue > 0.)
+                pass = true;
+        } else if (fabs(electron->Eta()) > 0.8 && fabs(electron->Eta()) < 1.48) {
+            if (electron->Pt() > 20 && mvaValue > 0.85)
+                pass = true;
+            else if (electron->Pt() < 20 && mvaValue > 0.1)
+                pass = true;
+        } else if (fabs(electron->Eta()) > 1.48 && fabs(electron->Eta()) < 2.5) {
+            if (electron->Pt() > 20 && mvaValue > 0.92)
+                pass = true;
+            else if (electron->Pt() < 20 && mvaValue > 0.62)
+                pass = true;
+        }
     }
 
     return pass;

@@ -167,12 +167,12 @@ class AnalysisTools():
         elif dataName == 'Fakes':
             outHist     = self.get_hist(var, dataName, histType)
 
-            if outHist is None:
-                return outHist
-            else:
-                dataName    = 'Remove_{0}'.format(self._category.split('_', 1)[0])
-                doFakes     = True
-                const       = -1.
+            #if outHist is None:
+            #    return outHist
+            #else:
+            #    dataName    = 'Remove_{0}'.format(self._category.split('_', 1)[0])
+            #    doFakes     = True
+            #    const       = -1.
 
         if dataName not in self._combineDict:
             if doFakes:
