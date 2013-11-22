@@ -601,7 +601,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
         sort(fBJetsM.begin(), fBJetsM.end(), BTagSortCondition);
         sort(fBJetsL.begin(), fBJetsL.end(), BTagSortCondition);
 
-
         if (!lowMassResonance) {
             if (matchedFakeables.size() == 0) {
                 GetFakeBG(leptons, fakeables, fJets, fBJetsM, fBJetsL, selectedVtx);

@@ -283,7 +283,7 @@ class PlotProducer(AnalysisTools):
                 canvas.SaveAs('{0}/{1}/{2}/{3}{4}'.format(self._savePath, self._category, directory, var, self._plotType))
 
 
-    def make_overlays_diff(self, histPairs, directory, logScale = False, doRatio = True, doEff = False):
+    def make_overlays_diff(self, hists, directory, outputName, logScale = False, doRatio = False, doEff = False):
         '''
         Process to produce overlays of different histograms.
         '''
@@ -317,21 +317,36 @@ class PlotProducer(AnalysisTools):
         tmpHists = {}
         legend = build_legend(tmpHists, self._overlayList+self._datasets, self._styleDict)
 
-        for i, (data, var) in enumerate(histPairs):
+        for i, (samples, var) in enumerate(hists):
 
-            hists   = self.get_hist_dict(directory)
-            hist    = self.combine_samples(var, data)
+            drawOption = 'E'
+            if len(samples) == 1:
+                hist = self.combine_samples(var[0], samples[0])
+                if hist is None: 
+                    continue
 
-            if hist is None: 
-                continue
+                set_hist_style(hist, samples[0], self._styleDict)
+            else:
+                drawOption = 'HIST'
+                histList = []
+                for j,sample in enumerate(samples):
+                    tmpHist = self.combine_samples(var[j], sample)
+                    if tmpHist is None: 
+                        continue
+                        
+                    set_hist_style(tmpHist, sample, self._styleDict)
+                    histList.append((tmpHist, sample))
 
-            set_hist_style(hist, data, self._styleDict)
+                hist = self.build_stack(histList)
+
+                if hist is None: 
+                    continue
 
             pad1.cd()
             if i == 0:
-                hist.Draw('E')
+                hist.Draw(drawOption)
             else:
-                hist.Draw('E SAME')
+                hist.Draw('{0} SAME'.format(drawOption))
 
         ## Draw info box ##
         r.gStyle.SetOptTitle(0)
@@ -349,7 +364,7 @@ class PlotProducer(AnalysisTools):
         legend.Draw('SAME')
         textBox.Draw('SAME')
 
-        canvas.SaveAs('{0}/{1}/{2}/{3}{4}'.format(self._savePath, self._category, directory, var, self._plotType))
+        canvas.SaveAs('{0}/{1}/{2}/{3}{4}'.format(self._savePath, self._category, directory, outputName, self._plotType))
 
 
     def make_overlays_1D(self, logScale = False, doRatio = True, doEff = False):

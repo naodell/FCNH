@@ -20,6 +20,7 @@ class AnalysisTools():
         self._scaleDict     = scales
         self._styleDict     = styles
         self._combineDict   = combos
+        self._cleanFakes    = False
         self._category      = ''
         self._datasets      = []
 
@@ -136,8 +137,8 @@ class AnalysisTools():
         if histType == '2D':
             histogramName = 'h2_' + var  
         
+        #print self._category, dataName, histogramName
         hist = self._histFile.GetDirectory(self._category + '/' + dataName).Get(histogramName)
-        #print self._category, dataName, histogramName, hist
 
         if not hist:
             return None
@@ -169,7 +170,7 @@ class AnalysisTools():
 
             if outHist is None:
                 return outHist
-            else:
+            elif self._cleanFakes:
                 dataName    = 'Remove_{0}'.format(self._category.split('_', 1)[0])
                 doFakes     = True
                 const       = -1.

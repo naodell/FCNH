@@ -347,6 +347,24 @@ if doPlots:
         for category in cat3l:
             p_plot.append(Process(name = 'CR_ttZ/' + category, target = plotter_wrapper, args=(ttZ_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, doEff)))
 
+    ### low delta eta ss control region
+    if 'CR_ttZ' in crList:
+        ttZ_plotter = copy.deepcopy(plotter)
+        ttZ_plotter.add_datasets(samples['ss'],  Clear=True)
+        ttZ_plotter._overlayList = ['DATA']
+
+        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 9, period, batch)
+
+        if doLog:
+            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'CR_low_deltaEta')
+        else:
+            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'CR_low_deltaEta')
+
+        ttZ_plotter.make_save_path(outFile, clean=True)
+
+        for category in cat3l:
+            p_plot.append(Process(name = 'CR_low_deltaEta' + category, target = plotter_wrapper, args=(ttZ_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, doEff)))
+
 
 ### End of configuration for PlotProducer ###
 

@@ -412,12 +412,15 @@ void Selector::ElectronSelector(TClonesArray* electrons)
             if (ElectronMVA(thisElec) && !muOverlap)
                 _selElectrons["premva"].push_back(*thisElec);
 
-            if (ElectronMVA(thisElec) && eleISO < 0.15) 
+            if (ElectronMVA(thisElec) 
+                    && eleISO < 0.15 
+                    && electron->ConversionVeto() 
+                    && electron->Missing) { 
                 if (!muOverlap)
                     _selElectrons["tight"].push_back(*thisElec);			
                 else
                     _selElectrons["tight_overlap"].push_back(*thisElec);			
-            else if (!muOverlap)
+            } else if (!muOverlap)
                 _selElectrons["fakeable"].push_back(*thisElec);
 
         } else if (
@@ -563,7 +566,9 @@ void Selector::JetSelector(TClonesArray* jets)
                         _selJets["eleJets"].push_back(corJet);
                     else {
                         _selJets["forward"].push_back(corJet); 
-                        _selJets["tight_NoFakes"].push_back(corJet);
+
+                        if (!overlap[2] && !overlap[3])
+                            _selJets["tight_NoFakes"].push_back(corJet);
                     }
             }
         }
