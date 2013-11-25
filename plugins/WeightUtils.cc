@@ -449,6 +449,9 @@ float WeightUtils::GetFakeWeight(vector<TCPhysObject> fakeables, string controlR
                 fakeRate *= g_ElectronFakesPtE[controlRegion]->Eval(fakeablePt);
         }
     }
+    
+    if (fakeRate < 0) 
+        fakeRate = 0;
 
     //cout << fakeRate/(1-fakeRate) << endl;
 

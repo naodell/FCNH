@@ -95,7 +95,10 @@ if doPlots:
         plotter.set_category(category)
         plotter.make_overlays_1D(logScale = doLog, doRatio = doRatio, doEff = doEff)
 
-        plotter.make_overlays_diff([(['DATA'],['MuNumerPt']), (['DATA', 'FAKES_2l'], ['MuUnevenPtClosure', 'MuNumerPt'])], 'Lepton', 'MuClosurePt') 
         #plotter.make_overlays_diff([(['DATA', 'FAKES_2l'], ['MuUnevenPtClosure', 'MuNumerPt']), (['DATA'],['MuNumerPt'])], 'Lepton', 'MuClosurePt') 
+        plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['MuNumerPt', 'MuUnevenPtClosure']), (['PASS'],['MuNumerPt'])], 'Lepton', 'MuClosurePt') 
+        plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['EleNumerPt', 'EleUnevenPtClosure']), (['PASS'],['EleNumerPt'])], 'Lepton', 'EleClosurePt') 
+
+        #plotter.make_overlays_diff([(['DATA'],['MuNumerPt']), (['DATA', 'FAKES_2l'], ['MuUnevenPtClosure', 'MuNumerPt'])], 'Lepton', 'MuClosurePt') 
         #plotter.make_overlays_diff([(['DATA', 'FAKES_2l'], ['EleUnevenPtClosure', 'EleNumerPt']), (['DATA'],['EleNumerPt'])], 'Lepton', 'EleClosurePt')
 

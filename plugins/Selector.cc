@@ -180,17 +180,17 @@ bool Selector::MuonTightID(TCMuon* muon)
     bool pass = false;
     if (
             (muon->IsTRK() && muon->IsGLB() && muon->IsPF())
+            && muon->PtError()/muon->Pt() < 0.1
             && muon->NormalizedChi2()  < 10
             && muon->NumberOfValidMuonHits()  > 0
             && muon->NumberOfMatchedStations() > 1
             && muon->NumberOfValidPixelHits() > 0
             && muon->TrackLayersWithMeasurement() > 5
-            && fabs(muon->Dz(_selVertices[0]))  < 0.05 
-            && fabs(muon->Dxy(_selVertices[0])) < 0.01
+            && fabs(muon->Dz(_selVertices[0]))  < 0.1 
+            && fabs(muon->Dxy(_selVertices[0])) < 0.015
 
             //&& muon->NumberOfMatches() > 1
             //&& muon->NumberOfValidTrackerHits() > 10 // Possibly not valid in 2012
-            //&& muon->PtError()/muon->Pt() < 0.1
 
        ) pass = true;
 
@@ -256,13 +256,18 @@ void Selector::MuonSelector(TClonesArray* muons)
                 _selMuons["QCD2l_CR_tag"].push_back(*thisMuon);
             else if (
                     thisMuon->IsPF()
-                    ) 
+                    && fabs(thisMuon->Dz(_selVertices[0]))  < 0.1
+                    && fabs(thisMuon->Dxy(_selVertices[0])) < 0.015
+                    )
                 _selMuons["QCD2l_CR_probe"].push_back(*thisMuon);
 
             // analysis lepton selection
             if (MuonTightID(thisMuon) && muISO < 0.12) 
                 _selMuons["tight"].push_back(*thisMuon);
-            else if (thisMuon->IsPF())
+            else if (thisMuon->IsPF()
+                    && fabs(thisMuon->Dz(_selVertices[0]))  < 0.1 
+                    && fabs(thisMuon->Dxy(_selVertices[0])) < 0.015
+                    )
                 _selMuons["fakeable"].push_back(*thisMuon);
 
         } else if ( thisMuon->Pt() > _muPtCuts[1]  ) 
@@ -301,23 +306,21 @@ bool Selector::ElectronMVA(TCElectron* electron)
 
     electron->SetIdMap("mva", mvaValue);
 
-    if (fabs(electron->Dz(_selVertices[0]))  < 0.1 && fabs(electron->Dxy(_selVertices[0])) < 0.015) {
-        if (fabs(electron->Eta()) < 0.8) {
-            if (electron->Pt() > 20 && mvaValue > 0.94)
-                pass = true;
-            else if (electron->Pt() < 20 && mvaValue > 0.)
-                pass = true;
-        } else if (fabs(electron->Eta()) > 0.8 && fabs(electron->Eta()) < 1.48) {
-            if (electron->Pt() > 20 && mvaValue > 0.85)
-                pass = true;
-            else if (electron->Pt() < 20 && mvaValue > 0.1)
-                pass = true;
-        } else if (fabs(electron->Eta()) > 1.48 && fabs(electron->Eta()) < 2.5) {
-            if (electron->Pt() > 20 && mvaValue > 0.92)
-                pass = true;
-            else if (electron->Pt() < 20 && mvaValue > 0.62)
-                pass = true;
-        }
+    if (fabs(electron->Eta()) < 0.8) {
+        if (electron->Pt() > 20 && mvaValue > 0.94)
+            pass = true;
+        else if (electron->Pt() < 20 && mvaValue > 0.)
+            pass = true;
+    } else if (fabs(electron->Eta()) > 0.8 && fabs(electron->Eta()) < 1.48) {
+        if (electron->Pt() > 20 && mvaValue > 0.85)
+            pass = true;
+        else if (electron->Pt() < 20 && mvaValue > 0.1)
+            pass = true;
+    } else if (fabs(electron->Eta()) > 1.48 && fabs(electron->Eta()) < 2.5) {
+        if (electron->Pt() > 20 && mvaValue > 0.92)
+            pass = true;
+        else if (electron->Pt() < 20 && mvaValue > 0.62)
+            pass = true;
     }
 
     return pass;
@@ -376,7 +379,6 @@ bool Selector::ElectronLooseID(TCElectron* electron)
 
 void Selector::ElectronSelector(TClonesArray* electrons) 
 {
-    //cout << "Electrons (" << electrons->GetSize() << "): ";
 
     for (int i = 0; i <  electrons->GetSize(); ++i) {
         TCElectron* thisElec = (TCElectron*) electrons->At(i);    
@@ -394,10 +396,14 @@ void Selector::ElectronSelector(TClonesArray* electrons)
             if (thisElec->DeltaR(_selMuons["tight"][j]) < 0.1) 
                 muOverlap = true;
 
-        //cout << "(" << thisElec->Pt() << ", " << thisElec->Eta() << "),\t";
-
         // electron preselection
-        if ( thisElec->Pt() < _elePtCuts[0] || fabs(thisElec->Eta()) > 2.5 ) continue;
+        if ( 
+                thisElec->Pt() < _elePtCuts[0] 
+                || fabs(thisElec->Eta()) > 2.5 
+                || !thisElec->ConversionVeto() 
+                || fabs(thisElec->Dz(_selVertices[0])) > 0.1 
+                || fabs(thisElec->Dxy(_selVertices[0])) > 0.015
+                ) continue;
 
         float eleISO = (thisElec->IsoMap("pfChIso_R04") + max(0., (double)(thisElec->IsoMap("pfPhoIso_R04") 
                         + thisElec->IsoMap("pfNeuIso_R04") - _rho*thisElec->IsoMap("EffArea_R04"))))/thisElec->Pt(); 
@@ -405,8 +411,6 @@ void Selector::ElectronSelector(TClonesArray* electrons)
         thisElec->SetIsoMap("IsoRel", eleISO);
 
         // analysis electrons
-        //if (ElectronTightID(thisElec)) 
-
         if (thisElec->IdMap("preSelPassV1")) {
 
             _selElectrons["QCD2l_CR_probe"].push_back(*thisElec);
@@ -414,10 +418,9 @@ void Selector::ElectronSelector(TClonesArray* electrons)
             if (ElectronMVA(thisElec) && !muOverlap)
                 _selElectrons["premva"].push_back(*thisElec);
 
-            if (ElectronMVA(thisElec) 
-                    && eleISO < 0.15 
-                    && electron->ConversionVeto() 
-                    && electron->Missing) { 
+            if (ElectronMVA(thisElec) && eleISO < 0.15 
+                    //&& electron->MissingHits() // <-- ??
+                    ) { 
                 if (!muOverlap)
                     _selElectrons["tight"].push_back(*thisElec);			
                 else
@@ -431,7 +434,6 @@ void Selector::ElectronSelector(TClonesArray* electrons)
                 && !muOverlap
                 ) _selElectrons["loose"].push_back(*thisElec);
     }
-    //cout << endl;
 }
 
 

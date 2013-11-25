@@ -127,7 +127,8 @@ class TableMaker(AnalysisTools):
                     if doErrors:
                         self._outFile.write(' {3} {0:.2f} $\pm$ {1:.2f} ({2:.2f} \%) '.format(value, error, eff*100, delimiter))
                     else:
-                        self._outFile.write(' {3} {0:.2f} ({2:.2f} \%) '.format(value, error, eff*100, delimiter))
+                        #self._outFile.write(' {3} {0:.2f} ({2:.2f} \%) '.format(value, error, eff*100, delimiter))
+                        self._outFile.write('{3} {0:.2f}'.format(value, error, eff*100, delimiter))
 
                 elif column is 'DATA':
                     value = histDict['DATA'].GetBinContent(count)

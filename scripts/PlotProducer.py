@@ -314,39 +314,55 @@ class PlotProducer(AnalysisTools):
 
         self.make_save_path('{0}/{1}/{2}'.format(self._savePath, self._category, directory))
 
-        tmpHists = {}
-        legend = build_legend(tmpHists, self._overlayList+self._datasets, self._styleDict)
-
-        for i, (samples, var) in enumerate(hists):
+        histList = []
+        dataNames = []
+        for samples, var in hists:
 
             drawOption = 'E'
             if len(samples) == 1:
                 hist = self.combine_samples(var[0], samples[0])
                 if hist is None: 
                     continue
-
-                set_hist_style(hist, samples[0], self._styleDict)
+                else:
+                    dataNames.append(samples[0])
+                    set_hist_style(hist, samples[0], self._styleDict)
+                    histList.append((hist, drawOption))
             else:
                 drawOption = 'HIST'
-                histList = []
+                stackList = []
                 for j,sample in enumerate(samples):
                     tmpHist = self.combine_samples(var[j], sample)
+
                     if tmpHist is None: 
                         continue
-                        
-                    set_hist_style(tmpHist, sample, self._styleDict)
-                    histList.append((tmpHist, sample))
+                    else:
+                        dataNames.append(sample)
+                        set_hist_style(tmpHist, sample, self._styleDict)
+                        stackList.append((tmpHist, sample))
 
-                hist = self.build_stack(histList)
+                hist = self.build_stack(stackList)
 
                 if hist is None: 
                     continue
+                else:
+                    histList.append((hist, drawOption))
 
-            pad1.cd()
-            if i == 0:
-                hist.Draw(drawOption)
+        tmpHists = {}
+        legend = build_legend(tmpHists, list(set(dataNames)), self._styleDict)
+
+        pad1.cd()
+        isBlank = True
+        for (hist, opt) in histList:
+            if isBlank:
+                hist.SetMaximum(hist.GetMaximum()*1.2)
+                hist.Draw(opt)
+
+                if hist.GetYaxis():
+                    hist.GetYaxis().SetTitleOffset(2.0);
+
+                isBlank = False
             else:
-                hist.Draw('{0} SAME'.format(drawOption))
+                hist.Draw('{0} SAME'.format(opt))
 
         ## Draw info box ##
         r.gStyle.SetOptTitle(0)

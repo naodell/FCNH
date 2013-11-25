@@ -126,6 +126,66 @@ class RatioMaker(AnalysisTools):
 
                 self._hists.append(h2_Eff)
 
+    def charge_flip_fitter(self, ratioSample, nToys = 5):
+        ### Converts 2D (double electron) charge flip probabilities to 1D
+        ### (single electron) charge flip probabilities.  Assumes mapping is
+        ### P(i,j) = p(i) + p(j).
+
+        self.make_category_directory()
+
+        for key,value in self._ratioDict2D.iteritems():
+            h2_Numer    = self.combine_samples(value[0], ratioSample, histType = '2D') 
+            h2_Denom    = self.combine_samples(value[1], ratioSample, histType = '2D') 
+
+            h2_Eff = r.TH2D('h2_{0}'.format(key), '{0};;'.format(key),
+                             h2_Numer.GetNbinsX(), h2_Numer.GetXaxis().GetXmin(), h2_Numer.GetXaxis().GetXmax(),
+                             h2_Numer.GetNbinsY(), h2_Numer.GetYaxis().GetXmin(), h2_Numer.GetYaxis().GetXmax())
+
+            h2_Eff.Divide(h2_Numer, h2_Denom, 1., 1., 'B')
+            self._hists.append(h2_Eff)
+
+            ### Guess at values of p(i) from diagonal bins, i.e., p(i) = 0.5*P(i,j)
+
+            nBinsX = h2_Eff.GetNbinsX()
+            nBinsY = h2_Eff.GetNbinsY()
+
+            prob0 = [0.5*h2_Eff.GetBinContent(i+1, i+1) for i in range(nBinsX)]
+
+            for toy in range(nToys):
+
+                ### Now get possible values of p(i) from p(i) = P(i,j) - p(j) and reiterate
+                probs = [[] for i in range(nBinsX)]
+                for binX in range(nBinsX):
+                    for binY in range(nBinsY):
+                        if binX == binY: continue
+
+                        binContentXY = h2_Eff.GetBinContent(binX+1, binY+1) 
+                        binContentYX = h2_Eff.GetBinContent(binY+1, binX+1) 
+                        if binContentXY != 0:
+                            if prob0[binY] != 0:
+                                probs[binX].append(binContentXY - prob0[binY])
+                            if prob0[binX] != 0:
+                                probs[binY].append(binContentXY - prob0[binX])
+                        if binContentYX != 0:
+                            if prob0[binX] != 0:
+                                probs[binY].append(binContentYX - prob0[binX])
+                            if prob0[binX] != 0: 
+                                probs[binX].append(binContentYX - prob0[binY])
+
+                for binX in range(nBinsX):
+                    #print probs[binX], sum(probs[binX])/nBinsX
+                    prob0[binX] = abs(sum(probs[binX])/len(probs[binX]))
+
+            g_ProbB = r.TGraph(nBinsX/2, array('f', range(nBinsX/2)), array('f', prob0[:nBinsX/2]))
+            g_ProbB.SetName('g_QFlipB')
+            g_ProbB.SetTitle('barrel electron charge flips;iPt;#varepsilon')
+
+            g_ProbE = r.TGraph(nBinsX/2, array('f', range(nBinsX/2)), array('f', prob0[nBinsX/2:]))
+            g_ProbE.SetName('g_QFlipE')
+            g_ProbE.SetTitle('endcap electron charge flips;iPt;#varepsilon')
+
+            self._outFile.GetDirectory(self._category).Add(g_ProbB)
+            self._outFile.GetDirectory(self._category).Add(g_ProbE)
 
 
 if __name__ == '__main__':
@@ -139,8 +199,8 @@ if __name__ == '__main__':
         print 'A batch must specified.  Otherwise, do some hacking so this thing knows about your inputs.'
         exit()
 
-    doQFlips    = False
-    doFakes     = True
+    doQFlips    = True
+    doFakes     = False
     doMetFake   = False
 
     ### For electron charge misID efficiencies ###
@@ -158,7 +218,8 @@ if __name__ == '__main__':
             }
 
         ratioMaker.set_ratio_2D(eMisQDict)
-        ratioMaker.make_2D_ratios('DATA', doProjections = False)
+        ratioMaker.charge_flip_fitter('DATA')
+        #ratioMaker.make_2D_ratios('DATA', doProjections = False)
 
         ratioMaker.write_outfile()
 

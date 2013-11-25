@@ -26,7 +26,7 @@ selection   = 'fcnh'
 
 cutList     = ['1_preselection']
 cutList.extend(['2_Z_veto', '3_MET', '4_HT', '5_bjet'])
-crList      = ['CR_WZ', 'CR_ttbar', 'CR_ttZ']
+crList      = ['CR_WZ', 'CR_ttbar', 'CR_ttZ', 'high_mass_ss', 'low_mass_ss', 'barrel_leptons']
 
 period      = '2012'
 LUMIDATA    = 19.712 
@@ -346,25 +346,62 @@ if doPlots:
 
         for category in cat3l:
             p_plot.append(Process(name = 'CR_ttZ/' + category, target = plotter_wrapper, args=(ttZ_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, doEff)))
+    
+    doLog = True
 
     ### low delta eta ss control region
-    if 'CR_ttZ' in crList:
-        ttZ_plotter = copy.deepcopy(plotter)
-        ttZ_plotter.add_datasets(samples['ss'],  Clear=True)
-        ttZ_plotter._overlayList = ['DATA']
+    if 'high_mass_ss' in crList:
+        hm_plotter = copy.deepcopy(plotter)
+        hm_plotter.add_datasets(samples['ss'],  Clear=True)
+        hm_plotter._overlayList = ['DATA']
 
         inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 9, period, batch)
 
         if doLog:
-            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'CR_low_deltaEta')
+            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'high_mass_ss')
         else:
-            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'CR_low_deltaEta')
+            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'high_mass_ss')
 
-        ttZ_plotter.make_save_path(outFile, clean=True)
+        hm_plotter.make_save_path(outFile, clean=True)
 
-        for category in cat3l:
-            p_plot.append(Process(name = 'CR_low_deltaEta' + category, target = plotter_wrapper, args=(ttZ_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, doEff)))
+        for category in catSS:
+            p_plot.append(Process(name = 'high_mass_ss/' + category, target = plotter_wrapper, args=(hm_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, doEff)))
 
+    ### low delta eta ss control region
+    if 'low_mass_ss' in crList:
+        lm_plotter = copy.deepcopy(plotter)
+        lm_plotter.add_datasets(samples['ss'],  Clear=True)
+        lm_plotter._overlayList = ['DATA']
+
+        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 10, period, batch)
+
+        if doLog:
+            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'low_mass_ss')
+        else:
+            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'low_mass_ss')
+
+        lm_plotter.make_save_path(outFile, clean=True)
+
+        for category in catSS:
+            p_plot.append(Process(name = 'high_mass_ss/' + category, target = plotter_wrapper, args=(lm_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, doEff)))
+
+    ### low delta eta ss control region
+    if 'barrel_leptons' in crList:
+        bl_plotter = copy.deepcopy(plotter)
+        bl_plotter.add_datasets(samples['ss'],  Clear=True)
+        bl_plotter._overlayList = ['DATA']
+
+        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 11, period, batch)
+
+        if doLog:
+            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'barrel_leptons')
+        else:
+            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'barrel_leptons')
+
+        bl_plotter.make_save_path(outFile, clean=True)
+
+        for category in cat3l + catSS:
+            p_plot.append(Process(name = 'barrel_leptons/' + category, target = plotter_wrapper, args=(bl_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, doEff)))
 
 ### End of configuration for PlotProducer ###
 
@@ -390,11 +427,13 @@ if doYields:
         yieldTable.get_scale_factors(['FCNH'])
 
     if do3l:
+        yieldTable._columnList  = ['Irreducible', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
         #yieldTable._columnList  = samples['3l'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau','FCNH']# 'Significance'] 
-        yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
+        #yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
-        yieldTable.add_datasets(samples['3l'], Clear = True)
+        yieldTable.add_datasets(['Irreducible', 'Fakes'], Clear = True)
+        #yieldTable.add_datasets(samples['3l'], Clear = True)
         yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
 
@@ -403,13 +442,15 @@ if doYields:
         for category in cat3l:
             yieldTable._category = category
             histDict = yieldTable.get_hist_dict('YieldByCut')
-            yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
+            yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 1)
 
     if doSS:
+        yieldTable._columnList  = ['Irreducible', 'Fakes', 'QFlips', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
         #yieldTable._columnList  = samples['ss'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
-        yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
+        #yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
-        yieldTable.add_datasets(samples['ss'], Clear = True)
+        yieldTable.add_datasets(['Irreducible', 'Fakes', 'QFlips'], Clear = True)
+        #yieldTable.add_datasets(samples['ss'], Clear = True)
         yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
 
@@ -418,10 +459,11 @@ if doYields:
         for category in catSS:
             yieldTable._category = category
             histDict = yieldTable.get_hist_dict('YieldByCut')
-            yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
+            yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 1)
 
     crCats = {'CR_WZ':'3l_inclusive', 'CR_ttbar':'os_emu', 'CR_ttZ':'3l_inclusive'}
     for i,CR in enumerate(crList):
+        if CR[:2] != 'CR': continue
 
         yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, i+5, period, batch))
         yieldTable._columnList  = samples[CR[3:]] + ['BG', 'DATA']

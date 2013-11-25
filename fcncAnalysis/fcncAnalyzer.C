@@ -694,7 +694,6 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
         // Fill MVA ntuples //
         SetVarsMVA(leptons, bJetsM, jets);
         if (doMVATree) mvaTree->Fill();
-
         if (doMVACut) {
             float mvaValue = mvaReader->EvaluateMVA("test");
 
@@ -750,28 +749,29 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
         SetYields(12);
     }
 
-    // low delta eta control region //
+    // low mass same-sign control region //
     if (
-            leptons.size() == 2 
-            && leptons[0].Charge() == leptons[1].Charge()
-            && fabs(leptons[0].Eta() - leptons[1].Eta()) < 0.8
+            leptons.size() == 2 && leptons[0].Charge() == leptons[1].Charge()
        ) {
-        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 8);
-        SetYields(13);
+            if ((leptons[0] + leptons[1]).M() > 50.) {
+                MakePlots(leptons, jets, bJetsM, *recoMET, PV, 8);
+                SetYields(13);
+            } else 
+                MakePlots(leptons, jets, bJetsM, *recoMET, PV, 9);
     }
 
     // only barrel leptons control region //
     if (
             (leptons.size() == 2 
-            && leptons[0].Eta() < 1.4 
-            && leptons[1].Eta() < 1.4)
+            && fabs(leptons[0].Eta()) < 1.4 
+            && fabs(leptons[1].Eta()) < 1.4)
             ||
-            (leptons.size() == 2 
-            && leptons[0].Eta() < 1.4 
-            && leptons[1].Eta() < 1.4
-            && leptons[2].Eta() < 1.4)
+            (leptons.size() == 3 
+            && fabs(leptons[0].Eta()) < 1.4 
+            && fabs(leptons[1].Eta()) < 1.4
+            && fabs(leptons[2].Eta()) < 1.4)
        ) {
-        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 9);
+        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 10);
         //SetYields(13);
     }
 
