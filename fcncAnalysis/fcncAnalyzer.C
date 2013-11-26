@@ -742,7 +742,7 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
     if (
             leptons.size() == 3 
             && zTagged
-            && (bJetsM.size() == 1 || bJetsL.size() == 2)
+            && (bJetsM.size() >= 1 || bJetsL.size() >= 2)
             && METLD > 0.2 
        ) {
         MakePlots(leptons, jets, bJetsM, *recoMET, PV, 7);
@@ -854,8 +854,13 @@ void fcncAnalyzer::GetFakeBG(vObj leptons, vObj fakeables, vector<TCJet> jets, v
        ) {
 
         Float_t fakeWeight = weighter->GetFakeWeight(fakeables, "QCD2l");
+        //cout << fakeWeight << endl;
 
-        evtWeight *= fakeWeight;
+        if (fakeWeight <= 0)
+            return;
+        else
+            evtWeight *= fakeWeight;
+
         vObj leptonsPlusFakes = leptons;
         leptonsPlusFakes.insert(leptonsPlusFakes.end(), fakeables.begin(), fakeables.end());
         sort(leptonsPlusFakes.begin(), leptonsPlusFakes.end(), P4SortCondition);

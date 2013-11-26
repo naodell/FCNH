@@ -237,8 +237,7 @@ void Selector::MuonSelector(TClonesArray* muons)
 
         // isolation
         float muISO = 0.;
-        muISO = (
-                thisMuon->IsoMap("pfChargedHadronPt_R04") + TMath::Max(0.0, (double)thisMuon->IsoMap("pfPhotonEt_R04") 
+        muISO = (thisMuon->IsoMap("pfChargedHadronPt_R04") + TMath::Max(0.0, (double)thisMuon->IsoMap("pfPhotonEt_R04") 
                     + thisMuon->IsoMap("pfNeutralHadronEt_R04") - TMath::Max(0.0, (double)_rho*EffectiveArea(thisMuon)))
                 )/thisMuon->Pt();
 
@@ -264,13 +263,14 @@ void Selector::MuonSelector(TClonesArray* muons)
             // analysis lepton selection
             if (MuonTightID(thisMuon) && muISO < 0.12) 
                 _selMuons["tight"].push_back(*thisMuon);
-            else if (thisMuon->IsPF()
+            else if (
+                    thisMuon->IsPF()
                     && fabs(thisMuon->Dz(_selVertices[0]))  < 0.1 
                     && fabs(thisMuon->Dxy(_selVertices[0])) < 0.015
                     )
                 _selMuons["fakeable"].push_back(*thisMuon);
 
-        } else if ( thisMuon->Pt() > _muPtCuts[1]  ) 
+        } else if (thisMuon->Pt() > _muPtCuts[1]) 
                 if (MuonLooseID(thisMuon)
                 //&& (muISO > 0.1 && thisMuon->Pt() > 20)
                 //&& (muISO < 0.15 && thisMuon->Pt() < 20)
@@ -401,7 +401,7 @@ void Selector::ElectronSelector(TClonesArray* electrons)
                 thisElec->Pt() < _elePtCuts[0] 
                 || fabs(thisElec->Eta()) > 2.5 
                 || !thisElec->ConversionVeto() 
-                || fabs(thisElec->Dz(_selVertices[0])) > 0.1 
+                || fabs(thisElec->Dz(_selVertices[0])) > 0.05 
                 || fabs(thisElec->Dxy(_selVertices[0])) > 0.015
                 ) continue;
 

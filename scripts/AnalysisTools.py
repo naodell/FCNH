@@ -116,7 +116,7 @@ class AnalysisTools():
 
                     self._scaleDict[self._period][dataName] = 1e3*self._scaleDict[self._period][dataName]/nInit
 
-                    print self._scaleDict[self._period][dataName],nInit
+                    #print self._scaleDict[self._period][dataName],nInit
 
                 else:
                     print '{0} not found in scale dictionary; setting to 0'.format(dataName)
@@ -168,12 +168,13 @@ class AnalysisTools():
         elif dataName == 'Fakes':
             outHist     = self.get_hist(var, dataName, histType)
 
-            #if outHist is None:
-            #    return outHist
-            #else:
-            #    dataName    = 'Remove_{0}'.format(self._category.split('_', 1)[0])
-            #    doFakes     = True
-            #    const       = -1.
+            if outHist is None:
+                return outHist
+            else:
+                dataName    = 'Remove_{0}'.format(self._category.split('_', 1)[0])
+                doFakes     = True
+                const       = -1.
+
         if dataName not in self._combineDict:
             if doFakes:
                 outHist = self.get_hist(var, 'Fakes_' + dataName, histType)

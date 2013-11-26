@@ -108,6 +108,15 @@ class RatioMaker(AnalysisTools):
                 h2_Numer.Add(h2_bgNumer, -1.)
                 h2_Denom.Add(h2_bgDenom, -1.)
 
+            ### Set negative entries to 0
+            for binX in range(h2_Numer.GetNbinsX()):
+                for binY in range(h2_Numer.GetNbinsY()):
+                    if h2_Numer.GetBinContent(binX+1, binY+1) < 0.:
+                        h2_Numer.SetBinContent(binX+1, binY+1, 0.)
+
+                    if h2_Denom.GetBinContent(binX+1, binY+1) < 0.:
+                        h2_Denom.SetBinContent(binX+1, binY+1, 0.)
+
             if removePass:
                 h2_Denom.Add(h2_Numer, -1)
 
@@ -176,11 +185,12 @@ class RatioMaker(AnalysisTools):
                     #print probs[binX], sum(probs[binX])/nBinsX
                     prob0[binX] = abs(sum(probs[binX])/len(probs[binX]))
 
-            g_ProbB = r.TGraph(nBinsX/2, array('f', range(nBinsX/2)), array('f', prob0[:nBinsX/2]))
+            ptBins = [15., 25., 37.5, 57.5, 85., 125.]
+            g_ProbB = r.TGraph(len(ptBins), array('f', ptBins), array('f', prob0[:nBinsX/2]))
             g_ProbB.SetName('g_QFlipB')
             g_ProbB.SetTitle('barrel electron charge flips;iPt;#varepsilon')
 
-            g_ProbE = r.TGraph(nBinsX/2, array('f', range(nBinsX/2)), array('f', prob0[nBinsX/2:]))
+            g_ProbE = r.TGraph(len(ptBins), array('f', ptBins), array('f', prob0[nBinsX/2:]))
             g_ProbE.SetName('g_QFlipE')
             g_ProbE.SetTitle('endcap electron charge flips;iPt;#varepsilon')
 
@@ -199,8 +209,8 @@ if __name__ == '__main__':
         print 'A batch must specified.  Otherwise, do some hacking so this thing knows about your inputs.'
         exit()
 
-    doQFlips    = True
-    doFakes     = False
+    doQFlips    = False
+    doFakes     = True
     doMetFake   = False
 
     ### For electron charge misID efficiencies ###
