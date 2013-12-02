@@ -59,7 +59,7 @@ samples     = {'all':[], 'inclusive':[], '3l':[], 'ss':[], 'os':[], 'WZ':[], 'tt
 samples['all'].append('higgs')
 samples['all'].append('Triboson')
 samples['all'].append('ttV')
-samples['all'].append('ZZ4l')
+#samples['all'].append('ZZ4l')
 #samples['all'].append('WZJets3LNu')
 samples['all'].append('Diboson')
 samples['all'].append('top')
@@ -158,7 +158,7 @@ if doPlots:
                                            'Lepton1 dxy', 'Lepton1 dz',
                                            'Lepton2 dxy', 'Lepton2 dz',
                                            'Lepton3 dxy', 'Lepton3 dz',
-                                           'LeptonMult']
+                                           'LeptonMult', 'OverlapEleMu']
                                            #'Lepton1Phi', 'Lepton2Phi', 'Lepton3Phi']
 
     plotter._variableDict['Dilepton']   = ['DileptonMass21', 'DileptonTransMass21', 'DileptonQt21',
@@ -172,7 +172,8 @@ if doPlots:
                                            'DileptonOSQt', 'DileptonOSDeltaPt', 'DileptonOSDeltaR', 
                                            'DileptonOSDeltaEta', 'DileptonOSDeltaPhi'] 
 
-    plotter._variableDict['Trilepton']  = ['DileptonLepDeltaR', 'DileptonLepDeltaPhi', 'DileptonLepDeltaEta', 'Lep3MetMT', 'TrileptonMass']
+    plotter._variableDict['Trilepton']  = ['DileptonLepDeltaR', 'DileptonLepDeltaPhi', 'DileptonLepDeltaEta', 
+                                           'Lep3MetMT', 'TrileptonMass', 'TrileptonPt']
 
     plotter._variableDict['Lep+Jet']    = ['Lepton1BJetDeltaPhi', 'Lepton1BJetDeltaEta', 'Lepton1BJetDeltaR', 'Lepton1BJetDeltaPt',
                                            'Lepton2BJetDeltaPhi', 'Lepton2BJetDeltaEta', 'Lepton2BJetDeltaR', 'Lepton2BJetDeltaPt',
@@ -182,6 +183,7 @@ if doPlots:
                                            'Lepton3JetDeltaPhi', 'Lepton3JetDeltaEta', 'Lepton3JetDeltaR', 'Lepton3JetDeltaPt',
                                            'DileptonJetDeltaPhi', 'DileptonJetDeltaEta', 'DileptonJetDeltaR', 'DileptonJetDeltaPt',
                                            'DileptonBJetDeltaPhi', 'DileptonBJetDeltaEta', 'DileptonBJetDeltaR', 'DileptonBJetDeltaPt',
+                                           'OverlapJetMult'
                                           ]
 
     plotter._variableDict['Jet']        = ['Jet1Pt', 'Jet2Pt',# 'Jet3Pt',
@@ -190,7 +192,8 @@ if doPlots:
                                            'BJet1BDiscr', 'BJet1Pt', 'BJet1Eta', #'BJet1Phi', 
                                            'BJet2BDiscr', 'BJet2Pt', 'BJet2Eta', #'BJet2Phi',
                                            'HT', 'HTs', 'EventBalance', 'Centrality',
-                                           'JetMultCharge', 'JetMult', 'BJetMult']
+                                           'JetBJetDeltaPhi', 'JetBJetDeltaEta', 'JetBJetDeltaR',
+                                           'JetMultCharge', 'JetMult', 'BJetMult', 'AllJetMult']
 
     plotter._variableDict['MET']        = ['Met', 'MHT', 'METLD', 'MHT-MET', 'MetPhi', 'MetSumEt',
                                            'MetLepton1DeltaPhi', 'MetLepton2DeltaPhi'

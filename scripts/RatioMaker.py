@@ -135,7 +135,7 @@ class RatioMaker(AnalysisTools):
 
                 self._hists.append(h2_Eff)
 
-    def charge_flip_fitter(self, ratioSample, nToys = 5):
+    def charge_flip_fitter(self, ratioSample, nToys = 10):
         ### Converts 2D (double electron) charge flip probabilities to 1D
         ### (single electron) charge flip probabilities.  Assumes mapping is
         ### P(i,j) = p(i) + p(j).
@@ -158,39 +158,50 @@ class RatioMaker(AnalysisTools):
             nBinsX = h2_Eff.GetNbinsX()
             nBinsY = h2_Eff.GetNbinsY()
 
-            prob0 = [0.5*h2_Eff.GetBinContent(i+1, i+1) for i in range(nBinsX)]
+            prob0 = [[0.5*h2_Eff.GetBinContent(i+1, i+1) for i in range(nBinsX)], [0.5*h2_Eff.GetBinError(i+1, i+1) for i in range(nBinsX)]]
+            print prob0
 
             for toy in range(nToys):
 
                 ### Now get possible values of p(i) from p(i) = P(i,j) - p(j) and reiterate
-                probs = [[] for i in range(nBinsX)]
+                probs = [[0. for i in range(nBinsX)], [0. for i in range(nBinsX)]]
+
                 for binX in range(nBinsX):
                     for binY in range(nBinsY):
-                        if binX == binY: continue
+                        #if binX == binY: continue
 
-                        binContentXY = h2_Eff.GetBinContent(binX+1, binY+1) 
-                        binContentYX = h2_Eff.GetBinContent(binY+1, binX+1) 
+                        binContentXY    = h2_Eff.GetBinContent(binX+1, binY+1) 
+                        binErrorXY      = h2_Eff.GetBinError(binX+1, binY+1) 
+                        errX            = binErrorXY*binErrorXY + prob0[1][binY]*prob0[1][binY]
+                        errY            = binErrorXY*binErrorXY + prob0[1][binX]*prob0[1][binX]
                         if binContentXY != 0:
-                            if prob0[binY] != 0:
-                                probs[binX].append(binContentXY - prob0[binY])
-                            if prob0[binX] != 0:
-                                probs[binY].append(binContentXY - prob0[binX])
-                        if binContentYX != 0:
-                            if prob0[binX] != 0:
-                                probs[binY].append(binContentYX - prob0[binX])
-                            if prob0[binX] != 0: 
-                                probs[binX].append(binContentYX - prob0[binY])
+                            if prob0[0][binY] != 0:
+                                #print binContentXY, prob0[binY][0], errX
+
+                                probs[0][binX] += (binContentXY - prob0[0][binY])/errX
+                                probs[1][binX] += 1./errX
+                            if prob0[0][binX] != 0:
+                                probs[0][binY] += (binContentXY - prob0[0][binX])/errY
+                                probs[1][binY] += 1./errY
 
                 for binX in range(nBinsX):
-                    #print probs[binX], sum(probs[binX])/nBinsX
-                    prob0[binX] = abs(sum(probs[binX])/len(probs[binX]))
+                    #print probs[binX], probs[0][binX]/nBinsX
+                    prob0[0][binX] = probs[0][binX]/probs[1][binX]
+                    prob0[1][binX] = 1./sqrt(probs[1][binX])
+
+
+                if toy%9 == 0:
+                    print prob0
+
+            print prob0[0]
+            print prob0[1]
 
             ptBins = [15., 25., 37.5, 57.5, 85., 125.]
-            g_ProbB = r.TGraph(len(ptBins), array('f', ptBins), array('f', prob0[:nBinsX/2]))
+            g_ProbB = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][:nBinsX/2]), array('f', [0.1 for bin in ptBins]), array('f', prob0[1][:nBinsX/2]))
             g_ProbB.SetName('g_QFlipB')
             g_ProbB.SetTitle('barrel electron charge flips;iPt;#varepsilon')
 
-            g_ProbE = r.TGraph(len(ptBins), array('f', ptBins), array('f', prob0[nBinsX/2:]))
+            g_ProbE = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][nBinsX/2:]), array('f', [0.1 for bin in ptBins]), array('f', prob0[1][nBinsX/2:]))
             g_ProbE.SetName('g_QFlipE')
             g_ProbE.SetTitle('endcap electron charge flips;iPt;#varepsilon')
 
@@ -228,7 +239,7 @@ if __name__ == '__main__':
             }
 
         ratioMaker.set_ratio_2D(eMisQDict)
-        ratioMaker.charge_flip_fitter('DATA')
+        ratioMaker.charge_flip_fitter('DATA_ELECTRON')
         #ratioMaker.make_2D_ratios('DATA', doProjections = False)
 
         ratioMaker.write_outfile()

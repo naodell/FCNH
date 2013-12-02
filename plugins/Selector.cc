@@ -180,13 +180,13 @@ bool Selector::MuonTightID(TCMuon* muon)
     bool pass = false;
     if (
             (muon->IsTRK() && muon->IsGLB() && muon->IsPF())
-            && muon->PtError()/muon->Pt() < 0.1
+            //&& muon->PtError()/muon->Pt() < 0.1
             && muon->NormalizedChi2()  < 10
             && muon->NumberOfValidMuonHits()  > 0
             && muon->NumberOfMatchedStations() > 1
             && muon->NumberOfValidPixelHits() > 0
             && muon->TrackLayersWithMeasurement() > 5
-            && fabs(muon->Dz(_selVertices[0]))  < 0.1 
+            && fabs(muon->Dz(_selVertices[0]))  < 0.05
             && fabs(muon->Dxy(_selVertices[0])) < 0.015
 
             //&& muon->NumberOfMatches() > 1
@@ -255,7 +255,7 @@ void Selector::MuonSelector(TClonesArray* muons)
                 _selMuons["QCD2l_CR_tag"].push_back(*thisMuon);
             else if (
                     thisMuon->IsPF()
-                    && fabs(thisMuon->Dz(_selVertices[0]))  < 0.1
+                    && fabs(thisMuon->Dz(_selVertices[0]))  < 0.05
                     && fabs(thisMuon->Dxy(_selVertices[0])) < 0.015
                     )
                 _selMuons["QCD2l_CR_probe"].push_back(*thisMuon);
@@ -265,7 +265,7 @@ void Selector::MuonSelector(TClonesArray* muons)
                 _selMuons["tight"].push_back(*thisMuon);
             else if (
                     thisMuon->IsPF()
-                    && fabs(thisMuon->Dz(_selVertices[0]))  < 0.1 
+                    && fabs(thisMuon->Dz(_selVertices[0]))  < 0.05 
                     && fabs(thisMuon->Dxy(_selVertices[0])) < 0.015
                     )
                 _selMuons["fakeable"].push_back(*thisMuon);
