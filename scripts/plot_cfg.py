@@ -25,8 +25,8 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-cutList.extend(['2_Z_veto', '3_MET', '4_HT', '5_bjet'])
-crList      = ['CR_WZ', 'CR_ttbar', 'CR_ttZ', 'high_mass_ss', 'low_mass_ss', 'barrel_leptons']
+cutList.extend(['2_Z_veto', '3_jet', '4_MET', '5_HT'])
+crList      = []#'CR_WZ', 'CR_ttbar', 'CR_ttZ', 'high_mass_ss', 'low_mass_ss', 'barrel_leptons']
 
 period      = '2012'
 LUMIDATA    = 19.712 
@@ -155,9 +155,9 @@ if doPlots:
                                            'Lepton1Eta', 'Lepton2Eta', 'Lepton3Eta',
                                            'ElectronPt', 'ElectronEta',
                                            'MuonPt', 'MuonEta',
-                                           'Lepton1 dxy', 'Lepton1 dz',
-                                           'Lepton2 dxy', 'Lepton2 dz',
-                                           'Lepton3 dxy', 'Lepton3 dz',
+                                           'Lepton1dxy', 'Lepton1dz',
+                                           'Lepton2dxy', 'Lepton2dz',
+                                           'Lepton3dxy', 'Lepton3dz',
                                            'LeptonMult', 'OverlapEleMu']
                                            #'Lepton1Phi', 'Lepton2Phi', 'Lepton3Phi']
 
@@ -196,8 +196,8 @@ if doPlots:
                                            'JetMultCharge', 'JetMult', 'BJetMult', 'AllJetMult']
 
     plotter._variableDict['MET']        = ['Met', 'MHT', 'METLD', 'MHT-MET', 'MetPhi', 'MetSumEt',
-                                           'MetLepton1DeltaPhi', 'MetLepton2DeltaPhi'
-                                           'MetLepDeltaPhiMin', 'nearLepIndex', 'ProjectedMet', 'MetLepton3DeltaPhi'] 
+                                           'MetLepton1DeltaPhi', 'MetLepton2DeltaPhi', 'MetLepton3DeltaPhi'
+                                           'MetLepDeltaPhiMin', 'nearLepIndex', 'ProjectedMet'] 
 
     plotter._variableDict['GEN']        = ['GenChargeMisId', 'GenMisIdPt', 'GenMisIdEta',
                                            'GenDeltaR', 'GenBalance']

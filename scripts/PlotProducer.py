@@ -598,10 +598,10 @@ class PlotProducer(AnalysisTools):
 
                 textBox.Draw('same')
                   
-                idBox = r.TPaveText(0.8, 0.85, 0.9, 0.95, 'NDC')
+                idBox = r.TPaveText(0.75, 0.8, 0.9, 0.9, 'NDC')
                 idBox.SetFillColor(1)
-                idBox.SetFillStyle(1)
-                idBox.SetLineWidth(0)
+                idBox.SetFillStyle(1001)
+                idBox.SetLineWidth(1)
                 idBox.SetLineColor(1)
 
                 for (hist, data) in hists[var]:
