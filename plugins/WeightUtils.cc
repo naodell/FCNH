@@ -391,7 +391,13 @@ float WeightUtils::GetMuEff(TLorentzVector lep) const
 float WeightUtils::GetFakeWeight(vector<TCPhysObject> fakeables, string controlRegion)
 {
     float fakeRate = 1;
+    float fakeablePt;  
+    if (fakeable.Pt() < 100)
+        fakeablePt = fakeable.Pt();
+    else 
+        fakeablePt = 99.;
 
+    //cout << fakeable.Type() << "\t" << fakeable.Pt() << "\t";
     for (unsigned i = 0; i < fakeables.size(); ++i) {
         TCPhysObject fakeable = fakeables[i];
 
@@ -418,8 +424,6 @@ float WeightUtils::GetFakeWeight(vector<TCPhysObject> fakeables, string controlR
                 fakeRate *= g_ElectronFakesPtE[controlRegion]->Eval(fakeablePt);
         }
     }
-
-    //cout << fakeRate << ", " << fakeRate/(1-fakeRate) << endl;
 
     return fakeRate / (1 - fakeRate);
 }
