@@ -5,7 +5,7 @@ import ROOT as r
 
 ### Some useful functions ###
 
-def add_scale_branch(inputFile, sampleList, scales):
+def add_scale_branch(inputFile, sampleList, scales, selection):
     '''
     Merges trees and adds a branch with weights based on cross-section.
     '''
@@ -17,9 +17,13 @@ def add_scale_branch(inputFile, sampleList, scales):
     for sample in sampleList:
         print sample,
 
-        nInit   = inputFile.Get('inclusive/' + sample + '/h1_YieldByCut').GetBinContent(1)
-        tree    = inputFile.Get('mvaTree_' + sample)
-        scale   = array('f', [1e3*scales['2012'][sample]/nInit]) 
+        tree    = inputFile.Get('tree' + selection + '_' + sample)
+        if sample not in ['QFlips', 'Fakes']:
+            nInit   = inputFile.Get('inclusive/' + sample + '/h1_YieldByCut').GetBinContent(1)
+            scale = array('f', [1e3*scales['2012'][sample]/nInit]) 
+        else:
+            scale = array('f', [1.])    
+
         entries = tree.GetEntries()
 
         if entries == 0:
@@ -54,7 +58,7 @@ if __name__ == '__main__':
     # Configuration parameters
     methods     = ['BDT']
     doGUI       = True
-    selection   = '3l'
+    selection   = 'SS'
 
     # Scale factors
     paramFile = open('scripts/fcncParams.pkl', 'rb')
@@ -66,18 +70,19 @@ if __name__ == '__main__':
     #bgList.extend(['WWJets2L2Nu', 'ZZJets2L2Nu']) #, 'ZZJets2L2Q', 'WZJets2L2Q']) # Diboson to 2l + X
     bgList.extend(['WZJets3LNu']) # WZ to 3l+nu
     #bgList.extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']) # ZZ to 4l
-    bgList.extend(['tW', 'tbarW', 't_t-channel', 'tbar_t-channel', 'ttbar']) # Top
+    #bgList.extend(['tW', 'tbarW', 't_t-channel', 'tbar_t-channel', 'ttbar']) # Top
+    bgList.extend(['Fakes'])
     bgList.extend(['ttZ', 'ttW', 'ttG']) # Top+V
     #bgList.extend(['QCD_20_MU', 'QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_EM', 'QCD_170-250_EM', 'QCD_250-350_EM', 'QCD_350_EM']) #QCD
     #bgList.extend(['ggHToZZ4L_M-125', 'WHToWWW3L_M-125']) # Higgs
 
-    sigList = ['FCNC_M125_t', 'FCNC_M125_tbar']
+    sigList = ['FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau']
 
     # Input file and tree merging
     inFile  = r.TFile('histos/fcnh_cut1_2012_{0}.root'.format(batch), 'OPEN')
 
-    bgTrees     = add_scale_branch(inFile, bgList, scales)
-    sigTrees    = add_scale_branch(inFile, sigList, scales)
+    bgTrees     = add_scale_branch(inFile, bgList, scales, selection)
+    sigTrees    = add_scale_branch(inFile, sigList, scales, selection)
 
     ### Start settting up MVA ###
 
@@ -126,14 +131,14 @@ if __name__ == '__main__':
     factory.AddVariable('jetMult', 'jetMult', '', 'I')
     factory.AddVariable('bJetMult', 'bJetMult', '', 'I')
 
-    if selection is '3l':
-        #factory.AddVariable('lep3Pt', 'lep3Pt', 'GeV', 'F')
-        #factory.AddVariable('lep3Eta', 'lep3Eta', '', 'F')
-        #factory.AddVariable('lep3Phi', 'lep3Phi', 'rad', 'F')
-
+    if selection == '3l':
         factory.AddVariable('trileptonMass', 'trileptonMass', 'GeV', 'F')
         factory.AddVariable('dileptonMassOS', 'dileptonMassOS', 'GeV', 'F')
         factory.AddVariable('dileptonDROS', 'dileptonDROS', 'rad', 'F')
+    
+    if selection == 'SS':
+        factory.AddVariable('dileptonMass', 'dileptonMass', 'GeV', 'F')
+        factory.AddVariable('dileptonDR', 'dileptonDR', 'rad', 'F')
 
 
     for tree in sigTrees:
