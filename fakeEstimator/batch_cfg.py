@@ -75,7 +75,14 @@ if period == '2012':
         cfg('ZZJets2L2Nu', dCache+'/naodell/nuTuples_v7_4/ZZJetsTo2L2Nu', 5, 'ZZJets2L2Nu muon 2012'),
         cfg('ZZJets2L2Q', dCache+'/naodell/nuTuples_v7_4/ZZJetsTo2L2Q', 5, 'ZZJets2L2Q muon 2012'),
         cfg('WZJets2L2Q', dCache+'/naodell/nuTuples_v7_4/WZJetsTo2L2Q', 10, 'WZJets2L2Q muon 2012'),
-        cfg('WZJets3LNu', dCache+'/naodell/nuTuples_v7_4/WZJetsTo3LNu', 5, 'WZJets3LNu muon 2012')
+        cfg('WZJets3LNu', dCache+'/naodell/nuTuples_v7_4/WZJetsTo3LNu', 5, 'WZJets3LNu muon 2012'),
+
+        cfg('ZZTo4e', dCache+'/naodell/nuTuples_v7_4/ZZTo4e', 5, 'ZZ4e muon 2012'),
+        cfg('ZZTo4mu', dCache+'/naodell/nuTuples_v7_4/ZZTo4mu', 5, 'ZZ4mu muon 2012'),
+        cfg('ZZTo4tau', dCache+'/naodell/nuTuples_v7_4/ZZTo4tau', 5, 'ZZ4tau muon 2012'),
+        cfg('ZZTo2e2mu', dCache+'/naodell/nuTuples_v7_4/ZZTo2e2mu', 5, 'ZZ2e2mu muon 2012'),
+        cfg('ZZTo2e2tau', dCache+'/naodell/nuTuples_v7_4/ZZTo2e2tau', 5, 'ZZ2e2tau muon 2012'),
+        cfg('ZZTo2mu2tau', dCache+'/naodell/nuTuples_v7_4/ZZTo2mu2tau', 5, 'ZZ2mu2tau muon 2012'),
 
         #cfg('QCD_20-30_EM', dCache+'/naodell/nuTuples_v7_4/QCD_Pt_20_30_EMEnriched', 10, 'QCD_20-30_EM muon 2012'),
         #cfg('QCD_30-80_EM', dCache+'/naodell/nuTuples_v7_4/QCD_Pt_30_80_EMEnriched', 10, 'QCD_30-80_EM muon 2012'),

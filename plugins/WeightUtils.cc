@@ -31,15 +31,19 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
     g_MuonFakesPtB["QCD2l"]         = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l_inclusive/g_MuonFake_1");
     g_MuonFakesPtE["QCD2l"]         = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l_inclusive/g_MuonFake_2");
     g_ElectronFakesPtB["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l_inclusive/g_ElectronFake_1");
-    g_ElectronFakesPtE["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l_inclusive/g_ElectronFake_2");
+    g_ElectronFakesPtG["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l_inclusive/g_ElectronFake_2");
+    g_ElectronFakesPtE["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l_inclusive/g_ElectronFake_3");
 
     g_MuonFakesPtB["ZPlusJet"]      = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet_inclusive/g_MuonFake_1");
     g_MuonFakesPtE["ZPlusJet"]      = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet_inclusive/g_MuonFake_2");
     g_ElectronFakesPtB["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet_inclusive/g_ElectronFake_1");
-    g_ElectronFakesPtE["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet_inclusive/g_ElectronFake_2");
+    g_ElectronFakesPtG["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet_inclusive/g_ElectronFake_2");
+    g_ElectronFakesPtE["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet_inclusive/g_ElectronFake_3");
 
     TFile* f_misQFile = new TFile("../data/electronQMisID.root", "OPEN");
     h2_DielectronMisQ = (TH2D*)f_misQFile->Get("inclusive/h2_DielectronMisQ");
+    g_QFlipB = (TGraph*)f_misQFile->Get("inclusive/g_QFlipB");
+    g_QFlipE = (TGraph*)f_misQFile->Get("inclusive/g_QFlipE");
 
 }
 
@@ -128,13 +132,12 @@ float WeightUtils::RecoWeight()
         if (_leptons[0].Type() == "muon" && _leptons[1].Type() == "muon") 
             _triggerWeight = GetMuTriggerEff(_leptons[0], _leptons[1]);
         if (_leptons[0].Type() == "electron" && _leptons[1].Type() == "electron") 
-            _triggerWeight = 1;//GetEleTriggerEff(_leptons[0], _leptons[1]);
+            _triggerWeight = GetEleTriggerEff(_leptons[0], _leptons[1]);
     } else {
         _triggerWeight = 1.;
     }
 
     //cout << endl;
-
 
     return _triggerWeight*_recoWeight;
 }
@@ -352,37 +355,6 @@ float WeightUtils::GetEleTriggerEff(TLorentzVector lep1, TLorentzVector lep2) co
 
 float WeightUtils::GetElectronEff(TLorentzVector lep) const
 {
-    /*
-    // Scale factors based for 2012 8 TeV data (53X) for tight muon selection
-    float eleScale[5][6] = {
-    {0.818, 0.928, 0.973, 0.979, 0.984, 0.983},
-    {0.840, 0.914, 0.948, 0.961, 0.972, 0.977},
-    {1.008, 0.877, 0.983, 0.983, 0.957, 0.978},
-    {0.906, 0.907, 0.957, 0.962, 0.985, 0.986},
-    {0.991, 0.939, 1.001, 1.002, 0.999, 0.995}
-    };
-
-    int ptBin  = 0;
-    int etaBin = 0;
-    float ptBins[]  = {10., 15., 20., 30., 40., 50., 9999.};
-    float etaBins[] = {0., 0.8, 1.442, 1.556, 2.0, 2.5};
-    float weight    = 1.;
-
-    for (int i = 0; i < 5; ++i) {
-    if (fabs(lep.Eta()) > etaBins[i] && fabs(lep.Eta()) <= etaBins[i+1]) {
-    etaBin = i;
-    break;
-    }
-    }
-
-    for (int i = 0; i < 6; ++i) {
-    if (lep.Pt() > ptBins[i] && lep.Pt() <= ptBins [i+1]) {
-    ptBin = i;
-    break;
-    }
-    }
-    weight = eleScale[etaBin][ptBin];
-     */
 
     float weight = 1.;
 
@@ -437,7 +409,6 @@ float WeightUtils::GetFakeWeight(vector<TCPhysObject> fakeables, string controlR
             fakeablePt = 99.;
 
         if (fakeable.Type() == "muon") {
-
             if (fabs(fakeable.Eta()) < 1.5)
                 fakeRate *= g_MuonFakesPtB[controlRegion]->Eval(fakeablePt);
             else if (fabs(fakeable.Eta()) >= 1.5)
@@ -445,61 +416,38 @@ float WeightUtils::GetFakeWeight(vector<TCPhysObject> fakeables, string controlR
 
         } else if (fakeable.Type() == "electron") {
 
-            if (fabs(fakeable.Eta()) < 1.5)
+            if (fabs(fakeable.Eta()) < 0.8)
                 fakeRate *= g_ElectronFakesPtB[controlRegion]->Eval(fakeablePt);
-            else if (fabs(fakeable.Eta()) >= 1.5)
+            if (fabs(fakeable.Eta()) >= 0.8 && fabs(fakeable.Eta()) < 1.479)
+                fakeRate *= g_ElectronFakesPtG[controlRegion]->Eval(fakeablePt);
+            else if (fabs(fakeable.Eta()) >= 1.479)
                 fakeRate *= g_ElectronFakesPtE[controlRegion]->Eval(fakeablePt);
         }
     }
-
 
     return fakeRate / (1 - fakeRate);
 }
 
 float WeightUtils::GetQFlipWeight()
 {
-    float weight = 1;
-    unsigned iPt1, iEta1, iPt2, iEta2;
+    float weight = 0.;
 
     // Set iEta bins for leading and trailing electrons
-    if (fabs(_leptons[0].Eta()) < 1.5)
-        iEta1 = 0;
-    else 
-        iEta1 = 1;
+    for (unsigned i = 0; i < _leptons.size(); ++i) {
+        if (_leptons[i].Type() != "electron") continue;
 
-    if (fabs(_leptons[1].Eta()) < 1.5)
-        iEta2 = 0;
-    else 
-        iEta2 = 1;
+        float electronPt;
+        if (_leptons[i].Pt() < 125.)
+            electronPt = _leptons[i].Pt();
+        else
+            electronPt = 125.;
 
-    // Set iPt bins for leading and trailing _leptons
-    if (_leptons[0].Pt() < 20.)
-        iPt1 = 1;
-    else if (_leptons[0].Pt() > 20 && _leptons[0].Pt() < 50)
-        iPt1 = 2;
-    else if (_leptons[0].Pt() > 50)
-        iPt1 = 3;
-
-    if (_leptons[1].Pt() < 20.)
-        iPt2 = 1;
-    else if (_leptons[1].Pt() > 20 && _leptons[1].Pt() < 50)
-        iPt2 = 2;
-    else if (_leptons[1].Pt() > 50) 
-        iPt2 = 3;
-
-    if (_leptons[0].Type() == "electron" && _leptons[1].Type() == "muon") {
-        iEta2   = iEta1;
-        iPt2    = iPt1;
-        weight = h2_DielectronMisQ->GetBinContent(3*iEta1 + iPt1, 3*iEta2 + iPt2)/2;
-    } else if (_leptons[1].Type() == "electron" && _leptons[0].Type() == "muon") {
-        iEta1   = iEta2;
-        iPt1    = iPt2;
-        weight = h2_DielectronMisQ->GetBinContent(3*iEta1 + iPt1, 3*iEta2 + iPt2)/2;
-    } else
-        weight = h2_DielectronMisQ->GetBinContent(3*iEta1 + iPt1, 3*iEta2 + iPt2);
-
+        if (fabs(_leptons[0].Eta()) < 1.5)
+            weight += g_QFlipB->Eval(electronPt);
+        else 
+            weight += g_QFlipE->Eval(electronPt);
+    }
 
     //cout << weight << endl;
-
     return weight;
 }

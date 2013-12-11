@@ -94,8 +94,8 @@ const string categoryNames[] = {
     //"3l_barrel",
 };
 
-const unsigned short N_CUTS = 8;
-const string cutNames[] = {"preselection", "Z veto",  "MET selection", "jet selection", "BDT", "WZ_CR", "ttbar_CR", "ttZ_CR"};
+const unsigned short N_CUTS = 11;
+const string cutNames[] = {"preselection", "Z veto",  "MET selection", "jet selection", "BDT", "WZ_CR", "ttbar_CR", "ttZ_CR", "high_dileptonMass_ss", "low_dileptonMass_ss", "barrel_only"};
 
 typedef vector<TCPhysObject> vObj;
 
@@ -146,8 +146,6 @@ class fcncAnalyzer : public TSelector {
         UInt_t      chargeCat;
 
         Float_t     evtWeight;
-        Float_t     qFlipWeight;
-        Float_t     fakeWeight;
 
         // trees for lepton mva
         TTree*  muTree;
@@ -269,6 +267,7 @@ class fcncAnalyzer : public TSelector {
         virtual void    Terminate();
 
         virtual bool    AnalysisSelection(vObj, vector<TCJet>, vector<TCJet>, vector<TCJet>, TVector3, string);
+        virtual void    GetFakeBG(vObj, vObj, vector<TCJet>, vector<TCJet>, vector<TCJet>, TVector3);
 
         // Plot methods
         virtual void    MakePlots(vObj, vector<TCJet>, vector<TCJet>, TCMET, TVector3, unsigned);

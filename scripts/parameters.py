@@ -10,7 +10,14 @@ styleDict['DATA']               = (2, r.kBlack, 0, 21, 'Observed')
 styleDict['DATA_MUON']          = (2, r.kGray, 0, 21, 'Observed (#mu#mu)')
 styleDict['DATA_ELECTRON']      = (2, r.kGray+1, 0, 21, 'Observed (ee)')
 styleDict['DATA_MUEG']          = (2, r.kGray+2, 0, 21, 'Observed (e#mu)')
-styleDict['DATA_FAKES']         = (2, r.kBlack, 0, 21, 'Fakes')
+styleDict['DATA_FAKES']         = (2, r.kBlack, 3001, 21, 'Data')
+
+# For fake studies
+styleDict['PASS']               = (2, r.kBlack, 0, 23, 'Pass')
+styleDict['PROMPT_2l']          = (2, r.kRed, 3001, 21, 'Prompt')
+styleDict['PROMPT_3l']          = (2, r.kRed, 3001, 21, 'Prompt')
+styleDict['FAKEABLE']           = (2, r.kBlue, 0, 21, 'Fakeable')
+styleDict['Irreducible']        = (2, r.kBlue, 0, 21, 'Irreducible')
 
 #V+jets
 styleDict['VJets']              = (0, r.kRed, 1, 1, 'V+jets') # Vector boson combination
@@ -103,8 +110,8 @@ styleDict['SIG_EFF']            = (1, r.kRed, 3018, 21, 'Signal')
 styleDict['RATIO']              = (0, r.kBlack, 3002, 21, 'Ratio')
 styleDict['Fakes']              = (2, r.kBlack, 3001, 1, 'Fakes')
 styleDict['QFlips']             = (2, r.kBlue+2, 3001, 1, 'QFlips')
-styleDict['FAKE_2l']            = (2, r.kRed, 3001, 1, 'Prompt')
-styleDict['FAKE_3l']            = (2, r.kBlue, 3001, 1, 'Prompt')
+styleDict['FAKES_2l']           = (2, r.kRed, 3001, 1, 'Prompt')
+styleDict['FAKES_3l']           = (2, r.kBlue, 3001, 1, 'Prompt')
 
 ### Set scales
 scaleDict = {'2011':{}, '2012':{}}
@@ -233,22 +240,32 @@ combineDict = {}
 combineDict['FCNH']             = ['FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau']
 #combineDict['FCNH']             = ['FCNC_M125_tbar', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau']
 combineDict['DATA']             = ['DATA_MUON', 'DATA_ELECTRON', 'DATA_MUEG']
-combineDict['DATA_FAKES']       = ['DATA_MUON', 'DATA_ELECTRON', 'DATA_MUEG']
+
 combineDict['VJets']            = ['ZJets_M-50', 'ZJets_M-10To50', 'WJets']
 combineDict['ZJets']            = ['ZJets_M-50', 'ZJets_M-10To50']
 combineDict['WGStar']           = ['WGStarLNu2E', 'WGStarLNu2Mu', 'WGStarLNu2Tau']
 combineDict['top']              = ['ttbar', 'tW', 'tbarW', 't_t-channel', 'tbar_t-channel']
 combineDict['single top']       = ['tW', 'tbarW', 't_t-channel', 'tbar_t-channel']
+combineDict['ttV']              = ['ttZ', 'ttW', 'ttG']
 combineDict['Diboson']          = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'WZJets3LNu']
 combineDict['WW/ZZ']            = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'WWJets2L2Nu', 'ZZJets2L2Nu']
 combineDict['ZZ4l']             = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
-combineDict['ttV']              = ['ttZ', 'ttW', 'ttG']
 combineDict['Triboson']         = ['WWW', 'WWZ', 'WZZ', 'ZZZ', 'WWG']
 combineDict['QCD']              = ['QCD_20_MU', 'QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_EM', 'QCD_170-250_EM', 'QCD_250-350_EM', 'QCD_350_EM']
 combineDict['QCD_EM']           = ['QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_EM', 'QCD_170-250_EM', 'QCD_250-350_EM', 'QCD_350_EM']
 combineDict['higgs']            = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125']
-combineDict['FAKE_2l']          = ['WbbToLNu', 'ZJets_M-50', 'ZJets_M-10To50', 'ttbar', 'tbarW', 'tW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'ZZJets2L2Q']
-combineDict['FAKE_3l']          = ['WZJets3LNu']
+
+combineDict['FAKES_2l']         = ['WbbToLNu', 'ZJets_M-50', 'ZJets_M-10To50', 'ttbar', 'tbarW', 'tW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'ZZJets2L2Q']
+combineDict['FAKES_3l']         = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
+combineDict['Remove_ss']        = ['ZJets_M-50', 'ZJets_M-10To50']
+combineDict['Remove_3l']        = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
+combineDict['Irreducible']      = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ', 'WWG', 'WZJets3LNu']
+
+combineDict['DATA_FAKES']       = combineDict['DATA']
+combineDict['PASS']             = combineDict['DATA']
+combineDict['FAKEABLE']         = combineDict['DATA']
+combineDict['PROMPT_2l']        = combineDict['FAKES_2l']
+combineDict['PROMPT_3l']        = combineDict['FAKES_3l']
 
 categoryDict = {'inclusive':'inclusive',
                 'ss_inclusive':'ss inclusive', 'ss_mumu':'#mu^{#pm}#mu^{#pm}', 'ss_ee':'e^{#pm}e^{#pm}', 'ss_emu':'e^{#pm}#mu^{#pm}',

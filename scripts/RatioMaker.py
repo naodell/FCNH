@@ -19,9 +19,7 @@ def make_graph_ratio_2D(outName, h2_Numer, h2_Denom):
     ### TGraphAsymmErrors
 
     gList = []
-
     for i in range(h2_Numer.GetYaxis().GetNbins()):
-
         gList.append(r.TGraphAsymmErrors())
         gList[i].Divide(h2_Numer.ProjectionX('h_Numer_{0}_{1}'.format(outName, i+1), i, i+1), h2_Denom.ProjectionX('h_Denom_{0}_{1}'.format(outName, i+1), i, i+1))
         gList[i].SetName('g_{0}_{1}'.format(outName, i+1))
@@ -39,7 +37,11 @@ class RatioMaker(AnalysisTools):
         self._ratioDict2D   = {}
         self._hists         = []
 
-    def write_outfile(self):
+    def write_outfile(self, hists = []):
+        
+        for hist in hists:
+            self._outFile.Add(hist)
+
         self._outFile.Write()
         self._outFile.Close()
 
@@ -106,6 +108,15 @@ class RatioMaker(AnalysisTools):
                 h2_Numer.Add(h2_bgNumer, -1.)
                 h2_Denom.Add(h2_bgDenom, -1.)
 
+            ### Set negative entries to 0
+            for binX in range(h2_Numer.GetNbinsX()):
+                for binY in range(h2_Numer.GetNbinsY()):
+                    if h2_Numer.GetBinContent(binX+1, binY+1) < 0.:
+                        h2_Numer.SetBinContent(binX+1, binY+1, 0.)
+
+                    if h2_Denom.GetBinContent(binX+1, binY+1) < 0.:
+                        h2_Denom.SetBinContent(binX+1, binY+1, 0.)
+
             if removePass:
                 h2_Denom.Add(h2_Numer, -1)
 
@@ -124,6 +135,78 @@ class RatioMaker(AnalysisTools):
 
                 self._hists.append(h2_Eff)
 
+    def charge_flip_fitter(self, ratioSample, nToys = 10):
+        ### Converts 2D (double electron) charge flip probabilities to 1D
+        ### (single electron) charge flip probabilities.  Assumes mapping is
+        ### P(i,j) = p(i) + p(j).
+
+        self.make_category_directory()
+
+        for key,value in self._ratioDict2D.iteritems():
+            h2_Numer    = self.combine_samples(value[0], ratioSample, histType = '2D') 
+            h2_Denom    = self.combine_samples(value[1], ratioSample, histType = '2D') 
+
+            h2_Eff = r.TH2D('h2_{0}'.format(key), '{0};;'.format(key),
+                             h2_Numer.GetNbinsX(), h2_Numer.GetXaxis().GetXmin(), h2_Numer.GetXaxis().GetXmax(),
+                             h2_Numer.GetNbinsY(), h2_Numer.GetYaxis().GetXmin(), h2_Numer.GetYaxis().GetXmax())
+
+            h2_Eff.Divide(h2_Numer, h2_Denom, 1., 1., 'B')
+            self._hists.append(h2_Eff)
+
+            ### Guess at values of p(i) from diagonal bins, i.e., p(i) = 0.5*P(i,j)
+
+            nBinsX = h2_Eff.GetNbinsX()
+            nBinsY = h2_Eff.GetNbinsY()
+
+            prob0 = [[0.5*h2_Eff.GetBinContent(i+1, i+1) for i in range(nBinsX)], [0.5*h2_Eff.GetBinError(i+1, i+1) for i in range(nBinsX)]]
+            print prob0
+
+            for toy in range(nToys):
+
+                ### Now get possible values of p(i) from p(i) = P(i,j) - p(j) and reiterate
+                probs = [[0. for i in range(nBinsX)], [0. for i in range(nBinsX)]]
+
+                for binX in range(nBinsX):
+                    for binY in range(nBinsY):
+                        #if binX == binY: continue
+
+                        binContentXY    = h2_Eff.GetBinContent(binX+1, binY+1) 
+                        binErrorXY      = h2_Eff.GetBinError(binX+1, binY+1) 
+                        errX            = binErrorXY*binErrorXY + prob0[1][binY]*prob0[1][binY]
+                        errY            = binErrorXY*binErrorXY + prob0[1][binX]*prob0[1][binX]
+                        if binContentXY != 0:
+                            if prob0[0][binY] != 0:
+                                #print binContentXY, prob0[binY][0], errX
+
+                                probs[0][binX] += (binContentXY - prob0[0][binY])/errX
+                                probs[1][binX] += 1./errX
+                            if prob0[0][binX] != 0:
+                                probs[0][binY] += (binContentXY - prob0[0][binX])/errY
+                                probs[1][binY] += 1./errY
+
+                for binX in range(nBinsX):
+                    #print probs[binX], probs[0][binX]/nBinsX
+                    prob0[0][binX] = probs[0][binX]/probs[1][binX]
+                    prob0[1][binX] = 1./sqrt(probs[1][binX])
+
+
+                if toy%9 == 0:
+                    print prob0
+
+            print prob0[0]
+            print prob0[1]
+
+            ptBins = [15., 25., 37.5, 57.5, 85., 125.]
+            g_ProbB = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][:nBinsX/2]), array('f', [0.1 for bin in ptBins]), array('f', prob0[1][:nBinsX/2]))
+            g_ProbB.SetName('g_QFlipB')
+            g_ProbB.SetTitle('barrel electron charge flips;iPt;#varepsilon')
+
+            g_ProbE = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][nBinsX/2:]), array('f', [0.1 for bin in ptBins]), array('f', prob0[1][nBinsX/2:]))
+            g_ProbE.SetName('g_QFlipE')
+            g_ProbE.SetTitle('endcap electron charge flips;iPt;#varepsilon')
+
+            self._outFile.GetDirectory(self._category).Add(g_ProbB)
+            self._outFile.GetDirectory(self._category).Add(g_ProbE)
 
 
 if __name__ == '__main__':
@@ -139,6 +222,7 @@ if __name__ == '__main__':
 
     doQFlips    = False
     doFakes     = True
+    doMetFake   = False
 
     ### For electron charge misID efficiencies ###
     if doQFlips:
@@ -155,7 +239,8 @@ if __name__ == '__main__':
             }
 
         ratioMaker.set_ratio_2D(eMisQDict)
-        ratioMaker.make_2D_ratios('DATA', doProjections = False)
+        ratioMaker.charge_flip_fitter('DATA_ELECTRON')
+        #ratioMaker.make_2D_ratios('DATA', doProjections = False)
 
         ratioMaker.write_outfile()
 
@@ -166,7 +251,7 @@ if __name__ == '__main__':
         outFile = 'data/fakeRates_TEST.root'
 
         ratioMaker = RatioMaker(inFile, outFile, scale = 19.7)
-        ratioMaker.get_scale_factors(['FAKE_2l', 'FAKE_3l'], corrected = False)
+        ratioMaker.get_scale_factors(['FAKES_2l', 'FAKES_3l'], corrected = False)
 
         fakeDict1D = {
             #'MuonFakePt_Even':('MuPassLepPt', 'MuProbeLepPt'),
@@ -186,25 +271,76 @@ if __name__ == '__main__':
             'ElectronFake':('EleNumer', 'EleDenom')
         }
 
-        fakeCategories = [
-                            'QCD2l_inclusive', 'ZPlusJet_inclusive',
-                            #'QCD2l_low_met', 'QCD2l_high_met',
-                            #'ZPlusJet_low_met', 'ZPlusJet_high_met'
-                         ]
+        fakeCategories = ['QCD2l_inclusive', 'ZPlusJet_inclusive']
 
         for category in fakeCategories:
             ratioMaker.set_category(category)
 
             bgType =''
             if category.split('_', 1)[0] == 'QCD2l':
-                bgType = 'FAKE_2l'
+                bgType = 'FAKES_2l'
             elif category.split('_', 1)[0] == 'ZPlusJet':
-                bgType = 'FAKE_3l'
+                bgType = 'FAKES_3l'
 
             ratioMaker.set_ratio_1D(fakeDict1D)
             ratioMaker.make_1D_ratios('DATA', bgType)
 
             ratioMaker.set_ratio_2D(fakeDict2D)
-            #ratioMaker.make_2D_ratios('DATA', bgType, doProjections = True, removePass = False)
+            ratioMaker.make_2D_ratios('DATA', bgType, doProjections = True, removePass = False)
+
+        # ttH fake rate estimation using low/high met categories
+
+        if doMetFake:
+            ratioMaker.set_category('TEST')
+            ratioMaker.make_category_directory()
+
+            hists = []
+            for key,value in fakeDict2D.iteritems():
+                ratioMaker.set_category('QCD2l_low_met')
+                h2_Numer_lm    = ratioMaker.combine_samples(value[0], 'DATA', histType = '2D') 
+                h2_Denom_lm    = ratioMaker.combine_samples(value[1], 'DATA', histType = '2D') 
+                h2_bgNumer_lm  = ratioMaker.combine_samples(value[0], 'FAKES_2l', histType = '2D') 
+                h2_bgDenom_lm  = ratioMaker.combine_samples(value[1], 'FAKES_2l', histType = '2D') 
+
+                ratioMaker.set_category('QCD2l_high_met')
+                h2_Numer_hm    = ratioMaker.combine_samples(value[0], 'DATA', histType = '2D') 
+                h2_Denom_hm    = ratioMaker.combine_samples(value[1], 'DATA', histType = '2D') 
+                h2_bgNumer_hm  = ratioMaker.combine_samples(value[0], 'FAKES_2l', histType = '2D') 
+                h2_bgDenom_hm  = ratioMaker.combine_samples(value[1], 'FAKES_2l', histType = '2D') 
+
+                h2_bgNumer = h2_bgNumer_lm.Clone()
+                h2_bgNumer.Add(h2_bgNumer_hm)
+
+                nBinsX, xMin, xMax, nBinsY, yMin, yMax = \
+                                                         h2_Numer_lm.GetNbinsX(), h2_Numer_lm.GetXaxis().GetXmin(), h2_Numer_lm.GetXaxis().GetXmax(), \
+                                                         h2_Numer_lm.GetNbinsY(), h2_Numer_lm.GetYaxis().GetXmin(), h2_Numer_lm.GetYaxis().GetXmax()
+
+                h2_fakeRate_lm  = r.TH2D('h2_fakeRate_lm_{0}'.format(key), '{0};;'.format(key), nBinsX, xMin, xMax, nBinsY, yMin, yMax)
+                h2_fakeRate_hm  = r.TH2D('h2_fakeRate_hm_{0}'.format(key), '{0};;'.format(key), nBinsX, xMin, xMax, nBinsY, yMin, yMax)
+                h2_fakeRate_qcd = r.TH2D('h2_fakeRate_qcd_{0}'.format(key), '{0};;'.format(key), nBinsX, xMin, xMax, nBinsY, yMin, yMax)
+                h2_ratioPrompt  = r.TH2D('h2_ratioPrompt_lm_{0}'.format(key), '{0};;'.format(key), nBinsX, xMin, xMax, nBinsY, yMin, yMax)
+                h2_Numerator    = r.TH2D('h2_Numerator_lm_{0}'.format(key), '{0};;'.format(key), nBinsX, xMin, xMax, nBinsY, yMin, yMax)
+                h2_Denominator  = r.TH2D('h2_Denominator_lm_{0}'.format(key), '{0};;'.format(key), nBinsX, xMin, xMax, nBinsY, yMin, yMax)
+                h2_AllOnes      = r.TH2D('h2_AllOnes_lm_{0}'.format(key), '{0};;'.format(key), nBinsX, xMin, xMax, nBinsY, yMin, yMax)
+
+                for n in range(nBinsX):
+                    for m in range(nBinsY):
+                        h2_AllOnes.SetBinContent(n+1, m+1, 1);
+                        h2_AllOnes.SetBinError(n+1, m+1, 0);
+
+                h2_fakeRate_lm.Divide(h2_Numer_lm, h2_Denom_lm, 1., 1., 'B')
+                h2_fakeRate_hm.Divide(h2_Numer_hm, h2_Denom_lm, 1., 1., 'B')
+
+                h2_Denom_lm.Multiply(h2_bgNumer_hm)
+                h2_Denom_hm.Multiply(h2_bgNumer_lm)
+                h2_ratioPrompt.Divide(h2_Denom_lm, h2_Denom_hm, 1., 1.)
+
+                h2_fakeRate_hm.Multiply(h2_ratioPrompt)
+                h2_Numerator.Add(h2_fakeRate_lm, h2_fakeRate_hm, 1., -1.)
+                h2_Denominator.Add(h2_AllOnes, h2_ratioPrompt, 1., -1.)
+
+                h2_fakeRate_qcd.Divide(h2_Numerator, h2_Denominator, 1., 1., 'B')
+
+                hists.append(h2_fakeRate_qcd)
 
         ratioMaker.write_outfile()

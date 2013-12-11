@@ -58,8 +58,8 @@ samples['all'].append('ttV')
 samples['all'].append('Diboson')
 samples['all'].append('top')
 samples['all'].append('ZJets')
-samples['all'].append('WJets')
-samples['all'].append('QCD')
+#samples['all'].append('WJets')
+#samples['all'].append('QCD')
 #samples['all'].extend(['ZbbToLL', 'WbbToLNu']) #, 'ZGstar'])
 
 samples['3l'].append('Fakes_Triboson')
@@ -69,14 +69,14 @@ samples['3l'].append('Fakes_WZJets3LNu')
 samples['3l'].append('Fakes_top')
 samples['3l'].append('Fakes_ZJets')
 
-samples['ss'].append('Fakes_Triboson')
-samples['ss'].append('Fakes_ttV')
+#samples['ss'].append('Fakes_Triboson')
+#samples['ss'].append('Fakes_ttV')
 samples['ss'].append('Fakes_ZZ4l')
 samples['ss'].append('Fakes_WZJets3LNu')
 samples['ss'].append('Fakes_top')
+#samples['ss'].append('Fakes_WJets')
+#samples['ss'].append('Fakes_QCD')
 samples['ss'].append('Fakes_ZJets')
-samples['ss'].append('Fakes_WJets')
-samples['ss'].append('Fakes_QCD')
 
 p_plot = []
 
@@ -106,18 +106,19 @@ if doPlots:
     ### plot while giving a key value which is the 
     ### directory that they are located in as a key.
 
-    plotter._directoryList1D            = ['Misc', 'Lepton', 'Dilepton', 'DileptonOS', 'Trilepton', 'MET', 'Jet']
+    plotter._directoryList1D            = ['Misc', 'Lepton', 'Lep+Jet', 'Dilepton', 'DileptonOS', 'Trilepton', 'MET', 'Jet']
 
-    plotter._variableDict['Misc']       = ['PvMult', 'YieldByCut', 'YieldByCutRaw', 'EventWeight', 'TriggerStatus', 
-                                            'BDT']
+    plotter._variableDict['Misc']       = ['PvMult', 'YieldByCut', 'YieldByCutRaw', 'EventWeight', 'TriggerStatus', 'BDT'] 
 
     plotter._variableDict['Lepton']     = ['LeptonCharge', 'LeptonFlavor', 
                                            'Lepton1Pt', 'Lepton2Pt','Lepton3Pt',
                                            'Lepton1Eta', 'Lepton2Eta', 'Lepton3Eta',
+                                           'ElectronPt', 'ElectronEta',
+                                           'MuonPt', 'MuonEta',
                                            'Lepton1 dxy', 'Lepton1 dz',
                                            'Lepton2 dxy', 'Lepton2 dz',
                                            'Lepton3 dxy', 'Lepton3 dz',
-                                           'TrileptonMass', 'LeptonMult']
+                                           'LeptonMult']
                                            #'Lepton1Phi', 'Lepton2Phi', 'Lepton3Phi']
 
     plotter._variableDict['Dilepton']   = ['DileptonMass21', 'DileptonTransMass21', 'DileptonQt21',
@@ -129,16 +130,19 @@ if doPlots:
 
     plotter._variableDict['DileptonOS'] = ['DileptonOSMass', 'DileptonOSTransMass', 'DileptonOSBalance',
                                            'DileptonOSQt', 'DileptonOSDeltaPt', 'DileptonOSDeltaR', 
-                                           'DileptonOSDeltaEta', 'DileptonOSDeltaPhi',
-                                           'DileptonLepDeltaR', 'DileptonLepDeltaPhi', 'DileptonLepDeltaEta'] 
+                                           'DileptonOSDeltaEta', 'DileptonOSDeltaPhi'] 
 
-    plotter._variableDict['Trilepton']  = ['DileptonLepDeltaR', 'DileptonLepDeltaPhi', 'DileptonLepDeltaEta', 'Lep3MetMT']
+    plotter._variableDict['Trilepton']  = ['DileptonLepDeltaR', 'DileptonLepDeltaPhi', 'DileptonLepDeltaEta', 'Lep3MetMT', 'TrileptonMass']
 
     plotter._variableDict['Lep+Jet']    = ['Lepton1BJetDeltaPhi', 'Lepton1BJetDeltaEta', 'Lepton1BJetDeltaR', 'Lepton1BJetDeltaPt',
                                            'Lepton2BJetDeltaPhi', 'Lepton2BJetDeltaEta', 'Lepton2BJetDeltaR', 'Lepton2BJetDeltaPt',
-                                           'Lepton3BJetDeltaPhi', 'Lepton3BJetDeltaEta', 'Lepton3BJetDeltaR', 'Lepton3BJetDeltaPt'
-                                           ]
-
+                                           'Lepton3BJetDeltaPhi', 'Lepton3BJetDeltaEta', 'Lepton3BJetDeltaR', 'Lepton3BJetDeltaPt',
+                                           'Lepton1JetDeltaPhi', 'Lepton1JetDeltaEta', 'Lepton1JetDeltaR', 'Lepton1JetDeltaPt',
+                                           'Lepton2JetDeltaPhi', 'Lepton2JetDeltaEta', 'Lepton2JetDeltaR', 'Lepton2JetDeltaPt',
+                                           'Lepton3JetDeltaPhi', 'Lepton3JetDeltaEta', 'Lepton3JetDeltaR', 'Lepton3JetDeltaPt',
+                                           'DileptonJetDeltaPhi', 'DileptonJetDeltaEta', 'DileptonJetDeltaR', 'DileptonJetDeltaPt',
+                                           'DileptonBJetDeltaPhi', 'DileptonBJetDeltaEta', 'DileptonBJetDeltaR', 'DileptonBJetDeltaPt',
+                                          ]
 
     plotter._variableDict['Jet']        = ['Jet1Pt', 'Jet2Pt',# 'Jet3Pt',
                                            'Jet1Eta', 'Jet2Eta',# 'Jet3Eta',
@@ -148,9 +152,20 @@ if doPlots:
                                            'HT', 'HTs', 'EventBalance', 'Centrality',
                                            'JetMultCharge', 'JetMult', 'BJetMult']
 
-    plotter._variableDict['MET']        = ['Met', 'MHT', 'METLD', 'MET-MHT', 'MetPhi', 'MetSumEt',
+    plotter._variableDict['MET']        = ['Met', 'MHT', 'METLD', 'MHT-MET', 'MetPhi', 'MetSumEt',
                                            'MetLepton1DeltaPhi', 'MetLepton2DeltaPhi'
                                            'MetLepDeltaPhiMin', 'nearLepIndex', 'ProjectedMet', 'MetLepton3DeltaPhi'] 
+
+    plotter._variableDict['GEN']        = ['GenChargeMisId', 'GenMisIdPt', 'GenMisIdEta',
+                                           'GenDeltaR', 'GenBalance']
+
+    plotter._variableDict['4l']         = ['4lMass', '4lPt', '4lSumPt', '4lMet']
+
+    plotter._variableDict['2D']         = ['metVsHt', 'metVsSqrtHt', 'TrileptonMVsDileptonMOS',
+                                            'DileptonMVsDeltaROS', 'DileptonQtVsDeltaROS',
+                                            #'DileptonM13VsM21', 'DileptonM12VsM31', 'DileptonM21VsM32',
+                                            #'DalitzM13VsM21', 'DalitzM12VsM31', 'DalitzM21VsM32',
+                                            'LepChargeVsFlavor']
 
 
 

@@ -263,7 +263,7 @@ class PlotProducer(AnalysisTools):
 
         ### Build the legend from the list of samples
         tmpHists = {}
-        legend = build_legend(tmpHists, self._datasets+self._overlayList, self._styleDict)
+        legend = build_legend(tmpHists, self._overlayList+self._datasets, self._styleDict)
 
         for directory in self._directoryList1D:
             stacks, sums = self.get_stack_dict(directory)
@@ -283,7 +283,7 @@ class PlotProducer(AnalysisTools):
                 canvas.SaveAs('{0}/{1}/{2}/{3}{4}'.format(self._savePath, self._category, directory, var, self._plotType))
 
 
-    def make_overlays_diff(self, histPairs, directory, logScale = False, doRatio = True, doEff = False):
+    def make_overlays_diff(self, hists, directory, outputName, logScale = False, doRatio = False, doEff = False):
         '''
         Process to produce overlays of different histograms.
         '''
@@ -314,24 +314,55 @@ class PlotProducer(AnalysisTools):
 
         self.make_save_path('{0}/{1}/{2}'.format(self._savePath, self._category, directory))
 
-        #tmpHists = {}
-        #legend = build_legend(tmpHists, dataList, self._styleDict)
+        histList = []
+        dataNames = []
+        for samples, var in hists:
 
-        for i, (data, var) in enumerate(histPairs):
-
-            hists   = self.get_hist_dict(directory)
-            hist    = self.combine_samples(var, data)
-
-            if hist is None: 
-                continue
-
-            set_hist_style(hist, data, self._styleDict)
-
-            pad1.cd()
-            if i == 0:
-                hist.Draw('E')
+            drawOption = 'E'
+            if len(samples) == 1:
+                hist = self.combine_samples(var[0], samples[0])
+                if hist is None: 
+                    continue
+                else:
+                    dataNames.append(samples[0])
+                    set_hist_style(hist, samples[0], self._styleDict)
+                    histList.append((hist, drawOption))
             else:
-                hist.Draw('E SAME')
+                drawOption = 'HIST'
+                stackList = []
+                for j,sample in enumerate(samples):
+                    tmpHist = self.combine_samples(var[j], sample)
+
+                    if tmpHist is None: 
+                        continue
+                    else:
+                        dataNames.append(sample)
+                        set_hist_style(tmpHist, sample, self._styleDict)
+                        stackList.append((tmpHist, sample))
+
+                hist = self.build_stack(stackList)
+
+                if hist is None: 
+                    continue
+                else:
+                    histList.append((hist, drawOption))
+
+        tmpHists = {}
+        legend = build_legend(tmpHists, list(set(dataNames)), self._styleDict)
+
+        pad1.cd()
+        isBlank = True
+        for (hist, opt) in histList:
+            if isBlank:
+                hist.SetMaximum(hist.GetMaximum()*1.2)
+                hist.Draw(opt)
+
+                if hist.GetYaxis():
+                    hist.GetYaxis().SetTitleOffset(2.0);
+
+                isBlank = False
+            else:
+                hist.Draw('{0} SAME'.format(opt))
 
         ## Draw info box ##
         r.gStyle.SetOptTitle(0)
@@ -349,7 +380,7 @@ class PlotProducer(AnalysisTools):
         legend.Draw('SAME')
         textBox.Draw('SAME')
 
-        canvas.SaveAs('{0}/{1}/{2}/{3}{4}'.format(self._savePath, self._category, directory, var, self._plotType))
+        canvas.SaveAs('{0}/{1}/{2}/{3}{4}'.format(self._savePath, self._category, directory, outputName, self._plotType))
 
 
     def make_overlays_1D(self, logScale = False, doRatio = True, doEff = False):
@@ -383,7 +414,7 @@ class PlotProducer(AnalysisTools):
 
         ### Build the legend from the list of samples
         tmpHists = {}
-        legend = build_legend(tmpHists, self._datasets+self._overlayList, self._styleDict)
+        legend = build_legend(tmpHists, self._overlayList+self._datasets, self._styleDict)
 
         ### Starting loop over directories in histogram file
         for directory in self._directoryList1D:
@@ -414,13 +445,13 @@ class PlotProducer(AnalysisTools):
                     legend.SetY1(0.25)
                     legend.SetY2(0.89)
 
-
                 stacks[var].Draw('HIST')
-                sums[var].Draw('E2 SAME')
 
                 if not logScale or not (doRatio):
-                    stacks[var].GetYaxis().SetTitleOffset(1.00);
+                    stacks[var].GetYaxis().SetTitleOffset(2.0);
+                    stacks[var].Draw('HIST')
 
+                sums[var].Draw('E2 SAME')
                 for (hist, data) in hists[var]:
                     hist.Draw('E SAME')
 
@@ -569,9 +600,9 @@ class PlotProducer(AnalysisTools):
                   
                 idBox = r.TPaveText(0.8, 0.85, 0.9, 0.95, 'NDC')
                 idBox.SetFillColor(1)
-                idBox.SetFillStyle(0)
+                idBox.SetFillStyle(1)
                 idBox.SetLineWidth(0)
-                idBox.SetLineColor(0)
+                idBox.SetLineColor(1)
 
                 for (hist, data) in hists[var]:
                     if data in ['Signal', 'FCNH']:

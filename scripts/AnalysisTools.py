@@ -20,6 +20,7 @@ class AnalysisTools():
         self._scaleDict     = scales
         self._styleDict     = styles
         self._combineDict   = combos
+        self._cleanFakes    = False
         self._category      = ''
         self._datasets      = []
 
@@ -115,7 +116,7 @@ class AnalysisTools():
 
                     self._scaleDict[self._period][dataName] = 1e3*self._scaleDict[self._period][dataName]/nInit
 
-                    print self._scaleDict[self._period][dataName],nInit
+                    #print self._scaleDict[self._period][dataName],nInit
 
                 else:
                     print '{0} not found in scale dictionary; setting to 0'.format(dataName)
@@ -136,8 +137,8 @@ class AnalysisTools():
         if histType == '2D':
             histogramName = 'h2_' + var  
         
+        #print self._category, dataName, histogramName
         hist = self._histFile.GetDirectory(self._category + '/' + dataName).Get(histogramName)
-        #print self._category, dataName, histogramName, hist
 
         if not hist:
             return None
@@ -160,9 +161,19 @@ class AnalysisTools():
 
         outHist = None
         doFakes = False
+        const   = 1.
         if dataName.split('_', 1)[0] == 'Fakes' and dataName != 'Fakes':
             dataName = dataName.split('_', 1)[1]
             doFakes  = True
+        elif dataName == 'Fakes':
+            outHist     = self.get_hist(var, dataName, histType)
+
+            if outHist is None:
+                return outHist
+            else:
+                dataName    = 'Remove_{0}'.format(self._category.split('_', 1)[0])
+                doFakes     = True
+                const       = -1.
 
         if dataName not in self._combineDict:
             if doFakes:
@@ -181,7 +192,7 @@ class AnalysisTools():
                 if outHist is None and hist is not None:
                     outHist = hist
                 elif hist is not None:
-                    outHist.Add(hist)
+                    outHist.Add(hist, const)
 
         return outHist
 
