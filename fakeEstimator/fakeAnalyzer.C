@@ -228,7 +228,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
     vector<TCJet> eleJets   = selector->GetSelectedJets("eleJets");
 
     jets.insert(jets.end(), fwdJets.begin(), fwdJets.end());
-    jets.insert(jets.end(), bJetsL.begin(), bJetsL.end());
+    //jets.insert(jets.end(), bJetsL.begin(), bJetsL.end());
     jets.insert(jets.end(), bJetsM.begin(), bJetsM.end());
     jets.insert(jets.end(), muJets.begin(), muJets.end());
     jets.insert(jets.end(), eleJets.begin(), eleJets.end());
@@ -620,9 +620,9 @@ void fakeAnalyzer::FillDenominatorHists(string cat, TCPhysObject probe)
                 "h1_MuProbeLepEta", "probe muon #eta;#eta;Entries / bin", 25, -2.5, 2.5);
 
         histManager->Fill1DHistUnevenBins(probePt,
-                "h1_MuDenomPt", "probe muon p_{T};p_{T};Entries / 3 GeV", nPtBins, ptBins);
+                "h1_MuDenomPt", "probe muon p_{T};p_{T};Entries / bin", nPtBins, ptBins);
         histManager->Fill1DHistUnevenBins(probe.Eta(),
-                "h1_MuDenomEta", "probe muon #eta;#eta;Entries / 3 GeV", 2, etaBinsMu);
+                "h1_MuDenomEta", "probe muon #eta;#eta;Entries / bin", 2, etaBinsMu);
         histManager->Fill2DHistUnevenBins(probePt, probe.Eta(),
                 "h2_MuDenom", "probe muon p_{T};p_{T};#eta", nPtBins, ptBins, 2, etaBinsMu);
 
@@ -636,9 +636,9 @@ void fakeAnalyzer::FillDenominatorHists(string cat, TCPhysObject probe)
                 "h1_EleProbeLepEta", "probe electron #eta;#eta;Entries / bin", 25, -2.5, 2.5);
 
         histManager->Fill1DHistUnevenBins(probePt,
-                "h1_EleDenomPt", "probe electron p_{T};p_{T};Entries / 3 GeV", nPtBins, ptBins);
+                "h1_EleDenomPt", "probe electron p_{T};p_{T};Entries / bin", nPtBins, ptBins);
         histManager->Fill1DHistUnevenBins(probe.Eta(),
-                "h1_EleDenomEta", "probe electron #eta;#eta;Entries / 3 GeV", 3, etaBinsEle);
+                "h1_EleDenomEta", "probe electron #eta;#eta;Entries / bin", 3, etaBinsEle);
         histManager->Fill2DHistUnevenBins(probePt, probe.Eta(),
                 "h2_EleDenom", "probe electron p_{T};p_{T};#eta", nPtBins, ptBins, 3, etaBinsEle);
 
@@ -673,7 +673,6 @@ void fakeAnalyzer::FillNumeratorHists(string cat, TCPhysObject passLep)
 
         histManager->Fill1DHistUnevenBins(recoMET->Mod(),
                 "h1_MuNumerMet", "pass muon Met;Met;Entries", nMetBins, metBins);
-
 
     } else if (lepType == "electron") {
         histManager->Fill1DHist(passLep.Pt(),
@@ -735,10 +734,10 @@ void fakeAnalyzer::FillJetFlavorHists(string cat, TCPhysObject lepton, vector<TC
         //cout << jets[jetIndex].BDiscriminatorMap("CSV") << endl;
         if (lepton.Type() == "muon")
             histManager->Fill1DHist(jets[jetIndex].BDiscriminatorMap("CSV"),
-                    "h1_matchedMuJetBDiscr", "matched #mu-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
+                    "h1_MatchedMuJetBDiscr", "matched #mu-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
         if (lepton.Type() == "electron")
             histManager->Fill1DHist(jets[jetIndex].BDiscriminatorMap("CSV"),
-                    "h1_matchedEleJetBDiscr", "matched e-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
+                    "h1_MatchedEleJetBDiscr", "matched e-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
     }
 }
 

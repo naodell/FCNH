@@ -537,22 +537,12 @@ void Selector::JetSelector(TClonesArray* jets)
                     if (BTagModifier(corJet, "CSVM")) {
                         _selJets["bJetsMedium"].push_back(corJet);
 
-                        if (overlap[2])
-                            _selJets["muFakes"].push_back(corJet);
-                        if (overlap[3])
-                            _selJets["eleFakes"].push_back(corJet);
-                        else if (!overlap[2] && !overlap[3])
+                        if (!overlap[2] && !overlap[3])
                             _selJets["bJetsMedium_NoFakes"].push_back(corJet);
-
-                    } else if (BTagModifier(corJet, "CSVL")) {
-                        _selJets["bJetsLoose"].push_back(corJet);
-
-                        if (overlap[2])
-                            _selJets["muFakes"].push_back(corJet);
-                        if (overlap[3])
+                        else if (overlap[2])
+                             _selJets["muFakes"].push_back(corJet);
+                        else if (overlap[3])
                             _selJets["eleFakes"].push_back(corJet);
-                        else if (!overlap[2] && !overlap[3])
-                            _selJets["bJetsLoose_NoFakes"].push_back(corJet);
 
                     } else if (
                             corJet.VtxNTracks() > 0
@@ -561,12 +551,20 @@ void Selector::JetSelector(TClonesArray* jets)
                             ) { 
                         _selJets["tight"].push_back(corJet);
 
-                        if (overlap[2])
-                            _selJets["muFakes"].push_back(corJet);
-                        if (overlap[3])
-                            _selJets["eleFakes"].push_back(corJet);
-                        else if (!overlap[2] && !overlap[3])
+                        if (!overlap[2] && !overlap[3])
                             _selJets["tight_NoFakes"].push_back(corJet);
+                        else if (overlap[2])
+                            _selJets["muFakes"].push_back(corJet);
+                        else if (overlap[3])
+                            _selJets["eleFakes"].push_back(corJet);
+                    }
+
+                    //} else if (BTagModifier(corJet, "CSVL")) {
+                if (corJet.BDiscriminatorMap("CSV") > 0.244 && corJet.BDiscriminatorMap("CSV") < 0.679) {
+                        _selJets["bJetsLoose"].push_back(corJet);
+
+                        if (!overlap[2] && !overlap[3])
+                            _selJets["bJetsLoose_NoFakes"].push_back(corJet);
                     }
                 }
             }
@@ -584,12 +582,12 @@ void Selector::JetSelector(TClonesArray* jets)
                 else {
                     _selJets["forward"].push_back(corJet); 
 
-                    if (overlap[2])
-                        _selJets["muFakes"].push_back(corJet);
-                    if (overlap[3])
-                        _selJets["eleFakes"].push_back(corJet);
-                    else if (!overlap[2] && !overlap[3])
+                    if (!overlap[2] && !overlap[3])
                         _selJets["tight_NoFakes"].push_back(corJet);
+                    else if (overlap[2])
+                        _selJets["muFakes"].push_back(corJet);
+                    else if (overlap[3])
+                        _selJets["eleFakes"].push_back(corJet);
                 }
             }
         }

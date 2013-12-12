@@ -105,8 +105,9 @@ styleDict['higgs']              = (2, r.kBlue+3, 0, 1, 'higgs')
 #Misc
 styleDict['BGERROR']            = (0, r.kBlack, 3018, 0, 'BG error')
 styleDict['FCNH']               = (3, r.kPink+3, 2, 22, 'FCNH')
-styleDict['SUM_EFF']            = (1, r.kBlue, 3018, 21, 'BG')
-styleDict['SIG_EFF']            = (1, r.kRed, 3018, 21, 'Signal')
+styleDict['SUM_EFF']            = (2, r.kBlue, 1, 21, 'BG')
+styleDict['SIG_EFF']            = (2, r.kRed, 1, 21, 'Signal')
+styleDict['SIGNIFICANCE']       = (2, r.kGreen, 1, 21, 'Signficance')
 styleDict['RATIO']              = (0, r.kBlack, 3002, 21, 'Ratio')
 styleDict['Fakes']              = (2, r.kBlack, 3001, 1, 'Fakes')
 styleDict['QFlips']             = (2, r.kBlue+2, 3001, 1, 'QFlips')
@@ -166,7 +167,7 @@ scaleDict['2012']['ZG']                 = 159.12
 scaleDict['2012']['ZZJets2L2Nu']        = 0.365
 scaleDict['2012']['ZZJets2L2Q']         = 1.28
 scaleDict['2012']['ZZJets4L']           = 0.0921
-scaleDict['2012']['WZJets3LNu']         = 1.086#*1.309 #<-- WZ rescaled based on 3 lepton control region
+scaleDict['2012']['WZJets3LNu']         = 1.086 #*1.309 #<-- WZ rescaled based on 3 lepton control region
 scaleDict['2012']['WZJets2L2Q']         = 5.09
 scaleDict['2012']['WWJets2L2Nu']        = 5.995
 

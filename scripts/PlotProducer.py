@@ -199,6 +199,35 @@ class PlotProducer(AnalysisTools):
         
         return hRatio
 
+    def get_significance(self, signal, background, dataType):
+        '''
+        Generates a histogram with the cut efficiency
+        for a 1-D plot.  Intended for comparison of
+        background and signal.
+        '''
+
+        nBins = signal.GetNbinsX()
+        xAxisName = signal.GetXaxis().GetTitle()
+        hSig = r.TH1D('h1_Sig_'+dataType, ';' + xAxisName + ';#varepsilon_{cut}', nBins, signal.GetBinLowEdge(1), signal.GetBinLowEdge(nBins + 1))
+
+        for i in range(nBins):
+            sig     = signal.Integral(i+1, nBins)
+            bg      = background.Integral(i+1, nBins)
+
+            #print sig + bg
+            if sig + bg > 0.:
+                signif  = sig/sqrt(sig + bg)
+            else:
+                signif  = 0.
+
+            hSig.SetBinContent(i + 1, signif)
+            hSig.SetBinError(i + 1, 0.025*signif)
+
+        set_hist_style(hSig, dataType, self._styleDict)
+        prep_hist(hSig, (-0.05, hSig.GetMaximum()*1.1))
+
+        return hSig
+
 
     def get_cut_efficiency(self, hist, dataType):
         '''
@@ -224,31 +253,6 @@ class PlotProducer(AnalysisTools):
         prep_hist(hEff, (-0.05, 1.1))
 
         return hEff
-
-    def get_significance(self, h_sig, h_bg, dataType):
-        '''
-        Generates a histogram with the significance
-        for a 1-D plot.  Intended for comparison of
-        background and signal.
-        '''
-
-        nBins = h_bg.GetNbinsX()
-        xAxisName = h_bg.GetXaxis().GetTitle()
-        hSig = r.TH1D('h1_Sig_'+dataType, ';' + xAxisName + ';sig', nBins, hist.GetBinLowEdge(1), hist.GetBinLowEdge(nBins + 1))
-
-        for i in range(nBins):
-            sumError = r.Double(0)
-            eff = h_sig.IntegralAndError(i+1, nBins, sumError)/math.sqrt(h_sig.IntegralAndError(i+1, nBins, sumError) + h_bg.IntegralAndError(i+1, nBins, sumError))
-            hSig.SetBinContent(i + 1, eff)
-            hSig.SetBinError(i + 1, 0.025*eff)
-
-            #hSig.SetBinError(i + 1, self.binomial_error(eff, hist.Integral()))
-
-
-        set_hist_style(hSig, dataType, self._styleDict)
-        prep_hist(hSig, (-0.05, 1.1))
-
-        return hSig
 
     def make_stacks_by_category(self, categoryList = '', logScale = False):
         '''
@@ -472,6 +476,7 @@ class PlotProducer(AnalysisTools):
 
                 textBox.Draw('same')
 
+                delEffHists = False
                 if doRatio and not doEff:
                     pad2.cd()
                     hRatio = self.get_ratio(hists[var][0][0], sums[var])
@@ -482,12 +487,19 @@ class PlotProducer(AnalysisTools):
                     hEffBG  = self.get_cut_efficiency(sums[var], 'SUM_EFF')
                     hEffBG.Draw("E3")
 
-                    for hist in hists[var]:
-                        if hist[1] in ['SIGNAL', 'FCNH', 'FCNC_M125_t', 'FCNC_M125_tbar']:
-                            hEffSig = self.get_cut_efficiency(hist[0], 'SIG_EFF')
-                            hEffSig.Draw("E3 SAME")
+                    hEffSig = self.get_cut_efficiency(hists[var][1][0], 'SIG_EFF')
+                    canvas.Update()
+                    scale_to_pad(hEffSig)
+                    hEffSig.Draw("E3 SAME")
 
-                            continue
+                    hSignif = self.get_significance(hists[var][1][0], sums[var], 'SIGNIFICANCE')
+                    canvas.Update()
+                    scale_to_pad(hSignif)
+                    hSignif.Draw("E3 SAME")
+
+                    axisEff = r.TGaxis(r.gPad.GetUxmax(), r.gPad.GetUymin(), r.gPad.GetUxmax(), r.gPad.GetUymax(), 0.0, 1.10, 510, '+L')
+                    format_axis(axisEff, 0.5, '#varepsilon_{cut}', r.kBlack)
+
 
                 elif doEff and doRatio:
                     pad2.cd()
@@ -497,27 +509,42 @@ class PlotProducer(AnalysisTools):
                     hEffBG  = self.get_cut_efficiency(sums[var], 'SUM_EFF')
                     canvas.Update()
                     scale_to_pad(hEffBG)
-                    hEffBG.Draw("E3 SAME")
+                    hEffBG.Draw("L SAME")
+
+                    hEffSig = self.get_cut_efficiency(hists[var][1][0], 'SIG_EFF')
+                    canvas.Update()
+                    scale_to_pad(hEffSig)
+                    hEffSig.Draw("L SAME")
+
+                    hSignif = self.get_significance(hists[var][1][0], sums[var], 'SIGNIFICANCE')
+                    canvas.Update()
+                    scale_to_pad(hSignif)
+                    hSignif.Draw("L SAME")
 
                     axisEff = r.TGaxis(r.gPad.GetUxmax(), r.gPad.GetUymin(), r.gPad.GetUxmax(), r.gPad.GetUymax(), 0.0, 1.10, 510, '+L')
                     format_axis(axisEff, 0.5, '#varepsilon_{cut}', r.kBlack)
 
-                    for hist in hists[var]:
-                        if hist[1] in ['SIGNAL', 'FCNH', 'FCNC_M125_t', 'FCNC_M125_tbar']:
-                            hEffSig = self.get_cut_efficiency(hist[0], 'SIG_EFF')
-                            canvas.Update()
-                            scale_to_pad(hEffSig)
-                            hEffSig.Draw("E3 SAME")
-                            break
+                    cutBox = r.TPaveText(0.70, 0.20, 0.89, 0.75, 'NDC')
+                    cutBox.SetFillColor(0)
+                    cutBox.SetFillStyle(0)
+                    cutBox.SetLineWidth(1)
+                    cutBox.SetLineColor(1)
+
+                    cutBox.AddText('sig_{max} = ' + '{0:.1f}'.format(hSignif.GetMaximum()))
+                    cutBox.AddText('eff_{bg} = ' + '{0:.1f}'.format(hEffBG.GetBinContent(hSignif.GetMaximumBin())))
+                    cutBox.AddText('eff_{sig} = ' + '{0:.1f}'.format(hEffSig.GetBinContent(hSignif.GetMaximumBin())))
+
+                    cutBox.Draw("SAME")
 
                 canvas.SaveAs(self._savePath + '/' + self._category + '/' + directory + '/' + var + self._plotType)
 
                 if doRatio:
                     hRatio.Delete()
 
-                if doEff:
+                if doEff: 
                     hEffBG.Delete()
                     hEffSig.Delete()
+                    hSignif.Delete()
                 
 
         if self._makeIndex: make_index_afs(self._savePath)
@@ -541,8 +568,8 @@ class PlotProducer(AnalysisTools):
             pad2.SetBottomMargin(0.2)
             pad1.Draw()
             pad2.Draw()
-            pad2.SetGridx()
-            pad2.SetGridy()
+            #pad2.SetGridx()
+            #pad2.SetGridy()
         else:
             pad1 = r.TPad('pad1', '', 0.02, 0.65, 0.96, 0.96, 0)
             pad2 = r.TPad('pad2', '', 0.02, 0.335, 0.96, 0.645, 0)
@@ -556,12 +583,12 @@ class PlotProducer(AnalysisTools):
             pad2.Draw()
             pad3.Draw()
 
-            pad1.SetGridx()
-            pad1.SetGridy()
-            pad2.SetGridx()
-            pad2.SetGridy()
-            pad3.SetGridx()
-            pad3.SetGridy()
+            #pad1.SetGridx()
+            #pad1.SetGridy()
+            #pad2.SetGridx()
+            #pad2.SetGridy()
+            #pad3.SetGridx()
+            #pad3.SetGridy()
 
         if logScale:
             pad1.SetLogz()
@@ -598,8 +625,8 @@ class PlotProducer(AnalysisTools):
 
                 textBox.Draw('same')
                   
-                idBox = r.TPaveText(0.75, 0.8, 0.9, 0.9, 'NDC')
-                idBox.SetFillColor(1)
+                idBox = r.TPaveText(0.75, 0.2, 0.9, 0.4, 'NDC')
+                idBox.SetFillColor(r.kWhite)
                 idBox.SetFillStyle(1001)
                 idBox.SetLineWidth(1)
                 idBox.SetLineColor(1)
@@ -670,5 +697,5 @@ def plotter_wrapper(plotter, category, inputPath, outputPath, do1D, do2D, log, r
     if do1D:
         plotter.make_overlays_1D(logScale = log, doRatio = ratios, doEff = eff)
     if do2D:
-        plotter.make_overlays_2D(logScale = False, doProjection = False)
+        plotter.make_overlays_2D(logScale = log, doProjection = False)
 

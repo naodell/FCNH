@@ -25,7 +25,7 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-cutList.extend(['2_Z_veto', '3_jet', '4_MET', '5_HT'])
+cutList.extend(['2_Z_veto', '3_jet', '4_MET', '5_HT', 'BDT'])
 crList      = []#'CR_WZ', 'CR_ttbar', 'CR_ttZ', 'high_mass_ss', 'low_mass_ss', 'barrel_leptons']
 
 period      = '2012'
@@ -33,7 +33,7 @@ LUMIDATA    = 19.712
 
 doPlots     = True
 doLog       = True
-doEff       = False
+doEff       = True
 doRatio     = True
 do1D        = True
 do2D        = True
@@ -158,7 +158,7 @@ if doPlots:
                                            'Lepton1dxy', 'Lepton1dz',
                                            'Lepton2dxy', 'Lepton2dz',
                                            'Lepton3dxy', 'Lepton3dz',
-                                           'LeptonMult', 'OverlapEleMu']
+                                           'LeptonMult', 'OverlapEleMu', 'fakeableOverlapMult']
                                            #'Lepton1Phi', 'Lepton2Phi', 'Lepton3Phi']
 
     plotter._variableDict['Dilepton']   = ['DileptonMass21', 'DileptonTransMass21', 'DileptonQt21',
@@ -236,7 +236,7 @@ if doPlots:
             outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
 
         inclusive_plotter.make_save_path(outFile, clean=True)
-        p_plot.append(Process(name = cut[2:] + '/inclusive', target = plotter_wrapper, args=(inclusive_plotter, 'inclusive', inFile, outFile, do1D, do2D, doLog, doRatio, doEff)))
+        p_plot.append(Process(name = cut[2:] + '/inclusive', target = plotter_wrapper, args=(inclusive_plotter, 'inclusive', inFile, outFile, do1D, do2D, doLog, doRatio, False)))
 
 
     ### 3l selection ###
@@ -296,7 +296,7 @@ if doPlots:
             os_plotter.make_save_path(outFile, clean=True)
 
             for category in catOS:
-                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(os_plotter, category, inFile, outFile, do1D, do2D, doLog, doRatio, doEff)))
+                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(os_plotter, category, inFile, outFile, do1D, do2D, doLog, doRatio, False)))
 
     doLog = False
 
@@ -316,7 +316,7 @@ if doPlots:
         wz_plotter.make_save_path(outFile, clean=True)
 
         for category in cat3l:
-            p_plot.append(Process(name = 'CR_WZ/' + category, target = plotter_wrapper, args=(wz_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, doEff)))
+            p_plot.append(Process(name = 'CR_WZ/' + category, target = plotter_wrapper, args=(wz_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False)))
 
     ### ttbar control region
     if 'CR_ttbar' in crList:
@@ -333,7 +333,7 @@ if doPlots:
 
         ttbar_plotter.make_save_path(outFile, clean=True)
 
-        p_plot.append(Process(name = 'CR_ttbar/os_emu', target = plotter_wrapper, args=(ttbar_plotter, 'os_emu', inFile, outFile, do1D, False, doLog, doRatio, doEff)))
+        p_plot.append(Process(name = 'CR_ttbar/os_emu', target = plotter_wrapper, args=(ttbar_plotter, 'os_emu', inFile, outFile, do1D, False, doLog, doRatio, False)))
 
     ### ttZ control region
     if 'CR_ttZ' in crList:
@@ -351,7 +351,7 @@ if doPlots:
         ttZ_plotter.make_save_path(outFile, clean=True)
 
         for category in cat3l:
-            p_plot.append(Process(name = 'CR_ttZ/' + category, target = plotter_wrapper, args=(ttZ_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, doEff)))
+            p_plot.append(Process(name = 'CR_ttZ/' + category, target = plotter_wrapper, args=(ttZ_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False)))
     
     doLog = True
 
@@ -371,7 +371,7 @@ if doPlots:
         hm_plotter.make_save_path(outFile, clean=True)
 
         for category in catSS:
-            p_plot.append(Process(name = 'high_mass_ss/' + category, target = plotter_wrapper, args=(hm_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, doEff)))
+            p_plot.append(Process(name = 'high_mass_ss/' + category, target = plotter_wrapper, args=(hm_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False)))
 
     ### low delta eta ss control region
     if 'low_mass_ss' in crList:
@@ -389,7 +389,7 @@ if doPlots:
         lm_plotter.make_save_path(outFile, clean=True)
 
         for category in catSS:
-            p_plot.append(Process(name = 'high_mass_ss/' + category, target = plotter_wrapper, args=(lm_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, doEff)))
+            p_plot.append(Process(name = 'high_mass_ss/' + category, target = plotter_wrapper, args=(lm_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False)))
 
     ### low delta eta ss control region
     if 'barrel_leptons' in crList:
@@ -407,7 +407,7 @@ if doPlots:
         bl_plotter.make_save_path(outFile, clean=True)
 
         for category in cat3l + catSS:
-            p_plot.append(Process(name = 'barrel_leptons/' + category, target = plotter_wrapper, args=(bl_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, doEff)))
+            p_plot.append(Process(name = 'barrel_leptons/' + category, target = plotter_wrapper, args=(bl_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False)))
 
 ### End of configuration for PlotProducer ###
 
@@ -443,12 +443,12 @@ if doYields:
         yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
 
-        yieldTable._rowList = 5*['.'] + ['3 lepton', 'Z removal', 'MET', 'HT', 'b-jet'] + 5*['.'] + ['BDT']
+        yieldTable._rowList = 5*['.'] + ['3 lepton', 'Z removal', '2+ jets', 'MET', 'HT'] + 5*['.'] + ['BDT']
 
         for category in cat3l:
             yieldTable._category = category
             histDict = yieldTable.get_hist_dict('YieldByCut')
-            yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 1)
+            yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
 
     if doSS:
         yieldTable._columnList  = ['Irreducible', 'Fakes', 'QFlips', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
@@ -460,12 +460,12 @@ if doYields:
         yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
 
-        yieldTable._rowList = ['.', '.', '.', '.', '.','ss lepton', 'Z removal', 'MET', 'HT', 'b-jet']
+        yieldTable._rowList = ['.', '.', '.', '.', '.','ss lepton', 'Z removal', '2+ jets', 'MET', 'HT']  + 5*['.'] + ['BDT']
 
         for category in catSS:
             yieldTable._category = category
             histDict = yieldTable.get_hist_dict('YieldByCut')
-            yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 1)
+            yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
 
     crCats = {'CR_WZ':'3l_inclusive', 'CR_ttbar':'os_emu', 'CR_ttZ':'3l_inclusive'}
     for i,CR in enumerate(crList):
@@ -484,14 +484,14 @@ if doYields:
         yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 6)
 
     ### Special case for ZZ->4l control region ###
-    yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut1_{1}_{2}.root'.format(selection, period, batch))
-    yieldTable.add_datasets(['ZZ4l', 'DATA'], Clear = True)
-    yieldTable._columnList  = ['ZZ4l'] + ['BG', 'DATA']
-    yieldTable._rowList = 8*['.'] + ['ZZ4l']
+    #yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut1_{1}_{2}.root'.format(selection, period, batch))
+    #yieldTable.add_datasets(['ZZ4l', 'DATA'], Clear = True)
+    #yieldTable._columnList  = ['ZZ4l'] + ['BG', 'DATA']
+    #yieldTable._rowList = 8*['.'] + ['ZZ4l']
 
-    yieldTable._category = 'inclusive'
-    histDict = yieldTable.get_hist_dict('YieldByCut')
-    yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 6)
+    #yieldTable._category = 'inclusive'
+    #histDict = yieldTable.get_hist_dict('YieldByCut')
+    #yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 6)
 
     tableFile.close()
 

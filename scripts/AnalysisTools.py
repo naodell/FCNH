@@ -175,7 +175,7 @@ class AnalysisTools():
 
             if outHist is None:
                 return outHist
-            elif self._cleanFakes:
+            elif self._cleanFakes and histType == '1D':
                 dataName    = 'Remove_{0}'.format(self._category.split('_', 1)[0])
                 doFakes     = True
                 const       = -1.
