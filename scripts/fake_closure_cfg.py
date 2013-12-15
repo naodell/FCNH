@@ -90,6 +90,7 @@ if doPlots:
     plotter = PlotProducer(inputFile = 'fcncAnalysis/combined_histos/{0}_cut1_{1}_{2}.root'.format(selection, period, batch), savePath = '', scale = LUMIDATA, isAFS = False)
     plotter.set_period(period)
     plotter.set_output_type(plotType)
+    plotter.set_clean_fakes(False)
 
     ### DATASETS ###
     ### Specify the datasets you wish to stack 
@@ -153,8 +154,8 @@ if doPlots:
                                            'JetMultCharge', 'JetMult', 'BJetMult']
 
     plotter._variableDict['MET']        = ['Met', 'MHT', 'METLD', 'MHT-MET', 'MetPhi', 'MetSumEt',
-                                           'MetLepton1DeltaPhi', 'MetLepton2DeltaPhi'
-                                           'MetLepDeltaPhiMin', 'nearLepIndex', 'ProjectedMet', 'MetLepton3DeltaPhi'] 
+                                           'MetLepton1DeltaPhi', 'MetLepton2DeltaPhi', 'MetLepton3DeltaPhi'
+                                           'MetLepDeltaPhiMin', 'nearLepIndex', 'ProjectedMet'] 
 
     plotter._variableDict['GEN']        = ['GenChargeMisId', 'GenMisIdPt', 'GenMisIdEta',
                                            'GenDeltaR', 'GenBalance']
@@ -227,75 +228,3 @@ for process in p_plot:
 
 print '\n'
 
-if doYields:
-    ### Initialize table maker ###
-    tableFile       = file('yields/.yields_tmp.tex', 'w')
-    yieldTable      = TableMaker('fcncAnalysis/combined_histos/{0}_cut1_{1}_{2}.root'.format(selection, period, batch), tableFile, scale = LUMIDATA, delimiter = '&', doSumBG = True)
-    yieldTable.set_period(period)
-
-    yieldTable.add_datasets(samples['all'], Clear = True)
-
-    if not doPlots:
-        #yieldTable.get_scale_factors()
-        yieldTable.get_scale_factors(['FCNH'])
-
-    if do3l:
-        #yieldTable._columnList  = samples['3l'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
-        yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
-
-        yieldTable.add_datasets(samples['3l'], Clear = True)
-        yieldTable.add_datasets('FCNH')
-        yieldTable.add_datasets('DATA')
-
-        yieldTable._rowList = 5*['.'] + ['3 lepton', 'Z removal', 'MET', 'HT', 'b-jet'] + 5*['.'] + ['BDT']
-
-        for category in cat3l:
-            yieldTable._category = category
-            histDict = yieldTable.get_hist_dict('YieldByCut')
-            yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
-
-    if doSS:
-        #yieldTable._columnList  = samples['ss'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
-        yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
-
-        yieldTable.add_datasets(samples['ss'], Clear = True)
-        yieldTable.add_datasets('FCNH')
-        yieldTable.add_datasets('DATA')
-
-        yieldTable._rowList = ['.', '.', '.', '.', '.','ss lepton', 'Z removal', 'MET', 'HT', 'b-jet']
-
-        for category in catSS:
-            yieldTable._category = category
-            histDict = yieldTable.get_hist_dict('YieldByCut')
-            yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
-
-    crCats = {'CR_WZ':'3l_inclusive', 'CR_ttbar':'os_emu', 'CR_ttZ':'3l_inclusive'}
-    for i,CR in enumerate(crList):
-
-        yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, i+5, period, batch))
-        yieldTable._columnList  = samples[CR[3:]] + ['BG', 'DATA']
-
-        yieldTable.add_datasets(samples[CR[3:]], Clear = True)
-        yieldTable.add_datasets('DATA')
-
-        yieldTable._rowList = ['preselection'] + (4+i)*['.'] + [CR[3:]]
-
-        yieldTable._category = crCats[CR]
-        histDict = yieldTable.get_hist_dict('YieldByCut')
-        yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 6)
-
-    ### Special case for ZZ->4l control region ###
-    yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut1_{1}_{2}.root'.format(selection, period, batch))
-    yieldTable.add_datasets(['ZZ4l', 'DATA'], Clear = True)
-    yieldTable._columnList  = ['ZZ4l'] + ['BG', 'DATA']
-    yieldTable._rowList = 8*['.'] + ['ZZ4l']
-
-    yieldTable._category = 'inclusive'
-    histDict = yieldTable.get_hist_dict('YieldByCut')
-    yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 6)
-
-    tableFile.close()
-
-    subprocess.call('pdflatex -output-dir=yields yields/yields.tex', shell = True)
-    subprocess.call('cp yields/yields.pdf plots/{0}/{1}_{2}_{3}/.'.format(currentDate, selection, batch, suffix), shell = True)
-    subprocess.call('cp yields/.yields_tmp.tex plots/{0}/{1}_{2}_{3}/yields.tex'.format(currentDate, selection, batch, suffix), shell = True)

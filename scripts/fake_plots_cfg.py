@@ -40,9 +40,8 @@ catList = [
 
 ### Samples to be included in stacks ###
 samples = {}
-samples['inclusive']    = ['FAKES_2l', 'FAKES_3l'] # ['ZJets', 'ttbar']
+samples['inclusive']    = ['FAKES_2l'] # ['ZJets', 'ttbar']
 samples['ZPlusJet']     = ['FAKES_3l']
-
 samples['QCD2l']        = ['FAKES_2l']
 
 if doPlots:
@@ -59,7 +58,7 @@ if doPlots:
 
     ### DATASETS ###
 
-    plotter.add_datasets(samples['inclusive'])
+    plotter.add_datasets(samples['ZPlusJet'] + samples['QCD2l'])
     plotter._overlayList.extend(['DATA_FAKES'])
 
     plotter.get_scale_factors(corrected = False)
@@ -95,10 +94,6 @@ if doPlots:
         plotter.set_category(category)
         plotter.make_overlays_1D(logScale = doLog, doRatio = doRatio, doEff = doEff)
 
-        #plotter.make_overlays_diff([(['DATA', 'FAKES_2l'], ['MuUnevenPtClosure', 'MuNumerPt']), (['DATA'],['MuNumerPt'])], 'Lepton', 'MuClosurePt') 
         plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['MuNumerPt', 'MuUnevenPtClosure']), (['PASS'],['MuNumerPt'])], 'Lepton', 'MuClosurePt') 
         plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['EleNumerPt', 'EleUnevenPtClosure']), (['PASS'],['EleNumerPt'])], 'Lepton', 'EleClosurePt') 
-
-        #plotter.make_overlays_diff([(['DATA'],['MuNumerPt']), (['DATA', 'FAKES_2l'], ['MuUnevenPtClosure', 'MuNumerPt'])], 'Lepton', 'MuClosurePt') 
-        #plotter.make_overlays_diff([(['DATA', 'FAKES_2l'], ['EleUnevenPtClosure', 'EleNumerPt']), (['DATA'],['EleNumerPt'])], 'Lepton', 'EleClosurePt')
 
