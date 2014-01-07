@@ -524,7 +524,7 @@ class PlotProducer(AnalysisTools):
                     axisEff = r.TGaxis(r.gPad.GetUxmax(), r.gPad.GetUymin(), r.gPad.GetUxmax(), r.gPad.GetUymax(), 0.0, 1.10, 510, '+L')
                     format_axis(axisEff, 0.5, '#varepsilon_{cut}', r.kBlack)
 
-                    cutBox = r.TPaveText(0.70, 0.20, 0.89, 0.75, 'NDC')
+                    cutBox = r.TPaveText(0.75, 0.35, 0.89, 0.75, 'NDC')
                     cutBox.SetFillColor(0)
                     cutBox.SetFillStyle(0)
                     cutBox.SetLineWidth(1)

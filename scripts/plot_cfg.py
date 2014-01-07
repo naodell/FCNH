@@ -25,8 +25,8 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-cutList.extend(['2_Z_veto', '3_jet', '4_MET', '5_HT', 'BDT'])
-crList      = []#'CR_WZ', 'CR_ttbar', 'CR_ttZ', 'high_mass_ss', 'low_mass_ss', 'barrel_leptons']
+cutList.extend(['2_Z_veto', '3_jet', '4_MET', '5_HT', '4_BDT'])
+crList      = []#'CR_WZ', 'CR_ttbar']#, 'CR_ttZ', 'high_mass_ss', 'low_mass_ss', 'barrel_leptons']
 
 period      = '2012'
 LUMIDATA    = 19.712 
@@ -306,7 +306,7 @@ if doPlots:
         wz_plotter.add_datasets(samples['WZ'], Clear=True)
         wz_plotter._overlayList = ['DATA']
 
-        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 6, period, batch)
+        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 7, period, batch)
 
         if doLog:
             outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'CR_WZ')
@@ -324,7 +324,7 @@ if doPlots:
         ttbar_plotter.add_datasets(samples['ttbar'],  Clear=True)
         ttbar_plotter._overlayList = ['DATA']
 
-        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 7, period, batch)
+        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 8, period, batch)
 
         if doLog:
             outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'CR_ttbar')
@@ -341,7 +341,7 @@ if doPlots:
         ttZ_plotter.add_datasets(samples['ttZ'],  Clear=True)
         ttZ_plotter._overlayList = ['DATA']
 
-        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 8, period, batch)
+        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 9, period, batch)
 
         if doLog:
             outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'CR_ttZ')

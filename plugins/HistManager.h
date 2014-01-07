@@ -30,6 +30,7 @@ class HistManager : public TObject {
         virtual string  str(int i) {return static_cast<ostringstream*>( &(ostringstream() << i) )->str();}
 
         void SetWeight(float);
+        void SetWeightError(float);
         void SetFileNumber(unsigned);
         void SetDirectory(string);
         void AddFile(TFile*);
@@ -76,6 +77,7 @@ class HistManager : public TObject {
         unsigned    _fileNumber;
         string      _directory;  
         float       _evtWeight;
+        float       _weightErr;
 
         // map to hold histograms
         vector<map<string,TH1F*> >      histMap1D;
