@@ -174,6 +174,7 @@ class fakeAnalyzer : public TSelector {
         virtual void    FillDenominatorHists(string, TCPhysObject);
         virtual void    FillNumeratorHists(string, TCPhysObject);
         virtual void    FillClosureHists(string, TCPhysObject);
+        virtual void    FillJetFlavorHists(string, TCPhysObject, vector<TCJet>);
         virtual void    DoZTag(vObj leptons);
         virtual bool    CheckQCD2lCR(vector<TCJet>, TCPhysObject);
         virtual bool    CheckZPlusJetCR();

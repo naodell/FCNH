@@ -251,7 +251,7 @@ void Selector::MuonSelector(TClonesArray* muons)
             if (
                     sqrt(pow(thisMuon->Dz(_selVertices[0]), 2) + pow(thisMuon->Dxy(_selVertices[0]), 2)) > 1. // Replacement for SIP3D inverted cut -- needs to be tuned
                     && muISO > 0.2
-                    ) 
+               ) 
                 _selMuons["QCD2l_CR_tag"].push_back(*thisMuon);
             else if (
                     thisMuon->IsPF()
@@ -271,11 +271,11 @@ void Selector::MuonSelector(TClonesArray* muons)
                 _selMuons["fakeable"].push_back(*thisMuon);
 
         } else if (thisMuon->Pt() > _muPtCuts[1]) 
-                if (MuonLooseID(thisMuon)
-                //&& (muISO > 0.1 && thisMuon->Pt() > 20)
-                //&& (muISO < 0.15 && thisMuon->Pt() < 20)
-                   )
-            _selMuons["loose"].push_back(*thisMuon);
+            if (MuonLooseID(thisMuon)
+                    //&& (muISO > 0.1 && thisMuon->Pt() > 20)
+                    //&& (muISO < 0.15 && thisMuon->Pt() < 20)
+               )
+                _selMuons["loose"].push_back(*thisMuon);
     }
 
     //cout << endl;
@@ -403,7 +403,7 @@ void Selector::ElectronSelector(TClonesArray* electrons)
                 || !thisElec->ConversionVeto() 
                 || fabs(thisElec->Dz(_selVertices[0])) > 0.05 
                 || fabs(thisElec->Dxy(_selVertices[0])) > 0.015
-                ) continue;
+           ) continue;
 
         float eleISO = (thisElec->IsoMap("pfChIso_R04") + max(0., (double)(thisElec->IsoMap("pfPhoIso_R04") 
                         + thisElec->IsoMap("pfNeuIso_R04") - _rho*thisElec->IsoMap("EffArea_R04"))))/thisElec->Pt(); 
@@ -420,7 +420,7 @@ void Selector::ElectronSelector(TClonesArray* electrons)
 
             if (ElectronMVA(thisElec) && eleISO < 0.15 
                     //&& electron->MissingHits() // <-- ??
-                    ) { 
+               ) { 
                 if (!muOverlap)
                     _selElectrons["tight"].push_back(*thisElec);			
                 else
@@ -539,11 +539,10 @@ void Selector::JetSelector(TClonesArray* jets)
 
                         if (!overlap[2] && !overlap[3])
                             _selJets["bJetsMedium_NoFakes"].push_back(corJet);
-
-                    } else if (BTagModifier(corJet, "CSVL")) {
-                        _selJets["bJetsLoose"].push_back(corJet);
-                        if (!overlap[2] && !overlap[3])
-                            _selJets["bJetsLoose_NoFakes"].push_back(corJet);
+                        else if (overlap[2])
+                             _selJets["muFakes"].push_back(corJet);
+                        else if (overlap[3])
+                            _selJets["eleFakes"].push_back(corJet);
 
                     } else if (
                             corJet.VtxNTracks() > 0
@@ -554,6 +553,18 @@ void Selector::JetSelector(TClonesArray* jets)
 
                         if (!overlap[2] && !overlap[3])
                             _selJets["tight_NoFakes"].push_back(corJet);
+                        else if (overlap[2])
+                            _selJets["muFakes"].push_back(corJet);
+                        else if (overlap[3])
+                            _selJets["eleFakes"].push_back(corJet);
+                    }
+
+                    //} else if (BTagModifier(corJet, "CSVL")) {
+                if (corJet.BDiscriminatorMap("CSV") > 0.244 && corJet.BDiscriminatorMap("CSV") < 0.679) {
+                        _selJets["bJetsLoose"].push_back(corJet);
+
+                        if (!overlap[2] && !overlap[3])
+                            _selJets["bJetsLoose_NoFakes"].push_back(corJet);
                     }
                 }
             }
@@ -564,16 +575,20 @@ void Selector::JetSelector(TClonesArray* jets)
                     && corJet.NeuHadFrac() < 0.99
                     && corJet.NeuEmFrac() < 0.99
                ) { 
-                    if (overlap[0]) 
-                        _selJets["muJets"].push_back(corJet);
-                    else if (overlap[1]) 
-                        _selJets["eleJets"].push_back(corJet);
-                    else {
-                        _selJets["forward"].push_back(corJet); 
+                if (overlap[0]) 
+                    _selJets["muJets"].push_back(corJet);
+                else if (overlap[1]) 
+                    _selJets["eleJets"].push_back(corJet);
+                else {
+                    _selJets["forward"].push_back(corJet); 
 
-                        if (!overlap[2] && !overlap[3])
-                            _selJets["tight_NoFakes"].push_back(corJet);
-                    }
+                    if (!overlap[2] && !overlap[3])
+                        _selJets["tight_NoFakes"].push_back(corJet);
+                    else if (overlap[2])
+                        _selJets["muFakes"].push_back(corJet);
+                    else if (overlap[3])
+                        _selJets["eleFakes"].push_back(corJet);
+                }
             }
         }
     }

@@ -20,7 +20,7 @@ class AnalysisTools():
         self._scaleDict     = scales
         self._styleDict     = styles
         self._combineDict   = combos
-        self._cleanFakes    = False
+        self._cleanFakes    = True
         self._category      = ''
         self._datasets      = []
 
@@ -35,6 +35,9 @@ class AnalysisTools():
 
     def set_period(self, period):
         self._period = period
+
+    def set_clean_fakes(self, doClean):
+        self._cleanFakes = doClean
 
     def get_current_time(self):
         ''' 
@@ -94,10 +97,11 @@ class AnalysisTools():
                 for data in self._combineDict[dataName]:
                     print data,
 
-                    nInit       = self._histFile.GetDirectory('inclusive/' + data).Get('h1_YieldByCut').GetBinContent(1)
+                    yieldHist = self._histFile.GetDirectory('inclusive/' + data).Get('h1_YieldByCut')
+                    nInit       = yieldHist.GetBinContent(1)
                     if corrected:
                         nRaw        = self._histFile.GetDirectory('inclusive/' + data).Get('h1_YieldByCutRaw').GetBinContent(6)
-                        nWeighted   = self._histFile.GetDirectory('inclusive/' + data).Get('h1_YieldByCut').GetBinContent(6)
+                        nWeighted   = yieldHist.GetBinContent(6)
 
                         nInit = nInit - (nRaw - nWeighted)
 
@@ -107,10 +111,11 @@ class AnalysisTools():
                 if dataName in self._scaleDict[self._period]:
                     print dataName,
 
-                    nInit       = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCut').GetBinContent(1)
+                    yieldHist = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCut')
+                    nInit       = yieldHist.GetBinContent(1)
                     if corrected:
                         nRaw        = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCutRaw').GetBinContent(6)
-                        nWeighted   = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCut').GetBinContent(6)
+                        nWeighted   = yieldHist.GetBinContent(6)
 
                         nInit = nInit - (nRaw - nWeighted)
 
@@ -170,7 +175,7 @@ class AnalysisTools():
 
             if outHist is None:
                 return outHist
-            else:
+            elif self._cleanFakes and histType == '1D':
                 dataName    = 'Remove_{0}'.format(self._category.split('_', 1)[0])
                 doFakes     = True
                 const       = -1.

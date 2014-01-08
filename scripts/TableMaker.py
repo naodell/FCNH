@@ -73,14 +73,14 @@ class TableMaker(AnalysisTools):
         delimiter = self._delimiter
         self.print_header()
 
-        pStatement = ' {3} {0:.2f}'
+        pStatement = ' {3} {0:.1f}'
         if doErrors:
             if self._delimiter == '|':
-                pStatement += ' &plusmn; {1:.2f}'
+                pStatement += ' &plusmn; {1:.1f}'
             elif self._delimiter == '&':
-                pStatement += ' $\pm$ {1:.2f}'
+                pStatement += ' $\pm$ {1:.1f}'
         if doEff:
-            pStatement += ' ({2:.2f} %)'
+            pStatement += ' ({2:.1f} %)'
 
         for i, row in enumerate(self._rowList):
 
@@ -125,10 +125,11 @@ class TableMaker(AnalysisTools):
 
                 if column in ['FCNH', 'HIGGS', 'SIGNAL'] or column[:4] == 'FCNC':
                     if doErrors:
-                        self._outFile.write(' {3} {0:.2f} $\pm$ {1:.2f} ({2:.2f} \%) '.format(value, error, eff*100, delimiter))
+                        #self._outFile.write(' {3} {0:.1f} $\pm$ {1:.1f} ({2:.1f} \%) '.format(value, error, eff*100, delimiter))
+                        self._outFile.write(' {3} {0:.1f} $\pm$ {1:.1f} '.format(value, error, eff*100, delimiter))
                     else:
-                        #self._outFile.write(' {3} {0:.2f} ({2:.2f} \%) '.format(value, error, eff*100, delimiter))
-                        self._outFile.write('{3} {0:.2f}'.format(value, error, eff*100, delimiter))
+                        #self._outFile.write(' {3} {0:.1f} ({2:.1f} \%) '.format(value, error, eff*100, delimiter))
+                        self._outFile.write('{3} {0:.1f}'.format(value, error, eff*100, delimiter))
 
                 elif column is 'DATA':
                     value = histDict['DATA'].GetBinContent(count)
