@@ -61,7 +61,7 @@ if __name__ == '__main__':
     flCats['SS'] = ['inclusive', 'ee', 'emu', 'mumu']
 
     flavorCuts = {}
-    cut = 'jetMult >= 1'
+    cut = 'jetMult > 1'
     flavorCuts['3l']  = {'inclusive': 'flavorCat > 0', 'eee':'flavorCat == 5', 'eemu':'flavorCat == 6 || flavorCat == 7 || flavorCat == 9', 'emumu':'flavorCat == 8 || flavorCat == 10 || flavorCat == 11', 'mumumu':'flavorCat == 12'}
     flavorCuts['SS'] = {'inclusive': 'flavorCat > 0', 'ee':'flavorCat == 1', 'emu':'flavorCat == 2 || flavorCat == 3', 'mumu':'flavorCat == 4'}
 
@@ -106,24 +106,24 @@ if __name__ == '__main__':
     factory.AddVariable('HT', 'HT', 'GeV', 'F')
     factory.AddVariable('MT', 'MT', 'GeV', 'F')
     #factory.AddVariable('jetMult', 'jetMult', '', 'I')
-    #factory.AddVariable('bJetMult', 'bJetMult', '', 'I')
+    factory.AddVariable('bJetMult', 'bJetMult', '', 'I')
 
     if selection == '3l':
         #factory.AddVariable('trileptonMass', 'trileptonMass', 'GeV', 'F')
-        #factory.AddVariable('dileptonMassOS', 'dileptonMassOS', 'GeV', 'F')
-        factory.AddVariable('dileptonDROS', 'dileptonDROS', 'rad', 'F')
+        factory.AddVariable('dileptonMassOS', 'dileptonMassOS', 'GeV', 'F')
+        #factory.AddVariable('dileptonDROS', 'dileptonDROS', 'rad', 'F')
 
         factory.AddSpectator( 'flavorCat', 'flavorCat', '', 5., 12.) 
         factory.AddSpectator( 'chargeCat', 'chargeCat', '', 5, 12.)
     elif selection == 'SS':
-        #factory.AddVariable('dileptonMass', 'dileptonMass', 'GeV', 'F')
-        factory.AddVariable('dileptonDR', 'dileptonDR', 'rad', 'F')
+        factory.AddVariable('dileptonMass', 'dileptonMass', 'GeV', 'F')
+        #factory.AddVariable('dileptonDR', 'dileptonDR', 'rad', 'F')
 
         factory.AddSpectator( 'flavorCat', 'flavorCat', '', 1., 4.) 
         factory.AddSpectator( 'chargeCat', 'chargeCat', '', 1., 4.)
 
     factory.AddSpectator('jetMult', 'jetMult', '', 0., 15.)
-    factory.AddSpectator('bJetMult', 'bJetMult', '', 0., 5.)
+    #factory.AddSpectator('bJetMult', 'bJetMult', '', 0., 5.)
     factory.AddSpectator( 'evtWeight', 'evtWeight', '', 0., 1e9)
 
 
