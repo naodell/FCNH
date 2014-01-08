@@ -32,7 +32,7 @@ const float   muPtCut[]         = {10., 3.};
 const float   elePtCut[]        = {10., 7.};
 const float   phoPtCut[]        = {10., 10.};
 const float   leptonPtCut[]     = {20., 10.};
-const float   metCut[]          = {60., 50.};
+const float   metCut[]          = {30., 0.};
 const float   htCut[]           = {13., 14.};
 const float   bJetVeto          = 1e9;
 
@@ -893,12 +893,18 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
     else if (leptons.size() == 3 && (zTagged || (dileptonMassOS > 40 && fabs(trileptonMass - 91.2) < 7.5))) 
         return true;
 
-
     MakePlots(leptons, jets, bJetsM, *recoMET, PV, 1);
     SetYields(6);
 
-    if (doMVACut && (jets.size() + bJetsM.size()) > 1) {
 
+    //!! Require at least one b-jet !!//
+    if (bJetsM.size() + jets.size() <= 1) return true;
+    MakePlots(leptons, jets, bJetsM, *recoMET, PV, 2);
+    SetYields(7);
+
+
+    //!! Do mva selection !!//
+    if (doMVACut) {
         float mvaValue = -99.;
         float mvaCut = -99.;
         if (leptons.size() == 3) {
@@ -923,7 +929,7 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
         } else if (leptons.size() == 2 && leptons[0].Charge() == leptons[1].Charge()) {
             if (flavorCat == 1) {
                 mvaValue = mvaSSReader[0]->EvaluateMVA("test");
-                mvaCut   = -0.1789;
+                mvaCut   = 0.1390;
             } else if (flavorCat == 2 || flavorCat == 3) {
                 mvaValue = mvaSSReader[1]->EvaluateMVA("test");
                 mvaCut   = -0.2249;
@@ -942,11 +948,6 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
             SetYields(15);
         }
     }
-
-    //!! Require at least one b-jet !!//
-    if (bJetsM.size() + jets.size() <= 1) return true;
-    MakePlots(leptons, jets, bJetsM, *recoMET, PV, 2);
-    SetYields(7);
 
     //!! MET cut !!//
     if (leptons.size() == 2){

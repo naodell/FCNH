@@ -678,7 +678,7 @@ bool Selector::BTagModifier(TCJet jet, string bTag)
 
     if (abs(jetFlavor) == 5 || abs(jetFlavor) == 4) {
         float bTagEff   = _bTagEff->Eval(jetPt);
-        if (abs(jetFlavor) == 4) bTagSF = bTagSF/5.;
+        if (abs(jetFlavor) == 4) bTagEff = bTagEff/5.;
         if(bTagSF > 1){  // use this if SF>1
             if (!isBTagged) {
                 //upgrade to tagged
