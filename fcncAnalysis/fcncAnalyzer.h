@@ -94,8 +94,8 @@ const string categoryNames[] = {
     //"3l_barrel",
 };
 
-const unsigned short N_CUTS = 6;
-const string cutNames[] = {"preselection", "Z veto", "jet selection",  "MET selection", "HT", "BDT"};//, "WZ_CR", "ttbar_CR", "ttZ_CR", "high_dileptonMass_ss", "low_dileptonMass_ss", "barrel_only"};
+const unsigned short N_CUTS = 9;
+const string cutNames[] = {"preselection", "Z veto", "jet selection",  "MET selection", "HT", "BDT", "WZ_CR", "ttbar_CR", "ttZ_CR"};//, "high_dileptonMass_ss", "low_dileptonMass_ss", "barrel_only"};
 
 typedef vector<TCPhysObject> vObj;
 
@@ -162,6 +162,7 @@ class fcncAnalyzer : public TSelector {
         // Simple ntuples for MVA
         TTree       *tree3l, *treeSS, *treeQFlips, *treeFakes3l, *treeFakesSS;
 
+        TClonesArray *selLeptons, *selJets;
         Float_t     dileptonMassOS;
         Float_t     trileptonMass;
         Float_t     dileptonDROS;

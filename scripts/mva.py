@@ -17,9 +17,13 @@ def add_scale_branch(inputFile, sampleList, scales, selection):
     for sample in sampleList:
         print sample,
 
-        nInit   = inputFile.Get('inclusive/' + sample + '/h1_YieldByCut').GetBinContent(1)
         tree    = inputFile.Get('tree' + selection + '_' + sample)
-        scale   = array('f', [1e3*scales['2012'][sample]/nInit]) 
+        if sample not in ['QFlips', 'Fakes']:
+            nInit   = inputFile.Get('inclusive/' + sample + '/h1_YieldByCut').GetBinContent(1)
+            scale = array('f', [1e3*scales['2012'][sample]/nInit]) 
+        else:
+            scale = array('f', [1.])    
+
         entries = tree.GetEntries()
 
         if entries == 0:
@@ -163,7 +167,7 @@ if __name__ == '__main__':
         #factory.BookMethod(r.TMVA.Types.kBDT, "BDT", 
         #                    "!H:!V:NTrees=1000:nEventsMin=150:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:SeparationType=SDivSqrtSPlusB:nCuts=20:PruneMethod=NoPruning" )
         factory.BookMethod(r.TMVA.Types.kBDT, "BDT", 
-                            "!H:!V:NTrees=500:nEventsMin=50:MaxDepth=2:BoostType=AdaBoost:AdaBoostBeta=0.5:SeparationType=GiniIndex:nCuts=-1:PruneMethod=NoPruning" )
+                            "!H:!V:NTrees=500:MinNodeSize=10:MaxDepth=2:BoostType=AdaBoost:AdaBoostBeta=0.5:SeparationType=GiniIndex:nCuts=-1:PruneMethod=NoPruning" )
 
 
     factory.TrainAllMethods()

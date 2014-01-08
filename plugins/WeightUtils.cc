@@ -391,11 +391,6 @@ float WeightUtils::GetMuEff(TLorentzVector lep) const
 float WeightUtils::GetFakeWeight(vector<TCPhysObject> fakeables, string controlRegion)
 {
     float fakeRate = 1;
-    float fakeablePt;  
-    if (fakeable.Pt() < 100)
-        fakeablePt = fakeable.Pt();
-    else 
-        fakeablePt = 99.;
 
     //cout << fakeable.Type() << "\t" << fakeable.Pt() << "\t";
     for (unsigned i = 0; i < fakeables.size(); ++i) {

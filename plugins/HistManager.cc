@@ -2,9 +2,10 @@
 
 HistManager::HistManager()
 {
-    _evtWeight    = 1;
-    _fileNumber   = 0;
-    _directory    = "";
+    _evtWeight  = 1.;
+    _weightErr  = 0.;
+    _fileNumber = 0;
+    _directory  = "";
 }
 
 
@@ -15,6 +16,11 @@ HistManager::~HistManager()
 void HistManager::SetWeight(float w)
 { 
     _evtWeight = w;
+}
+
+void HistManager::SetWeightError(float e)
+{ 
+    _weightErr = e;
 }
 
 void HistManager::SetFileNumber(unsigned f)
@@ -60,6 +66,12 @@ void HistManager::Fill1DHist(float x,
     }
 
     histMap1D[_fileNumber][key]->Fill(x, _evtWeight);
+
+    unsigned histBin = histMap1D[_fileNumber][key]->FindBin(x);
+    float errStat = histMap1D[_fileNumber][key]->GetBinError(histBin);
+    float errComb = sqrt(pow(errStat, 2) + pow(_weightErr, 2));
+    histMap1D[_fileNumber][key]->SetBinError(histBin, errComb);
+
 }
 
 void HistManager::Fill1DHistUnevenBins(float x, 
