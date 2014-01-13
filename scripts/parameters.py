@@ -171,14 +171,14 @@ scaleDict['2012']['WZJets3LNu']         = 1.086 #*1.309 #<-- WZ rescaled based o
 scaleDict['2012']['WZJets2L2Q']         = 5.09
 scaleDict['2012']['WWJets2L2Nu']        = 5.995
 
-scaleDict['2012']['ttbar']              = 234#*1.046 #<-- ttbar rescaled based on e/mu lepton control region
+scaleDict['2012']['ttbar']              = 234*1.046 #<-- ttbar rescaled based on e/mu lepton control region
 scaleDict['2012']['tW']                 = 11.77
 scaleDict['2012']['tbarW']              = 11.77
 scaleDict['2012']['t_t-channel']        = 55.53
 scaleDict['2012']['tbar_t-channel']     = 30.7
 scaleDict['2012']['ttW']                = 0.249
-scaleDict['2012']['ttZ']                = 0.208
-scaleDict['2012']['ttG']                = 1.44
+scaleDict['2012']['ttZ']                = 0.206
+scaleDict['2012']['ttG']                = 2.166
 
 scaleDict['2012']['WWW']                = 0.082
 scaleDict['2012']['WWZ']                = 0.063
@@ -226,6 +226,7 @@ scaleDict['2012']['TTH_M-125']          = .1032
 #scaleDict['GJets_470to800']     = 1/15812.2
 
 scaleDict['2012']['FCNC_M125_t']            = 252*1.*0.01*0.215*0.324*0.324*0.324
+#scaleDict['2012']['FCNC_M125_t']            = 2*252*1.*0.01*0.215*0.324*0.324*0.324
 scaleDict['2012']['FCNC_M125_tbar']         = 252*1.*0.01*0.215*0.324*0.324*0.324
 scaleDict['2012']['FCNC_M125_t_semilep']    = 2*252*1.*0.01*0.215*3*0.676*0.324*0.324
 scaleDict['2012']['FCNC_M125_t_ZZ']         = 2*252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
@@ -239,6 +240,7 @@ scaleDict['2012']['QFlips']             = 1.
 
 combineDict = {}
 combineDict['FCNH']             = ['FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau']
+#combineDict['FCNH']             = ['FCNC_M125_t', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau']
 #combineDict['FCNH']             = ['FCNC_M125_tbar', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau']
 combineDict['DATA']             = ['DATA_MUON', 'DATA_ELECTRON', 'DATA_MUEG']
 

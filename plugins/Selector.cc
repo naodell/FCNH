@@ -22,6 +22,7 @@ Selector::Selector(const float* muPtCuts, const float* elePtCuts, const float* j
     TFile* f_bEff = new TFile("../data/bEff_ttbar_2012.root");
     _misTagEff  = (TGraphAsymmErrors*)f_bEff->Get("g_MistagEff");
     _bTagEff    = (TGraphAsymmErrors*)f_bEff->Get("g_bTagEff");
+    _cTagEff    = (TGraphAsymmErrors*)f_bEff->Get("g_cTagEff");
 
     // Initialize electron MVA tool 
     std::vector<std::string> WeightsMVA;
@@ -238,7 +239,8 @@ void Selector::MuonSelector(TClonesArray* muons)
         // isolation
         float muISO = 0.;
         muISO = (thisMuon->IsoMap("pfChargedHadronPt_R04") + TMath::Max(0.0, (double)thisMuon->IsoMap("pfPhotonEt_R04") 
-                    + thisMuon->IsoMap("pfNeutralHadronEt_R04") - TMath::Max(0.0, (double)_rho*EffectiveArea(thisMuon)))
+                    + thisMuon->IsoMap("pfNeutralHadronEt_R04") - 0.5*thisMuon->IsoMap("pfPUPt_R04"))
+                    //+ thisMuon->IsoMap("pfNeutralHadronEt_R04") - TMath::Max(0.0, (double)_rho*EffectiveArea(thisMuon)))
                 )/thisMuon->Pt();
 
         thisMuon->SetIsoMap("IsoRel", muISO);
@@ -677,8 +679,12 @@ bool Selector::BTagModifier(TCJet jet, string bTag)
     float rNumber = rnGen->Uniform(1.);
 
     if (abs(jetFlavor) == 5 || abs(jetFlavor) == 4) {
-        float bTagEff   = _bTagEff->Eval(jetPt);
-        if (abs(jetFlavor) == 4) bTagEff = bTagEff/5.;
+        float bTagEff;
+        if (abs(jetFlavor) == 4) 
+            bTagEff = _cTagEff->Eval(jetPt);
+        else if (abs(jetFlavor) == 5) 
+            bTagEff = _bTagEff->Eval(jetPt);
+
         if(bTagSF > 1){  // use this if SF>1
             if (!isBTagged) {
                 //upgrade to tagged

@@ -33,7 +33,7 @@ LUMIDATA    = 19.712
 
 doPlots     = True
 doLog       = True
-doEff       = True
+doEff       = False
 doRatio     = True
 do1D        = True
 do2D        = True
@@ -148,7 +148,7 @@ if doPlots:
     plotter._directoryList2D            = ['2D']
 
     plotter._variableDict['Misc']       = ['PvMult', 'YieldByCut', 'YieldByCutRaw', 'EventWeight', 'TriggerStatus', 
-                                            'BDT']
+                                            'FakeWeightUncertainty', 'BDT']
 
     plotter._variableDict['Lepton']     = ['LeptonCharge', 'LeptonFlavor', 
                                            'Lepton1Pt', 'Lepton2Pt','Lepton3Pt',

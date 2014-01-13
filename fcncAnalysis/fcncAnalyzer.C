@@ -724,7 +724,7 @@ void fcncAnalyzer::Terminate()
     cout<<"| At least two jets:                 |\t" << eventCount[7]  << "\t|\t" << eventCountWeighted[7] << "\t|"<<endl;
     cout<<"| MET cut:                           |\t" << eventCount[8]  << "\t|\t" << eventCountWeighted[8] << "\t|"<<endl;
     cout<<"| HT cut:                            |\t" << eventCount[9]  << "\t|\t" << eventCountWeighted[9] << "\t|"<<endl;
-    cout<<"| BDT > -0.2:                        |\t" << eventCount[15]  << "\t|\t" << eventCountWeighted[15] << "\t|"<<endl;
+    cout<<"| BDT:                               |\t" << eventCount[15]  << "\t|\t" << eventCountWeighted[15] << "\t|"<<endl;
 
 
     // Control regions //
@@ -843,6 +843,7 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
     //!!!!!!!!!!!!!//
     // Do MVA Trees//
     //!!!!!!!!!!!!!//
+
 
     if (leptons.size() == 3) {
         // Fill MVA trees //
@@ -1486,6 +1487,9 @@ void fcncAnalyzer::MiscPlots()
     //histManager->Fill1DHist(primaryVtx[0].Z(),
     //        "h1_PvZ", "z_{PV};z_{PV};Entries / bin" 50, 0.5, 50.5);
 
+    // Histograms for systematic errors
+    histManager->Fill1DHist(weighter->GetFakeUncertainty(),
+            "h1_FakeWeightUncertainty", "fake rate error;#sigma_{fake};Entries / bin", 40, 0., 0.1);
 }
 
 void fcncAnalyzer::MakeQMisIDPlots(vObj electrons)
