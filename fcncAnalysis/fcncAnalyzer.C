@@ -815,28 +815,14 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
         SetYields(12);
     }
 
-    // low mass same-sign control region //
+    // Z+fake control region //
     if (
-            leptons.size() == 2 && leptons[0].Charge() == leptons[1].Charge()
+            zTagged 
+            && leptons.size() == 3 
+            && METLD < 0.3
        ) {
-        if ((leptons[0] + leptons[1]).M() > 50.) {
-            //MakePlots(leptons, jets, bJetsM, *recoMET, PV, 8);
-        } /*else 
-            MakePlots(leptons, jets, bJetsM, *recoMET, PV, 9);*/
-    }
-
-    // only barrel leptons control region //
-    if (
-            (leptons.size() == 2 
-             && fabs(leptons[0].Eta()) < 1.4 
-             && fabs(leptons[1].Eta()) < 1.4)
-            ||
-            (leptons.size() == 3 
-             && fabs(leptons[0].Eta()) < 1.4 
-             && fabs(leptons[1].Eta()) < 1.4
-             && fabs(leptons[2].Eta()) < 1.4)
-       ) {
-        //MakePlots(leptons, jets, bJetsM, *recoMET, PV, 10);
+        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 9);
+        SetYields(13);
     }
 
 
@@ -902,6 +888,9 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
     if (bJetsM.size() + jets.size() <= 1) return true;
     MakePlots(leptons, jets, bJetsM, *recoMET, PV, 2);
     SetYields(7);
+
+    if (jetMult > 1 && HT < 60)
+        cout << HT << endl;
 
 
     //!! Do mva selection !!//

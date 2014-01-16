@@ -445,7 +445,7 @@ float WeightUtils::GetFakeWeight(vector<TCPhysObject> fakeables, string controlR
         }
         fakeWeight *= fakeRate / (1 - fakeRate);
 
-        cout << fakeable.Type() << ", " << fakeRate << ", " << fakeWeight << endl;
+        //cout << fakeable.Type() << ", " << fakeRate << ", " << fakeWeight << endl;
     }
 
     if (fakeError >= 0.) 
@@ -453,7 +453,7 @@ float WeightUtils::GetFakeWeight(vector<TCPhysObject> fakeables, string controlR
     else 
         _fakeWeightErr = 0.;
 
-    cout << "\n\t" << fakeWeight << endl;
+    //cout << "\n\t" << fakeWeight << endl;
 
     return fakeWeight;
 }
