@@ -62,6 +62,8 @@ class WeightUtils: public TObject {
         float GetMuTriggerEff(TLorentzVector, TLorentzVector) const;
         float GetEleTriggerEff(TLorentzVector, TLorentzVector) const;
 
+        float GetFakeUncertainty() const;
+
         ClassDef(WeightUtils, 0);
 
     private:
@@ -98,6 +100,15 @@ class WeightUtils: public TObject {
         float _vbfWeight;
         float _recoWeight;
         float _triggerWeight;
+
+        // error on weights
+        float _puWeightErr;
+        float _zzWeightErr;
+        float _vbfWeightErr;
+        float _recoWeightErr;
+        float _triggerWeightErr;
+        float _qFlipWeightErr;
+        float _fakeWeightErr;
 };
 
 #endif

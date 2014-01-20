@@ -32,7 +32,7 @@ const float   muPtCut[]         = {10., 3.};
 const float   elePtCut[]        = {10., 7.};
 const float   phoPtCut[]        = {10., 10.};
 const float   leptonPtCut[]     = {20., 10.};
-const float   metCut[]          = {60., 50.};
+const float   metCut[]          = {30., 0.};
 const float   htCut[]           = {13., 14.};
 const float   bJetVeto          = 1e9;
 
@@ -724,7 +724,7 @@ void fcncAnalyzer::Terminate()
     cout<<"| At least two jets:                 |\t" << eventCount[7]  << "\t|\t" << eventCountWeighted[7] << "\t|"<<endl;
     cout<<"| MET cut:                           |\t" << eventCount[8]  << "\t|\t" << eventCountWeighted[8] << "\t|"<<endl;
     cout<<"| HT cut:                            |\t" << eventCount[9]  << "\t|\t" << eventCountWeighted[9] << "\t|"<<endl;
-    cout<<"| BDT > -0.2:                        |\t" << eventCount[15]  << "\t|\t" << eventCountWeighted[15] << "\t|"<<endl;
+    cout<<"| BDT:                               |\t" << eventCount[15]  << "\t|\t" << eventCountWeighted[15] << "\t|"<<endl;
 
 
     // Control regions //
@@ -815,34 +815,21 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
         SetYields(12);
     }
 
-    // low mass same-sign control region //
+    // Z+fake control region //
     if (
-            leptons.size() == 2 && leptons[0].Charge() == leptons[1].Charge()
+            zTagged 
+            && leptons.size() == 3 
+            && METLD < 0.3
        ) {
-        if ((leptons[0] + leptons[1]).M() > 50.) {
-            //MakePlots(leptons, jets, bJetsM, *recoMET, PV, 8);
-        } /*else 
-            MakePlots(leptons, jets, bJetsM, *recoMET, PV, 9);*/
-    }
-
-    // only barrel leptons control region //
-    if (
-            (leptons.size() == 2 
-             && fabs(leptons[0].Eta()) < 1.4 
-             && fabs(leptons[1].Eta()) < 1.4)
-            ||
-            (leptons.size() == 3 
-             && fabs(leptons[0].Eta()) < 1.4 
-             && fabs(leptons[1].Eta()) < 1.4
-             && fabs(leptons[2].Eta()) < 1.4)
-       ) {
-        //MakePlots(leptons, jets, bJetsM, *recoMET, PV, 10);
+        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 9);
+        SetYields(13);
     }
 
 
     //!!!!!!!!!!!!!//
     // Do MVA Trees//
     //!!!!!!!!!!!!!//
+
 
     if (leptons.size() == 3) {
         // Fill MVA trees //
@@ -893,12 +880,21 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
     else if (leptons.size() == 3 && (zTagged || (dileptonMassOS > 40 && fabs(trileptonMass - 91.2) < 7.5))) 
         return true;
 
-
     MakePlots(leptons, jets, bJetsM, *recoMET, PV, 1);
     SetYields(6);
 
-    if (doMVACut && (jets.size() + bJetsM.size()) > 1) {
 
+    //!! Require at least one b-jet !!//
+    if (bJetsM.size() + jets.size() <= 1) return true;
+    MakePlots(leptons, jets, bJetsM, *recoMET, PV, 2);
+    SetYields(7);
+
+    if (jetMult > 1 && HT < 60)
+        cout << HT << endl;
+
+
+    //!! Do mva selection !!//
+    if (doMVACut) {
         float mvaValue = -99.;
         float mvaCut = -99.;
         if (leptons.size() == 3) {
@@ -923,7 +919,7 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
         } else if (leptons.size() == 2 && leptons[0].Charge() == leptons[1].Charge()) {
             if (flavorCat == 1) {
                 mvaValue = mvaSSReader[0]->EvaluateMVA("test");
-                mvaCut   = -0.1789;
+                mvaCut   = 0.1390;
             } else if (flavorCat == 2 || flavorCat == 3) {
                 mvaValue = mvaSSReader[1]->EvaluateMVA("test");
                 mvaCut   = -0.2249;
@@ -942,11 +938,6 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
             SetYields(15);
         }
     }
-
-    //!! Require at least one b-jet !!//
-    if (bJetsM.size() + jets.size() <= 1) return true;
-    MakePlots(leptons, jets, bJetsM, *recoMET, PV, 2);
-    SetYields(7);
 
     //!! MET cut !!//
     if (leptons.size() == 2){
@@ -1485,6 +1476,9 @@ void fcncAnalyzer::MiscPlots()
     //histManager->Fill1DHist(primaryVtx[0].Z(),
     //        "h1_PvZ", "z_{PV};z_{PV};Entries / bin" 50, 0.5, 50.5);
 
+    // Histograms for systematic errors
+    histManager->Fill1DHist(weighter->GetFakeUncertainty(),
+            "h1_FakeWeightUncertainty", "fake rate error;#sigma_{fake};Entries / bin", 40, 0., 0.1);
 }
 
 void fcncAnalyzer::MakeQMisIDPlots(vObj electrons)

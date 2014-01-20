@@ -10,12 +10,13 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
     Initialize();
 
     // Muon reco efficiencies
-    TFile* f_muRecoSF2012 = new TFile("../data/Muon_ID_iso_Efficiencies_Run_2012ABCD_53X.root", "OPEN"); 
+    //TFile* f_muRecoSF2012 = new TFile("../data/Muon_ID_iso_Efficiencies_Run_2012ABCD_53X.root", "OPEN"); 
+    TFile* f_muRecoSF2012 = new TFile("../data/MuonEfficiencies_ISO_Run_2012ReReco_53X.root", "OPEN"); 
 
-    _muSF2012[0] = (TGraphErrors*)f_muRecoSF2012->Get("DATA_over_MC_combRelIsoPF04dBeta<02_Tight_pt_abseta<0.9_2012ABCD");
-    _muSF2012[1] = (TGraphErrors*)f_muRecoSF2012->Get("DATA_over_MC_combRelIsoPF04dBeta<02_Tight_pt_abseta0.9-1.2_2012ABCD");
-    _muSF2012[2] = (TGraphErrors*)f_muRecoSF2012->Get("DATA_over_MC_combRelIsoPF04dBeta<02_Tight_pt_abseta1.2-2.1_2012ABCD");
-    _muSF2012[3] = (TGraphErrors*)f_muRecoSF2012->Get("DATA_over_MC_HighPt_pt_abseta2.1-2.4_2012ABCD");
+    _muSF2012[0] = (TGraphErrors*)f_muRecoSF2012->Get("DATA_over_MC_combRelIsoPF04dBeta<012_Tight_pt_abseta<0.9");
+    _muSF2012[1] = (TGraphErrors*)f_muRecoSF2012->Get("DATA_over_MC_combRelIsoPF04dBeta<012_Tight_pt_abseta0.9-1.2");
+    _muSF2012[2] = (TGraphErrors*)f_muRecoSF2012->Get("DATA_over_MC_combRelIsoPF04dBeta<012_Tight_pt_abseta1.2-2.1");
+    _muSF2012[3] = (TGraphErrors*)f_muRecoSF2012->Get("DATA_over_MC_combRelIsoPF04dBeta<012_Tight_pt_abseta2.1-2.4");
 
     // Electron reco (MVA) efficiencies
     TFile* f_elRecoFile2012 = new TFile("../data/CombinedMethod_ScaleFactors_IdIsoSip.root", "OPEN");
@@ -390,11 +391,22 @@ float WeightUtils::GetMuEff(TLorentzVector lep) const
 
 float WeightUtils::GetFakeWeight(vector<TCPhysObject> fakeables, string controlRegion)
 {
-    float fakeRate = 1;
+    float fakeWeight    = 1.;
+    float fakeRate      = 0.;
+    float fakeError     = 0.;
+    float ptBins[]      = {10., 20., 30., 45., 60, 100.}; 
 
     //cout << fakeable.Type() << "\t" << fakeable.Pt() << "\t";
     for (unsigned i = 0; i < fakeables.size(); ++i) {
         TCPhysObject fakeable = fakeables[i];
+
+        unsigned iPt = 0;
+        for (unsigned j = 0; j < 6; ++j) {
+            if (fakeable.Pt() > ptBins[j] && fakeable.Pt() < ptBins[j + 1]) {
+                iPt = j+1;
+                break;
+            }
+        }
 
         //cout << fakeable.Type() << "\t" << fakeable.Pt() << "\t";
         float fakeablePt;  
@@ -405,10 +417,13 @@ float WeightUtils::GetFakeWeight(vector<TCPhysObject> fakeables, string controlR
             else 
                 fakeablePt = 60.;
 
-            if (fabs(fakeable.Eta()) < 1.5)
-                fakeRate *= g_MuonFakesPtB[controlRegion]->Eval(fakeablePt);
-            else if (fabs(fakeable.Eta()) >= 1.5)
-                fakeRate *= g_MuonFakesPtE[controlRegion]->Eval(fakeablePt);
+            if (fabs(fakeable.Eta()) < 1.5) {
+                fakeRate  = g_MuonFakesPtB[controlRegion]->Eval(fakeablePt);
+                fakeError = g_MuonFakesPtB[controlRegion]->GetErrorY(iPt);
+            } else if (fabs(fakeable.Eta()) >= 1.5) {
+                fakeRate  = g_MuonFakesPtE[controlRegion]->Eval(fakeablePt);
+                fakeError = g_MuonFakesPtE[controlRegion]->GetErrorY(iPt);
+            }
 
         } else if (fakeable.Type() == "electron") {
 
@@ -417,16 +432,30 @@ float WeightUtils::GetFakeWeight(vector<TCPhysObject> fakeables, string controlR
             else 
                 fakeablePt = 100.;
 
-            if (fabs(fakeable.Eta()) < 0.8)
-                fakeRate *= g_ElectronFakesPtB[controlRegion]->Eval(fakeablePt);
-            if (fabs(fakeable.Eta()) >= 0.8 && fabs(fakeable.Eta()) < 1.479)
-                fakeRate *= g_ElectronFakesPtG[controlRegion]->Eval(fakeablePt);
-            else if (fabs(fakeable.Eta()) >= 1.479)
-                fakeRate *= g_ElectronFakesPtE[controlRegion]->Eval(fakeablePt);
+            if (fabs(fakeable.Eta()) < 0.8) {
+                fakeRate  = g_ElectronFakesPtB[controlRegion]->Eval(fakeablePt);
+                fakeError = g_ElectronFakesPtB[controlRegion]->GetErrorY(iPt);
+            } else if (fabs(fakeable.Eta()) >= 0.8 && fabs(fakeable.Eta()) < 1.479) {
+                fakeRate  = g_ElectronFakesPtG[controlRegion]->Eval(fakeablePt);
+                fakeError = g_ElectronFakesPtG[controlRegion]->GetErrorY(iPt);
+            } else if (fabs(fakeable.Eta()) >= 1.479) {
+                fakeRate  = g_ElectronFakesPtE[controlRegion]->Eval(fakeablePt);
+                fakeError = g_ElectronFakesPtE[controlRegion]->GetErrorY(iPt);
+            }
         }
+        fakeWeight *= fakeRate / (1 - fakeRate);
+
+        //cout << fakeable.Type() << ", " << fakeRate << ", " << fakeWeight << endl;
     }
 
-    return fakeRate / (1 - fakeRate);
+    if (fakeError >= 0.) 
+        _fakeWeightErr = fakeError*(sqrt(1 - 2*fakeRate + 2*pow(fakeRate, 2))/pow(1 - fakeRate, 2));
+    else 
+        _fakeWeightErr = 0.;
+
+    //cout << "\n\t" << fakeWeight << endl;
+
+    return fakeWeight;
 }
 
 float WeightUtils::GetQFlipWeight()
@@ -451,4 +480,9 @@ float WeightUtils::GetQFlipWeight()
 
     //cout << weight << endl;
     return weight;
+}
+
+float WeightUtils::GetFakeUncertainty() const
+{
+    return _fakeWeightErr;
 }
