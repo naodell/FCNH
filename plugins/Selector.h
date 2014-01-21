@@ -107,6 +107,7 @@ class Selector : public TObject {
         // b-tag efficiencies from MC 
         TGraphAsymmErrors*  _misTagEff;
         TGraphAsymmErrors*  _bTagEff;
+        TGraphAsymmErrors*  _cTagEff;
 
         // Misc
         TRandom3* rnGen;

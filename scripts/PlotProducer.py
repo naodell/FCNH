@@ -144,7 +144,19 @@ class PlotProducer(AnalysisTools):
             for data in self._datasets:
                 hist = self.combine_samples(var, data, histType)
 
+
                 if hist is None: continue
+
+                if var == 'HT':
+                    hist.GetXaxis().SetTitle('HT (GeV)');
+                if var == 'Met':
+                    hist.GetXaxis().SetTitle('MET (GeV)');
+                if var == 'DileptonMass21':
+                    hist.GetYaxis().SetTitle('Entries / 5 GeV/c^{2}');
+                    hist.GetXaxis().SetTitle('M_{ll} (GeV/c^{2})');
+                if var == 'TrileptonMVsDileptonMOS':
+                    hist.GetXaxis().SetTitle('M_{OS} (GeV/c^{2})');
+                    hist.GetYaxis().SetTitle('M_{lll} (GeV/c^{2})');
 
                 set_hist_style(hist, data, self._styleDict, histType)
 
@@ -438,7 +450,7 @@ class PlotProducer(AnalysisTools):
 
                 if logScale:
                     stacks[var].SetMaximum(max(stacks[var].GetMaximum(), hists[var][0][0].GetMaximum())*5)
-                    stacks[var].SetMinimum(0.09)
+                    stacks[var].SetMinimum(0.2)
                 else:
                     stacks[var].SetMaximum(max(stacks[var].GetMaximum(), hists[var][0][0].GetMaximum())*1.25)
                     stacks[var].SetMinimum(0.00001)
@@ -451,8 +463,15 @@ class PlotProducer(AnalysisTools):
 
                 stacks[var].Draw('HIST')
 
-                if not logScale or not (doRatio):
-                    stacks[var].GetYaxis().SetTitleOffset(2.0);
+                if not logScale or not doRatio:
+
+                    if var == 'HT':
+                        stacks[var].GetXaxis().SetRangeUser(0., 1500.);
+
+                    stacks[var].GetYaxis().SetTitleOffset(1.3);
+                    stacks[var].GetYaxis().SetTitleSize(0.04);
+                    stacks[var].GetXaxis().SetTitleOffset(0.9);
+                    stacks[var].GetXaxis().SetTitleSize(0.04);
                     stacks[var].Draw('HIST')
 
                 sums[var].Draw('E2 SAME')
@@ -463,11 +482,12 @@ class PlotProducer(AnalysisTools):
 
                 ## Draw info box ##
                 r.gStyle.SetOptTitle(0)
-                textBox = r.TPaveText(0.09, 0.91, 0.79, 0.96, 'NDC')
+                textBox = r.TPaveText(0.09, 0.91, 0.91, 0.98, 'NDC')
                 textBox.SetFillColor(0)
                 textBox.SetFillStyle(0)
                 textBox.SetLineWidth(0)
                 textBox.SetLineColor(0)
+                textBox.SetTextSize(0.03)
 
                 if self._period is '2011':
                     textBox.AddText('#scale[1.2]{CMS preliminary, #sqrt{s} = 7 TeV, #it{L}_{int}' + ' = {0:.1f}'.format(self._scale) + ' fb^{-1}       #bf{#color[2]{' + categories[self._category] + '}}}')
@@ -583,12 +603,12 @@ class PlotProducer(AnalysisTools):
             pad2.Draw()
             pad3.Draw()
 
-            #pad1.SetGridx()
-            #pad1.SetGridy()
-            #pad2.SetGridx()
-            #pad2.SetGridy()
-            #pad3.SetGridx()
-            #pad3.SetGridy()
+            pad1.SetGridx()
+            pad1.SetGridy()
+            pad2.SetGridx()
+            pad2.SetGridy()
+            pad3.SetGridx()
+            pad3.SetGridy()
 
         if logScale:
             pad1.SetLogz()
@@ -596,11 +616,12 @@ class PlotProducer(AnalysisTools):
             pad3.SetLogz()
 
 
-        textBox = r.TPaveText(0.12, 0.95, 0.67, 0.98, 'NDC')
+        textBox = r.TPaveText(0.09, 0.94, 0.89, 0.98, 'NDC')
         textBox.SetFillColor(0)
         textBox.SetFillStyle(0)
         textBox.SetLineWidth(0)
         textBox.SetLineColor(0)
+        textBox.SetTextSize(0.023)
 
         if self._period is '2011':
             textBox.AddText('#scale[1.2]{CMS preliminary, #sqrt{s} = 7 TeV, #it{L}_{int}' + ' = {0:.1f}'.format(self._scale) + ' fb^{-1}       #bf{#color[2]{' + categories[self._category] + '}}}')
@@ -625,11 +646,13 @@ class PlotProducer(AnalysisTools):
 
                 textBox.Draw('same')
                   
-                idBox = r.TPaveText(0.75, 0.2, 0.9, 0.4, 'NDC')
-                idBox.SetFillColor(r.kWhite)
-                idBox.SetFillStyle(1001)
-                idBox.SetLineWidth(1)
-                idBox.SetLineColor(1)
+                idBox = r.TPaveText(0.7, 0.24, 0.89, 0.4, 'NDC')
+                idBox.SetFillColor(0)
+                idBox.SetFillStyle(0)
+                idBox.SetLineWidth(0)
+                idBox.SetLineColor(0)
+                idBox.SetTextSize(0.1)
+                idBox.SetTextColor(r.kBlue)
 
                 for (hist, data) in hists[var]:
                     if data in ['Signal', 'FCNH']:
@@ -640,6 +663,9 @@ class PlotProducer(AnalysisTools):
 
                         hist.GetXaxis().SetTitle('')
                         hist.GetXaxis().SetLabelSize(0.)
+
+                        hist.GetZaxis().SetLabelSize(0.09)
+
                         hist.Draw('COLZ')
 
                         sigBox = idBox.Clone()
@@ -649,13 +675,18 @@ class PlotProducer(AnalysisTools):
                     if data in ['DATA', 'DATA_MUON','DATA_ELECTRON', 'DATA_MUEG']:
                         pad2.cd()
                         hist.GetYaxis().CenterTitle()
-                        hist.GetYaxis().SetTitleSize(0.09)
-                        hist.GetYaxis().SetTitleOffset(0.6)
+                        hist.GetYaxis().SetTitleSize(0.13)
+                        hist.GetYaxis().SetTitleOffset(0.4)
                         hist.GetYaxis().SetLabelOffset(0.01)
                         hist.GetYaxis().SetLabelSize(0.06)
+                        if var == 'TrileptonMVsDileptonMOS':
+                            hist.GetYaxis().SetTitle('M_{lll} (GeV/c^{2})');
 
                         hist.GetXaxis().SetTitle('')
                         hist.GetXaxis().SetLabelSize(0.)
+
+                        hist.GetZaxis().SetLabelSize(0.09)
+
                         hist.Draw('COLZ')
 
                         dataBox = idBox.Clone()
@@ -669,8 +700,11 @@ class PlotProducer(AnalysisTools):
 
                 sums[var].GetXaxis().SetLabelOffset(0.03)
                 sums[var].GetXaxis().SetLabelSize(0.065)
-                sums[var].GetXaxis().SetTitleSize(0.09)
+                sums[var].GetXaxis().SetTitleSize(0.10)
                 sums[var].GetXaxis().SetTitleOffset(1.)
+
+                sums[var].GetZaxis().SetLabelSize(0.09)
+
                 sums[var].Draw('COLZ')
 
                 bgBox = idBox.Clone()

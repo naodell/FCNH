@@ -25,7 +25,7 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-cutList.extend(['2_Z_veto', '3_jet', '4_MET', '5_HT', '4_BDT'])
+cutList.extend(['2_Z_veto', '3_jet', '4_MET', '5_HT'])#, '4_BDT'])
 crList      = []#'CR_WZ', 'CR_ttbar']#, 'CR_ttZ', 'high_mass_ss', 'low_mass_ss', 'barrel_leptons']
 
 period      = '2012'
@@ -33,8 +33,8 @@ LUMIDATA    = 19.712
 
 doPlots     = True
 doLog       = True
-doEff       = True
-doRatio     = True
+doEff       = False
+doRatio     = False
 do1D        = True
 do2D        = True
 
@@ -42,7 +42,7 @@ doOS        = True
 doSS        = True
 do3l        = True
 
-doYields    = True
+doYields    = False
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive']
@@ -148,7 +148,7 @@ if doPlots:
     plotter._directoryList2D            = ['2D']
 
     plotter._variableDict['Misc']       = ['PvMult', 'YieldByCut', 'YieldByCutRaw', 'EventWeight', 'TriggerStatus', 
-                                            'BDT']
+                                            'FakeWeightUncertainty', 'BDT']
 
     plotter._variableDict['Lepton']     = ['LeptonCharge', 'LeptonFlavor', 
                                            'Lepton1Pt', 'Lepton2Pt','Lepton3Pt',
@@ -481,7 +481,7 @@ if doYields:
 
         yieldTable._category = crCats[CR]
         histDict = yieldTable.get_hist_dict('YieldByCut')
-        yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 6)
+        yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 6)
 
     ### Special case for ZZ->4l control region ###
     #yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut1_{1}_{2}.root'.format(selection, period, batch))
