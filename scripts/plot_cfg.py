@@ -25,8 +25,8 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-cutList.extend(['2_Z_veto', '3_jet', '4_MET', '5_HT'])#, '4_BDT'])
-crList      = []#'CR_WZ', 'CR_ttbar']#, 'CR_ttZ', 'high_mass_ss', 'low_mass_ss', 'barrel_leptons']
+cutList.extend(['2_Z_veto', '3_jet', '4_MET', '5_HT', '4_BDT'])
+crList      = ['CR_WZ', 'CR_ttbar', 'CR_ttZ', 'CR_ZFake']#, 'high_mass_ss', 'low_mass_ss', 'barrel_leptons']
 
 period      = '2012'
 LUMIDATA    = 19.712 
@@ -34,7 +34,7 @@ LUMIDATA    = 19.712
 doPlots     = True
 doLog       = True
 doEff       = False
-doRatio     = False
+doRatio     = True
 do1D        = True
 do2D        = True
 
@@ -42,7 +42,7 @@ doOS        = True
 doSS        = True
 do3l        = True
 
-doYields    = False
+doYields    = True
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive']
@@ -54,7 +54,7 @@ cat3l.extend(['3l_OSSF', '3l_SSSF'])
 cat3l.extend(['3l_eee', '3l_eemu', '3l_emumu', '3l_mumumu'])
 
 ### Samples to be included in stacks ###
-samples     = {'all':[], 'inclusive':[], '3l':[], 'ss':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[]}
+samples     = {'all':[], 'inclusive':[], '3l':[], 'ss':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[], 'ZFake':[]}
 
 samples['all'].append('higgs')
 samples['all'].append('Triboson')
@@ -109,6 +109,7 @@ samples['os'].extend(['Diboson', 'top', 'ZJets'])
 samples['WZ'].extend(['WW/ZZ', 'top', 'ZJets', 'WZJets3LNu'])
 samples['ttbar'].extend(['single top', 'ZJets', 'ttbar'])
 samples['ttZ'].extend(['top', 'ZJets', 'WZJets3LNu', 'ttW', 'ttG', 'ttZ'])
+samples['ZFake'].extend(['ZZ4l', 'WZJets3LNu', 'Fakes'])
 
 p_plot = []
 
@@ -352,9 +353,27 @@ if doPlots:
 
         for category in cat3l:
             p_plot.append(Process(name = 'CR_ttZ/' + category, target = plotter_wrapper, args=(ttZ_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False)))
-    
+
     doLog = True
 
+    ### ZPlusFake control region
+    if 'CR_ZFake' in crList:
+        ZFake_plotter = copy.deepcopy(plotter)
+        ZFake_plotter.add_datasets(samples['ZFake'],  Clear=True)
+        ZFake_plotter._overlayList = ['DATA']
+
+        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 10, period, batch)
+
+        if doLog:
+            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'CR_ZFake')
+        else:
+            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'CR_ZFake')
+
+        ZFake_plotter.make_save_path(outFile, clean=True)
+
+        for category in cat3l:
+            p_plot.append(Process(name = 'CR_ZFake/' + category, target = plotter_wrapper, args=(ZFake_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False)))
+    
     ### low delta eta ss control region
     if 'high_mass_ss' in crList:
         hm_plotter = copy.deepcopy(plotter)
@@ -469,7 +488,7 @@ if doYields:
 
     crCats = {'CR_WZ':'3l_inclusive', 'CR_ttbar':'os_emu', 'CR_ttZ':'3l_inclusive'}
     for i,CR in enumerate(crList):
-        if CR[:2] != 'CR': continue
+        if CR[:2] != 'CR' or CR == 'CR_ZFake': continue
 
         yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, i+5, period, batch))
         yieldTable._columnList  = samples[CR[3:]] + ['BG', 'DATA']

@@ -6,16 +6,16 @@
 
 void analyzer::Begin(TTree * /*tree*/)
 {
-
     // Job config
     TString option  = GetOption();
     TObjArray *args = (TObjArray*)option.Tokenize(" ");
     string suffix   = (string)((TObjString*)args->At(0))->GetString();
 
-    histoFile = new TFile(("test_" + suffix + ".root").c_str(), "RECREATE");
+    histoFile = new TFile(("histos/test_" + suffix + ".root").c_str(), "RECREATE");
+    histoFile->mkdir(suffix.c_str(), suffix.c_str());
+    //histoFile->cd(suffix.c_str);
 
     h1_Met  = new TH1D("h1_Met", "MET", 20, 0., 100.);
-
 }
 
 Bool_t analyzer::Process(Long64_t entry)
@@ -23,6 +23,9 @@ Bool_t analyzer::Process(Long64_t entry)
     GetEntry(entry);
 
     h1_Met->Fill(met);
+
+    if (jetMult > 2 && HT < 60)
+        cout << HT << endl;
 
     //!! Z-veto !!//
     /*
