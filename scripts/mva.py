@@ -65,7 +65,12 @@ if __name__ == '__main__':
     flCats['SS'] = ['inclusive', 'ee', 'emu', 'mumu']
 
     flavorCuts = {}
-    cut = 'jetMult > 1'
+    cut = '(jetMult + bJetMult) > 1'
+    if selection == '3l':
+        cut += ' && (dileptonMassOS < 76.2 || dileptonMassOS > 106.2)'
+    elif selection == 'SS':
+        cut += ' && (dileptonMass < 76.2 || dileptonMass > 106.2)'
+
     flavorCuts['3l']  = {'inclusive': 'flavorCat > 0', 'eee':'flavorCat == 5', 'eemu':'flavorCat == 6 || flavorCat == 7 || flavorCat == 9', 'emumu':'flavorCat == 8 || flavorCat == 10 || flavorCat == 11', 'mumumu':'flavorCat == 12'}
     flavorCuts['SS'] = {'inclusive': 'flavorCat > 0', 'ee':'flavorCat == 1', 'emu':'flavorCat == 2 || flavorCat == 3', 'mumu':'flavorCat == 4'}
 
@@ -75,6 +80,7 @@ if __name__ == '__main__':
 
     ### Start settting up MVA ###
     # Logon not automatically loaded through PyROOT (logon loads TMVA library) load also GUI
+    r.gROOT.LoadMacro("src/TCPhysObject.cc+");
     r.gROOT.SetMacroPath("${ROOTSYS}/tmva/test/.") 
     r.gROOT.Macro       ("${ROOTSYS}/tmva/test/TMVAlogon.C")
     if doGUI:
