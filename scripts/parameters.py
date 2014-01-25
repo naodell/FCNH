@@ -171,7 +171,7 @@ scaleDict['2012']['WZJets3LNu']         = 1.086 #*1.309 #<-- WZ rescaled based o
 scaleDict['2012']['WZJets2L2Q']         = 5.09
 scaleDict['2012']['WWJets2L2Nu']        = 5.995
 
-scaleDict['2012']['ttbar']              = 234*1.046 #<-- ttbar rescaled based on e/mu lepton control region
+scaleDict['2012']['ttbar']              = 234 #*1.046 #<-- ttbar rescaled based on e/mu lepton control region
 scaleDict['2012']['tW']                 = 11.77
 scaleDict['2012']['tbarW']              = 11.77
 scaleDict['2012']['t_t-channel']        = 55.53
