@@ -21,6 +21,7 @@ class TCPhysObject : public TLorentzVector {
         string _type;
         bool _isPF;
         bool _isReco;
+        bool _isFake;
 
     public:
         TCPhysObject();
@@ -38,6 +39,7 @@ class TCPhysObject : public TLorentzVector {
         string Type() const;
         bool IsPF() const;
         bool IsReco() const;
+        bool IsFake() const;
 
         float Dxy(TVector3 *primVtx) const;
         float Dz(TVector3 *primVtx) const;
@@ -51,6 +53,7 @@ class TCPhysObject : public TLorentzVector {
         void SetType(string s);
         void SetReco(bool);
         void SetPF(bool);
+        void SetFake(bool);
 
         ClassDef(TCPhysObject, 1);
 };

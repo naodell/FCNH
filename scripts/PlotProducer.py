@@ -422,8 +422,8 @@ class PlotProducer(AnalysisTools):
         else:
             pad1 = r.TPad('pad1', '', 0.06, 0.02, 0.89, 0.98, 0)
             pad1.Draw()
-            pad1.SetGridx()
-            pad1.SetGridy()
+            #pad1.SetGridx()
+            #pad1.SetGridy()
 
         if logScale:
             pad1.SetLogy()
@@ -460,6 +460,11 @@ class PlotProducer(AnalysisTools):
                     legend.SetX2(1.0)
                     legend.SetY1(0.25)
                     legend.SetY2(0.89)
+                #else:
+                #    legend.SetX1(0.81)
+                #    legend.SetX2(0.9)
+                #    legend.SetY1(0.25)
+                #    legend.SetY2(0.88)
 
                 stacks[var].Draw('HIST')
 

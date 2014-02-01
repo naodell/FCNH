@@ -2,14 +2,14 @@
 #include "../interface/TCPhysObjectLinkDef.h"
 
 TCPhysObject::TCPhysObject() {
-    _isPF = _isReco = false;
+    _isPF = _isReco = _isFake = false;
 }
 
 TCPhysObject::TCPhysObject(TLorentzVector p4, int charge) {
     this->SetP4(p4);
     this->SetCharge(charge);
 
-    _isPF = _isReco = false;
+    _isPF = _isReco = _isFake = false;
 }
 
 TCPhysObject::TCPhysObject(TLorentzVector p4, int charge, string type) {
@@ -17,7 +17,7 @@ TCPhysObject::TCPhysObject(TLorentzVector p4, int charge, string type) {
     this->SetCharge(charge);
     this->SetType(type);
 
-    _isPF = _isReco = false;
+    _isPF = _isReco = _isFake = false;
 }
 
 TCPhysObject::~TCPhysObject() {
@@ -65,6 +65,7 @@ string TCPhysObject::Type() const { return _type; }
 int TCPhysObject::Charge() const { return _charge; }
 bool TCPhysObject::IsPF() const { return _isPF; }
 bool TCPhysObject::IsReco() const { return _isReco; }
+bool TCPhysObject::IsFake() const { return _isFake; }
 
 // "set" methods ---------------------------------------------
 
@@ -81,6 +82,7 @@ void TCPhysObject::SetCharge(int c){ _charge = c; }
 void TCPhysObject::SetType(string s){ _type = s; }
 void TCPhysObject::SetPF(bool p){ _isPF = p;}
 void TCPhysObject::SetReco(bool r){ _isReco = r;}
+void TCPhysObject::SetFake(bool f){ _isFake = f;}
 
 // generally useful methods -----------------------------------
 

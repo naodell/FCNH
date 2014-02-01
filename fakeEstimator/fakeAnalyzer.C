@@ -422,8 +422,6 @@ bool fakeAnalyzer::Process(Long64_t entry)
         return kTRUE;
 
     if (crType == "QCD2l" && leptons.size() <= 1) {
-
-
         if (nEleProbes == 1) {
             if (recoMET->Mod() < 50) {
                 FillDenominatorHists(crType + "_inclusive", eleProbe);
@@ -447,7 +445,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
             else if (recoMET->Mod() > 45 && recoMET->Mod() < 80)
                 FillDenominatorHists(crType + "_high_met", muProbe);
         }
-    } else if (crType == "ZPlusJet" && leptons.size() <= 3) {
+    } else if (crType == "ZPlusJet" && leptons.size() < 4 && leptons.size() > 2) {
         if (nEleProbes == 1) {
             FillJetFlavorHists(crType, eleProbe, jets);
             FillDenominatorHists(crType + "_inclusive", eleProbe);
@@ -517,7 +515,6 @@ bool fakeAnalyzer::Process(Long64_t entry)
     if (muMatched) {
         if (recoMET->Mod() < 50)
             FillNumeratorHists(crType + "_inclusive", muPass);
-
         if (crType == "QCD2l") {
             if (recoMET->Mod() < 20)
                 FillNumeratorHists(crType + "_low_met", muPass);
@@ -526,7 +523,6 @@ bool fakeAnalyzer::Process(Long64_t entry)
         }
     } else  if (nMuProbes == 1)
         FillClosureHists(crType, muProbe);
-
 
     return kTRUE;
 }
