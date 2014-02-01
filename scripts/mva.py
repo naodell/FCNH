@@ -65,7 +65,12 @@ if __name__ == '__main__':
     flCats['SS'] = ['inclusive', 'ee', 'emu', 'mumu']
 
     flavorCuts = {}
-    cut = 'jetMult >= 1'
+    cut = '(jetMult + bJetMult) > 1'
+    if selection == '3l':
+        cut += ' && (dileptonMassOS < 76.2 || dileptonMassOS > 106.2)'
+    if selection == 'SS':
+        cut += ' && (dileptonMass < 76.2 || dileptonMass > 106.2)'
+
     flavorCuts['3l']  = {'inclusive': 'flavorCat > 0', 'eee':'flavorCat == 5', 'eemu':'flavorCat == 6 || flavorCat == 7 || flavorCat == 9', 'emumu':'flavorCat == 8 || flavorCat == 10 || flavorCat == 11', 'mumumu':'flavorCat == 12'}
     flavorCuts['SS'] = {'inclusive': 'flavorCat > 0', 'ee':'flavorCat == 1', 'emu':'flavorCat == 2 || flavorCat == 3', 'mumu':'flavorCat == 4'}
 
@@ -75,6 +80,7 @@ if __name__ == '__main__':
 
     ### Start settting up MVA ###
     # Logon not automatically loaded through PyROOT (logon loads TMVA library) load also GUI
+    r.gROOT.LoadMacro("src/TCPhysObject.cc+");
     r.gROOT.SetMacroPath("${ROOTSYS}/tmva/test/.") 
     r.gROOT.Macro       ("${ROOTSYS}/tmva/test/TMVAlogon.C")
     if doGUI:
@@ -110,24 +116,24 @@ if __name__ == '__main__':
     factory.AddVariable('HT', 'HT', 'GeV', 'F')
     factory.AddVariable('MT', 'MT', 'GeV', 'F')
     #factory.AddVariable('jetMult', 'jetMult', '', 'I')
-    #factory.AddVariable('bJetMult', 'bJetMult', '', 'I')
+    factory.AddVariable('bJetMult', 'bJetMult', '', 'I')
 
     if selection == '3l':
         #factory.AddVariable('trileptonMass', 'trileptonMass', 'GeV', 'F')
-        #factory.AddVariable('dileptonMassOS', 'dileptonMassOS', 'GeV', 'F')
-        factory.AddVariable('dileptonDROS', 'dileptonDROS', 'rad', 'F')
+        factory.AddVariable('dileptonMassOS', 'dileptonMassOS', 'GeV', 'F')
+        #factory.AddVariable('dileptonDROS', 'dileptonDROS', 'rad', 'F')
 
         factory.AddSpectator( 'flavorCat', 'flavorCat', '', 5., 12.) 
         factory.AddSpectator( 'chargeCat', 'chargeCat', '', 5, 12.)
     elif selection == 'SS':
-        #factory.AddVariable('dileptonMass', 'dileptonMass', 'GeV', 'F')
-        factory.AddVariable('dileptonDR', 'dileptonDR', 'rad', 'F')
+        factory.AddVariable('dileptonMass', 'dileptonMass', 'GeV', 'F')
+        #factory.AddVariable('dileptonDR', 'dileptonDR', 'rad', 'F')
 
         factory.AddSpectator( 'flavorCat', 'flavorCat', '', 1., 4.) 
         factory.AddSpectator( 'chargeCat', 'chargeCat', '', 1., 4.)
 
     factory.AddSpectator('jetMult', 'jetMult', '', 0., 15.)
-    factory.AddSpectator('bJetMult', 'bJetMult', '', 0., 5.)
+    #factory.AddSpectator('bJetMult', 'bJetMult', '', 0., 5.)
     factory.AddSpectator( 'evtWeight', 'evtWeight', '', 0., 1e9)
 
 
@@ -162,12 +168,14 @@ if __name__ == '__main__':
     factory.PrepareTrainingAndTestTree(r.TCut('({0}) && ({1})'.format(cut, flavorCuts[selection][flCat])), r.TCut('({0}) && ({1})'.format(cut, flavorCuts[selection][flCat])), "nTrain_Signal=0:nTrain_Background=0:SplitMode=Random:NormMode=NumEvents:!V" )
 
     if 'BDT' in methods:
-        #factory.BookMethod( r.TMVA.Types.kBDT, "BDTG",
-        #                    "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.30:UseBaggedGrad:GradBaggingFraction=0.6:SeparationType=SDivSqrtSPlusB:nCuts=20:MaxDepth=3" )
+        factory.BookMethod( r.TMVA.Types.kBDT, "BDTG",
+                            '!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.10:UseBaggedGrad:GradBaggingFraction=0.5:nCuts=2000:NNodesMax=8:IgnoreNegWeights:nEventsMin=80')
+                            #'!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.30:UseBaggedGrad:GradBaggingFraction=0.6:SeparationType=SDivSqrtSPlusB:nCuts=20:MaxDepth=3' )
+
         #factory.BookMethod(r.TMVA.Types.kBDT, "BDT", 
         #                    "!H:!V:NTrees=1000:nEventsMin=150:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:SeparationType=SDivSqrtSPlusB:nCuts=20:PruneMethod=NoPruning" )
-        factory.BookMethod(r.TMVA.Types.kBDT, "BDT", 
-                            "!H:!V:NTrees=500:MinNodeSize=10:MaxDepth=2:BoostType=AdaBoost:AdaBoostBeta=0.5:SeparationType=GiniIndex:nCuts=-1:PruneMethod=NoPruning" )
+        #factory.BookMethod(r.TMVA.Types.kBDT, "BDT", 
+        #                    "!H:!V:NTrees=500:MinNodeSize=10:MaxDepth=2:BoostType=AdaBoost:AdaBoostBeta=0.5:SeparationType=GiniIndex:nCuts=-1:PruneMethod=NoPruning" )
 
 
     factory.TrainAllMethods()
