@@ -38,11 +38,11 @@ doRatio     = True
 do1D        = True
 do2D        = True
 
-doOS        = True
+doOS        = False
 doSS        = True
 do3l        = True
 
-doYields    = True
+doYields    = False
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive']

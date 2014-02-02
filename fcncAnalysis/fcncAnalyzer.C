@@ -1712,29 +1712,29 @@ void fcncAnalyzer::GenPlots(vector<TCGenParticle> gen, vObj leptons)
     }
 }
 
-void fcncAnalyzer::FakePlots(vObj leptons)
-{
-
-    if (fakeables.size() >= 1) {
-        unsigned flCategory = GetHistCategory(2) - 10;
-        histManager->SetFileNumber(0);
-        histManager->SetDirectory(categoryNames[flCategory] + "/Fakes");
-        histManager->Fill1DHist(recoMET->DeltaPhi(fakeables[0].P2()),
-                "h1_MetFakeableDeltaPhi", "#Delta#phi(fakeable, MET);#Delta#phi(fakeable, MET);Entries / bin", 36, 0., TMath::Pi());
-
-        vector<TCJet> muFakeJets    = selector->GetSelectedJets("muFakes");
-        vector<TCJet> eleFakeJets   = selector->GetSelectedJets("eleFakes");
-
-        for (unsigned i = 0; i < muFakeJets.size(); ++i) {
-            histManager->Fill1DHist(muFakeJets[i].BDiscriminatorMap("CSV"),
-                    "h1_MatchedMuJetBDiscr", "matched #mu-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
-        }
-        for (unsigned i = 0; i < eleFakeJets.size(); ++i) {
-            histManager->Fill1DHist(eleFakeJets[i].BDiscriminatorMap("CSV"),
-                    "h1_MatchedEleJetBDiscr", "matched e-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
-        }
-    }
-}
+//void fcncAnalyzer::FakePlots(vObj leptons)
+//{
+//
+//    if (fakeables.size() >= 1) {
+//        unsigned flCategory = GetHistCategory(2) - 10;
+//        histManager->SetFileNumber(0);
+//        histManager->SetDirectory(categoryNames[flCategory] + "/Fakes");
+//        histManager->Fill1DHist(recoMET->DeltaPhi(fakeables[0].P2()),
+//                "h1_MetFakeableDeltaPhi", "#Delta#phi(fakeable, MET);#Delta#phi(fakeable, MET);Entries / bin", 36, 0., TMath::Pi());
+//
+//        vector<TCJet> muFakeJets    = selector->GetSelectedJets("muFakes");
+//        vector<TCJet> eleFakeJets   = selector->GetSelectedJets("eleFakes");
+//
+//        for (unsigned i = 0; i < muFakeJets.size(); ++i) {
+//            histManager->Fill1DHist(muFakeJets[i].BDiscriminatorMap("CSV"),
+//                    "h1_MatchedMuJetBDiscr", "matched #mu-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
+//        }
+//        for (unsigned i = 0; i < eleFakeJets.size(); ++i) {
+//            histManager->Fill1DHist(eleFakeJets[i].BDiscriminatorMap("CSV"),
+//                    "h1_MatchedEleJetBDiscr", "matched e-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
+//        }
+//    }
+//}
 
 void fcncAnalyzer::SetEventCategory(vObj leptons)
 {

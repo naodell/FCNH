@@ -148,11 +148,14 @@ class AnalysisTools():
         if not hist:
             return None
 
-        if dataName.split('_', 1)[0] == 'Fakes' and dataName != 'Fakes':
-            dataName = dataName.split('_', 1)[1]
+        #if dataName.split('_')[0] == 'Fakes' and dataName != 'Fakes':
+        #    dataName = dataName.split('_')[2]
+
+        if dataName.split('_')[0] == 'Fakes' and len(dataName.split('_')) >= 3:
+            dataName = dataName.split('_', 2)[2]
 
         if doScale:
-            if dataName[:4] == 'DATA' or dataName in ['Fakes', 'QFlips']:
+            if dataName[:4] == 'DATA' or dataName in ['Fakes_e', 'Fakes_mu', 'Fakes_ee', 'Fakes_emu', 'Fakes_mumu', 'QFlips']:
                 hist.Scale(self._scaleDict[self._period][dataName])
             else:
                 hist.Scale(self._scale*self._scaleDict[self._period][dataName]) 
@@ -167,14 +170,21 @@ class AnalysisTools():
         outHist = None
         doFakes = False
         const   = 1.
-        if dataName.split('_', 1)[0] == 'Fakes' and dataName != 'Fakes':
-            dataName = dataName.split('_', 1)[1]
+        if dataName.split('_')[0] == 'Fakes' and dataName != 'Fakes':
+            dataName = dataName.split('_', 2)[2]
             doFakes  = True
         elif dataName == 'Fakes':
-            outHist     = self.get_hist(var, dataName, histType)
+            for data in self._combineDict['Fakes']:
+                hist = self.get_hist(var, data, histType)
+                if hist is not None: 
+                    if outHist is None:
+                        outHist = hist
+                    else:
+                        outHist.Add(hist)
 
             if outHist is None:
                 return outHist
+
             elif self._cleanFakes and histType == '1D':
                 dataName    = 'Remove_{0}'.format(self._category.split('_', 1)[0])
                 doFakes     = True
@@ -190,7 +200,14 @@ class AnalysisTools():
             for data in self._combineDict[dataName]:
 
                 if doFakes:
-                    hist = self.get_hist(var, 'Fakes_' + data, histType)
+                    hist = None
+                    for category in self._combineDict['Fakes']:
+                        catHist = self.get_hist(var, category + '_' + data, histType)
+                        if catHist is not None: 
+                            if hist is None:
+                                hist = catHist
+                            else:
+                                hist.Add(catHist)
                 else:
                     hist = self.get_hist(var, data, histType)
 
