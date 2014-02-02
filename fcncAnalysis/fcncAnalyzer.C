@@ -995,24 +995,24 @@ void fcncAnalyzer::GetFakeBG(vObj leptons, vObj fakeables, vector<TCJet> jets, v
     // Do application of fake rates here.  This is done for the case of
     // ppf, pff, pf and ff events.  
     if (
-            (leptons.size() == 2 && fakeables.size() == 1) 
-            || (leptons.size() == 1 && (fakeables.size() == 2 || fakeables.size() == 1)) 
-            || (leptons.size() == 0 && fakeables.size() == 2)
+            (fakeables.size() == 1 && (leptons.size() == 2 || leptons.size() == 1))
+            || (fakeables.size() == 2 && (leptons.size() == 1 || leptons.size() == 0)) 
        ) {
 
         string fakeCat = GetFakeCategory(fakeables);
-        //cout << fakeCat << endl;
+        cout << fakeCat << endl;
 
         Float_t fakeWeight1 = 1.;
         Float_t fakeWeight2 = 1.;
         if (fakeables.size() == 2) {
             fakeWeight1 = weighter->GetFakeWeight(fakeables[0], "QCD2l");
             fakeWeight2 = weighter->GetFakeWeight(fakeables[1], "QCD2l");
+            //cout << fakeables[0].Type() << ", " << fakeables[1].Type() << ", " << fakeWeight1 << fakeWeight2 << endl;
         } else if (fakeables.size() == 1) 
             fakeWeight1 = weighter->GetFakeWeight(fakeables[0], "QCD2l");
+            //cout << fakeables.size() << ", " << fakeables[0].Type() << ", " << fakeWeight1 << endl;
 
         Float_t fakeWeight = fakeWeight1*fakeWeight2;
-        //cout << fakeables.size() << ", " << fakeWeight << endl;
 
         if (fakeWeight <= 0)
             return;
@@ -1021,7 +1021,7 @@ void fcncAnalyzer::GetFakeBG(vObj leptons, vObj fakeables, vector<TCJet> jets, v
 
         // Fake rate fudge 
         if (fakeables.size() == 1 && leptons.size() == 2) 
-            if (fakeables[0].Type() == "electron") //&& leptons[0].Type() == "muon" && leptons[1].Type() == "muon") 
+            if (fakeables[0].Type() == "electron" && leptons[0].Type() == leptons[1].Type()) 
                 fakeWeight *= 0.4;
 
 
@@ -1032,6 +1032,10 @@ void fcncAnalyzer::GetFakeBG(vObj leptons, vObj fakeables, vector<TCJet> jets, v
         SetEventCategory(leptonsPlusFakes);
         SetEventVariables(leptonsPlusFakes, jets, bJetsM, *recoMET); 
 
+        for (unsigned i = 0; i < leptonsPlusFakes.size(); ++i) {
+            cout << leptonsPlusFakes[i].IsFake() << ", " << leptonsPlusFakes[i].Type() << "\t";
+        }
+        cout << endl;
 
         // Enforce same-sign dilepton/trilepton selection with fake leptons
         if (leptonsPlusFakes.size() == 2) { 
@@ -1712,29 +1716,29 @@ void fcncAnalyzer::GenPlots(vector<TCGenParticle> gen, vObj leptons)
     }
 }
 
-void fcncAnalyzer::FakePlots(vObj leptons)
-{
-
-    if (fakeables.size() >= 1) {
-        unsigned flCategory = GetHistCategory(2) - 10;
-        histManager->SetFileNumber(0);
-        histManager->SetDirectory(categoryNames[flCategory] + "/Fakes");
-        histManager->Fill1DHist(recoMET->DeltaPhi(fakeables[0].P2()),
-                "h1_MetFakeableDeltaPhi", "#Delta#phi(fakeable, MET);#Delta#phi(fakeable, MET);Entries / bin", 36, 0., TMath::Pi());
-
-        vector<TCJet> muFakeJets    = selector->GetSelectedJets("muFakes");
-        vector<TCJet> eleFakeJets   = selector->GetSelectedJets("eleFakes");
-
-        for (unsigned i = 0; i < muFakeJets.size(); ++i) {
-            histManager->Fill1DHist(muFakeJets[i].BDiscriminatorMap("CSV"),
-                    "h1_MatchedMuJetBDiscr", "matched #mu-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
-        }
-        for (unsigned i = 0; i < eleFakeJets.size(); ++i) {
-            histManager->Fill1DHist(eleFakeJets[i].BDiscriminatorMap("CSV"),
-                    "h1_MatchedEleJetBDiscr", "matched e-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
-        }
-    }
-}
+//void fcncAnalyzer::FakePlots(vObj leptons)
+//{
+//
+//    if (fakeables.size() >= 1) {
+//        unsigned flCategory = GetHistCategory(2) - 10;
+//        histManager->SetFileNumber(0);
+//        histManager->SetDirectory(categoryNames[flCategory] + "/Fakes");
+//        histManager->Fill1DHist(recoMET->DeltaPhi(fakeables[0].P2()),
+//                "h1_MetFakeableDeltaPhi", "#Delta#phi(fakeable, MET);#Delta#phi(fakeable, MET);Entries / bin", 36, 0., TMath::Pi());
+//
+//        vector<TCJet> muFakeJets    = selector->GetSelectedJets("muFakes");
+//        vector<TCJet> eleFakeJets   = selector->GetSelectedJets("eleFakes");
+//
+//        for (unsigned i = 0; i < muFakeJets.size(); ++i) {
+//            histManager->Fill1DHist(muFakeJets[i].BDiscriminatorMap("CSV"),
+//                    "h1_MatchedMuJetBDiscr", "matched #mu-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
+//        }
+//        for (unsigned i = 0; i < eleFakeJets.size(); ++i) {
+//            histManager->Fill1DHist(eleFakeJets[i].BDiscriminatorMap("CSV"),
+//                    "h1_MatchedEleJetBDiscr", "matched e-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
+//        }
+//    }
+//}
 
 void fcncAnalyzer::SetEventCategory(vObj leptons)
 {
