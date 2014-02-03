@@ -80,7 +80,6 @@ if __name__ == '__main__':
 
     ### Start settting up MVA ###
     # Logon not automatically loaded through PyROOT (logon loads TMVA library) load also GUI
-    r.gROOT.LoadMacro("src/TCPhysObject.cc+");
     r.gROOT.SetMacroPath("${ROOTSYS}/tmva/test/.") 
     r.gROOT.Macro       ("${ROOTSYS}/tmva/test/TMVAlogon.C")
     if doGUI:
