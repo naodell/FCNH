@@ -25,7 +25,7 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-cutList.extend(['2_Z_veto', '3_MET', '4_HT', '5_bjet'])
+cutList.extend(['2_Z_veto', '3_jet', '4_MET'])
 
 period      = '2012'
 LUMIDATA    = 19.712 
@@ -182,7 +182,7 @@ if doPlots:
 
         plotter_3l = copy.deepcopy(plotter)
         plotter_3l.add_datasets(samples['3l'], Clear=True)
-        plotter_3l._overlayList = ['Fakes']
+        #plotter_3l._overlayList = ['Fakes']
 
         for i, cut in enumerate(cutList):
             inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)

@@ -235,6 +235,7 @@ scaleDict['2012']['FCNC_M125_t_TauTau']     = 2*scaleDict['2012']['ttbar']*1.*0.
 scaleDict['2012']['DATA_MUON']          = 1.
 scaleDict['2012']['DATA_ELECTRON']      = 1.
 scaleDict['2012']['DATA_MUEG']          = 1.
+scaleDict['2012']['Fakes']              = 1.
 scaleDict['2012']['Fakes_e']            = 1.
 scaleDict['2012']['Fakes_mu']           = 1.
 scaleDict['2012']['Fakes_ee']           = 1.
