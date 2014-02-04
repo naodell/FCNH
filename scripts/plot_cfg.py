@@ -25,8 +25,8 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-cutList.extend(['2_Z_veto', '3_jet', '4_MET', '5_BDT'])
-crList      = ['CR_WZ', 'CR_ttbar', 'CR_ttZ', 'CR_ZFake']#, 'high_mass_ss', 'low_mass_ss', 'barrel_leptons']
+cutList.extend(['2_Z_veto', '3_jet', '4_MET'])#, '5_BDT'])
+crList      = []#'CR_WZ', 'CR_ttbar', 'CR_ttZ', 'CR_ZFake']#, 'high_mass_ss', 'low_mass_ss', 'barrel_leptons']
 
 period      = '2012'
 LUMIDATA    = 19.712 
@@ -77,9 +77,12 @@ samples['inclusive'].append('ZJets')
 samples['3l'].append('higgs')
 samples['3l'].append('Triboson')
 samples['3l'].append('ttV')
+#samples['3l'].extend(['ttW', 'ttZ'])
 samples['3l'].append('ZZ4l')
+#samples['3l'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
 samples['3l'].append('WZJets3LNu')
-samples['3l'].append('Fakes')
+samples['3l'].append('FAKES')
+#samples['3l'].extend(['Fakes_e', 'Fakes_mu', 'Fakes_ee', 'Fakes_emu', 'Fakes_mumu'])
 
 #samples['3l'].append('top')
 #samples['3l'].append('ZJets')
@@ -92,8 +95,10 @@ samples['ss'].append('higgs')
 samples['ss'].append('Triboson')
 samples['ss'].append('ttV')
 samples['ss'].append('ZZ4l')
+#samples['ss'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
 samples['ss'].append('WZJets3LNu')
-samples['ss'].append('Fakes')
+samples['ss'].append('FAKES')
+#samples['ss'].extend(['Fakes_e', 'Fakes_mu', 'Fakes_ee', 'Fakes_emu', 'Fakes_mumu'])
 samples['ss'].append('QFlips')
 
 #samples['ss'].append('Diboson')
@@ -137,7 +142,6 @@ if doPlots:
     plotter._overlayList.extend(['FCNH'])
 
     plotter.get_scale_factors(['FCNH'])
-
     #plotter.get_scale_factors()
 
     ### VARIABLES ###

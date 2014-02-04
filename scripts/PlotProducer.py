@@ -48,7 +48,7 @@ def set_hist_style(hist, dataType, styleDict, histType = '1D'):
     Set styles of histograms to be stacked
     '''
 
-    if dataType.split('_', 1)[0] == 'Fakes' and dataType != 'Fakes':
+    if dataType.split('_')[0] == 'Fakes' and dataType not in ['Fakes', 'Fakes_e', 'Fakes_mu', 'Fakes_ee', 'Fakes_emu', 'Fakes_mumu']:
         dataType = dataType.split('_', 1)[1]
 
     hist.SetMarkerStyle(styleDict[dataType][3])
@@ -76,7 +76,7 @@ def build_legend(hists, dataList, styleDict):
     legend.SetTextSize(0.045)
 
     for data in dataList[::-1]:
-        if data.split('_', 1)[0] == 'Fakes' and data != 'Fakes':
+        if data.split('_')[0] == 'Fakes' and data not in ['Fakes', 'Fakes_e', 'Fakes_mu', 'Fakes_ee', 'Fakes_emu', 'Fakes_mumu']:
             dataName = data.split('_', 1)[1]
         else:
             dataName = data

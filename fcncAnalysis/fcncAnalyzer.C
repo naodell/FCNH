@@ -78,9 +78,6 @@ void fcncAnalyzer::Begin(TTree* tree)
         histManager->AddFile(histoFile[iCut]);
         histManager->SetFileNumber(iCut);
 
-        histoFile[iCut]->mkdir("TESTS", "TESTS");
-        histoFile[iCut]->GetDirectory("TESTS")->mkdir(subdir.c_str());
-
         for (unsigned i = 0; i < N_CATEGORIES; ++i) { 
 
             histoFile[iCut]->mkdir(categoryNames[i].c_str(), categoryNames[i].c_str());
@@ -91,7 +88,7 @@ void fcncAnalyzer::Begin(TTree* tree)
             else
                 doQFlips = false;
 
-            if (doFakes && (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON" || suffix == "TEST")) {
+            if (doFakes && (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON")) {
                 histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir("Fakes_e", "Fakes_e");
                 histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir("Fakes_mu", "Fakes_mu");
                 histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir("Fakes_ee", "Fakes_ee");
@@ -184,7 +181,7 @@ void fcncAnalyzer::Begin(TTree* tree)
             treeQFlips->Branch("dileptonDR", &dileptonDROS, "dileptonDR/F");
         }
 
-        if (doFakes && (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON" || suffix == "TEST")) {
+        if (doFakes && (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON")) {
             treeFakes3l = new TTree("tree3l_Fakes", "Tree for 3l cut MVA");
             treeFakes3l->Branch("evtWeight", &evtWeight, "evtWeight/F");
             treeFakes3l->Branch("flavorCat", &flavorCat, "flavorCat/I");
@@ -654,9 +651,8 @@ bool fcncAnalyzer::Process(Long64_t entry)
         vObj matchedFakeables, unmatchedFakeables;
 
         for (unsigned i = 0; i < fakeables.size(); ++i) {
-
             for (unsigned j = 0; j < leptons.size(); ++j) {
-                if (fakeables[i].DeltaR(leptons[j]) < 0.1) {
+                if (fakeables[i].DeltaR(leptons[j]) < 0.1 && fakeables[i].Type() != leptons[j].Type()) {
                     fakeables.erase(fakeables.begin() + i);
                     --i;
                     leptonMatched = true;
@@ -669,13 +665,13 @@ bool fcncAnalyzer::Process(Long64_t entry)
                 }
             }
 
-            if (leptonMatched || lowMassResonance) continue;
+            if (lowMassResonance || leptonMatched) continue;
 
             bool fakeMatched = false;
             for (unsigned j = 0; j < fakeables.size(); ++j) {
                 if (i == j) continue;
 
-                if (fakeables[i].DeltaR(fakeables[j]) < 0.1) {
+                if (fakeables[i].DeltaR(fakeables[j]) < 0.1 && fakeables[i].Type() != fakeables[j].Type()) {
                     fakeMatched = true;
                     matchedFakeables.push_back(fakeables[i]);
 
@@ -786,6 +782,10 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
 {
     subdir = histDir;
     //cout << subdir << endl;
+    //
+    //for (unsigned i = 0; i < leptons.size(); ++i)
+    //    cout << leptons[i].Type() << "\t" << leptons[i].IsFake() << ", " ;
+    //cout << flavorCat << endl;
 
     // ZZ control region //
     if (leptons.size() == 4) {
@@ -1000,30 +1000,28 @@ void fcncAnalyzer::GetFakeBG(vObj leptons, vObj fakeables, vector<TCJet> jets, v
        ) {
 
         string fakeCat = GetFakeCategory(fakeables);
-        cout << fakeCat << endl;
+        //cout << fakeCat << endl;
 
         Float_t fakeWeight1 = 1.;
         Float_t fakeWeight2 = 1.;
         if (fakeables.size() == 2) {
             fakeWeight1 = weighter->GetFakeWeight(fakeables[0], "QCD2l");
             fakeWeight2 = weighter->GetFakeWeight(fakeables[1], "QCD2l");
-            //cout << fakeables[0].Type() << ", " << fakeables[1].Type() << ", " << fakeWeight1 << fakeWeight2 << endl;
         } else if (fakeables.size() == 1) 
             fakeWeight1 = weighter->GetFakeWeight(fakeables[0], "QCD2l");
-            //cout << fakeables.size() << ", " << fakeables[0].Type() << ", " << fakeWeight1 << endl;
 
         Float_t fakeWeight = fakeWeight1*fakeWeight2;
+
+        // Fake rate fudge 
+        if (fakeables.size() == 1 && leptons.size() == 2) 
+            if (fakeables[0].Type() == "electron" && leptons[0].Type() == leptons[1].Type()) {
+                fakeWeight *= 0.4;
+            }
 
         if (fakeWeight <= 0)
             return;
         else
             evtWeight *= fakeWeight;
-
-        // Fake rate fudge 
-        if (fakeables.size() == 1 && leptons.size() == 2) 
-            if (fakeables[0].Type() == "electron" && leptons[0].Type() == leptons[1].Type()) 
-                fakeWeight *= 0.4;
-
 
         vObj leptonsPlusFakes = leptons;
         leptonsPlusFakes.insert(leptonsPlusFakes.end(), fakeables.begin(), fakeables.end());
@@ -1033,9 +1031,9 @@ void fcncAnalyzer::GetFakeBG(vObj leptons, vObj fakeables, vector<TCJet> jets, v
         SetEventVariables(leptonsPlusFakes, jets, bJetsM, *recoMET); 
 
         for (unsigned i = 0; i < leptonsPlusFakes.size(); ++i) {
-            cout << leptonsPlusFakes[i].IsFake() << ", " << leptonsPlusFakes[i].Type() << "\t";
+            //cout << leptonsPlusFakes[i].IsFake() << ", " << leptonsPlusFakes[i].Type() << "\t";
         }
-        cout << endl;
+        //cout << fakeWeight << endl;
 
         // Enforce same-sign dilepton/trilepton selection with fake leptons
         if (leptonsPlusFakes.size() == 2) { 
@@ -1044,7 +1042,7 @@ void fcncAnalyzer::GetFakeBG(vObj leptons, vObj fakeables, vector<TCJet> jets, v
                     && leptonsPlusFakes[0].Pt() > leptonPtCut[0] 
                     && leptonsPlusFakes[1].Pt() > leptonPtCut[1]
                ) {
-                if (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON" || suffix == "TEST") 
+                if (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON") 
                     AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, PV, "Fakes_" + fakeCat);
                 else                                                  
                     AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, PV, "Fakes_" + fakeCat + "_" + suffix);
@@ -1056,7 +1054,7 @@ void fcncAnalyzer::GetFakeBG(vObj leptons, vObj fakeables, vector<TCJet> jets, v
                     && leptonsPlusFakes[2].Pt() > leptonPtCut[1]
                     && fabs(leptonsPlusFakes[0].Charge() + leptonsPlusFakes[1].Charge() + leptonsPlusFakes[2].Charge()) == 1
                ) {
-                if (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON" || suffix == "TEST") 
+                if (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON") 
                     AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, PV, "Fakes_" + fakeCat);
                 else                                                  
                     AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, PV, "Fakes_" + fakeCat + "_" + suffix);
@@ -1521,9 +1519,9 @@ void fcncAnalyzer::MiscPlots()
 
         if (subdir.substr(0,5) == "Fakes") {
             if (!lep1.IsFake() && !lep2.IsFake() && lep3.IsFake()) 
-                histManager->Fill1DHist(lepIndex, "h1_FakeCategory", "fake category;fake cat;Entries", 4, 0.5, 4.5);
+                histManager->Fill1DHist(lepIndex, "h1_FakeCategory", "fake category;fake cat;Entries", 6, 0.5, 6.5);
         } else {
-            histManager->Fill1DHist(lepIndex, "h1_FakeCategory", "fake category;fake cat;Entries", 4, 0.5, 4.5);
+            histManager->Fill1DHist(lepIndex, "h1_FakeCategory", "fake category;fake cat;Entries", 6, 0.5, 6.5);
         }
     }
 }
@@ -1882,7 +1880,6 @@ void fcncAnalyzer::FillYieldHists(string directory, float weight, unsigned cut)
         histManager->Fill1DHist(cut+1, "h1_YieldByCutRaw", "Raw number of events passing cuts by cut; cut; Entries", 16, 0.5, 16.5);
         histManager->SetWeight(weight);
     }
-
 }
 
 void fcncAnalyzer::SetYields(unsigned cut)
@@ -1912,7 +1909,6 @@ void fcncAnalyzer::SetYields(unsigned cut)
         ++eventCount[cut];
         eventCountWeighted[cut] += evtWeight;
     }
-
 }
 
 void fcncAnalyzer::SetEventVariables(vObj leptons, vector<TCJet> jets, vector<TCJet> bJets, TCMET met) 
