@@ -148,14 +148,14 @@ class AnalysisTools():
         if not hist:
             return None
 
-        #if dataName.split('_')[0] == 'Fakes' and dataName != 'Fakes':
-        #    dataName = dataName.split('_')[2]
+        if dataName.split('_')[0] == 'Fakes' and dataName != 'Fakes':
+            dataName = dataName.split('_')[2]
 
-        if dataName.split('_')[0] == 'Fakes' and len(dataName.split('_')) >= 3:
-            dataName = dataName.split('_', 2)[2]
+        #if dataName.split('_')[0] == 'Fakes' and len(dataName.split('_')) >= 3:
+        #    dataName = dataName.split('_', 2)[2]
 
         if doScale:
-            if dataName[:4] == 'DATA' or dataName in ['Fakes_e', 'Fakes_mu', 'Fakes_ee', 'Fakes_emu', 'Fakes_mumu', 'QFlips']:
+            if dataName[:4] == 'DATA' or dataName in ['Fakes', 'Fakes_e', 'Fakes_mu', 'Fakes_ee', 'Fakes_emu', 'Fakes_mumu', 'QFlips']:
                 hist.Scale(self._scaleDict[self._period][dataName])
             else:
                 hist.Scale(self._scale*self._scaleDict[self._period][dataName]) 

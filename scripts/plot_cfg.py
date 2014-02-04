@@ -25,8 +25,13 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
+<<<<<<< HEAD
 cutList.extend(['2_Z_veto', '3_jet', '4_MET', '5_BDT'])
 crList      = ['CR_WZ', 'CR_ttbar', 'CR_ttZ', 'CR_ZFake']#, 'high_mass_ss', 'low_mass_ss', 'barrel_leptons']
+=======
+cutList.extend(['2_Z_veto', '3_jet', '4_MET', '5_HT'])#, '4_BDT'])
+crList      = []#'CR_WZ', 'CR_ttbar']#, 'CR_ttZ', 'high_mass_ss', 'low_mass_ss', 'barrel_leptons']
+>>>>>>> parent of 72355eb... Minor changes
 
 period      = '2012'
 LUMIDATA    = 19.712 
@@ -34,7 +39,7 @@ LUMIDATA    = 19.712
 doPlots     = True
 doLog       = True
 doEff       = False
-doRatio     = True
+doRatio     = False
 do1D        = True
 do2D        = True
 
@@ -54,7 +59,7 @@ cat3l.extend(['3l_OSSF', '3l_SSSF'])
 cat3l.extend(['3l_eee', '3l_eemu', '3l_emumu', '3l_mumumu'])
 
 ### Samples to be included in stacks ###
-samples     = {'all':[], 'inclusive':[], '3l':[], 'ss':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[], 'ZFake':[]}
+samples     = {'all':[], 'inclusive':[], '3l':[], 'ss':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[]}
 
 samples['all'].append('higgs')
 samples['all'].append('Triboson')
@@ -108,11 +113,15 @@ samples['os'].extend(['Diboson', 'top', 'ZJets'])
 
 samples['WZ'].extend(['Fakes', 'WZJets3LNu'])
 samples['ttbar'].extend(['single top', 'ZJets', 'ttbar'])
+<<<<<<< HEAD
 #samples['WZ'].extend(['WW/ZZ', 'top', 'ZJets', 'WZJets3LNu'])
 #samples['ttbar'].extend(['single top', 'ZJets', 'ttbar'])
 
 samples['ttZ'].extend(['top', 'ZJets', 'ZZ4l', 'WZJets3LNu', 'ttW', 'ttG', 'ttZ'])
 samples['ZFake'].extend(['ZZ4l', 'WZJets3LNu', 'Fakes'])
+=======
+samples['ttZ'].extend(['top', 'ZJets', 'WZJets3LNu', 'ttW', 'ttG', 'ttZ'])
+>>>>>>> parent of 72355eb... Minor changes
 
 p_plot = []
 
@@ -359,6 +368,7 @@ if doPlots:
 
         for category in cat3l:
             p_plot.append(Process(name = 'CR_ttZ/' + category, target = plotter_wrapper, args=(ttZ_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False)))
+<<<<<<< HEAD
 
     ### ZPlusFake control region
     if 'CR_ZFake' in crList:
@@ -380,6 +390,11 @@ if doPlots:
 
     doLog = True
     
+=======
+    
+    doLog = True
+
+>>>>>>> parent of 72355eb... Minor changes
     ### low delta eta ss control region
     if 'high_mass_ss' in crList:
         hm_plotter = copy.deepcopy(plotter)

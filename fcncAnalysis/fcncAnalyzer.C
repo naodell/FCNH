@@ -215,9 +215,14 @@ void fcncAnalyzer::Begin(TTree* tree)
     }
 
     if (doMVACut) {
+<<<<<<< HEAD
         //string mva3lCats[4] = {"eee", "eemu", "emumu", "mumumu"};
         string mva3lCats[4] = {"inclusive"};
         for (unsigned i = 0; i < 1; ++i) {
+=======
+        string mva3lCats[4] = {"eee", "eemu", "emumu", "mumumu"};
+        for (unsigned i = 0; i < 4; ++i) {
+>>>>>>> parent of 72355eb... Minor changes
             TMVA::Reader* mvaReader = new TMVA::Reader("!Color:!Silent");
 
             mvaReader->AddVariable("met", &MET);
@@ -237,8 +242,13 @@ void fcncAnalyzer::Begin(TTree* tree)
             mva3lReader.push_back(mvaReader);
         }
 
+<<<<<<< HEAD
         string mvaSSCats[3] = {"inclusive"};
         for (unsigned i = 0; i < 1; ++i) {
+=======
+        string mvaSSCats[3] = {"ee", "emu", "mumu"};
+        for (unsigned i = 0; i < 3; ++i) {
+>>>>>>> parent of 72355eb... Minor changes
             TMVA::Reader* mvaReader = new TMVA::Reader("!Color:!Silent");
 
             mvaReader->AddVariable("met", &MET);
@@ -840,7 +850,7 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
     if (
             zTagged 
             && leptons.size() == 3 
-            && MET < 30
+            && METLD < 0.3
        ) {
         MakePlots(leptons, jets, bJetsM, *recoMET, PV, 9);
         SetYields(13);
@@ -909,7 +919,9 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
     MakePlots(leptons, jets, bJetsM, *recoMET, PV, 2);
     SetYields(7);
 
-    if (jetMult > 1 && HT < 60) cout << HT << endl;
+    if (jetMult > 1 && HT < 60)
+        cout << HT << endl;
+
 
     //!! Do mva selection !!//
     if (doMVACut) {
