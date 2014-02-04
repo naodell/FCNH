@@ -126,8 +126,8 @@ class fcncAnalyzer : public TSelector {
         bool ossfTagged;
         string subdir;
 
-        TLorentzVector  dileptonP4;
-        TCPhysObject    lep1, lep2, lep3; // If event is zTagged, lep1 and lep2 are associated to the z
+        TLorentzVector dileptonP4;
+        TLorentzVector lep1P4, lep2P4, lep3P4; // If event is zTagged, lep1 and lep2 are associated to the z
 
         Float_t     MET;
         Float_t     metPhi;
@@ -289,7 +289,6 @@ class fcncAnalyzer : public TSelector {
         virtual void    SetEventVariables(vObj, vector<TCJet>, vector<TCJet>, TCMET);
         virtual void    SetYields(unsigned);
         virtual int     GetHistCategory(unsigned);
-        virtual string  GetFakeCategory(vObj);
 
         // helper functions
         virtual string  str(int i) {return static_cast<ostringstream*>( &(ostringstream() << i) )->str();}

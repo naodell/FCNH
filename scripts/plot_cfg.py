@@ -26,7 +26,11 @@ selection   = 'fcnh'
 
 cutList     = ['1_preselection']
 <<<<<<< HEAD
+<<<<<<< HEAD
 cutList.extend(['2_Z_veto', '3_jet', '4_MET', '5_BDT'])
+=======
+cutList.extend(['2_Z_veto', '3_jet', '4_MET', '5_HT', '4_BDT'])
+>>>>>>> parent of 17d9010... Adding new BDT weight files
 crList      = ['CR_WZ', 'CR_ttbar', 'CR_ttZ', 'CR_ZFake']#, 'high_mass_ss', 'low_mass_ss', 'barrel_leptons']
 =======
 cutList.extend(['2_Z_veto', '3_jet', '4_MET', '5_HT'])#, '4_BDT'])
@@ -111,13 +115,17 @@ samples['ss'].append('QFlips')
 
 samples['os'].extend(['Diboson', 'top', 'ZJets'])
 
-samples['WZ'].extend(['Fakes', 'WZJets3LNu'])
+samples['WZ'].extend(['WW/ZZ', 'top', 'ZJets', 'WZJets3LNu'])
 samples['ttbar'].extend(['single top', 'ZJets', 'ttbar'])
+<<<<<<< HEAD
 <<<<<<< HEAD
 #samples['WZ'].extend(['WW/ZZ', 'top', 'ZJets', 'WZJets3LNu'])
 #samples['ttbar'].extend(['single top', 'ZJets', 'ttbar'])
 
 samples['ttZ'].extend(['top', 'ZJets', 'ZZ4l', 'WZJets3LNu', 'ttW', 'ttG', 'ttZ'])
+=======
+samples['ttZ'].extend(['top', 'ZJets', 'WZJets3LNu', 'ttW', 'ttG', 'ttZ'])
+>>>>>>> parent of 17d9010... Adding new BDT weight files
 samples['ZFake'].extend(['ZZ4l', 'WZJets3LNu', 'Fakes'])
 =======
 samples['ttZ'].extend(['top', 'ZJets', 'WZJets3LNu', 'ttW', 'ttG', 'ttZ'])
@@ -161,7 +169,7 @@ if doPlots:
     plotter._directoryList2D            = ['2D']
 
     plotter._variableDict['Misc']       = ['PvMult', 'YieldByCut', 'YieldByCutRaw', 'EventWeight', 'TriggerStatus', 
-                                            'FakeWeightUncertainty', 'BDT', 'FakeCategory']
+                                            'FakeWeightUncertainty', 'BDT']
 
     plotter._variableDict['Lepton']     = ['LeptonCharge', 'LeptonFlavor', 
                                            'Lepton1Pt', 'Lepton2Pt','Lepton3Pt',
@@ -171,8 +179,7 @@ if doPlots:
                                            'Lepton1dxy', 'Lepton1dz',
                                            'Lepton2dxy', 'Lepton2dz',
                                            'Lepton3dxy', 'Lepton3dz',
-                                           'LeptonMult', 'fakeableOverlapMult'
-                                           'OverlapEleMu', 'MuEleDeltaR']
+                                           'LeptonMult', 'OverlapEleMu', 'fakeableOverlapMult']
                                            #'Lepton1Phi', 'Lepton2Phi', 'Lepton3Phi']
 
     plotter._variableDict['Dilepton']   = ['DileptonMass21', 'DileptonTransMass21', 'DileptonQt21',
@@ -207,13 +214,11 @@ if doPlots:
                                            'BJet2BDiscr', 'BJet2Pt', 'BJet2Eta', #'BJet2Phi',
                                            'HT', 'HTs', 'EventBalance', 'Centrality',
                                            'JetBJetDeltaPhi', 'JetBJetDeltaEta', 'JetBJetDeltaR',
-                                           'JetMultCharge', 'JetMult', 'BJetMult', 'AllJetMult',
-                                           'MatchedMuJetBDiscr', 'MatchedEleJetBDiscr']
+                                           'JetMultCharge', 'JetMult', 'BJetMult', 'AllJetMult']
 
     plotter._variableDict['MET']        = ['Met', 'MHT', 'METLD', 'MHT-MET', 'MetPhi', 'MetSumEt',
                                            'MetLepton1DeltaPhi', 'MetLepton2DeltaPhi', 'MetLepton3DeltaPhi'
-                                           'MetLepDeltaPhiMin', 'nearLepIndex', 'ProjectedMet',
-                                           'MetFakeableDeltaPhi'] 
+                                           'MetLepDeltaPhiMin', 'nearLepIndex', 'ProjectedMet'] 
 
     plotter._variableDict['GEN']        = ['GenChargeMisId', 'GenMisIdPt', 'GenMisIdEta',
                                            'GenDeltaR', 'GenBalance']
@@ -224,7 +229,7 @@ if doPlots:
                                             'DileptonMVsDeltaROS', 'DileptonQtVsDeltaROS',
                                             #'DileptonM13VsM21', 'DileptonM12VsM31', 'DileptonM21VsM32',
                                             #'DalitzM13VsM21', 'DalitzM12VsM31', 'DalitzM21VsM32',
-                                            'LepChargeVsFlavor', 'LepMultVsFakeableMult']
+                                            'LepChargeVsFlavor']
 
 
      ###################   
@@ -370,6 +375,8 @@ if doPlots:
             p_plot.append(Process(name = 'CR_ttZ/' + category, target = plotter_wrapper, args=(ttZ_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False)))
 <<<<<<< HEAD
 
+    doLog = True
+
     ### ZPlusFake control region
     if 'CR_ZFake' in crList:
         ZFake_plotter = copy.deepcopy(plotter)
@@ -387,8 +394,6 @@ if doPlots:
 
         for category in cat3l:
             p_plot.append(Process(name = 'CR_ZFake/' + category, target = plotter_wrapper, args=(ZFake_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False)))
-
-    doLog = True
     
 =======
     
@@ -507,9 +512,9 @@ if doYields:
             histDict = yieldTable.get_hist_dict('YieldByCut')
             yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
 
-    crCats = {'CR_WZ':['3l_inclusive'], 'CR_ttbar':['os_emu'], 'CR_ttZ':['3l_inclusive'], 'CR_ZFake':['3l_eee', '3l_eemu', '3l_emumu', '3l_mumumu']}
+    crCats = {'CR_WZ':'3l_inclusive', 'CR_ttbar':'os_emu', 'CR_ttZ':'3l_inclusive'}
     for i,CR in enumerate(crList):
-        if CR[:2] != 'CR': continue
+        if CR[:2] != 'CR' or CR == 'CR_ZFake': continue
 
         yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, i+5, period, batch))
         yieldTable._columnList  = samples[CR[3:]] + ['BG', 'DATA']
@@ -519,10 +524,9 @@ if doYields:
 
         yieldTable._rowList = ['preselection'] + (4+i)*['.'] + [CR[3:]]
 
-        for cat in crCats[CR]:
-            yieldTable._category = cat 
-            histDict = yieldTable.get_hist_dict('YieldByCut')
-            yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 6)
+        yieldTable._category = crCats[CR]
+        histDict = yieldTable.get_hist_dict('YieldByCut')
+        yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 6)
 
     ### Special case for ZZ->4l control region ###
     #yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut1_{1}_{2}.root'.format(selection, period, batch))

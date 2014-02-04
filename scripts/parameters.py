@@ -6,7 +6,7 @@ import pickle
 styleDict = {}
 
 # Data
-styleDict['DATA']               = (2, r.kBlack, 0, 20, 'Data')
+styleDict['DATA']               = (2, r.kBlack, 0, 21, 'Observed')
 styleDict['DATA_MUON']          = (2, r.kGray, 0, 21, 'Observed (#mu#mu)')
 styleDict['DATA_ELECTRON']      = (2, r.kGray+1, 0, 21, 'Observed (ee)')
 styleDict['DATA_MUEG']          = (2, r.kGray+2, 0, 21, 'Observed (e#mu)')
@@ -104,7 +104,7 @@ styleDict['higgs']              = (2, r.kBlue+3, 0, 1, 'higgs')
 
 #Misc
 styleDict['BGERROR']            = (0, r.kBlack, 3018, 0, 'BG error')
-styleDict['FCNH']               = (3, r.kRed+3, 0, 20, 'FCNH')
+styleDict['FCNH']               = (3, r.kPink+3, 2, 22, 'FCNH')
 styleDict['SUM_EFF']            = (2, r.kBlue, 1, 21, 'BG')
 styleDict['SIG_EFF']            = (2, r.kRed, 1, 21, 'Signal')
 styleDict['SIGNIFICANCE']       = (2, r.kGreen, 1, 21, 'Signficance')
@@ -171,7 +171,7 @@ scaleDict['2012']['WZJets3LNu']         = 1.086 #*1.309 #<-- WZ rescaled based o
 scaleDict['2012']['WZJets2L2Q']         = 5.09
 scaleDict['2012']['WWJets2L2Nu']        = 5.995
 
-scaleDict['2012']['ttbar']              = 234#*1.046 #<-- ttbar rescaled based on e/mu lepton control region
+scaleDict['2012']['ttbar']              = 234*1.046 #<-- ttbar rescaled based on e/mu lepton control region
 scaleDict['2012']['tW']                 = 11.77
 scaleDict['2012']['tbarW']              = 11.77
 scaleDict['2012']['t_t-channel']        = 55.53
@@ -225,12 +225,12 @@ scaleDict['2012']['TTH_M-125']          = .1032
 #scaleDict['GJets_300to470']     = 1/1391.1
 #scaleDict['GJets_470to800']     = 1/15812.2
 
-#scaleDict['2012']['FCNC_M125_t']            = scaleDict['2012']['ttbar']*1.*0.01*0.215*0.324*0.324*0.324
-scaleDict['2012']['FCNC_M125_t']            = 2*scaleDict['2012']['ttbar']*1.*0.01*0.215*0.324*0.324*0.324
-scaleDict['2012']['FCNC_M125_tbar']         = scaleDict['2012']['ttbar']*1.*0.01*0.215*0.324*0.324*0.324
-scaleDict['2012']['FCNC_M125_t_semilep']    = 2*scaleDict['2012']['ttbar']*1.*0.01*0.215*3*0.676*0.324*0.324
-scaleDict['2012']['FCNC_M125_t_ZZ']         = 2*scaleDict['2012']['ttbar']*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
-scaleDict['2012']['FCNC_M125_t_TauTau']     = 2*scaleDict['2012']['ttbar']*1.*0.01*0.063*0.324
+#scaleDict['2012']['FCNC_M125_t']            = 252*1.*0.01*0.215*0.324*0.324*0.324
+scaleDict['2012']['FCNC_M125_t']            = 2*252*1.*0.01*0.215*0.324*0.324*0.324
+scaleDict['2012']['FCNC_M125_tbar']         = 252*1.*0.01*0.215*0.324*0.324*0.324
+scaleDict['2012']['FCNC_M125_t_semilep']    = 2*252*1.*0.01*0.215*3*0.676*0.324*0.324
+scaleDict['2012']['FCNC_M125_t_ZZ']         = 2*252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
+scaleDict['2012']['FCNC_M125_t_TauTau']     = 2*252*1.*0.01*0.063*0.324
 
 scaleDict['2012']['DATA_MUON']          = 1.
 scaleDict['2012']['DATA_ELECTRON']      = 1.
@@ -266,7 +266,7 @@ combineDict['Fakes']            = ['Fakes_e', 'Fakes_mu', 'Fakes_ee', 'Fakes_emu
 combineDict['FAKES_2l']         = ['WbbToLNu', 'ZJets_M-50', 'ZJets_M-10To50', 'ttbar', 'tbarW', 'tW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'ZZJets2L2Q']
 combineDict['FAKES_3l']         = ['WZJets3LNu']#, 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
 combineDict['Remove_ss']        = ['ZJets_M-50', 'ZJets_M-10To50']
-combineDict['Remove_3l']        = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'WWW', 'WWZ', 'WZZ', 'ZZZ']
+combineDict['Remove_3l']        = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
 combineDict['Irreducible']      = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ', 'WWG', 'WZJets3LNu']
 
 combineDict['DATA_FAKES']       = combineDict['DATA']
