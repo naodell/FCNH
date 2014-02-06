@@ -41,12 +41,12 @@ styleDict['ZZJets2L2Nu']        = (2, r.kGreen+3, 1, 1, 'ZZ#rightarrow2l2#nu')
 styleDict['ZZJets2L2Q']         = (2, r.kBlue-7, 1, 1, 'ZZ#rightarrow2l2q')
 styleDict['ZZJets4L']           = (2, r.kBlue+2, 1, 1, 'ZZ#rightarrow4l')
 styleDict['WWJets2L2Nu']        = (0, r.kGray+1, 1, 1, 'WW#rightarrow2l2#nu')
-styleDict['WZJets3LNu']         = (3, r.kMagenta+1, 3004, 1, 'WZ#rightarrow3l#nu')
+styleDict['WZJets3LNu']         = (3, r.kMagenta+1, 1, 1, 'WZ#rightarrow3l#nu')
 styleDict['WZJets2L2Q']         = (3, r.kBlue-3, 0, 1, 'WZ#rightarrow2l2q')
 
 # Powheg diboson
-styleDict['ZZ4mu']              = (2, r.kOrange+10, 1, 1,'ZZ#rightarrow 4l')
-#styleDict['ZZ4mu']              = (2, r.kOrange+10, 1, 1, 'ZZ#rightarrow 4#mu')
+#styleDict['ZZ4mu']              = (2, r.kOrange+10, 1, 1,'ZZ#rightarrow 4l')
+styleDict['ZZ4mu']              = (2, r.kOrange+10, 1, 1, 'ZZ#rightarrow 4#mu')
 styleDict['ZZ4e']               = (2, r.kOrange+9, 1, 1, 'ZZ#rightarrow 4e')
 styleDict['ZZ4tau']             = (2, r.kOrange+8, 1, 1, 'ZZ#rightarrow 4#tau')
 styleDict['ZZ2e2mu']            = (2, r.kOrange+7, 1, 1, 'ZZ#rightarrow 2e2#mu')
@@ -103,13 +103,23 @@ styleDict['GJets_15to30']       = (2, r.kYellow+2, 0, 1, 'gamma+jets')
 styleDict['higgs']              = (2, r.kBlue+3, 0, 1, 'higgs')
 
 #Misc
+<<<<<<< HEAD
 styleDict['BGERROR']            = (0, r.kBlack, 3018, 0, 'BG error')
 styleDict['FCNH']               = (3, r.kPink+3, 2, 22, 'FCNH')
+=======
+styleDict['BGERROR']            = (0, r.kBlack, 3018, 0, 'BG uncertainty')
+styleDict['FCNH']               = (3, r.kRed+3, 0, 20, 'FCNH')
+>>>>>>> b6d8dd4cb7ee4998fe3169b80a4ae28da3ff3610
 styleDict['SUM_EFF']            = (2, r.kBlue, 1, 21, 'BG')
 styleDict['SIG_EFF']            = (2, r.kRed, 1, 21, 'Signal')
 styleDict['SIGNIFICANCE']       = (2, r.kGreen, 1, 21, 'Signficance')
 styleDict['RATIO']              = (0, r.kBlack, 3002, 21, 'Ratio')
-styleDict['Fakes']              = (2, r.kBlack, 3001, 1, 'Fakes')
+styleDict['Fakes']              = (2, r.kBlack, 3001, 20, 'Fakes')
+styleDict['Fakes_e']            = (2, r.kCyan+2, 3001, 20, 'Fakes e')
+styleDict['Fakes_mu']           = (2, r.kMagenta+3, 3001, 20, 'Fakes #mu')
+styleDict['Fakes_ee']           = (2, r.kCyan +4, 3001, 1, 'Fakes ee')
+styleDict['Fakes_emu']          = (2, r.kViolet-5, 3001, 1, 'Fakes e#mu')
+styleDict['Fakes_mumu']         = (2, r.kMagenta+4, 3001, 1, 'Fakes #mu#mu')
 styleDict['QFlips']             = (2, r.kBlue+2, 3001, 1, 'QFlips')
 styleDict['FAKES_2l']           = (2, r.kRed, 3001, 1, 'Prompt')
 styleDict['FAKES_3l']           = (2, r.kBlue, 3001, 1, 'Prompt')
@@ -253,7 +263,7 @@ combineDict['ZJets']            = ['ZJets_M-50', 'ZJets_M-10To50']
 combineDict['WGStar']           = ['WGStarLNu2E', 'WGStarLNu2Mu', 'WGStarLNu2Tau']
 combineDict['top']              = ['ttbar', 'tW', 'tbarW', 't_t-channel', 'tbar_t-channel']
 combineDict['single top']       = ['tW', 'tbarW', 't_t-channel', 'tbar_t-channel']
-combineDict['ttV']              = ['ttZ', 'ttW', 'ttG']
+combineDict['ttV']              = ['ttZ', 'ttW']#, 'ttG']
 combineDict['Diboson']          = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'WZJets3LNu']
 combineDict['WW/ZZ']            = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'WWJets2L2Nu', 'ZZJets2L2Nu']
 combineDict['ZZ4l']             = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']

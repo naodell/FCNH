@@ -24,14 +24,19 @@ else:
 plotType    = '.png'
 selection   = 'fcnh'
 
+<<<<<<< HEAD
 cutList     = ['1_preselection']
 cutList.extend(['2_Z_veto', '3_jet', '4_MET'])
+=======
+cutList     = ['1_preselection', '2_Z_veto']
+fakeType    = 'Fakes_e'
+>>>>>>> b6d8dd4cb7ee4998fe3169b80a4ae28da3ff3610
 
 period      = '2012'
 LUMIDATA    = 19.712 
 
 doPlots     = True
-doLog       = True
+doLog       = False
 doEff       = False
 doRatio     = True
 do1D        = True
@@ -62,21 +67,21 @@ samples['all'].append('ZJets')
 #samples['all'].append('QCD')
 #samples['all'].extend(['ZbbToLL', 'WbbToLNu']) #, 'ZGstar'])
 
-samples['3l'].append('Fakes_Triboson')
-samples['3l'].append('Fakes_ttV')
-samples['3l'].append('Fakes_ZZ4l')
-samples['3l'].append('Fakes_WZJets3LNu')
-samples['3l'].append('Fakes_top')
-samples['3l'].append('Fakes_ZJets')
+samples['3l'].append(fakeType + '_Triboson')
+samples['3l'].append(fakeType + '_ttV')
+samples['3l'].append(fakeType + '_ZZ4l')
+samples['3l'].append(fakeType + '_WZJets3LNu')
+samples['3l'].append(fakeType + '_top')
+samples['3l'].append(fakeType + '_ZJets')
 
 #samples['ss'].append('Fakes_Triboson')
 #samples['ss'].append('Fakes_ttV')
-samples['ss'].append('Fakes_ZZ4l')
-samples['ss'].append('Fakes_WZJets3LNu')
-samples['ss'].append('Fakes_top')
+samples['ss'].append(fakeType + '_ZZ4l')
+samples['ss'].append(fakeType + '_WZJets3LNu')
+samples['ss'].append(fakeType + '_top')
 #samples['ss'].append('Fakes_WJets')
 #samples['ss'].append('Fakes_QCD')
-samples['ss'].append('Fakes_ZJets')
+samples['ss'].append(fakeType + '_ZJets')
 
 p_plot = []
 
@@ -107,19 +112,21 @@ if doPlots:
     ### plot while giving a key value which is the 
     ### directory that they are located in as a key.
 
-    plotter._directoryList1D            = ['Misc', 'Lepton', 'Lep+Jet', 'Dilepton', 'DileptonOS', 'Trilepton', 'MET', 'Jet']
+    plotter._directoryList1D            = ['Misc', 'Lepton', 'Lep+Jet', 'Dilepton', 'DileptonOS', 'Trilepton', 'MET', 'Jet', 'GEN', '4l']
 
-    plotter._variableDict['Misc']       = ['PvMult', 'YieldByCut', 'YieldByCutRaw', 'EventWeight', 'TriggerStatus', 'BDT'] 
+    plotter._variableDict['Misc']       = ['PvMult', 'YieldByCut', 'YieldByCutRaw', 'EventWeight', 'TriggerStatus', 
+                                            'FakeWeightUncertainty', 'BDT', 'FakeCategory']
 
     plotter._variableDict['Lepton']     = ['LeptonCharge', 'LeptonFlavor', 
                                            'Lepton1Pt', 'Lepton2Pt','Lepton3Pt',
                                            'Lepton1Eta', 'Lepton2Eta', 'Lepton3Eta',
                                            'ElectronPt', 'ElectronEta',
                                            'MuonPt', 'MuonEta',
-                                           'Lepton1 dxy', 'Lepton1 dz',
-                                           'Lepton2 dxy', 'Lepton2 dz',
-                                           'Lepton3 dxy', 'Lepton3 dz',
-                                           'LeptonMult']
+                                           'Lepton1dxy', 'Lepton1dz',
+                                           'Lepton2dxy', 'Lepton2dz',
+                                           'Lepton3dxy', 'Lepton3dz',
+                                           'LeptonMult', 'fakeableOverlapMult'
+                                           'OverlapEleMu', 'MuEleDeltaR']
                                            #'Lepton1Phi', 'Lepton2Phi', 'Lepton3Phi']
 
     plotter._variableDict['Dilepton']   = ['DileptonMass21', 'DileptonTransMass21', 'DileptonQt21',
@@ -133,7 +140,8 @@ if doPlots:
                                            'DileptonOSQt', 'DileptonOSDeltaPt', 'DileptonOSDeltaR', 
                                            'DileptonOSDeltaEta', 'DileptonOSDeltaPhi'] 
 
-    plotter._variableDict['Trilepton']  = ['DileptonLepDeltaR', 'DileptonLepDeltaPhi', 'DileptonLepDeltaEta', 'Lep3MetMT', 'TrileptonMass']
+    plotter._variableDict['Trilepton']  = ['DileptonLepDeltaR', 'DileptonLepDeltaPhi', 'DileptonLepDeltaEta', 
+                                           'Lep3MetMT', 'TrileptonMass', 'TrileptonPt']
 
     plotter._variableDict['Lep+Jet']    = ['Lepton1BJetDeltaPhi', 'Lepton1BJetDeltaEta', 'Lepton1BJetDeltaR', 'Lepton1BJetDeltaPt',
                                            'Lepton2BJetDeltaPhi', 'Lepton2BJetDeltaEta', 'Lepton2BJetDeltaR', 'Lepton2BJetDeltaPt',
@@ -143,6 +151,7 @@ if doPlots:
                                            'Lepton3JetDeltaPhi', 'Lepton3JetDeltaEta', 'Lepton3JetDeltaR', 'Lepton3JetDeltaPt',
                                            'DileptonJetDeltaPhi', 'DileptonJetDeltaEta', 'DileptonJetDeltaR', 'DileptonJetDeltaPt',
                                            'DileptonBJetDeltaPhi', 'DileptonBJetDeltaEta', 'DileptonBJetDeltaR', 'DileptonBJetDeltaPt',
+                                           'OverlapJetMult'
                                           ]
 
     plotter._variableDict['Jet']        = ['Jet1Pt', 'Jet2Pt',# 'Jet3Pt',
@@ -151,22 +160,19 @@ if doPlots:
                                            'BJet1BDiscr', 'BJet1Pt', 'BJet1Eta', #'BJet1Phi', 
                                            'BJet2BDiscr', 'BJet2Pt', 'BJet2Eta', #'BJet2Phi',
                                            'HT', 'HTs', 'EventBalance', 'Centrality',
-                                           'JetMultCharge', 'JetMult', 'BJetMult']
+                                           'JetBJetDeltaPhi', 'JetBJetDeltaEta', 'JetBJetDeltaR',
+                                           'JetMultCharge', 'JetMult', 'BJetMult', 'AllJetMult',
+                                           'MatchedMuJetBDiscr', 'MatchedEleJetBDiscr']
 
     plotter._variableDict['MET']        = ['Met', 'MHT', 'METLD', 'MHT-MET', 'MetPhi', 'MetSumEt',
                                            'MetLepton1DeltaPhi', 'MetLepton2DeltaPhi', 'MetLepton3DeltaPhi'
-                                           'MetLepDeltaPhiMin', 'nearLepIndex', 'ProjectedMet'] 
+                                           'MetLepDeltaPhiMin', 'nearLepIndex', 'ProjectedMet',
+                                           'MetFakeableDeltaPhi'] 
 
     plotter._variableDict['GEN']        = ['GenChargeMisId', 'GenMisIdPt', 'GenMisIdEta',
                                            'GenDeltaR', 'GenBalance']
 
     plotter._variableDict['4l']         = ['4lMass', '4lPt', '4lSumPt', '4lMet']
-
-    plotter._variableDict['2D']         = ['metVsHt', 'metVsSqrtHt', 'TrileptonMVsDileptonMOS',
-                                            'DileptonMVsDeltaROS', 'DileptonQtVsDeltaROS',
-                                            #'DileptonM13VsM21', 'DileptonM12VsM31', 'DileptonM21VsM32',
-                                            #'DalitzM13VsM21', 'DalitzM12VsM31', 'DalitzM21VsM32',
-                                            'LepChargeVsFlavor']
 
 
 
@@ -182,7 +188,11 @@ if doPlots:
 
         plotter_3l = copy.deepcopy(plotter)
         plotter_3l.add_datasets(samples['3l'], Clear=True)
+<<<<<<< HEAD
         #plotter_3l._overlayList = ['Fakes']
+=======
+        plotter_3l._overlayList = [fakeType]
+>>>>>>> b6d8dd4cb7ee4998fe3169b80a4ae28da3ff3610
 
         for i, cut in enumerate(cutList):
             inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
@@ -201,7 +211,7 @@ if doPlots:
     if doSS:
         ss_plotter = copy.deepcopy(plotter)
         ss_plotter.add_datasets(samples['ss'], Clear=True)
-        ss_plotter._overlayList = ['Fakes']
+        ss_plotter._overlayList = [fakeType]
 
         for i, cut in enumerate(cutList):
             inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
@@ -216,6 +226,22 @@ if doPlots:
             for category in catSS:
                 p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(ss_plotter, category, inFile, outFile, do1D, do2D, doLog, doRatio, doEff)))
 
+    ### ZPlusFake control region
+    ZFake_plotter = copy.deepcopy(plotter)
+    ZFake_plotter.add_datasets(samples['3l'],  Clear=True)
+    ZFake_plotter._overlayList = [fakeType]
+
+    inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 10, period, batch)
+
+    if doLog:
+        outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'CR_ZFake')
+    else:
+        outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'CR_ZFake')
+
+    ZFake_plotter.make_save_path(outFile, clean=True)
+
+    for category in cat3l:
+        p_plot.append(Process(name = 'CR_ZFake/' + category, target = plotter_wrapper, args=(ZFake_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False)))
 
 ### End of configuration for PlotProducer ###
 

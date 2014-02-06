@@ -267,6 +267,10 @@ void Selector::MuonSelector(TClonesArray* muons)
                 _selMuons["tight"].push_back(*thisMuon);
             else if (
                     thisMuon->IsPF()
+<<<<<<< HEAD
+=======
+                    //&& muISO < 0.2
+>>>>>>> b6d8dd4cb7ee4998fe3169b80a4ae28da3ff3610
                     && fabs(thisMuon->Dz(_selVertices[0]))  < 0.05 
                     && fabs(thisMuon->Dxy(_selVertices[0])) < 0.015
                     )
@@ -585,7 +589,7 @@ void Selector::JetSelector(TClonesArray* jets)
                     _selJets["forward"].push_back(corJet); 
 
                     if (!overlap[2] && !overlap[3])
-                        _selJets["tight_NoFakes"].push_back(corJet);
+                        _selJets["forward_NoFakes"].push_back(corJet);
                     else if (overlap[2])
                         _selJets["muFakes"].push_back(corJet);
                     else if (overlap[3])

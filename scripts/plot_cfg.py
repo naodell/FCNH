@@ -27,10 +27,14 @@ selection   = 'fcnh'
 cutList     = ['1_preselection']
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 cutList.extend(['2_Z_veto', '3_jet', '4_MET', '5_BDT'])
 =======
 cutList.extend(['2_Z_veto', '3_jet', '4_MET', '5_HT', '4_BDT'])
 >>>>>>> parent of 17d9010... Adding new BDT weight files
+=======
+cutList.extend(['2_Z_veto', '3_jet', '4_MET'])#, '5_BDT'])
+>>>>>>> b6d8dd4cb7ee4998fe3169b80a4ae28da3ff3610
 crList      = ['CR_WZ', 'CR_ttbar', 'CR_ttZ', 'CR_ZFake']#, 'high_mass_ss', 'low_mass_ss', 'barrel_leptons']
 =======
 cutList.extend(['2_Z_veto', '3_jet', '4_MET', '5_HT'])#, '4_BDT'])
@@ -86,9 +90,12 @@ samples['inclusive'].append('ZJets')
 samples['3l'].append('higgs')
 samples['3l'].append('Triboson')
 samples['3l'].append('ttV')
+#samples['3l'].extend(['ttW', 'ttZ'])
 samples['3l'].append('ZZ4l')
+#samples['3l'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
 samples['3l'].append('WZJets3LNu')
-samples['3l'].append('Fakes')
+#samples['3l'].append('Fakes')
+samples['3l'].extend(['Fakes_e', 'Fakes_mu', 'Fakes_ee', 'Fakes_emu', 'Fakes_mumu'])
 
 #samples['3l'].append('top')
 #samples['3l'].append('ZJets')
@@ -101,8 +108,10 @@ samples['ss'].append('higgs')
 samples['ss'].append('Triboson')
 samples['ss'].append('ttV')
 samples['ss'].append('ZZ4l')
+#samples['ss'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
 samples['ss'].append('WZJets3LNu')
-samples['ss'].append('Fakes')
+#samples['ss'].append('Fakes')
+samples['ss'].extend(['Fakes_e', 'Fakes_mu', 'Fakes_ee', 'Fakes_emu', 'Fakes_mumu'])
 samples['ss'].append('QFlips')
 
 #samples['ss'].append('Diboson')
@@ -143,7 +152,6 @@ if doPlots:
     plotter._overlayList.extend(['FCNH'])
 
     plotter.get_scale_factors(['FCNH'])
-
     #plotter.get_scale_factors()
 
     ### VARIABLES ###
@@ -331,7 +339,7 @@ if doPlots:
     ### ttbar control region
     if 'CR_ttbar' in crList:
         ttbar_plotter = copy.deepcopy(plotter)
-        ttbar_plotter.add_datasets(samples['ttbar'],  Clear=True)
+        ttbar_plotter.add_datasets(['Fakes'],  Clear=True)
         ttbar_plotter._overlayList = ['DATA']
 
         inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 8, period, batch)
