@@ -267,14 +267,13 @@ void Selector::MuonSelector(TClonesArray* muons)
                 _selMuons["tight"].push_back(*thisMuon);
             else if (
                     thisMuon->IsPF()
-<<<<<<< HEAD
-=======
                     //&& muISO < 0.2
->>>>>>> b6d8dd4cb7ee4998fe3169b80a4ae28da3ff3610
                     && fabs(thisMuon->Dz(_selVertices[0]))  < 0.05 
                     && fabs(thisMuon->Dxy(_selVertices[0])) < 0.015
-                    )
+                    ) {
+                thisMuon->SetFake(true);
                 _selMuons["fakeable"].push_back(*thisMuon);
+            }
 
         } else if (thisMuon->Pt() > _muPtCuts[1]) 
             if (MuonLooseID(thisMuon)
@@ -431,9 +430,10 @@ void Selector::ElectronSelector(TClonesArray* electrons)
                     _selElectrons["tight"].push_back(*thisElec);			
                 else
                     _selElectrons["tight_overlap"].push_back(*thisElec);			
-            } else if (!muOverlap)
+            } else if (!muOverlap) {
+                thisElec->SetFake(true);
                 _selElectrons["fakeable"].push_back(*thisElec);
-
+            }
         } else if (
                 ElectronLooseID(thisElec)
                 && (thisElec->Pt() > 20 && eleISO > 0.20)

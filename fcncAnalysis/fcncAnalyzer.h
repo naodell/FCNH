@@ -126,8 +126,8 @@ class fcncAnalyzer : public TSelector {
         bool ossfTagged;
         string subdir;
 
-        TLorentzVector dileptonP4;
-        TCPhysObject lep1, lep2, lep3; // If event is zTagged, lep1 and lep2 are associated to the z
+        TLorentzVector  dileptonP4;
+        TCPhysObject    lep1, lep2, lep3; // If event is zTagged, lep1 and lep2 are associated to the z
 
         Float_t     MET;
         Float_t     metPhi;
