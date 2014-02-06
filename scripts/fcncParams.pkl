@@ -159,6 +159,8 @@ F0.249
 sS'ZZ4mu'
 p48
 F0.076910000000000006
+sg28
+F1.0
 sg14
 I31314
 sS'TTH_M-125'
@@ -514,15 +516,15 @@ p77
 I1
 I3018
 I0
-S'BG error'
+S'BG uncertainty'
 p78
 tp79
 sS'Fakes_e'
 p80
 (I2
-I432
+I434
 I3001
-I1
+I20
 S'Fakes e'
 p81
 tp82
@@ -531,7 +533,7 @@ p83
 (I2
 I1
 I3001
-I1
+I20
 g83
 tp84
 sS'ZZToTauTau'
@@ -763,9 +765,9 @@ tp154
 sS'Fakes_mu'
 p155
 (I2
-I616
+I619
 I3001
-I1
+I20
 S'Fakes #mu'
 p156
 tp157
@@ -789,7 +791,7 @@ tp162
 sS'Fakes_mumu'
 p163
 (I2
-I618
+I620
 I3001
 I1
 S'Fakes #mu#mu'
@@ -816,7 +818,7 @@ tp171
 sS'Fakes_ee'
 p172
 (I2
-I434
+I436
 I3001
 I1
 S'Fakes ee'

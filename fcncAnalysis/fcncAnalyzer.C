@@ -91,15 +91,11 @@ void fcncAnalyzer::Begin(TTree* tree)
             if (doFakes && (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON")) {
                 histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir("Fakes_e", "Fakes_e");
                 histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir("Fakes_mu", "Fakes_mu");
-                histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir("Fakes_ee", "Fakes_ee");
-                histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir("Fakes_emu", "Fakes_emu");
-                histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir("Fakes_mumu", "Fakes_mumu");
-            } else {
+                histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir("Fakes_ll", "Fakes_ll");
+            } else if (categoryNames[i].substr(0,2) != "os" || suffix.substr(0, 4) != "FCNC") {
                 histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir(("Fakes_e_"+suffix).c_str(), ("Fakes_e_"+suffix).c_str());
                 histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir(("Fakes_mu_"+suffix).c_str(), ("Fakes_mu_"+suffix).c_str());
-                histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir(("Fakes_ee_"+suffix).c_str(), ("Fakes_ee_"+suffix).c_str());
-                histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir(("Fakes_emu_"+suffix).c_str(), ("Fakes_emu_"+suffix).c_str());
-                histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir(("Fakes_mumu_"+suffix).c_str(), ("Fakes_mumu_"+suffix).c_str());
+                histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir(("Fakes_ll_"+suffix).c_str(), ("Fakes_ll_"+suffix).c_str());
             }
         }
     }
@@ -467,10 +463,11 @@ bool fcncAnalyzer::Process(Long64_t entry)
     vector<TCJet> muJets    = selector->GetSelectedJets("muJets");
     vector<TCJet> eleJets   = selector->GetSelectedJets("eleJets");
 
-    jets.insert(jets.end(), fwdJets.begin(), fwdJets.end());
+    //jets.insert(jets.end(), fwdJets.begin(), fwdJets.end());
     //jets.insert(jets.end(), bJetsL.begin(), bJetsL.end());
 
     allJets.insert(allJets.end(), jets.begin(), jets.end());
+    allJets.insert(allJets.end(), fwdJets.begin(), fwdJets.end());
     allJets.insert(allJets.end(), bJetsM.begin(), bJetsM.end());
     allJets.insert(allJets.end(), muJets.begin(), muJets.end());
     allJets.insert(allJets.end(), eleJets.begin(), eleJets.end());
@@ -530,7 +527,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
     if (leptons.size() == 1) {
 
         //!!! Single leptons just for fakes !!!//
-        if (leptons[0].Pt() < leptonPtCut[0]) 
+        if (leptons[0].Pt() < leptonPtCut[1]) 
             return kTRUE;
 
     } else if (leptons.size() == 2) {
@@ -707,17 +704,17 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
             if (matchedFakeables.size() == 0) {
                 GetFakeBG(leptons, fakeables, fJets, fBJetsM, fBJetsL, selectedVtx);
-            } /*else if (matchedFakeables.size() == 2) {
+            } else if (matchedFakeables.size() == 2) {
                 evtWeight = evtWeight/(matchedFakeables.size());
                 for (unsigned i = 0; i < matchedFakeables.size(); ++i) {
-            //cout << matchedFakeables[i].Pt() << ", " << matchedFakeables[i].Eta() << endl;
-            vObj tmpFakeables = unmatchedFakeables;
-            tmpFakeables.push_back(matchedFakeables[i]);
-            GetFakeBG(leptons, tmpFakeables, fJets, fBJetsM, fBJetsL, selectedVtx);
+                    //cout << matchedFakeables[i].Pt() << ", " << matchedFakeables[i].Eta() << endl;
+                    vObj tmpFakeables = unmatchedFakeables;
+                    tmpFakeables.push_back(matchedFakeables[i]);
+                    GetFakeBG(leptons, tmpFakeables, fJets, fBJetsM, fBJetsL, selectedVtx);
+                }
+                //cout << endl;
+                evtWeight *= matchedFakeables.size();
             }
-            //cout << endl;
-            evtWeight *= matchedFakeables.size();
-            }*/
         }
     }
 
@@ -909,8 +906,6 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
     MakePlots(leptons, jets, bJetsM, *recoMET, PV, 2);
     SetYields(7);
 
-    if (jetMult > 1 && HT < 60) cout << HT << endl;
-
     //!! Do mva selection !!//
     if (doMVACut) {
         float mvaValue = -99.;
@@ -1013,10 +1008,11 @@ void fcncAnalyzer::GetFakeBG(vObj leptons, vObj fakeables, vector<TCJet> jets, v
         Float_t fakeWeight = fakeWeight1*fakeWeight2;
 
         // Fake rate fudge 
-        if (fakeables.size() == 1 && leptons.size() == 2) 
-            if (fakeables[0].Type() == "electron" && leptons[0].Type() == leptons[1].Type()) {
-                fakeWeight *= 0.4;
+        if (fakeables.size() == 1 && leptons.size() == 2) {
+            if (fakeables[0].Type() == "electron") {
+                //fakeWeight *= 0.4;
             }
+        }
 
         if (fakeWeight <= 0)
             return;
@@ -1374,6 +1370,10 @@ void fcncAnalyzer::JetPlots(vector<TCJet> jets, vector<TCJet> bJets)
     histManager->Fill1DHist(jets.size() + bJets.size(),
             "h1_AllJetMult", "Multiplicity of all jets;N_{jets};Entries / bin", 11, -0.5, 10.5);
 
+    if (jets.size() > 1) 
+        histManager->Fill1DHist((jets[0] + jets[1]).M(),
+                "h1_DijetMass", "M_{jj};M_{jj};Entries / 20 GeV", 50, 0, 1000);
+
     for (unsigned i = 0; i < jets.size(); ++i) {
         string index = str(i+1);
 
@@ -1504,13 +1504,13 @@ void fcncAnalyzer::MiscPlots()
 
     // Check 3l fakes
     if (flavorCat > 4) {
-        unsigned lepIndex = 0;
-        if (lep1.Type() == "electron" && lep1.Type() == lep2.Type())
-            lepIndex = 1;
-        else if (lep1.Type() == "muon" && lep1.Type() == lep2.Type())
-            lepIndex = 3;
-        else if (lep1.Type() != lep2.Type())
-            lepIndex = 5;
+        unsigned lepIndex = 1;
+        //if (lep1.Type() == "electron" && lep1.Type() == lep2.Type())
+        //    lepIndex = 1;
+        //else if (lep1.Type() == "muon" && lep1.Type() == lep2.Type())
+        //    lepIndex = 3;
+        //else if (lep1.Type() != lep2.Type())
+        //    lepIndex = 5;
 
         if (lep3.Type() == "electron")
             lepIndex += 0;
@@ -1519,9 +1519,9 @@ void fcncAnalyzer::MiscPlots()
 
         if (subdir.substr(0,5) == "Fakes") {
             if (!lep1.IsFake() && !lep2.IsFake() && lep3.IsFake()) 
-                histManager->Fill1DHist(lepIndex, "h1_FakeCategory", "fake category;fake cat;Entries", 6, 0.5, 6.5);
+                histManager->Fill1DHist(lepIndex, "h1_FakeCategory", "fake category;fake cat;Entries", 2, 0.5, 2.5);
         } else {
-            histManager->Fill1DHist(lepIndex, "h1_FakeCategory", "fake category;fake cat;Entries", 6, 0.5, 6.5);
+            histManager->Fill1DHist(lepIndex, "h1_FakeCategory", "fake category;fake cat;Entries", 2, 0.5, 2.5);
         }
     }
 }
@@ -1858,12 +1858,13 @@ string fcncAnalyzer::GetFakeCategory(vObj fakeables)
     } 
     
     if (fakeables.size() == 2) {
-        if (fakeables[0].Type() == "electron" && fakeables[0].Type() == "electron") 
-            cat = "e";
-        if (fakeables[0].Type() == "muon" && fakeables[0].Type() == "electron") 
-            cat = "emu";
-        if (fakeables[0].Type() == "muon" && fakeables[0].Type() == "muon") 
-            cat = "mumu";
+        cat = "ll";
+        //if (fakeables[0].Type() == "electron" && fakeables[0].Type() == "electron") 
+        //    cat = "e";
+        //if (fakeables[0].Type() == "muon" && fakeables[0].Type() == "electron") 
+        //    cat = "emu";
+        //if (fakeables[0].Type() == "muon" && fakeables[0].Type() == "muon") 
+        //    cat = "mumu";
     }
     return cat;
 }

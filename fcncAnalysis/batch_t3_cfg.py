@@ -43,15 +43,15 @@ signal  = []
 
 if period == '2012':
     data.extend([
-        cfg('muon_2012A', inputDir+'/nuTuples_v7_4/DoubleMu_Run2012A', 20, 'DATA_MUON muon 2012'),
-        cfg('muon_2012B', inputDir+'/nuTuples_v7_4/DoubleMu_Run2012B', 30, 'DATA_MUON muon 2012'),
-        cfg('muon_2012C', inputDir+'/nuTuples_v7_4/DoubleMu_Run2012C', 30, 'DATA_MUON muon 2012'),
-        cfg('muon_2012D', inputDir+'/nuTuples_v7_4/DoubleMu_Run2012D', 35, 'DATA_MUON muon 2012'),
+        cfg('muon_2012A', inputDir+'/nuTuples_v7_4/DoubleMu_Run2012A', 40, 'DATA_MUON muon 2012'),
+        cfg('muon_2012B', inputDir+'/nuTuples_v7_4/DoubleMu_Run2012B', 40, 'DATA_MUON muon 2012'),
+        cfg('muon_2012C', inputDir+'/nuTuples_v7_4/DoubleMu_Run2012C', 40, 'DATA_MUON muon 2012'),
+        cfg('muon_2012D', inputDir+'/nuTuples_v7_4/DoubleMu_Run2012D', 45, 'DATA_MUON muon 2012'),
 
-        cfg('electron_2012A', inputDir+'/nuTuples_v7_4/DoubleElectron_Run2012A', 20, 'DATA_ELECTRON electron 2012'),
-        cfg('electron_2012B', inputDir+'/nuTuples_v7_4/DoubleElectron_Run2012B', 30, 'DATA_ELECTRON electron 2012'),
-        cfg('electron_2012C', inputDir+'/nuTuples_v7_4/DoubleElectron_Run2012C', 30, 'DATA_ELECTRON electron 2012'),
-        cfg('electron_2012D', inputDir+'/nuTuples_v7_4/DoubleElectron_Run2012D', 35, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012A', inputDir+'/nuTuples_v7_4/DoubleElectron_Run2012A', 40, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012B', inputDir+'/nuTuples_v7_4/DoubleElectron_Run2012B', 40, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012C', inputDir+'/nuTuples_v7_4/DoubleElectron_Run2012C', 40, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012D', inputDir+'/nuTuples_v7_4/DoubleElectron_Run2012D', 45, 'DATA_ELECTRON electron 2012'),
 
         cfg('muEG_2012A', inputDir+'/nuTuples_v7_4/MuEG_Run2012A', 20, 'DATA_MUEG muEG 2012'),
         cfg('muEG_2012B', inputDir+'/nuTuples_v7_4/MuEG_Run2012B', 20, 'DATA_MUEG muEG 2012'),
@@ -61,7 +61,7 @@ if period == '2012':
 
     bg.extend([
         cfg('ZJets_M-50', inputDir+'/nuTuples_v7_4/DYJets', 50, 'ZJets_M-50 muon 2012'),
-        cfg('ZJets_M-10To50', inputDir+'/nuTuples_v7_4/DYJets_M-10To50', 25, 'ZJets_M-10To50 muon 2012'),
+        cfg('ZJets_M-10To50', inputDir+'/nuTuples_v7_4/DYJets_M-10To50', 35, 'ZJets_M-10To50 muon 2012'),
         #cfg('ZbbToLL', inputDir+'/nuTuples_v7_4/ZbbToLL', 20, 'ZbbToLL muon 2012'),
         #cfg('ZG', inputDir+'/nuTuples_v7_4/ZGToLLG', 10, 'ZG muon 2012'),
         #cfg('WJets', inputDir+'/nuTuples_v7_4/WJetsToLNu', 20, 'WJets muon 2012'),

@@ -169,57 +169,63 @@ class AnalysisTools():
 
         outHist = None
         doFakes = False
-        const   = 1.
-        if dataName.split('_')[0] == 'Fakes' and dataName not in ['Fakes', 'Fakes_e', 'Fakes_mu', 'Fakes_ee', 'Fakes_emu', 'Fakes_mumu']:
-            dataName = dataName.split('_', 2)[2]
-            doFakes  = True
-        elif dataName == 'Fakes':
-            for data in self._combineDict['Fakes']:
-                hist = self.get_hist(var, data, histType)
-                if hist is not None: 
-                    if outHist is None:
-                        outHist = hist
-                    else:
-                        outHist.Add(hist, 1)
+        fakeCats = ['Fakes_e', 'Fakes_mu', 'Fakes_ee', 'Fakes_emu', 'Fakes_mumu', 'Fakes_ll']
 
-            if outHist is None:
-                return outHist
-
-            elif self._cleanFakes and histType == '1D':
-                dataName    = 'Remove_{0}'.format(self._category.split('_', 1)[0])
-                doFakes     = True
-                const       = -1.
-
-        if dataName not in self._combineDict:
-            if doFakes:
+        if dataName.split('_')[0] == 'Fakes': # Treat fakes separately 
+            if dataName is 'Fakes': # fakes from data
                 for data in self._combineDict['Fakes']:
-                    hist = self.get_hist(var, data + '_' + dataName, histType)
-                    if hist is not None: 
-                        if outHist is None:
-                            outHist = hist
-                        else:
-                            outHist.Add(hist, 1)
-            else:
-                outHist = self.get_hist(var, dataName, histType)
-
-        else:
-            for data in self._combineDict[dataName]:
-                if doFakes:
-                    hist = None
-                    for category in self._combineDict['Fakes']:
-                        catHist = self.get_hist(var, category + '_' + data, histType)
-                        if catHist is not None: 
-                            if hist is None:
-                                hist = catHist
-                            else:
-                                hist.Add(catHist)
-                else:
                     hist = self.get_hist(var, data, histType)
 
-                if outHist is None and hist is not None:
-                    outHist = hist
-                elif hist is not None:
-                    outHist.Add(hist, const)
+                    if self._cleanFakes and hist:
+                        for mc in self._combineDict['Remove_{0}'.format(self._category.split('_')[0])]:
+                            mc_hist = self.get_hist(var, data + '_' + mc, histType)
+                            if mc_hist is None:
+                                continue
+                            else:
+                                hist.Add(mc_hist, -1)
+
+                    if not outHist:
+                        outHist = hist
+                    elif hist:
+                        outHist.Add(hist, 1)
+
+        #        dataName    = 'Remove_{0}'.format(self._category.split('_', 1)[0])
+                
+            elif dataName in fakeCats: # fakes from data
+                outHist = self.get_hist(var, dataName, histType)
+                if self._cleanFakes and outHist:
+                    for mc in self._combineDict['Remove_{0}'.format(self._category.split('_')[0])]:
+                        mc_hist = self.get_hist(var, dataName + '_' + mc, histType)
+
+                        if not mc_hist:
+                            continue
+                        elif mc_hist:
+                            outHist.Add(mc_hist, -1)
+
+            else: # MC fakes
+                if dataName.split('_')[2] not in self._combineDict:
+                    outHist = self.get_hist(var, dataName, histType)
+                else:
+                    for data in self._combineDict[dataName.split('_')[2]]:
+                        hist = self.get_hist(var, 'Fakes_' + dataName.split('_')[1] + '_' + data, histType)
+
+                        if not outHist:
+                            outHist = hist
+                        elif hist:
+                            outHist.Add(hist, 1)
+
+        else: # Non-fake datasets
+            if dataName not in self._combineDict:
+                outHist = self.get_hist(var, dataName, histType)
+
+            else:
+                for data in self._combineDict[dataName]:
+                    hist = self.get_hist(var, data, histType)
+
+                    if outHist is None and hist is not None:
+                        outHist = hist
+                    elif hist is not None:
+                        outHist.Add(hist, 1)
 
         return outHist
 

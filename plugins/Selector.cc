@@ -589,7 +589,7 @@ void Selector::JetSelector(TClonesArray* jets)
                     _selJets["forward"].push_back(corJet); 
 
                     if (!overlap[2] && !overlap[3])
-                        _selJets["tight_NoFakes"].push_back(corJet);
+                        _selJets["forward_NoFakes"].push_back(corJet);
                     else if (overlap[2])
                         _selJets["muFakes"].push_back(corJet);
                     else if (overlap[3])
