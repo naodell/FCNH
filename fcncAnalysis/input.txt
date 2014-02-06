@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 /uscms/home/naodell/eos/data/nuTuples_v9_6/DYJetsToLL_M-50/nuTuple_100_1_NiB.root
 /uscms/home/naodell/eos/data/nuTuples_v9_6/DYJetsToLL_M-50/nuTuple_101_1_iuZ.root
 /uscms/home/naodell/eos/data/nuTuples_v9_6/DYJetsToLL_M-50/nuTuple_102_1_Z7g.root
@@ -524,3 +525,15 @@
 /tthome/naodell/storage/data/nuTuples_v7_4/ZZTo4mu/nuTuple_99_1_U8T.root
 /tthome/naodell/storage/data/nuTuples_v7_4/ZZTo4mu/nuTuple_9_1_Biw.root
 >>>>>>> b6d8dd4cb7ee4998fe3169b80a4ae28da3ff3610
+=======
+dcap://cmsdca1.fnal.gov:24140/pnfs/fnal.gov/usr/cms/WAX/11/store/user/naodell/nuTuples_v7_4/TTJets/nuTuple_2_1_GZ9.root
+dcap://cmsdca1.fnal.gov:24140/pnfs/fnal.gov/usr/cms/WAX/11/store/user/naodell/nuTuples_v7_4/TTJets/nuTuple_210_1_Ol0.root
+dcap://cmsdca1.fnal.gov:24140/pnfs/fnal.gov/usr/cms/WAX/11/store/user/naodell/nuTuples_v7_4/TTJets/nuTuple_55_1_4s3.root
+dcap://cmsdca1.fnal.gov:24140/pnfs/fnal.gov/usr/cms/WAX/11/store/user/naodell/nuTuples_v7_4/TTJets/nuTuple_148_1_83A.root
+dcap://cmsdca1.fnal.gov:24140/pnfs/fnal.gov/usr/cms/WAX/11/store/user/naodell/nuTuples_v7_4/TTJets/nuTuple_199_1_pMX.root
+dcap://cmsdca1.fnal.gov:24140/pnfs/fnal.gov/usr/cms/WAX/11/store/user/naodell/nuTuples_v7_4/TTJets/nuTuple_129_1_6Lt.root
+dcap://cmsdca1.fnal.gov:24140/pnfs/fnal.gov/usr/cms/WAX/11/store/user/naodell/nuTuples_v7_4/TTJets/nuTuple_26_1_RAI.root
+dcap://cmsdca1.fnal.gov:24140/pnfs/fnal.gov/usr/cms/WAX/11/store/user/naodell/nuTuples_v7_4/TTJets/nuTuple_262_1_Gpp.root
+dcap://cmsdca1.fnal.gov:24140/pnfs/fnal.gov/usr/cms/WAX/11/store/user/naodell/nuTuples_v7_4/TTJets/nuTuple_101_1_6Xd.root
+dcap://cmsdca1.fnal.gov:24140/pnfs/fnal.gov/usr/cms/WAX/11/store/user/naodell/nuTuples_v7_4/TTJets/nuTuple_98_1_swa.root
+>>>>>>> parent of 87fe1b2... Debugging fake weighting

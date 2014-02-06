@@ -26,7 +26,7 @@ cd Analysis_CMS/fcncAnalysis
 cp ../../../../input_${DATANAME}_${COUNT}.txt input.txt
 rm histos/*root
 
-root -l -b -q 'run.C(1e9, "'$SUFFIX' '$SELECTION' '$PERIOD'")'
+./fcncLocal.csh $SUFFIX $SELECTION $PERIOD
 
 ### Copy output and cleanup ###
 rename .root _${DATANAME}_$COUNT.root histos/fcncHistograms*
