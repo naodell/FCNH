@@ -117,19 +117,8 @@ samples['os'].extend(['Diboson', 'top', 'ZJets'])
 
 samples['WZ'].extend(['WW/ZZ', 'top', 'ZJets', 'WZJets3LNu'])
 samples['ttbar'].extend(['single top', 'ZJets', 'ttbar'])
-<<<<<<< HEAD
-<<<<<<< HEAD
-#samples['WZ'].extend(['WW/ZZ', 'top', 'ZJets', 'WZJets3LNu'])
-#samples['ttbar'].extend(['single top', 'ZJets', 'ttbar'])
-
 samples['ttZ'].extend(['top', 'ZJets', 'ZZ4l', 'WZJets3LNu', 'ttW', 'ttG', 'ttZ'])
-=======
-samples['ttZ'].extend(['top', 'ZJets', 'WZJets3LNu', 'ttW', 'ttG', 'ttZ'])
->>>>>>> parent of 17d9010... Adding new BDT weight files
 samples['ZFake'].extend(['ZZ4l', 'WZJets3LNu', 'Fakes'])
-=======
-samples['ttZ'].extend(['top', 'ZJets', 'WZJets3LNu', 'ttW', 'ttG', 'ttZ'])
->>>>>>> parent of 72355eb... Minor changes
 
 p_plot = []
 
@@ -373,7 +362,6 @@ if doPlots:
 
         for category in cat3l:
             p_plot.append(Process(name = 'CR_ttZ/' + category, target = plotter_wrapper, args=(ttZ_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False)))
-<<<<<<< HEAD
 
     doLog = True
 
@@ -395,11 +383,6 @@ if doPlots:
         for category in cat3l:
             p_plot.append(Process(name = 'CR_ZFake/' + category, target = plotter_wrapper, args=(ZFake_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False)))
     
-=======
-    
-    doLog = True
-
->>>>>>> parent of 72355eb... Minor changes
     ### low delta eta ss control region
     if 'high_mass_ss' in crList:
         hm_plotter = copy.deepcopy(plotter)
