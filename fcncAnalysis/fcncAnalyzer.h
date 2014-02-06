@@ -283,6 +283,7 @@ class fcncAnalyzer : public TSelector {
         virtual void    FillYieldHists(string, float, unsigned);
 
         // Set/Get methods
+        virtual void    ResetGlobalVars();
         virtual void    SetEventCategory(vObj);
         virtual void    SetVarsMVA(vObj, vector<TCJet>, vector<TCJet>);
         virtual void    FillLepMVA(vector<TCMuon>, vector<TCElectron>, vector<TCJet>, TVector3);

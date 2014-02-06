@@ -266,6 +266,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
     // Reset event information
     selector->PurgeObjects();
+    ResetGlobalVars();
     evtCategory.reset();
     evtWeight = 1.;
     subdir = suffix;
@@ -2203,3 +2204,27 @@ TLorentzVector fcncAnalyzer::CalculateNuP4(TLorentzVector lep, TCMET met)
     return nuP4;
 }
 
+void fcncAnalyzer::ResetGlobalVars()
+{
+    zTagged     = false;
+    ossfTagged  = false;
+    subdir      = suffix;
+
+    MET     = -1;
+    metPhi  = -4;
+    METLD   = -1;
+    HT      = -1;
+    HTs     = -1;
+    MHT     = -1;
+    MT      = -1;
+
+    lepMult     = 0;
+    bJetMult    = 0;
+    jetMult     = 0;
+
+    evtCategory.reset();
+    flavorCat = 999;
+    chargeCat = 999;
+
+    evtWeight = 1;
+}
