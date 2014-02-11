@@ -24,7 +24,8 @@ else:
 plotType    = '.png'
 selection   = 'fcnh'
 
-cutList     = ['1_preselection', '2_Z_veto']
+cutList     = ['1_preselection']
+cutList.extend(['2_Z_veto', '3_jet', '4_MET'])
 fakeType    = 'Fakes_mu'
 
 period      = '2012'

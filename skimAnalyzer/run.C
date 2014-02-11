@@ -14,7 +14,7 @@ void run(Long64_t nEntries = 1e6, string suffix = "DATA_MUON", string selection 
 
     TChain* fChain = new TChain(("tree" + selection + "_" + suffix).c_str());
 
-    fChain->Add("~/eos/histos/fcnh_cut1_2012_20131217_205058.root");      
+    fChain->Add("../fcncAnalysis/combined_histos/fcnh_cut1_2012_20131217_205058.root");      
 
     TStopwatch timer;
     timer.Start();
