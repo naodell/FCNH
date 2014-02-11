@@ -25,8 +25,11 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-cutList.extend(['2_Z_veto', '3_jet', '4_MET'])#, '5_BDT'])
-crList      = ['CR_WZ', 'CR_ttbar', 'CR_ttZ', 'CR_ZFake']#, 'high_mass_ss', 'low_mass_ss', 'barrel_leptons']
+#cutList.extend(['2_Z_veto', '3_jet', '4_MET', '.'])#, '5_BDT'])
+#cutList.extend(['.', '.', '.'])
+#cutList.extend(['CR_0jet', 'CR_1jet', 'CR_2jet'])
+
+crList      = []#'CR_WZ', 'CR_ttbar', 'CR_ZFake']
 
 period      = '2012'
 LUMIDATA    = 19.712 
@@ -35,12 +38,13 @@ doPlots     = True
 doLog       = True
 doEff       = False
 doRatio     = True
+doNorm      = True
 do1D        = True
 do2D        = True
 
 doOS        = False
 doSS        = True
-do3l        = True
+do3l        = False
 
 doYields    = False
 
@@ -50,11 +54,13 @@ catSS.extend(['ss_mumu', 'ss_ee', 'ss_emu'])
 catOS       = ['os_inclusive']
 catOS.extend(['os_mumu', 'os_ee', 'os_emu']) 
 cat3l       = ['3l_inclusive']
-cat3l.extend(['3l_OSSF', '3l_SSSF'])
 cat3l.extend(['3l_eee', '3l_eemu', '3l_emumu', '3l_mumumu'])
+#cat3l.extend(['3l_OSSF', '3l_SSSF'])
 
 ### Samples to be included in stacks ###
-samples     = {'all':[], 'inclusive':[], '3l':[], 'ss':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[], 'ZFake':[]}
+samples     = {'all':[], 'inclusive':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[], 'ZFake':[],
+                '3l_inclusive':[], '3l_eee':[], '3l_eemu':[], '3l_emumu':[], '3l_mumumu':[], 
+                'ss_inclusive':[], 'ss_ee':[], 'ss_emu':[], 'ss_mumu':[]}
 
 samples['all'].append('higgs')
 samples['all'].append('Triboson')
@@ -74,15 +80,31 @@ samples['inclusive'].append('Diboson')
 samples['inclusive'].append('top')
 samples['inclusive'].append('ZJets')
 
-samples['3l'].append('higgs')
-samples['3l'].append('Triboson')
-samples['3l'].append('ttV')
-#samples['3l'].extend(['ttW', 'ttZ'])
-samples['3l'].append('ZZ4l')
-#samples['3l'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
-samples['3l'].append('WZJets3LNu')
-#samples['3l'].append('Fakes')
-samples['3l'].extend(['Fakes_e', 'Fakes_mu', 'Fakes_ee', 'Fakes_emu', 'Fakes_mumu'])
+## trilepton categories
+samples['3l_inclusive'].append('higgs')
+samples['3l_inclusive'].append('Triboson')
+samples['3l_inclusive'].append('ttV')
+samples['3l_inclusive'].append('ZZ4l')
+samples['3l_inclusive'].append('WZJets3LNu')
+
+## eee
+samples['3l_eee'].extend(samples['3l_inclusive'])
+samples['3l_eee'].extend(['Fakes_e', 'Fakes_ll'])
+
+## eemu
+samples['3l_eemu'].extend(samples['3l_inclusive'])
+samples['3l_eemu'].extend(['Fakes_e', 'Fakes_mu', 'Fakes_ll'])
+
+## emumu
+samples['3l_emumu'].extend(samples['3l_inclusive'])
+samples['3l_emumu'].extend(['Fakes_e', 'Fakes_mu', 'Fakes_ll'])
+
+## mumumu
+samples['3l_mumumu'].extend(samples['3l_inclusive'])
+samples['3l_mumumu'].extend(['Fakes_mu', 'Fakes_ll'])
+
+## inclusive
+samples['3l_inclusive'].append('Fakes')
 
 #samples['3l'].append('top')
 #samples['3l'].append('ZJets')
@@ -91,24 +113,31 @@ samples['3l'].extend(['Fakes_e', 'Fakes_mu', 'Fakes_ee', 'Fakes_emu', 'Fakes_mum
 #samples['3l'].append('WGStar')
 #samples['3l'].extend(['WGStarLNu2E', 'WGStarLNu2Mu', 'WGStarLNu2Tau'])
 
-samples['ss'].append('higgs')
-samples['ss'].append('Triboson')
-samples['ss'].append('ttV')
-samples['ss'].append('ZZ4l')
-#samples['ss'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
-samples['ss'].append('WZJets3LNu')
-#samples['ss'].append('Fakes')
-samples['ss'].extend(['Fakes_e', 'Fakes_mu', 'Fakes_ee', 'Fakes_emu', 'Fakes_mumu'])
-samples['ss'].append('QFlips')
+## same-sign categories
+samples['ss_inclusive'].append('higgs')
+samples['ss_inclusive'].append('Triboson')
+samples['ss_inclusive'].append('ttV')
+samples['ss_inclusive'].append('ZZ4l')
+samples['ss_inclusive'].append('WZJets3LNu')
 
-#samples['ss'].append('Diboson')
-#samples['ss'].append('top')
-#samples['ss'].append('ZJets')
-#samples['ss'].append('QCD')
-#samples['ss'].append('QCD_EM')
-#samples['ss'].append('QCD_20_MU')
-#samples['ss'].extend(['ZbbToLL', 'WbbToLNu'])
+## dielectrons
+samples['ss_ee'].extend(samples['ss_inclusive'])
+samples['ss_ee'].append('QFlips')
+samples['ss_ee'].extend(['Fakes_e', 'Fakes_ll'])
 
+## electron+muon
+samples['ss_emu'].extend(samples['ss_inclusive'])
+samples['ss_emu'].append('QFlips')
+samples['ss_emu'].extend(['Fakes_e', 'Fakes_mu', 'Fakes_ll'])
+
+## dimuons
+samples['ss_mumu'].extend(samples['ss_inclusive'])
+samples['ss_mumu'].extend(['Fakes_mu', 'Fakes_ll'])
+
+samples['ss_inclusive'].append('Fakes')
+samples['ss_inclusive'].append('QFlips')
+
+## opposite-sign categories
 samples['os'].extend(['Diboson', 'top', 'ZJets'])
 
 samples['WZ'].extend(['Fakes', 'WZJets3LNu'])
@@ -132,6 +161,7 @@ if doPlots:
     plotter = PlotProducer(inputFile = 'fcncAnalysis/combined_histos/{0}_cut1_{1}_{2}.root'.format(selection, period, batch), savePath = '', scale = LUMIDATA, isAFS = False)
     plotter.set_period(period)
     plotter.set_output_type(plotType)
+    #plotter.set_clean_fakes(False)
 
     ### DATASETS ###
     ### Specify the datasets you wish to stack 
@@ -203,7 +233,8 @@ if doPlots:
                                            'HT', 'HTs', 'EventBalance', 'Centrality',
                                            'JetBJetDeltaPhi', 'JetBJetDeltaEta', 'JetBJetDeltaR',
                                            'JetMultCharge', 'JetMult', 'BJetMult', 'AllJetMult',
-                                           'MatchedMuJetBDiscr', 'MatchedEleJetBDiscr']
+                                           'MatchedMuJetBDiscr', 'MatchedEleJetBDiscr', 
+                                           'DijetMass']
 
     plotter._variableDict['MET']        = ['Met', 'MHT', 'METLD', 'MHT-MET', 'MetPhi', 'MetSumEt',
                                            'MetLepton1DeltaPhi', 'MetLepton2DeltaPhi', 'MetLepton3DeltaPhi'
@@ -238,6 +269,8 @@ if doPlots:
     inclusive_plotter._overlayList = ['DATA'] # overlaySamples
 
     for i, cut in enumerate(cutList):
+        if cut == '.':
+            continue
 
         inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
 
@@ -247,47 +280,64 @@ if doPlots:
             outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
 
         inclusive_plotter.make_save_path(outFile, clean=True)
-        p_plot.append(Process(name = cut[2:] + '/inclusive', target = plotter_wrapper, args=(inclusive_plotter, 'inclusive', inFile, outFile, do1D, do2D, doLog, doRatio, False)))
+        p_plot.append(Process(name = cut[2:] + '/inclusive', target = plotter_wrapper, args=(inclusive_plotter, 'inclusive', inFile, outFile, do1D, do2D, False, doLog, doRatio, False)))
 
 
     ### 3l selection ###
     if do3l:
+        for category in cat3l:
+            plotter_3l = copy.deepcopy(plotter)
+            plotter_3l.add_datasets(samples[category], Clear=True)
+            plotter_3l._overlayList = ['DATA', 'FCNH']
 
-        plotter_3l = copy.deepcopy(plotter)
-        plotter_3l.add_datasets(samples['3l'], Clear=True)
-        plotter_3l._overlayList = ['DATA', 'FCNH']
+            for i, cut in enumerate(cutList):
+                if cut == '.':
+                    continue
 
-        for i, cut in enumerate(cutList):
-            inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
+                inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
 
-            if doLog:
-                outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, cut)
-            else:
-                outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
+                if doLog:
+                    outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, cut)
+                else:
+                    outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
 
-            plotter_3l.make_save_path(outFile, clean=True)
-
-            for category in cat3l:
-                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(plotter_3l, category, inFile, outFile, do1D, do2D, doLog, doRatio, doEff)))
+                plotter_3l.make_save_path(outFile, clean=True)
+                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(plotter_3l, category, inFile, outFile, do1D, do2D, False, doLog, doRatio, doEff)))
 
     ### ss selection ###
     if doSS:
-        ss_plotter = copy.deepcopy(plotter)
-        ss_plotter.add_datasets(samples['ss'], Clear=True)
-        ss_plotter._overlayList = ['DATA', 'FCNH']
+        for category in catSS:
+            ss_plotter = copy.deepcopy(plotter)
+            ss_plotter.add_datasets(samples[category], Clear=True)
+            ss_plotter._overlayList = ['DATA', 'FCNH']
 
-        for i, cut in enumerate(cutList):
-            inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
+            for i, cut in enumerate(cutList):
+                if cut == '.':
+                    continue
 
-            if doLog:
-                outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, cut)
-            else:
-                outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
+                inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
 
-            ss_plotter.make_save_path(outFile, clean=True)
+                if doLog:
+                    outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, cut)
+                else:
+                    outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
 
-            for category in catSS:
-                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(ss_plotter, category, inFile, outFile, do1D, do2D, doLog, doRatio, doEff)))
+                ss_plotter.make_save_path(outFile, clean=True)
+                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(ss_plotter, category, inFile, outFile, do1D, do2D, False, doLog, doRatio, doEff)))
+
+        ### overlay of fake distributions for single and double fakes ###
+        fake_plotter = copy.deepcopy(plotter)
+        fake_plotter.add_datasets(['Fakes_mu'], Clear=True)
+        fake_plotter._overlayList = ['Fakes_ll']
+        fake_plotter.draw_normalized(True)
+
+        if doLog:
+            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix,  'fakes_overlay')
+        else:
+            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'fakes_overlay')
+        fake_plotter.make_save_path(outFile, clean=True)
+
+        p_plot.append(Process(name = 'fakes_overlay/{0}'.format('ss_mumu'), target = plotter_wrapper, args=(fake_plotter, 'ss_mumu', inFile, outFile, do1D, False, True, True, False, False)))
 
 
     ### os selection ###
@@ -297,6 +347,9 @@ if doPlots:
         os_plotter._overlayList = ['DATA']
 
         for i, cut in enumerate(cutList):
+            if cut == '.':
+                continue
+
             inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
 
             if doLog:
@@ -307,7 +360,7 @@ if doPlots:
             os_plotter.make_save_path(outFile, clean=True)
 
             for category in catOS:
-                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(os_plotter, category, inFile, outFile, do1D, do2D, doLog, doRatio, False)))
+                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(os_plotter, category, inFile, outFile, do1D, do2D, False, doLog, doRatio, False)))
 
     doLog = False
 
@@ -327,12 +380,12 @@ if doPlots:
         wz_plotter.make_save_path(outFile, clean=True)
 
         for category in cat3l:
-            p_plot.append(Process(name = 'CR_WZ/' + category, target = plotter_wrapper, args=(wz_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False)))
+            p_plot.append(Process(name = 'CR_WZ/' + category, target = plotter_wrapper, args=(wz_plotter, category, inFile, outFile, do1D, False, False, doLog, doRatio, False)))
 
     ### ttbar control region
     if 'CR_ttbar' in crList:
         ttbar_plotter = copy.deepcopy(plotter)
-        ttbar_plotter.add_datasets(['Fakes'],  Clear=True)
+        ttbar_plotter.add_datasets(samples['ttbar'],  Clear=True)
         ttbar_plotter._overlayList = ['DATA']
 
         inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 8, period, batch)
@@ -344,25 +397,7 @@ if doPlots:
 
         ttbar_plotter.make_save_path(outFile, clean=True)
 
-        p_plot.append(Process(name = 'CR_ttbar/os_emu', target = plotter_wrapper, args=(ttbar_plotter, 'os_emu', inFile, outFile, do1D, False, doLog, doRatio, False)))
-
-    ### ttZ control region
-    if 'CR_ttZ' in crList:
-        ttZ_plotter = copy.deepcopy(plotter)
-        ttZ_plotter.add_datasets(samples['ttZ'],  Clear=True)
-        ttZ_plotter._overlayList = ['DATA']
-
-        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 9, period, batch)
-
-        if doLog:
-            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'CR_ttZ')
-        else:
-            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'CR_ttZ')
-
-        ttZ_plotter.make_save_path(outFile, clean=True)
-
-        for category in cat3l:
-            p_plot.append(Process(name = 'CR_ttZ/' + category, target = plotter_wrapper, args=(ttZ_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False)))
+        p_plot.append(Process(name = 'CR_ttbar/os_emu', target = plotter_wrapper, args=(ttbar_plotter, 'os_emu', inFile, outFile, do1D, False, False, doLog, doRatio, False)))
 
     ### ZPlusFake control region
     if 'CR_ZFake' in crList:
@@ -370,7 +405,7 @@ if doPlots:
         ZFake_plotter.add_datasets(samples['ZFake'],  Clear=True)
         ZFake_plotter._overlayList = ['DATA']
 
-        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 10, period, batch)
+        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 9, period, batch)
 
         if doLog:
             outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'CR_ZFake')
@@ -380,63 +415,8 @@ if doPlots:
         ZFake_plotter.make_save_path(outFile, clean=True)
 
         for category in cat3l:
-            p_plot.append(Process(name = 'CR_ZFake/' + category, target = plotter_wrapper, args=(ZFake_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False)))
+            p_plot.append(Process(name = 'CR_ZFake/' + category, target = plotter_wrapper, args=(ZFake_plotter, category, inFile, outFile, do1D, False, False, doLog, doRatio, False)))
 
-    doLog = True
-    
-    ### low delta eta ss control region
-    if 'high_mass_ss' in crList:
-        hm_plotter = copy.deepcopy(plotter)
-        hm_plotter.add_datasets(samples['ss'],  Clear=True)
-        hm_plotter._overlayList = ['DATA']
-
-        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 9, period, batch)
-
-        if doLog:
-            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'high_mass_ss')
-        else:
-            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'high_mass_ss')
-
-        hm_plotter.make_save_path(outFile, clean=True)
-
-        for category in catSS:
-            p_plot.append(Process(name = 'high_mass_ss/' + category, target = plotter_wrapper, args=(hm_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False)))
-
-    ### low delta eta ss control region
-    if 'low_mass_ss' in crList:
-        lm_plotter = copy.deepcopy(plotter)
-        lm_plotter.add_datasets(samples['ss'],  Clear=True)
-        lm_plotter._overlayList = ['DATA']
-
-        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 10, period, batch)
-
-        if doLog:
-            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'low_mass_ss')
-        else:
-            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'low_mass_ss')
-
-        lm_plotter.make_save_path(outFile, clean=True)
-
-        for category in catSS:
-            p_plot.append(Process(name = 'high_mass_ss/' + category, target = plotter_wrapper, args=(lm_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False)))
-
-    ### low delta eta ss control region
-    if 'barrel_leptons' in crList:
-        bl_plotter = copy.deepcopy(plotter)
-        bl_plotter.add_datasets(samples['ss'],  Clear=True)
-        bl_plotter._overlayList = ['DATA']
-
-        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 11, period, batch)
-
-        if doLog:
-            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'barrel_leptons')
-        else:
-            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'barrel_leptons')
-
-        bl_plotter.make_save_path(outFile, clean=True)
-
-        for category in cat3l + catSS:
-            p_plot.append(Process(name = 'barrel_leptons/' + category, target = plotter_wrapper, args=(bl_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False)))
 
 ### End of configuration for PlotProducer ###
 

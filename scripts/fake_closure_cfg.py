@@ -25,15 +25,15 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection', '2_Z_veto']
-fakeType    = 'Fakes_e'
+fakeType    = 'Fakes_mu'
 
 period      = '2012'
 LUMIDATA    = 19.712 
 
 doPlots     = True
-doLog       = False
+doLog       = True
 doEff       = False
-doRatio     = True
+doRatio     = False
 do1D        = True
 do2D        = False
 
@@ -71,9 +71,11 @@ samples['3l'].append(fakeType + '_ZJets')
 
 #samples['ss'].append('Fakes_Triboson')
 #samples['ss'].append('Fakes_ttV')
-samples['ss'].append(fakeType + '_ZZ4l')
-samples['ss'].append(fakeType + '_WZJets3LNu')
-samples['ss'].append(fakeType + '_top')
+#samples['ss'].append(fakeType + '_ZZ4l')
+samples['ss'].append(fakeType + '_Diboson')
+samples['ss'].append(fakeType + '_ttbar')
+samples['ss'].append(fakeType + '_tW')
+samples['ss'].append(fakeType + '_tbarW')
 #samples['ss'].append('Fakes_WJets')
 #samples['ss'].append('Fakes_QCD')
 samples['ss'].append(fakeType + '_ZJets')

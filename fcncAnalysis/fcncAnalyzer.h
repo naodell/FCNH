@@ -94,8 +94,8 @@ const string categoryNames[] = {
     //"3l_barrel",
 };
 
-const unsigned short N_CUTS = 10;
-const string cutNames[] = {"preselection", "Z veto", "jet selection",  "MET selection", "HT", "BDT", "WZ_CR", "ttbar_CR", "ttZ_CR", "ZFake_CR"};//, "high_dileptonMass_ss", "low_dileptonMass_ss", "barrel_only"};
+const unsigned short N_CUTS = 11;
+const string cutNames[] = {"preselection", "Z veto", "jet selection", "MET selection", "BDT", "WZ_CR", "ttbar_CR", "ZFake_CR", "0Jet_CR", "1Jet_CR", "2Jet_CR"};//, "high_dileptonMass_ss", "low_dileptonMass_ss", "barrel_only"};
 
 typedef vector<TCPhysObject> vObj;
 
@@ -247,9 +247,9 @@ class fcncAnalyzer : public TSelector {
         TBranch        *b_NoiseFilters;   //!
 
         //For counting events
-        int          eventCount[16];
+        int          eventCount[24];
         //For counting weighted events
-        float        eventCountWeighted[16];
+        float        eventCountWeighted[24];
 
         fcncAnalyzer(TTree * /*tree*/ =0) { }
         virtual ~fcncAnalyzer() { }
