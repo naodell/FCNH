@@ -72,7 +72,11 @@ samples['3l'].append(fakeType + '_ZJets')
 #samples['ss'].append('Fakes_Triboson')
 #samples['ss'].append('Fakes_ttV')
 #samples['ss'].append(fakeType + '_ZZ4l')
-samples['ss'].append(fakeType + '_Diboson')
+#samples['ss'].append(fakeType + '_Diboson')
+samples['ss'].append(fakeType + '_WWJets2L2Nu')
+samples['ss'].append(fakeType + '_ZZJets2L2Nu')
+#samples['ss'].append(fakeType + '_ZZJets2L2Q')
+#samples['ss'].append(fakeType + '_Diboson')
 samples['ss'].append(fakeType + '_ttbar')
 samples['ss'].append(fakeType + '_tW')
 samples['ss'].append(fakeType + '_tbarW')
@@ -198,7 +202,7 @@ if doPlots:
             plotter_3l.make_save_path(outFile, clean=True)
 
             for category in cat3l:
-                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(plotter_3l, category, inFile, outFile, do1D, do2D, doLog, doRatio, doEff)))
+                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(plotter_3l, category, inFile, outFile, do1D, do2D, False, doLog, doRatio, doEff)))
 
     ### ss selection ###
     if doSS:
@@ -217,7 +221,7 @@ if doPlots:
             ss_plotter.make_save_path(outFile, clean=True)
 
             for category in catSS:
-                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(ss_plotter, category, inFile, outFile, do1D, do2D, doLog, doRatio, doEff)))
+                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(ss_plotter, category, inFile, outFile, do1D, do2D, False, doLog, doRatio, doEff)))
 
     ### ZPlusFake control region
     ZFake_plotter = copy.deepcopy(plotter)
@@ -234,7 +238,7 @@ if doPlots:
     ZFake_plotter.make_save_path(outFile, clean=True)
 
     for category in cat3l:
-        p_plot.append(Process(name = 'CR_ZFake/' + category, target = plotter_wrapper, args=(ZFake_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False)))
+        p_plot.append(Process(name = 'CR_ZFake/' + category, target = plotter_wrapper, args=(ZFake_plotter, category, inFile, outFile, do1D, False, False, doLog, doRatio, False)))
 
 ### End of configuration for PlotProducer ###
 

@@ -94,8 +94,8 @@ const string categoryNames[] = {
     //"3l_barrel",
 };
 
-const unsigned short N_CUTS = 11;
-const string cutNames[] = {"preselection", "Z veto", "jet selection", "MET selection", "BDT", "WZ_CR", "ttbar_CR", "ZFake_CR", "0Jet_CR", "1Jet_CR", "2Jet_CR"};//, "high_dileptonMass_ss", "low_dileptonMass_ss", "barrel_only"};
+const unsigned short N_CUTS = 10;
+const string cutNames[] = {"preselection", "Z veto", "jet selection", "MET selection", "BDT", "WZ_CR", "ttbar_CR", "ZFake_CR", "0Jet_CR", "1Jet_CR"};//, "high_dileptonMass_ss", "low_dileptonMass_ss", "barrel_only"};
 
 typedef vector<TCPhysObject> vObj;
 
@@ -279,6 +279,7 @@ class fcncAnalyzer : public TSelector {
         virtual void    MetPlots(TCMET, vObj);
         virtual void    DileptonPlots2D(vObj);
         virtual void    GenPlots(vector<TCGenParticle>, vObj);
+        virtual void    FakePlots(vObj, vector<TCJet>, vector<TCJet>, TVector3);
         virtual void    MiscPlots();
         virtual void    FillYieldHists(string, float, unsigned);
 

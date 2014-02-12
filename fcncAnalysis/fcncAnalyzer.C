@@ -835,24 +835,6 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
         SetYields(12);
     }
 
-    // 0-jet CR //
-    if (jets.size() + bJetsM.size() == 0) {
-        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 8);
-        SetYields(14);
-    }
-
-    // 1-jet CR //
-    if (jets.size() + bJetsM.size() == 1) {
-        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 9);
-        SetYields(15);
-    }
-
-    // > 1-jet CR //
-    if (jets.size() + bJetsM.size() >= 2) {
-        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 10);
-        SetYields(16);
-    }
-
 
     //!!!!!!!!!!!!!//
     // Do MVA Trees//
@@ -911,11 +893,25 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
     MakePlots(leptons, jets, bJetsM, *recoMET, PV, 1);
     SetYields(6);
 
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
+    // 0-jet CR //
+    if (jets.size() + bJetsM.size() == 0) {
+        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 8);
+        SetYields(14);
+    }
 
-    //!! Require at least one b-jet !!//
+    // 1-jet CR //
+    if (jets.size() + bJetsM.size() == 1) {
+        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 9);
+        SetYields(15);
+    }
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
+
+    //!! Require at least two jets !!//
     if (bJetsM.size() + jets.size() <= 1) return true;
     MakePlots(leptons, jets, bJetsM, *recoMET, PV, 2);
     SetYields(7);
+
 
     //!! Do mva selection !!//
     if (doMVACut) {
@@ -1103,7 +1099,7 @@ void fcncAnalyzer::MakePlots(vObj leptons, vector<TCJet> jets, vector<TCJet> bJe
         MetPlots(met, leptons);
         JetPlots(jets, bJets);
         DileptonPlots2D(leptons);
-        //FakePlots(leptons, jets, bJets, PV);
+        FakePlots(leptons, jets, bJets, PV);
         MiscPlots();
 
         histManager->SetWeight(1);
@@ -1713,29 +1709,37 @@ void fcncAnalyzer::GenPlots(vector<TCGenParticle> gen, vObj leptons)
     }
 }
 
-//void fcncAnalyzer::FakePlots(vObj leptons)
-//{
-//
-//    if (fakeables.size() >= 1) {
-//        unsigned flCategory = GetHistCategory(2) - 10;
-//        histManager->SetFileNumber(0);
-//        histManager->SetDirectory(categoryNames[flCategory] + "/Fakes");
-//        histManager->Fill1DHist(recoMET->DeltaPhi(fakeables[0].P2()),
-//                "h1_MetFakeableDeltaPhi", "#Delta#phi(fakeable, MET);#Delta#phi(fakeable, MET);Entries / bin", 36, 0., TMath::Pi());
-//
-//        vector<TCJet> muFakeJets    = selector->GetSelectedJets("muFakes");
-//        vector<TCJet> eleFakeJets   = selector->GetSelectedJets("eleFakes");
-//
-//        for (unsigned i = 0; i < muFakeJets.size(); ++i) {
-//            histManager->Fill1DHist(muFakeJets[i].BDiscriminatorMap("CSV"),
-//                    "h1_MatchedMuJetBDiscr", "matched #mu-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
-//        }
-//        for (unsigned i = 0; i < eleFakeJets.size(); ++i) {
-//            histManager->Fill1DHist(eleFakeJets[i].BDiscriminatorMap("CSV"),
-//                    "h1_MatchedEleJetBDiscr", "matched e-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
-//        }
-//    }
-//}
+void fcncAnalyzer::FakePlots(vObj leptons, vector<TCJet> jets, vector<TCJet> bJets, TVector3 PV)
+{
+  
+    // Find fakes if present
+    vObj fakeables;
+    bitset<3> fakeIndices;
+    for (unsigned i = 0; i < leptons.size(); ++i) {
+        if (leptons[i].IsFake()) {
+            fakeables.push_back(leptons[i]);
+            fakeIndices.set(i);
+        }
+    }
+
+    //if (fakeables.size() >= 1) {
+    //    unsigned flCategory = GetHistCategory(2) - 10;
+    //    histManager->Fill1DHist(recoMET->DeltaPhi(fakeables[0].P2()),
+    //            "h1_MetFakeableDeltaPhi", "#Delta#phi(fakeable, MET);#Delta#phi(fakeable, MET);Entries / bin", 36, 0., TMath::Pi());
+
+    //    vector<TCJet> muFakeJets    = selector->GetSelectedJets("muFakes");
+    //    vector<TCJet> eleFakeJets   = selector->GetSelectedJets("eleFakes");
+
+    //    for (unsigned i = 0; i < muFakeJets.size(); ++i) {
+    //        histManager->Fill1DHist(muFakeJets[i].BDiscriminatorMap("CSV"),
+    //                "h1_MatchedMuJetBDiscr", "matched #mu-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
+    //    }
+    //    for (unsigned i = 0; i < eleFakeJets.size(); ++i) {
+    //        histManager->Fill1DHist(eleFakeJets[i].BDiscriminatorMap("CSV"),
+    //                "h1_MatchedEleJetBDiscr", "matched e-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
+    //    }
+    //}
+}
 
 void fcncAnalyzer::SetEventCategory(vObj leptons)
 {

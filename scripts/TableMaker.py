@@ -97,7 +97,6 @@ class TableMaker(AnalysisTools):
             sigErr2  = 0.
             bgErr2   = 0.
 
-
             # Calculate total background and signal
             for dataset in self._datasets:
                 value = histDict[dataset].GetBinContent(count)

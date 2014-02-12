@@ -185,10 +185,7 @@ class PlotProducer(AnalysisTools):
         '''
         hStack = r.THStack('hStack', '')
         for i, (hist, data) in enumerate(histList):
-            if self._drawNormalized:
-                hStack.Add(hist.Clone().Scale(1./hist.Integral()))
-            else:
-                hStack.Add(hist)
+            hStack.Add(hist)
 
             if i == 0:
                 hStack.SetTitle(hist.GetTitle() + ';' + hist.GetXaxis().GetTitle() + ';' + hist.GetYaxis().GetTitle())
@@ -413,6 +410,11 @@ class PlotProducer(AnalysisTools):
         ### Setting up the canvas and splitting
         ### if doing complimentary plotting
         canvas = r.TCanvas('canvas', 'canvas', 650, 700)
+        canvas.SetRightMargin(0.18)
+        canvas.SetLeftMargin(0.15)
+
+        if logScale:
+            canvas.SetLogy()
 
         ### Build the legend from the list of samples
         tmpHists = {}
@@ -425,7 +427,6 @@ class PlotProducer(AnalysisTools):
             self.make_save_path('{0}/{1}/{2}'.format(self._savePath, self._category, directory))
 
             for var in self._variableDict[directory]:
-
                 if var not in hists.keys(): continue
 
                 #if not logScale or not doRatio:
@@ -440,22 +441,32 @@ class PlotProducer(AnalysisTools):
                     if hist.GetMaximum() > hist_max:
                         hist_max = hist.GetMaximum()
 
-                    if self._drawNormalized:
-                        hist.DrawNormalized('H SAME')
+                if logScale:
+                    hists[var][0][0].SetMaximum(2.*hist_max)
+                    hists[var][0][0].SetMinimum(0.1)
+                else:               
+                    hists[var][0][0].SetMaximum(1.25*hist_max)
+                    hists[var][0][0].SetMinimum(0.00001)
+
+                for i,(hist, data) in enumerate(hists[var]):
+                    if i == 0:
+                        drawOpt = 'HIST'
                     else:
-                        hist.Draw('H SAME')
+                        drawOpt = 'HIST SAME'
 
-                #if logScale:
-                #    hists[var][0][0].SetMaximum(5*hist_max)
-                #    hists[var][0][0].SetMinimum(0.2)
-                #else:               
-                #    hists[var][0][0].SetMaximum(1.25*hist_max)
-                #    hists[var][0][0].SetMinimum(0.00001)
+                    hist.SetFillStyle(0)
 
-                legend.SetX1(0.91)
+                    if self._drawNormalized:
+                        hist.DrawNormalized(drawOpt)
+                    else:
+                        hist.Draw(drawOpt)
+
+
+                legend.SetX1(0.85)
                 legend.SetX2(1.0)
-                legend.SetY1(0.25)
+                legend.SetY1(0.55)
                 legend.SetY2(0.89)
+                legend.SetTextSize(0.03)
                 legend.Draw()
 
                 ## Draw info box ##
@@ -553,22 +564,13 @@ class PlotProducer(AnalysisTools):
                     stacks[var].GetXaxis().SetTitleSize(0.04);
                     stacks[var].Draw('HIST')
 
-                if self._drawNormalized:
-                    sums[var].DrawNormalized('E2 SAME')
-                else:
-                    sums[var].Draw('E2 SAME')
+                sums[var].Draw('E2 SAME')
 
                 for (hist, data) in hists[var]:
                     if data == 'FCNH':
-                        if self._drawNormalized:
-                            hist.DrawNormalized('H SAME')
-                        else:
-                            hist.Draw('H SAME')
+                        hist.Draw('H SAME')
                     else:
-                        if self._drawNormalized:
-                            hist.DrawNormalized('E SAME')
-                        else:
-                            hist.Draw('E SAME')
+                        hist.Draw('E SAME')
 
                 legend.Draw()
 
