@@ -7,5 +7,5 @@
 
 #include "../interface/TCGenJet.h"
 #ifdef __CINT__
-#pragma link C++ class TCGenJet;
+#pragma link C++ class TCGenJet+;
 #endif

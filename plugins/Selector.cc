@@ -6,7 +6,6 @@ Selector::Selector()
 
 Selector::~Selector()
 {
-    delete electronMVA;
 }
 
 Selector::Selector(const float* muPtCuts, const float* elePtCuts, const float* jetPtCuts, const float* phoPtCuts) 
@@ -23,18 +22,6 @@ Selector::Selector(const float* muPtCuts, const float* elePtCuts, const float* j
     _misTagEff  = (TGraphAsymmErrors*)f_bEff->Get("g_MistagEff");
     _bTagEff    = (TGraphAsymmErrors*)f_bEff->Get("g_bTagEff");
     _cTagEff    = (TGraphAsymmErrors*)f_bEff->Get("g_cTagEff");
-
-    // Initialize electron MVA tool 
-    std::vector<std::string> WeightsMVA;
-    WeightsMVA.push_back("../data/weights/Electrons_BDTG_TrigV0_Cat1.weights.xml");
-    WeightsMVA.push_back("../data/weights/Electrons_BDTG_TrigV0_Cat2.weights.xml");
-    WeightsMVA.push_back("../data/weights/Electrons_BDTG_TrigV0_Cat3.weights.xml");
-    WeightsMVA.push_back("../data/weights/Electrons_BDTG_TrigV0_Cat4.weights.xml");
-    WeightsMVA.push_back("../data/weights/Electrons_BDTG_TrigV0_Cat5.weights.xml");
-    WeightsMVA.push_back("../data/weights/Electrons_BDTG_TrigV0_Cat6.weights.xml");
-
-    electronMVA = new EGammaMvaEleEstimator();
-    electronMVA->initialize("BDT", EGammaMvaEleEstimator::kTrig, true, WeightsMVA);
 
     muCorrector = new rochcor2012(229);
 
@@ -237,11 +224,11 @@ void Selector::MuonSelector(TClonesArray* muons)
         thisMuon->SetPtEtaPhiM(tmpP4.Pt(), tmpP4.Eta(), tmpP4.Phi(), tmpP4.M());
 
         // isolation
-        float muISO = 0.;
-        muISO = (thisMuon->IsoMap("pfChargedHadronPt_R04") + TMath::Max(0.0, (double)thisMuon->IsoMap("pfPhotonEt_R04") 
-                    + thisMuon->IsoMap("pfNeutralHadronEt_R04") - 0.5*thisMuon->IsoMap("pfPUPt_R04"))
-                    //+ thisMuon->IsoMap("pfNeutralHadronEt_R04") - TMath::Max(0.0, (double)_rho*EffectiveArea(thisMuon)))
-                )/thisMuon->Pt();
+        float muISO = (thisMuon->PfIsoChargedHad() + max(0.,(double)thisMuon->PfIsoNeutral()+ thisMuon->PfIsoPhoton() - 0.5*thisMuon->PfIsoPU()));
+        //muISO = (thisMuon->IsoMap("pfChargedHadronPt_R04") + TMath::Max(0.0, (double)thisMuon->IsoMap("pfPhotonEt_R04") 
+        //            + thisMuon->IsoMap("pfNeutralHadronEt_R04") - 0.5*thisMuon->IsoMap("pfPUPt_R04"))
+        //            //+ thisMuon->IsoMap("pfNeutralHadronEt_R04") - TMath::Max(0.0, (double)_rho*EffectiveArea(thisMuon)))
+        //        )/thisMuon->Pt();
 
         thisMuon->SetIsoMap("IsoRel", muISO);
         //cout << "(" << thisMuon->Pt() << ", " << thisMuon->Eta() << "),\t";
@@ -297,18 +284,7 @@ bool Selector::ElectronMVA(TCElectron* electron)
 {
     bool pass = false;
 
-    double mvaValue = electronMVA->mvaValue( electron->IdMap("fbrem"),
-            electron->IdMap("kfChi2"), electron->IdMap("kfNLayers"),
-            electron->IdMap("gsfChi2"), electron->IdMap("dEta"),
-            electron->IdMap("dPhi"), electron->IdMap("dEtaAtCalo"),
-            electron->SigmaIEtaIEta(), electron->IdMap("SigmaIPhiIPhi"),
-            electron->IdMap("SCEtaWidth"), electron->IdMap("SCPhiWidth"),
-            electron->IdMap("ome1x5oe5x5"), electron->IdMap("R9"),
-            electron->HadOverEm(), electron->IdMap("EoP"),
-            electron->IdMap("ooemoopV1"), electron->IdMap("eopOut"),
-            electron->IdMap("preShowerORaw"), electron->IdMap("d0"),
-            electron->IdMap("ip3d"), electron->SCEta(), electron->Pt(), false);                
-
+    double mvaValue = electron->MvaID_Old();
     electron->SetIdMap("mva", mvaValue);
 
     if (fabs(electron->Eta()) < 0.8) {
@@ -338,21 +314,21 @@ bool Selector::ElectronTightID(TCElectron* electron)
             ((fabs(electron->Eta()) < 1.442     
               //&& electron->PtError()/electron->Pt()  < 0.1
               && electron->SigmaIEtaIEta()           < 0.01  
-              && fabs(electron->DphiSuperCluster())  < 0.06  
-              && fabs(electron->DetaSuperCluster())  < 0.004 
+              && fabs(electron->SCDeltaPhi())  < 0.06  
+              && fabs(electron->SCDeltaEta())  < 0.004 
               && electron->HadOverEm()               < 0.12      
              ) ||
              (fabs(electron->Eta()) >  1.556  
               //&& electron->PtError()/electron->Pt()  < 0.1
               && electron->SigmaIEtaIEta()           < 0.03  
-              && fabs(electron->DphiSuperCluster())  < 0.03  
-              && fabs(electron->DetaSuperCluster())  < 0.007 
+              && fabs(electron->SCDeltaPhi())  < 0.03  
+              && fabs(electron->SCDeltaEta())  < 0.007 
               && electron->HadOverEm()               < 0.1
              ))
             && electron->IdMap("fabsEPDiff")       < 0.05
             && fabs(electron->Dxy(_selVertices[0])) < 0.02
             && fabs(electron->Dz(_selVertices[0]))  < 0.1
-            && electron->ConversionVeto()
+            && electron->PassConversionVeto()
        ) pass = true;
 
     return pass;
@@ -364,20 +340,42 @@ bool Selector::ElectronLooseID(TCElectron* electron)
     if (
             ((fabs(electron->Eta()) < 1.442     
               && electron->SigmaIEtaIEta()           < 0.01  
-              && fabs(electron->DphiSuperCluster())  < 0.15  
-              && fabs(electron->DetaSuperCluster())  < 0.007 
+              && fabs(electron->SCDeltaPhi())  < 0.15  
+              && fabs(electron->SCDeltaEta())  < 0.007 
               && electron->HadOverEm()               < 0.12      
              ) ||
              (fabs(electron->Eta()) >  1.556  
               && electron->SigmaIEtaIEta()           < 0.03  
-              && fabs(electron->DphiSuperCluster())  < 0.1   
-              && fabs(electron->DetaSuperCluster())  < 0.009 
+              && fabs(electron->SCDeltaPhi())  < 0.1   
+              && fabs(electron->SCDeltaEta())  < 0.009 
               && electron->HadOverEm()               < 0.1
              ))
             && fabs(electron->Dxy(_selVertices[0])) < 0.2
             && fabs(electron->Dz(_selVertices[0]))  < 0.2
-            && electron->ConversionVeto()
+            && electron->PassConversionVeto()
        ) pass = true;
+
+    return pass;
+}
+
+bool Selector::ElectronMVAPreSel(TCElectron* electron)
+{
+    bool pass = false;
+    if (
+            fabs(electron->Eta()) < 1.479
+            && electron->IdMap("gsf_numberOfLostHits") == 0
+            && (electron->IdMap("dr03TkSumPt")) / electron->Pt() < 0.2
+            && (electron->IdMap("dr03EcalRecHitSumEt")) /electron->Pt() < 0.2
+            && (electron->IdMap("dr03HcalTowerSumEt")) / electron->Pt() < 0.2
+       ) {
+        if (electron->SigmaIEtaIEta()< 0.014 && electron->IdMap("hadronicOverEm") < 0.15) {
+            pass = true;
+        }
+    } else { //endcap
+        if (electron->SigmaIEtaIEta()< 0.035 && electron->IdMap("hadronicOverEm") < 0.10) {
+            pass = true;
+        }
+    }
 
     return pass;
 }
@@ -405,18 +403,20 @@ void Selector::ElectronSelector(TClonesArray* electrons)
         if ( 
                 thisElec->Pt() < _elePtCuts[0] 
                 || fabs(thisElec->Eta()) > 2.5 
-                || !thisElec->ConversionVeto() 
+                || !thisElec->PassConversionVeto() 
                 || fabs(thisElec->Dz(_selVertices[0])) > 0.05 
                 || fabs(thisElec->Dxy(_selVertices[0])) > 0.015
            ) continue;
 
-        float eleISO = (thisElec->IsoMap("pfChIso_R04") + max(0., (double)(thisElec->IsoMap("pfPhoIso_R04") 
-                        + thisElec->IsoMap("pfNeuIso_R04") - _rho*thisElec->IsoMap("EffArea_R04"))))/thisElec->Pt(); 
+        //float eleISO = (thisElec->IsoMap("pfChIso_R04") + max(0., (double)(thisElec->IsoMap("pfPhoIso_R04") 
+        //                + thisElec->IsoMap("pfNeuIso_R04") - _rho*thisElec->IsoMap("EffArea_R04"))))/thisElec->Pt(); 
+        float eleISO = (thisElec->PfIsoCharged() + max(0.,(double)thisElec->PfIsoNeutral() + thisElec->PfIsoPhoton() 
+                    - _rho*thisElec->EffArea()))/thisElec->Pt();
 
         thisElec->SetIsoMap("IsoRel", eleISO);
 
         // analysis electrons
-        if (thisElec->IdMap("preSelPassV1")) {
+        if (ElectronMVAPreSel(thisElec)) {
 
             _selElectrons["QCD2l_CR_probe"].push_back(*thisElec);
 
@@ -546,7 +546,7 @@ void Selector::JetSelector(TClonesArray* jets)
                         if (!overlap[2] && !overlap[3])
                             _selJets["bJetsMedium_NoFakes"].push_back(corJet);
                         else if (overlap[2])
-                             _selJets["muFakes"].push_back(corJet);
+                            _selJets["muFakes"].push_back(corJet);
                         else if (overlap[3])
                             _selJets["eleFakes"].push_back(corJet);
 
@@ -567,12 +567,12 @@ void Selector::JetSelector(TClonesArray* jets)
 
                     //} else if (BTagModifier(corJet, "CSVL")) {
                 if (corJet.BDiscriminatorMap("CSV") > 0.244 && corJet.BDiscriminatorMap("CSV") < 0.679) {
-                        _selJets["bJetsLoose"].push_back(corJet);
+                    _selJets["bJetsLoose"].push_back(corJet);
 
-                        if (!overlap[2] && !overlap[3])
-                            _selJets["bJetsLoose_NoFakes"].push_back(corJet);
-                    }
+                    if (!overlap[2] && !overlap[3])
+                        _selJets["bJetsLoose_NoFakes"].push_back(corJet);
                 }
+            }
             }
         } else if (fabs(corJet.Eta()) < 3.5) {
             if (

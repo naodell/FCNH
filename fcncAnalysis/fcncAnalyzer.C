@@ -380,34 +380,42 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
         selector->GenJetSelector(genJets);
         gJets = selector->GetSelectedGenJets();
+
+        // Hack to split ttbar sample
+        if (suffix == "ttbar_had" && gLeptons.size() > 1)
+            return kTRUE;
+        else if (suffix == "ttbar_lep" && gLeptons.size() != 2)
+            return kTRUE;
     }
 
     if (doGenPrint) {
         // Higgs
         for (unsigned i = 0; i < higgs.size(); ++i)
             if (higgs[i].GetStatus() == 3) 
-                cout << higgs[i].GetStatus() << ", " << higgs[i].M() << ", " << higgs[i].Mother() << ", higgs" << endl;
+                cout << higgs[i].GetStatus() << ", " << higgs[i].M() << ", " << higgs[i].Mother()->GetPDGId() << ", higgs" << endl;
 
         // Vector bosons
         for (unsigned i = 0; i < dubyas.size(); ++i)
             if (dubyas[i].GetStatus() == 3) 
-                cout << "\t status = " << dubyas[i].GetStatus() <<  ", mass = " << dubyas[i].M() << ", pt = " << dubyas[i].Pt() << ", mother = " << dubyas[i].Mother() << ", dubyas" << endl;
+                cout << "\t status = " << dubyas[i].GetStatus() <<  ", mass = " << dubyas[i].M() << ", pt = " << dubyas[i].Pt() << ", dubyas" << endl;
+
         for (unsigned i = 0; i < Zeds.size(); ++i)
             if (Zeds[i].GetStatus() == 3) 
-                cout << "\t status = " << Zeds[i].GetStatus() << ", mass = " << Zeds[i].M() << ", pt = " << Zeds[i].Pt() << ", mother = " << Zeds[i].Mother() << ", Zeds" << endl;
+                cout << "\t status = " << Zeds[i].GetStatus() << ", mass = " << Zeds[i].M() << ", pt = " << Zeds[i].Pt() << ", mother = " << Zeds[i].Mother()->GetPDGId() << ", Zeds" << endl;
 
         // leptons
         if ((gElectrons.size() + gMuons.size() + gTaus.size()) > 0) {
             for (unsigned i = 0; i < gElectrons.size(); ++i)
-                cout << "\t\t" << gElectrons[i].GetStatus() << ", " << gElectrons[i].Pt() << ", " << gElectrons[i].Eta() << ", " << gElectrons[i].Mother() << ", " << gElectrons[i].Grandmother() << ", electrons" << endl;
+                cout << "\t\t" << gElectrons[i].GetStatus() << ", " << gElectrons[i].Pt() << ", " << gElectrons[i].Eta() << ", " << gElectrons[i].Mother()->GetPDGId() << ", electrons" << endl;
             for (unsigned i = 0; i < gMuons.size(); ++i)
-                cout << "\t\t" << gMuons[i].GetStatus() << ", " << gMuons[i].Pt() << ", " << gMuons[i].Eta() << ", " << gMuons[i].Mother() << ", " << gMuons[i].Grandmother() << ", muons" << endl;
+                cout << "\t\t" << gMuons[i].GetStatus() << ", " << gMuons[i].Pt() << ", " << gMuons[i].Eta() << ", " << gMuons[i].Mother()->GetPDGId() << ", muons" << endl;
             for (unsigned i = 0; i < gTaus.size(); ++i)
-                cout << "\t\t" << gTaus[i].GetStatus() << ", " << gTaus[i].Pt() << ", " << gTaus[i].Eta() << ", " << gTaus[i].Mother() << ", " << gTaus[i].Grandmother() << ", taus" << endl;
+                cout << "\t\t" << gTaus[i].GetStatus() << ", " << gTaus[i].Pt() << ", " << gTaus[i].Eta() << ", " << gTaus[i].Mother()->GetPDGId() << ", taus" << endl;
         }
 
         cout << "\n" << endl;
     }
+
 
 
     //////////////////////
@@ -1634,7 +1642,7 @@ void fcncAnalyzer::GenPlots(vector<TCGenParticle> gen, vObj leptons)
     for (unsigned i = 0; i < gen.size(); ++i) {
 
         if (gen.size() == 3) {
-            if (gen[i].Grandmother() == 25) {
+            if (gen[i].Mother()->Mother()->GetPDGId() == 25) {
                 string index = str(higgsLepCount + 1);
                 histManager->Fill1DHist(gen[i].Pt(),
                         "h1_GenHiggsLeptonPt" + index, "Higgs lepton " + index + " p_{T};p_{T," + index + "};Entries / 5 GeV", 40, 0., 200.);
@@ -1645,7 +1653,7 @@ void fcncAnalyzer::GenPlots(vector<TCGenParticle> gen, vObj leptons)
 
             }
 
-            if (fabs(gen[i].Grandmother()) == 6) {
+            if (fabs(gen[i].Mother()->Mother()->GetPDGId()) == 6) {
                 histManager->Fill1DHist(gen[i].Pt(),
                         "h1_TopLeptonPt", "top lepton p_{T};p_{T};Entries / 5 GeV", 40, 0., 200.);
                 histManager->Fill1DHist(gen[i].Eta(),

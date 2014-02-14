@@ -7,5 +7,5 @@
 
 #include "../interface/TCPrimaryVtx.h"
 #ifdef __CINT__
-#pragma link C++ class TCPrimaryVtx;
+#pragma link C++ class TCPrimaryVtx+;
 #endif

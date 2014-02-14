@@ -6,11 +6,13 @@
 
 using namespace std;
 
-void run(Long64_t nEntries = 1e6, string args = "TEST muon 2012") 
+void run(Long64_t nEntries = 1e5, string args = "TEST muon 2012") 
 {
 
     //container classes
     gROOT->LoadMacro("../src/TCPhysObject.cc+");
+    gROOT->LoadMacro("../src/TCTrack.cc+");
+    gROOT->LoadMacro("../src/TCEGamma.cc+");
     gROOT->LoadMacro("../src/TCJet.cc+");
     gROOT->LoadMacro("../src/TCMET.cc+");
     gROOT->LoadMacro("../src/TCElectron.cc+");
