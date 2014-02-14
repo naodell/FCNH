@@ -24,21 +24,17 @@ else:
 plotType    = '.png'
 selection   = 'fcnh'
 
-<<<<<<< HEAD
 cutList     = ['1_preselection']
 cutList.extend(['2_Z_veto', '3_jet', '4_MET'])
-=======
-cutList     = ['1_preselection', '2_Z_veto']
-fakeType    = 'Fakes_e'
->>>>>>> b6d8dd4cb7ee4998fe3169b80a4ae28da3ff3610
+fakeType    = 'Fakes_mu'
 
 period      = '2012'
 LUMIDATA    = 19.712 
 
 doPlots     = True
-doLog       = False
+doLog       = True
 doEff       = False
-doRatio     = True
+doRatio     = False
 do1D        = True
 do2D        = False
 
@@ -76,9 +72,11 @@ samples['3l'].append(fakeType + '_ZJets')
 
 #samples['ss'].append('Fakes_Triboson')
 #samples['ss'].append('Fakes_ttV')
-samples['ss'].append(fakeType + '_ZZ4l')
-samples['ss'].append(fakeType + '_WZJets3LNu')
-samples['ss'].append(fakeType + '_top')
+#samples['ss'].append(fakeType + '_ZZ4l')
+samples['ss'].append(fakeType + '_Diboson')
+samples['ss'].append(fakeType + '_ttbar')
+samples['ss'].append(fakeType + '_tW')
+samples['ss'].append(fakeType + '_tbarW')
 #samples['ss'].append('Fakes_WJets')
 #samples['ss'].append('Fakes_QCD')
 samples['ss'].append(fakeType + '_ZJets')
@@ -188,11 +186,7 @@ if doPlots:
 
         plotter_3l = copy.deepcopy(plotter)
         plotter_3l.add_datasets(samples['3l'], Clear=True)
-<<<<<<< HEAD
-        #plotter_3l._overlayList = ['Fakes']
-=======
         plotter_3l._overlayList = [fakeType]
->>>>>>> b6d8dd4cb7ee4998fe3169b80a4ae28da3ff3610
 
         for i, cut in enumerate(cutList):
             inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)

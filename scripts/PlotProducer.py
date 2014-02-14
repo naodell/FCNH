@@ -48,7 +48,7 @@ def set_hist_style(hist, dataType, styleDict, histType = '1D'):
     Set styles of histograms to be stacked
     '''
 
-    if dataType.split('_')[0] == 'Fakes' and dataType not in ['Fakes', 'Fakes_e', 'Fakes_mu', 'Fakes_ee', 'Fakes_emu', 'Fakes_mumu']:
+    if dataType.split('_')[0] == 'Fakes' and dataType not in ['Fakes', 'Fakes_e', 'Fakes_mu', 'Fakes_ee', 'Fakes_emu', 'Fakes_mumu', 'Fakes_ll']:
         dataType = dataType.split('_')[2]
 
     hist.SetMarkerStyle(styleDict[dataType][3])
@@ -76,7 +76,7 @@ def build_legend(hists, dataList, styleDict):
     legend.SetTextSize(0.045)
 
     for data in dataList[::-1]:
-        if data.split('_')[0] == 'Fakes' and data not in ['Fakes', 'Fakes_e', 'Fakes_mu', 'Fakes_ee', 'Fakes_emu', 'Fakes_mumu']:
+        if data.split('_')[0] == 'Fakes' and data not in ['Fakes', 'Fakes_e', 'Fakes_mu', 'Fakes_ee', 'Fakes_emu', 'Fakes_mumu', 'Fakes_ll']:
             dataName = data.split('_')[2]
         else:
             dataName = data
@@ -92,14 +92,18 @@ def build_legend(hists, dataList, styleDict):
 
 class PlotProducer(AnalysisTools):
     '''For manipulating histograms'''
-    def __init__(self, inputFile, scale = 1., savePath = '', isAFS = False):
+    def __init__(self, inputFile, scale = 1., savePath = '', isAFS = False, drawNorm = False):
         AnalysisTools.__init__(self, inputFile, scale, savePath)
         self._plotType          = '.png'
         self._makeIndex         = isAFS
+        self._drawNormalized    = drawNorm
         self._overlayList       = []
         self._directoryList1D   = []
         self._directoryList2D   = []
         self._variableDict      = {}
+
+    def draw_normalized(self, drawNorm):
+        self._drawNormalized = drawNorm
 
     def set_output_type(self, plotType):
 
@@ -144,7 +148,6 @@ class PlotProducer(AnalysisTools):
             for data in self._datasets:
                 hist = self.combine_samples(var, data, histType)
 
-
                 if hist is None: continue
 
                 if var == 'HT':
@@ -182,7 +185,11 @@ class PlotProducer(AnalysisTools):
         '''
         hStack = r.THStack('hStack', '')
         for i, (hist, data) in enumerate(histList):
-            hStack.Add(hist)
+            if self._drawNormalized:
+                hStack.Add(hist.Clone().Scale(1./hist.Integral()))
+            else:
+                hStack.Add(hist)
+
             if i == 0:
                 hStack.SetTitle(hist.GetTitle() + ';' + hist.GetXaxis().GetTitle() + ';' + hist.GetYaxis().GetTitle())
         return hStack
@@ -398,6 +405,75 @@ class PlotProducer(AnalysisTools):
 
         canvas.SaveAs('{0}/{1}/{2}/{3}{4}'.format(self._savePath, self._category, directory, outputName, self._plotType))
 
+    def make_overlays_1D_simple(self, logScale = False):
+        '''
+        Process to produce simple overlays from 1D histograms.
+        '''
+
+        ### Setting up the canvas and splitting
+        ### if doing complimentary plotting
+        canvas = r.TCanvas('canvas', 'canvas', 650, 700)
+
+        ### Build the legend from the list of samples
+        tmpHists = {}
+        legend = build_legend(tmpHists, self._overlayList, self._styleDict)
+
+        ### Starting loop over directories in histogram file
+        for directory in self._directoryList1D:
+            hists        = self.get_hist_dict(directory)
+
+            self.make_save_path('{0}/{1}/{2}'.format(self._savePath, self._category, directory))
+
+            for var in self._variableDict[directory]:
+
+                if var not in hists.keys(): continue
+
+                #if not logScale or not doRatio:
+                    #stacks[var].GetYaxis().SetTitleOffset(1.3);
+                    #stacks[var].GetYaxis().SetTitleSize(0.04);
+                    #stacks[var].GetXaxis().SetTitleOffset(0.9);
+                    #stacks[var].GetXaxis().SetTitleSize(0.04);
+                    #stacks[var].Draw('HIST')
+
+                hist_max = 0
+                for (hist, data) in hists[var]:
+                    if hist.GetMaximum() > hist_max:
+                        hist_max = hist.GetMaximum()
+
+                    if self._drawNormalized:
+                        hist.DrawNormalized('H SAME')
+                    else:
+                        hist.Draw('H SAME')
+
+                #if logScale:
+                #    hists[var][0][0].SetMaximum(5*hist_max)
+                #    hists[var][0][0].SetMinimum(0.2)
+                #else:               
+                #    hists[var][0][0].SetMaximum(1.25*hist_max)
+                #    hists[var][0][0].SetMinimum(0.00001)
+
+                legend.SetX1(0.91)
+                legend.SetX2(1.0)
+                legend.SetY1(0.25)
+                legend.SetY2(0.89)
+                legend.Draw()
+
+                ## Draw info box ##
+                r.gStyle.SetOptTitle(0)
+                textBox = r.TPaveText(0.09, 0.91, 0.91, 0.98, 'NDC')
+                textBox.SetFillColor(0)
+                textBox.SetFillStyle(0)
+                textBox.SetLineWidth(0)
+                textBox.SetLineColor(0)
+                textBox.SetTextSize(0.03)
+
+                if self._period is '2011':
+                    textBox.AddText('#scale[1.2]{CMS preliminary, #sqrt{s} = 7 TeV, #it{L}_{int}' + ' = {0:.1f}'.format(self._scale) + ' fb^{-1}       #bf{#color[2]{' + categories[self._category] + '}}}')
+                elif self._period is '2012':
+                    textBox.AddText('#scale[1.2]{CMS preliminary, #sqrt{s} = 8 TeV, #it{L}_{int}' + ' = {0:.1f}'.format(self._scale) + ' fb^{-1}       #bf{#color[2]{' + categories[self._category] + '}}}')
+                textBox.Draw('same')
+
+                canvas.SaveAs(self._savePath + '/' + self._category + '/' + directory + '/' + var + self._plotType)
 
     def make_overlays_1D(self, logScale = False, doRatio = True, doEff = False):
         '''
@@ -461,7 +537,10 @@ class PlotProducer(AnalysisTools):
                     legend.SetY1(0.25)
                     legend.SetY2(0.89)
 
-                stacks[var].Draw('HIST')
+                if stacks[var]:
+                    stacks[var].Draw('HIST')    
+                else:
+                    continue
 
                 if not logScale or not doRatio:
 
@@ -474,9 +553,22 @@ class PlotProducer(AnalysisTools):
                     stacks[var].GetXaxis().SetTitleSize(0.04);
                     stacks[var].Draw('HIST')
 
-                sums[var].Draw('E2 SAME')
+                if self._drawNormalized:
+                    sums[var].DrawNormalized('E2 SAME')
+                else:
+                    sums[var].Draw('E2 SAME')
+
                 for (hist, data) in hists[var]:
-                    hist.Draw('E SAME')
+                    if data == 'FCNH':
+                        if self._drawNormalized:
+                            hist.DrawNormalized('H SAME')
+                        else:
+                            hist.Draw('H SAME')
+                    else:
+                        if self._drawNormalized:
+                            hist.DrawNormalized('E SAME')
+                        else:
+                            hist.Draw('E SAME')
 
                 legend.Draw()
 
@@ -565,7 +657,6 @@ class PlotProducer(AnalysisTools):
                     hEffBG.Delete()
                     hEffSig.Delete()
                     hSignif.Delete()
-                
 
         if self._makeIndex: make_index_afs(self._savePath)
 
@@ -722,14 +813,17 @@ class PlotProducer(AnalysisTools):
 #### End of PlotProducer class definition ####
 ####                                      ####  
 
-def plotter_wrapper(plotter, category, inputPath, outputPath, do1D, do2D, log, ratios, eff):
+def plotter_wrapper(plotter, category, inputPath, outputPath, do1D, do2D, doSimple, log, ratios, eff):
 
     plotter.set_input_file(inputPath)
     plotter.set_save_path(outputPath)
     plotter.set_category(category)
 
     if do1D:
-        plotter.make_overlays_1D(logScale = log, doRatio = ratios, doEff = eff)
+        if doSimple:
+            plotter.make_overlays_1D_simple(logScale = log)
+        else:
+            plotter.make_overlays_1D(logScale = log, doRatio = ratios, doEff = eff)
     if do2D:
         plotter.make_overlays_2D(logScale = log, doProjection = False)
 

@@ -751,11 +751,13 @@ void fcncAnalyzer::Terminate()
 
     // Control regions //
     cout<<"\nControl region event yields."<<"\n"<<endl;
-    cout<<"| WZ:                                |\t" << eventCount[10]  << "\t|\t" << eventCountWeighted[10] << "\t|"<<endl;
-    cout<<"| ttbar:                             |\t" << eventCount[11]  << "\t|\t" << eventCountWeighted[11] << "\t|"<<endl;
-    cout<<"| ttZ:                               |\t" << eventCount[12]  << "\t|\t" << eventCountWeighted[12] << "\t|"<<endl;
-    cout<<"| low eta:                           |\t" << eventCount[13]  << "\t|\t" << eventCountWeighted[13] << "\t|"<<endl;
-    cout<<"| ZZ:                                |\t" << eventCount[14]  << "\t|\t" << eventCountWeighted[14] << "\t|"<<endl;
+    cout<<"| WZ:                                |\t" << eventCount[9]   << "\t|\t" << eventCountWeighted[9]  << "\t|"<<endl;
+    cout<<"| ttbar:                             |\t" << eventCount[10]  << "\t|\t" << eventCountWeighted[10] << "\t|"<<endl;
+    cout<<"| Z+fake:                            |\t" << eventCount[11]  << "\t|\t" << eventCountWeighted[11] << "\t|"<<endl;
+    cout<<"| ZZ4l:                              |\t" << eventCount[12]  << "\t|\t" << eventCountWeighted[12] << "\t|"<<endl;
+    cout<<"| 0-jet:                             |\t" << eventCount[13]  << "\t|\t" << eventCountWeighted[13] << "\t|"<<endl;
+    cout<<"| 1-jet:                             |\t" << eventCount[14]  << "\t|\t" << eventCountWeighted[14] << "\t|"<<endl;
+    cout<<"| >= 2-jet:                          |\t" << eventCount[15]  << "\t|\t" << eventCountWeighted[15] << "\t|"<<endl;
 
 
     //for (int i = 0; i < 8; ++i) fout[i].close();
@@ -797,7 +799,7 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
     if (leptons.size() == 4) {
         if ( bJetsM.size() == 0) {
             Make4lPlots(leptons, *recoMET);
-            SetYields(14);
+            SetYields(13);
         }
         return kTRUE; 
     }
@@ -815,7 +817,7 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
             && jets.size() > 1
             && METLD > 0.3
        ) {
-        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 6);
+        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 5);
         SetYields(10);
     }
 
@@ -827,19 +829,8 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
             && leptons[0].Charge() != leptons[1].Charge()
             && MET > 30
        ) {
-        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 7);
+        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 6);
         SetYields(11);
-    }
-
-    // ttZ control region //
-    if (
-            leptons.size() >= 3 
-            && zTagged
-            && (bJetsM.size() >= 1 || bJetsL.size() >= 2)
-            && METLD > 0.2 
-       ) {
-        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 8);
-        SetYields(12);
     }
 
     // Z+fake control region //
@@ -848,8 +839,26 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
             && leptons.size() == 3 
             && MET < 30
        ) {
+        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 7);
+        SetYields(12);
+    }
+
+    // 0-jet CR //
+    if (jets.size() + bJetsM.size() == 0) {
+        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 8);
+        SetYields(14);
+    }
+
+    // 1-jet CR //
+    if (jets.size() + bJetsM.size() == 1) {
         MakePlots(leptons, jets, bJetsM, *recoMET, PV, 9);
-        SetYields(13);
+        SetYields(15);
+    }
+
+    // > 1-jet CR //
+    if (jets.size() + bJetsM.size() >= 2) {
+        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 10);
+        SetYields(16);
     }
 
 
@@ -899,11 +908,12 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
     if (
             leptons.size() == 2 
             && leptons[0].Charge() == leptons[1].Charge()
-            && leptons[0].Type() == leptons[1].Type()
+            && leptons[0].Type() == "electron"
+            && leptons[1].Type() == "electron"
             && fabs((leptons[0] + leptons[1]).M() - 91.2) < 15. 
        ) 
         return true;
-    else if (leptons.size() == 3 && (zTagged || (dileptonMassOS > 40 && fabs(trileptonMass - 91.2) < 7.5))) 
+    else if (leptons.size() == 3 && (zTagged || (dileptonMassOS > 50 && fabs(trileptonMass - 91.2) < 7.5))) 
         return true;
 
     MakePlots(leptons, jets, bJetsM, *recoMET, PV, 1);
@@ -962,8 +972,8 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
         }
 
         if (mvaValue > mvaCut) {
-            MakePlots(leptons, jets, bJetsM, *recoMET, PV, 5);
-            SetYields(15);
+            MakePlots(leptons, jets, bJetsM, *recoMET, PV, 4);
+            SetYields(9);
         }
     }
 
@@ -978,18 +988,6 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
     }
     MakePlots(leptons, jets, bJetsM, *recoMET, PV, 3);
     SetYields(8);
-
-    //!! HT cut !!//
-    if (leptons.size() == 2){
-        if (leptons[0].Charge() == leptons[1].Charge()) 
-            if (sqrt(HT) < htCut[0])
-                return true;
-    } else if (leptons.size() == 3) {
-        if (sqrt(HT) < htCut[1]) 
-            return true;
-    }
-    MakePlots(leptons, jets, bJetsM, *recoMET, PV, 4);
-    SetYields(9);
 
     return true;
 }
@@ -1885,9 +1883,9 @@ void fcncAnalyzer::FillYieldHists(string directory, float weight, unsigned cut)
 
         histManager->SetDirectory(directory);
         histManager->SetWeight(weight);
-        histManager->Fill1DHist(cut+1, "h1_YieldByCut", "Weighted number of events passing cuts by cut; cut; Entries", 16, 0.5, 16.5);
+        histManager->Fill1DHist(cut+1, "h1_YieldByCut", "Weighted number of events passing cuts by cut; cut; Entries", 24, 0.5, 24.5);
         histManager->SetWeight(1);
-        histManager->Fill1DHist(cut+1, "h1_YieldByCutRaw", "Raw number of events passing cuts by cut; cut; Entries", 16, 0.5, 16.5);
+        histManager->Fill1DHist(cut+1, "h1_YieldByCutRaw", "Raw number of events passing cuts by cut; cut; Entries", 24, 0.5, 24.5);
         histManager->SetWeight(weight);
     }
 }

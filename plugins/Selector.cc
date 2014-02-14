@@ -174,12 +174,15 @@ bool Selector::MuonTightID(TCMuon* muon)
             && muon->NumberOfMatchedStations() > 1
             && muon->NumberOfValidPixelHits() > 0
             && muon->TrackLayersWithMeasurement() > 5
-            && fabs(muon->Dz(_selVertices[0]))  < 0.05
-            && fabs(muon->Dxy(_selVertices[0])) < 0.015
-
-            //&& muon->NumberOfMatches() > 1
-            //&& muon->NumberOfValidTrackerHits() > 10 // Possibly not valid in 2012
-
+            && ((
+                    fabs(muon->Eta()) < 1.5 
+                    && fabs(muon->Dz(_selVertices[0]))  < 0.05
+                    && fabs(muon->Dxy(_selVertices[0])) < 0.015
+                ) || (
+                    fabs(muon->Eta()) > 1.5 
+                    && fabs(muon->Dz(_selVertices[0]))  < 0.05
+                    && fabs(muon->Dxy(_selVertices[0])) < 0.015 // Should probably reduce this to 0.005
+                    ))
        ) pass = true;
 
     return pass;
