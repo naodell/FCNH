@@ -1015,7 +1015,7 @@ void fcncAnalyzer::GetFakeBG(vObj leptons, vObj fakeables, vector<TCJet> jets, v
         // Fake rate fudge 
         if (fakeables.size() == 1 && leptons.size() == 2) {
             if (fakeables[0].Type() == "electron") {
-                //fakeWeight *= 0.4;
+                fakeWeight *= 0.4;
             }
         }
 
