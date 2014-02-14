@@ -193,7 +193,7 @@ class AnalysisTools():
                                     if self._category in ['ss_mumu', 'ss_emu'] and data == 'Fakes_mu': # h4x!!!
                                         hist.Add(mc_hist, -0.50)
                                     elif self._category == ['ss_emu', 'ss_ee'] and data == 'Fakes_e': # h4x!!!
-                                        hist.Add(mc_hist, -0.50)
+                                        hist.Add(mc_hist, -0.10)
                                 else:
                                     hist.Add(mc_hist, -1)
 

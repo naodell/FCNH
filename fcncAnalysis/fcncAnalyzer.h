@@ -57,7 +57,7 @@
 
 using namespace std;
 
-const unsigned short N_CATEGORIES = 16;
+const unsigned short N_CATEGORIES = 19;
 const string categoryNames[] = {
     //inclusive
     "inclusive",
@@ -82,9 +82,9 @@ const string categoryNames[] = {
     "3l_OSSF",
 
     // geometric
-    //"ss_endcap",
-    //"ss_mixed",
-    //"ss_barrel",
+    "ss_endcap",
+    "ss_mixed",
+    "ss_barrel",
     //"os_endcap",
     //"os_mixed",
     //"os_barrel",
@@ -92,10 +92,10 @@ const string categoryNames[] = {
     //"3l_2end1bar",
     //"3l_1end2bar",
     //"3l_barrel",
+
 };
 
 const unsigned short N_CUTS = 10;
-const string cutNames[] = {"preselection", "Z veto", "jet selection", "MET selection", "BDT", "WZ_CR", "ttbar_CR", "ZFake_CR", "0Jet_CR", "1Jet_CR"};//, "high_dileptonMass_ss", "low_dileptonMass_ss", "barrel_only"};
 
 typedef vector<TCPhysObject> vObj;
 

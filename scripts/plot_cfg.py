@@ -319,7 +319,7 @@ if doPlots:
                 if cut == '.':
                     continue
 
-                inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
+                inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, i+1, period, batch)
 
                 if doLog:
                     outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, cut)
@@ -330,18 +330,19 @@ if doPlots:
                 p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(ss_plotter, category, inFile, outFile, do1D, do2D, False, doLog, doRatio, doEff)))
 
         ### overlay of fake distributions for single and double fakes ###
-        fake_plotter = copy.deepcopy(plotter)
-        fake_plotter._overlayList = ['Fakes_ll', 'Fakes_mu', 'ttbar']
-        fake_plotter.draw_normalized(True)
+                if cut in ['1_preselection', 'X_0jet', 'X_1jet', '3_2jet']:
+                    fake_plotter = copy.deepcopy(plotter)
+                    fake_plotter._overlayList = ['Fakes_ll', 'Fakes_mu']
+                    fake_plotter.draw_normalized(True)
 
-        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, '1', period, batch)
-        if doLog:
-            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix,  'fakes_overlay')
-        else:
-            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'fakes_overlay')
-        fake_plotter.make_save_path(outFile, clean=True)
+                    inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, i+1, period, batch)
+                    if doLog:
+                        outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix,  'fakes_overlay_{0}'.format(cut[2:]))
+                    else:
+                        outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'fakes_overlay_{0}'.format(cut[2:]))
+                    fake_plotter.make_save_path(outFile, clean=True)
 
-        p_plot.append(Process(name = 'fakes_overlay/{0}'.format('ss_mumu'), target = plotter_wrapper, args=(fake_plotter, 'ss_mumu', inFile, outFile, do1D, False, True, True, False, False)))
+                    p_plot.append(Process(name = 'fakes_overlay_{0}/{1}'.format(cut[2:], category), target = plotter_wrapper, args=(fake_plotter, category, inFile, outFile, do1D, False, True, True, False, False)))
 
 
     ### os selection ###
@@ -456,12 +457,12 @@ if doYields:
         yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
 
-        yieldTable._rowList = 5*['.'] + ['3 lepton', 'Z removal', '2+ jets']# + 7*['.'] + ['BDT']
+        yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets'] + 6*['.'] + ['0-jet', '1-jet']# + 7*['.'] + ['BDT']
 
         for category in cat3l:
             yieldTable._category = category
             histDict = yieldTable.get_hist_dict('YieldByCut')
-            yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
+            yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 1)
 
     if doSS:
         #yieldTable._columnList  = ['Irreducible', 'Fakes', 'QFlips', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
@@ -472,13 +473,12 @@ if doYields:
         yieldTable.add_datasets(samples['ss_inclusive'], Clear = True)
         yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
-
-        yieldTable._rowList = ['.', '.', '.', '.', '.','ss lepton', 'Z removal', '2+ jets', 'MET', 'HT']#  + 5*['.'] + ['BDT']
+        yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET'] + 5*['.'] + ['0-jet', '1-jet']# + 7*['.'] + ['BDT']
 
         for category in catSS:
             yieldTable._category = category
             histDict = yieldTable.get_hist_dict('YieldByCut')
-            yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
+            yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 1)
 
     crCats = {'CR_WZ':['3l_inclusive'], 'CR_ttbar':['os_emu'], 'CR_ttZ':['3l_inclusive'], 'CR_ZFake':['3l_eee', '3l_eemu', '3l_emumu', '3l_mumumu']}
     for i,CR in enumerate(crList):
