@@ -24,10 +24,10 @@ else:
 plotType    = '.png'
 selection   = 'fcnh'
 
-cutList     = ['1_preselection']
-cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.'])#, '5_BDT'])
-cutList.extend(['.', '.', '.'])
-cutList.extend(['X_0jet', 'X_1jet'])
+cutList     = ['1_preselection', 'ss_mu_cr']
+#cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.'])#, '5_BDT'])
+#cutList.extend(['.', '.', '.'])
+#cutList.extend(['X_0jet', 'X_1jet'])
 
 crList      = []#'CR_WZ', 'CR_ttbar', 'CR_ZFake']
 
@@ -44,13 +44,14 @@ do2D        = True
 
 doOS        = False
 doSS        = True
-do3l        = True
+do3l        = False
 
 doYields    = True
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive']
 catSS.extend(['ss_mumu', 'ss_ee', 'ss_emu'])
+catSS.extend(['ss_endcap', 'ss_mixed', 'ss_barrel'])
 catOS       = ['os_inclusive']
 catOS.extend(['os_mumu', 'os_ee', 'os_emu']) 
 cat3l       = ['3l_inclusive']
@@ -137,6 +138,11 @@ samples['ss_mumu'].extend(['Fakes_mu', 'Fakes_ll'])
 ## inclusive
 samples['ss_inclusive'].append('Fakes')
 samples['ss_inclusive'].append('QFlips')
+
+## geometric categories
+samples['ss_endcap']    = samples['ss_mumu']
+samples['ss_mixed']     = samples['ss_mumu']
+samples['ss_barrel']    = samples['ss_mumu']
 
 ## opposite-sign categories
 samples['os'].extend(['Diboson', 'top', 'ZJets'])

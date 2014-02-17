@@ -2,11 +2,12 @@ import sys, os, shutil, pickle, datetime
 from math import *
 import ROOT as r
 
-paramFile = open('scripts/fcncParams.pkl', 'rb')
-scales    = pickle.load(paramFile)
-styles    = pickle.load(paramFile)
-combos    = pickle.load(paramFile)
-categories = pickle.load(paramFile)
+paramFile   = open('scripts/fcncParams.pkl', 'rb')
+scales      = pickle.load(paramFile)
+styles      = pickle.load(paramFile)
+combos      = pickle.load(paramFile)
+categories  = pickle.load(paramFile)
+systematics = pickle.load(paramFile)
 
 class AnalysisTools():
     '''
@@ -150,8 +151,12 @@ class AnalysisTools():
         if not hist:
             return None
 
-        #if dataName.split('_')[0] == 'Fakes' and dataName != 'Fakes':
-        #    dataName = dataName.split('_')[2]
+        #if dataName == 'QFlips':
+        #    hist = self.add_systematic(hist, 'QFlips')
+        #elif dataName in self._combineDict['Fakes']:
+        #    hist = self.add_systematic(hist, dataName)
+        #elif dataName in self._combineDict['Irreducible']:
+        #    hist = self.add_systematic(hist, 'Irreducible')
 
         if dataName.split('_')[0] == 'Fakes' and len(dataName.split('_')) >= 3:
             dataName = dataName.split('_', 2)[2]
@@ -245,3 +250,21 @@ class AnalysisTools():
 
         return outHist
 
+
+    def add_systematic(self, hist, dataset):
+        '''
+        Add a systematic uncertainty to a histogram based the data sample and the
+        category.
+        '''
+
+        for bin in range(hist.GetNbinsX()):
+            entries = hist.GetBinContent(bin+1)
+            errorSq = pow(hist.GetBinError(bin+1), 2)
+
+            for syst in systematics[self._category][dataset]:
+                errorSq += pow(syst*entries, 2)
+
+            error = sqrt(errorSq)
+            hist.SetBinError(bin, error)
+
+        return hist

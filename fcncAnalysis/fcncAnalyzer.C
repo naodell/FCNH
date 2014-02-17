@@ -879,9 +879,10 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
     if ( // Problematic region for same-sign
             leptons.size() == 2 
             && leptons[0].Pt() < 50
+            && fabs(leptons[0].Eta() - leptons[1].Eta()) <  1.
             && leptons[0].Type() == "muon" 
             && leptons[1].Type() == "muon"
-            && jets.size() == 0) {
+            && (bJetsM.size() + jets.size()) == 0) {
 
         MakePlots(leptons, jets, bJetsM, *recoMET, PV, 1);
         SetYields(6);
@@ -1101,7 +1102,12 @@ void fcncAnalyzer::MakePlots(vObj leptons, vector<TCJet> jets, vector<TCJet> bJe
                 histCategory = 0;
         }
 
+
         if ((i != 0 && histCategory == 0) || histCategory >= N_CATEGORIES) continue;
+
+        //if (cutLevel == 0) {
+        //    cout << categoryNames[histCategory] << ":\t" << leptons[0].Type() << ", " << leptons[0].Eta() << ";\t" << leptons[1].Type() << ", " << leptons[1].Eta() <<  "|\t" << (bJets.size() + jets.size()) << endl;
+        //}
 
         histManager->SetDirectory(categoryNames[histCategory] + "/" + subdir);
 
