@@ -878,117 +878,119 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
 
     if ( // Problematic region for same-sign
             leptons.size() == 2 
-            && leptons[0].Pt() < 50
-            && fabs(leptons[0].Eta() - leptons[1].Eta()) <  1.
             && leptons[0].Type() == "muon" 
             && leptons[1].Type() == "muon"
-            && (bJetsM.size() + jets.size()) == 0) {
-
-        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 1);
-        SetYields(6);
-
-    } else if (false) {
-        //!! Z-veto !!//
-        if (
-                leptons.size() == 2 
-                && leptons[0].Charge() == leptons[1].Charge()
-                && leptons[0].Type() == "electron"
-                && leptons[1].Type() == "electron"
-                && fabs((leptons[0] + leptons[1]).M() - 91.2) < 15. 
-           ) 
-            return true;
-        else if (leptons.size() == 3 && (zTagged || (dileptonMassOS > 50 && fabs(trileptonMass - 91.2) < 7.5))) 
-            return true;
-
-        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 1);
-        SetYields(6);
-
-        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
-        // 0-jet CR //
-        if (jets.size() + bJetsM.size() == 0) {
-            MakePlots(leptons, jets, bJetsM, *recoMET, PV, 8);
-            SetYields(14);
-        }
-
-        // 1-jet CR //
-        if (jets.size() + bJetsM.size() == 1) {
-            MakePlots(leptons, jets, bJetsM, *recoMET, PV, 9);
-            SetYields(15);
-        }
-        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
-
-        //!! Require at least two jets !!//
-        if (bJetsM.size() + jets.size() <= 1) return true;
-        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 2);
-        SetYields(7);
-
-
-        //!! Do mva selection !!//
-        if (doMVACut) {
-            float mvaValue = -99.;
-            float mvaCut = -99.;
-            if (leptons.size() == 3) {
-                mvaValue = mva3lReader[0]->EvaluateMVA("test");
-                mvaCut   = -0.6489;
-
-                //if (flavorCat == 5) {
-                //    mvaValue = mva3lReader[0]->EvaluateMVA("test");
-                //    mvaCut   = -0.1578;
-                //} else if (flavorCat == 6 || flavorCat == 7 || flavorCat == 9) {
-                //    mvaValue = mva3lReader[1]->EvaluateMVA("test");
-                //    mvaCut   = -0.0289;
-                //} else if (flavorCat == 8 || flavorCat == 10 || flavorCat == 11) {
-                //    mvaValue = mva3lReader[2]->EvaluateMVA("test");
-                //    mvaCut   = -0.0854;
-                //} else if (flavorCat == 12) {
-                //    mvaValue = mva3lReader[3]->EvaluateMVA("test");
-                //    mvaCut   = -0.1532;
-                //}
-
-                histManager->SetFileNumber(1);
-                histManager->SetDirectory("3l_inclusive/" + subdir);
-                histManager->Fill1DHist(mvaValue, "h1_BDT", "BDT value;Entries / bin;BDT", 36, -1., 0.2);
-
-            } else if (leptons.size() == 2 && leptons[0].Charge() == leptons[1].Charge()) {
-                mvaValue = mvaSSReader[0]->EvaluateMVA("test");
-                mvaCut   = -0.8628;
-
-                //if (flavorCat == 1) {
-                //    mvaValue = mvaSSReader[0]->EvaluateMVA("test");
-                //    mvaCut   = 0.1390;
-                //} else if (flavorCat == 2 || flavorCat == 3) {
-                //    mvaValue = mvaSSReader[1]->EvaluateMVA("test");
-                //    mvaCut   = -0.2249;
-                //} else if (flavorCat == 4) {
-                //    mvaValue = mvaSSReader[2]->EvaluateMVA("test");
-                //    mvaCut   = -0.499;
-                //}
-
-                histManager->SetFileNumber(1);
-                histManager->SetDirectory("ss_inclusive/" + subdir);
-                histManager->Fill1DHist(mvaValue, "h1_BDT", "BDT value;Entries / bin;BDT", 36, -1., 0.2);
-            }
-
-            if (mvaValue > mvaCut) {
-                MakePlots(leptons, jets, bJetsM, *recoMET, PV, 4);
-                SetYields(9);
-            }
-        }
-
-        //!! MET cut !!//
-        if (leptons.size() == 2){
-            if (leptons[0].Charge() == leptons[1].Charge()) 
-                if (recoMET->Mod() < metCut[0])
-                    return true;
-        } else if (leptons.size() == 3) {
-            if (recoMET->Mod() < metCut[1]) 
-                return true;
-        }
-        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 3);
-        SetYields(8);
-
+            && (bJetsM.size() + jets.size()) == 0
+            && (leptons[0] + leptons[1]).M() < 30
+            && recoMET->Mod() < 40
+            //&& leptons[0].Pt() < 50
+            //&& fabs(leptons[0].Eta() - leptons[1].Eta()) <  1.
+       ) 
         return true;
+
+    //    MakePlots(leptons, jets, bJetsM, *recoMET, PV, 1);
+    //    SetYields(6);
+
+    //!! Z-veto !!//
+    if (
+            leptons.size() == 2 
+            && leptons[0].Charge() == leptons[1].Charge()
+            && leptons[0].Type() == "electron"
+            && leptons[1].Type() == "electron"
+            && fabs((leptons[0] + leptons[1]).M() - 91.2) < 15. 
+       ) 
+        return true;
+    else if (leptons.size() == 3 && (zTagged || (dileptonMassOS > 50 && fabs(trileptonMass - 91.2) < 7.5))) 
+        return true;
+
+    MakePlots(leptons, jets, bJetsM, *recoMET, PV, 1);
+    SetYields(6);
+
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
+    // 0-jet CR //
+    if (jets.size() + bJetsM.size() == 0) {
+        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 8);
+        SetYields(14);
     }
+
+    // 1-jet CR //
+    if (jets.size() + bJetsM.size() == 1) {
+        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 9);
+        SetYields(15);
+    }
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
+
+    //!! Require at least two jets !!//
+    if (bJetsM.size() + jets.size() <= 1) return true;
+    MakePlots(leptons, jets, bJetsM, *recoMET, PV, 2);
+    SetYields(7);
+
+
+    //!! Do mva selection !!//
+    if (doMVACut) {
+        float mvaValue = -99.;
+        float mvaCut = -99.;
+        if (leptons.size() == 3) {
+            mvaValue = mva3lReader[0]->EvaluateMVA("test");
+            mvaCut   = -0.6489;
+
+            //if (flavorCat == 5) {
+            //    mvaValue = mva3lReader[0]->EvaluateMVA("test");
+            //    mvaCut   = -0.1578;
+            //} else if (flavorCat == 6 || flavorCat == 7 || flavorCat == 9) {
+            //    mvaValue = mva3lReader[1]->EvaluateMVA("test");
+            //    mvaCut   = -0.0289;
+            //} else if (flavorCat == 8 || flavorCat == 10 || flavorCat == 11) {
+            //    mvaValue = mva3lReader[2]->EvaluateMVA("test");
+            //    mvaCut   = -0.0854;
+            //} else if (flavorCat == 12) {
+            //    mvaValue = mva3lReader[3]->EvaluateMVA("test");
+            //    mvaCut   = -0.1532;
+            //}
+
+            histManager->SetFileNumber(1);
+            histManager->SetDirectory("3l_inclusive/" + subdir);
+            histManager->Fill1DHist(mvaValue, "h1_BDT", "BDT value;Entries / bin;BDT", 36, -1., 0.2);
+
+        } else if (leptons.size() == 2 && leptons[0].Charge() == leptons[1].Charge()) {
+            mvaValue = mvaSSReader[0]->EvaluateMVA("test");
+            mvaCut   = -0.8628;
+
+            //if (flavorCat == 1) {
+            //    mvaValue = mvaSSReader[0]->EvaluateMVA("test");
+            //    mvaCut   = 0.1390;
+            //} else if (flavorCat == 2 || flavorCat == 3) {
+            //    mvaValue = mvaSSReader[1]->EvaluateMVA("test");
+            //    mvaCut   = -0.2249;
+            //} else if (flavorCat == 4) {
+            //    mvaValue = mvaSSReader[2]->EvaluateMVA("test");
+            //    mvaCut   = -0.499;
+            //}
+
+            histManager->SetFileNumber(1);
+            histManager->SetDirectory("ss_inclusive/" + subdir);
+            histManager->Fill1DHist(mvaValue, "h1_BDT", "BDT value;Entries / bin;BDT", 36, -1., 0.2);
+        }
+
+        if (mvaValue > mvaCut) {
+            MakePlots(leptons, jets, bJetsM, *recoMET, PV, 4);
+            SetYields(9);
+        }
+    }
+
+    //!! MET cut !!//
+    if (leptons.size() == 2){
+        if (leptons[0].Charge() == leptons[1].Charge()) 
+            if (recoMET->Mod() < metCut[0])
+                return true;
+    } else if (leptons.size() == 3) {
+        if (recoMET->Mod() < metCut[1]) 
+            return true;
+    }
+    MakePlots(leptons, jets, bJetsM, *recoMET, PV, 3);
+    SetYields(8);
+
+    return true;
 }
 
 void fcncAnalyzer::GetFakeBG(vObj leptons, vObj fakeables, vector<TCJet> jets, vector<TCJet> bJetsM, vector<TCJet> bJetsL, TVector3 PV)
@@ -1084,7 +1086,7 @@ void fcncAnalyzer::MakePlots(vObj leptons, vector<TCJet> jets, vector<TCJet> bJe
         switch (i) {
             case 1:
                 // inclusive lepton categories
-                histCategory = 1 + (evtCategory.to_ulong() & 0xC);
+                histCategory = 1 + ((evtCategory.to_ulong() & 0xF) >> 2);
                 break;
             case 2:
                 // eta categories

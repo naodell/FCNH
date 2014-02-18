@@ -151,12 +151,13 @@ class AnalysisTools():
         if not hist:
             return None
 
-        #if dataName == 'QFlips':
-        #    hist = self.add_systematic(hist, 'QFlips')
-        #elif dataName in self._combineDict['Fakes']:
-        #    hist = self.add_systematic(hist, dataName)
-        #elif dataName in self._combineDict['Irreducible']:
-        #    hist = self.add_systematic(hist, 'Irreducible')
+        if self._category in systematics:
+            if dataName == 'QFlips':
+                hist = self.add_systematic(hist, 'QFlips')
+            elif dataName in self._combineDict['Fakes']:
+                hist = self.add_systematic(hist, dataName)
+            elif dataName in self._combineDict['Irreducible']:
+                hist = self.add_systematic(hist, 'Irreducible')
 
         if dataName.split('_')[0] == 'Fakes' and len(dataName.split('_')) >= 3:
             dataName = dataName.split('_', 2)[2]
@@ -257,14 +258,23 @@ class AnalysisTools():
         category.
         '''
 
-        for bin in range(hist.GetNbinsX()):
-            entries = hist.GetBinContent(bin+1)
-            errorSq = pow(hist.GetBinError(bin+1), 2)
+        if dataset not in systematics[self._category]:
+            return hist
 
+        for bin in range(hist.GetNbinsX()):
+
+            entries = hist.GetBinContent(bin+1)
+            if entries == 0:
+                continue
+
+            errorSq = pow(hist.GetBinError(bin+1), 2)
             for syst in systematics[self._category][dataset]:
                 errorSq += pow(syst*entries, 2)
 
             error = sqrt(errorSq)
+            #print self._category, dataset, entries, error, hist.GetBinError(bin+1)
             hist.SetBinError(bin, error)
+
+
 
         return hist

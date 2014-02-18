@@ -24,10 +24,9 @@ else:
 plotType    = '.png'
 selection   = 'fcnh'
 
-cutList     = ['1_preselection', 'ss_mu_cr']
-#cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.'])#, '5_BDT'])
-#cutList.extend(['.', '.', '.'])
-#cutList.extend(['X_0jet', 'X_1jet'])
+cutList     = ['1_preselection']
+cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.'])#, '5_BDT'])
+cutList.extend(['.', '.', '.', 'X_0jet', 'X_1jet'])
 
 crList      = []#'CR_WZ', 'CR_ttbar', 'CR_ZFake']
 
@@ -44,14 +43,14 @@ do2D        = True
 
 doOS        = False
 doSS        = True
-do3l        = False
+do3l        = True
 
 doYields    = True
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive']
 catSS.extend(['ss_mumu', 'ss_ee', 'ss_emu'])
-catSS.extend(['ss_endcap', 'ss_mixed', 'ss_barrel'])
+#catSS.extend(['ss_endcap', 'ss_mixed', 'ss_barrel'])
 catOS       = ['os_inclusive']
 catOS.extend(['os_mumu', 'os_ee', 'os_emu']) 
 cat3l       = ['3l_inclusive']
@@ -468,7 +467,7 @@ if doYields:
         for category in cat3l:
             yieldTable._category = category
             histDict = yieldTable.get_hist_dict('YieldByCut')
-            yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 1)
+            yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
 
     if doSS:
         #yieldTable._columnList  = ['Irreducible', 'Fakes', 'QFlips', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
@@ -484,7 +483,7 @@ if doYields:
         for category in catSS:
             yieldTable._category = category
             histDict = yieldTable.get_hist_dict('YieldByCut')
-            yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 1)
+            yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
 
     crCats = {'CR_WZ':['3l_inclusive'], 'CR_ttbar':['os_emu'], 'CR_ttZ':['3l_inclusive'], 'CR_ZFake':['3l_eee', '3l_eemu', '3l_emumu', '3l_mumumu']}
     for i,CR in enumerate(crList):
