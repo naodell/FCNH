@@ -9,6 +9,25 @@ combos      = pickle.load(paramFile)
 categories  = pickle.load(paramFile)
 systematics = pickle.load(paramFile)
 
+
+def bin_by_bin_hist_addition(hist1, hist2, constant = -1.):
+    '''
+    Custom histogram adder that does not allow negative bins
+    '''
+
+    for bin in range(hist1.GetNbinsX()):
+        entries1, entries2  = hist1.GetBinContent(bin+1), hist2.GetBinContent(bin+1)
+        error1, error2      = hist1.GetBinError(bin+1), hist2.GetBinError(bin+1)
+
+        if hist1 > hist2:
+            hist1.SetBinContent(bin+1, entries1 + constant*entries2)
+            hist1.SetBinError(bin+1, sqrt(pow(error1, 2) + pow(constant*entries2, 2)))
+        else:
+            hist1.SetBinContent(bin+1, 0)
+            hist1.SetBinError(bin+1, 0)
+
+    return hist1
+
 class AnalysisTools():
     '''
     Base class for analysis processes
@@ -197,11 +216,14 @@ class AnalysisTools():
                             else:
                                 if mc == 'ttbar':
                                     if self._category in ['ss_mumu', 'ss_emu'] and data == 'Fakes_mu': # h4x!!!
-                                        hist.Add(mc_hist, -0.50)
+                                        outHist.Add(mc_hist, -0.5)
+                                        #bin_by_bin_hist_addition(outHist, mc_hist, -0.5)
                                     elif self._category == ['ss_emu', 'ss_ee'] and data == 'Fakes_e': # h4x!!!
-                                        hist.Add(mc_hist, -0.10)
+                                        outHist.Add(mc_hist, -0.1)
+                                        #bin_by_bin_hist_addition(outHist, mc_hist, -0.1)
                                 else:
-                                    hist.Add(mc_hist, -1)
+                                    outHist.Add(mc_hist, -1.)
+                                    #bin_by_bin_hist_addition(outHist, mc_hist, -1.)
 
                     if not outHist:
                         outHist = hist
@@ -219,11 +241,14 @@ class AnalysisTools():
                         elif mc_hist:
                             if mc == 'ttbar':
                                 if self._category in ['ss_mumu', 'ss_emu'] and dataName == 'Fakes_mu': # h4x!!!
-                                    outHist.Add(mc_hist, -0.50)
+                                    outHist.Add(mc_hist, -0.5)
+                                    #bin_by_bin_hist_addition(outHist, mc_hist, -0.5)
                                 elif self._category == 'ss_emu' and dataName == 'Fakes_e': # h4x!!!
-                                    outHist.Add(mc_hist, -0.50)
+                                    outHist.Add(mc_hist, -0.5)
+                                    #bin_by_bin_hist_addition(outHist, mc_hist, -0.5)
                             else:
-                                outHist.Add(mc_hist, -1)
+                                outHist.Add(mc_hist, -1.)
+                                #bin_by_bin_hist_addition(outHist, mc_hist, -1.)
 
             else: # MC fakes
                 if dataName.split('_')[2] not in self._combineDict:
