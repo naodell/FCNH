@@ -216,13 +216,13 @@ class AnalysisTools():
                             else:
                                 if mc == 'ttbar':
                                     if self._category in ['ss_mumu', 'ss_emu'] and data == 'Fakes_mu': # h4x!!!
-                                        outHist.Add(mc_hist, -0.5)
+                                        hist.Add(mc_hist, -0.5)
                                         #bin_by_bin_hist_addition(outHist, mc_hist, -0.5)
                                     elif self._category == ['ss_emu', 'ss_ee'] and data == 'Fakes_e': # h4x!!!
-                                        outHist.Add(mc_hist, -0.1)
+                                        hist.Add(mc_hist, -0.1)
                                         #bin_by_bin_hist_addition(outHist, mc_hist, -0.1)
                                 else:
-                                    outHist.Add(mc_hist, -1.)
+                                    hist.Add(mc_hist, -1.)
                                     #bin_by_bin_hist_addition(outHist, mc_hist, -1.)
 
                     if not outHist:
