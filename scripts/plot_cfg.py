@@ -44,7 +44,7 @@ do2D        = True
 
 doOS        = False
 doSS        = True
-do3l        = False
+do3l        = True
 
 doYields    = False
 
@@ -62,18 +62,18 @@ samples     = {'all':[], 'inclusive':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[],
                 '3l_inclusive':[], '3l_eee':[], '3l_eemu':[], '3l_emumu':[], '3l_mumumu':[], 
                 'ss_inclusive':[], 'ss_ee':[], 'ss_emu':[], 'ss_mumu':[]}
 
-samples['all'].append('higgs')
+#samples['all'].append('higgs')
 samples['all'].append('Triboson')
 samples['all'].append('ttV')
-#samples['all'].append('ZZ4l')
-#samples['all'].append('WZJets3LNu')
 samples['all'].append('Diboson')
 samples['all'].append('top')
 samples['all'].append('ZJets')
+#samples['all'].append('ZZ4l')
+#samples['all'].append('WZJets3LNu')
 #samples['all'].append('QCD')
 #samples['all'].extend(['ZbbToLL', 'WbbToLNu']) #, 'ZGstar'])
 
-samples['inclusive'].append('higgs')
+#samples['inclusive'].append('higgs')
 samples['inclusive'].append('Triboson')
 samples['inclusive'].append('ttV')
 samples['inclusive'].append('Diboson')
@@ -81,7 +81,7 @@ samples['inclusive'].append('top')
 samples['inclusive'].append('ZJets')
 
 ## trilepton categories
-samples['3l_inclusive'].append('higgs')
+#samples['3l_inclusive'].append('higgs')
 samples['3l_inclusive'].append('Triboson')
 samples['3l_inclusive'].append('ttV')
 samples['3l_inclusive'].append('ZZ4l')
@@ -114,7 +114,7 @@ samples['3l_inclusive'].append('Fakes')
 #samples['3l'].extend(['WGStarLNu2E', 'WGStarLNu2Mu', 'WGStarLNu2Tau'])
 
 ## same-sign categories
-samples['ss_inclusive'].append('higgs')
+#samples['ss_inclusive'].append('higgs')
 samples['ss_inclusive'].append('Triboson')
 samples['ss_inclusive'].append('ttV')
 samples['ss_inclusive'].append('ZZ4l')
@@ -166,10 +166,10 @@ if doPlots:
 
     plotter.add_datasets(samples['all'])
     plotter._overlayList.extend(['DATA'])
-    plotter._overlayList.extend(['FCNH'])
+    #plotter._overlayList.extend(['FCNH'])
 
-    plotter.get_scale_factors(['FCNH'])
-    #plotter.get_scale_factors()
+    plotter.get_scale_factors()
+    #plotter.get_scale_factors(['FCNH'])
 
     ### VARIABLES ###
     ### First specify the directories in which your
@@ -283,7 +283,7 @@ if doPlots:
         for category in cat3l:
             plotter_3l = copy.deepcopy(plotter)
             plotter_3l.add_datasets(samples[category], Clear=True)
-            plotter_3l._overlayList = ['DATA', 'FCNH']
+            plotter_3l._overlayList = ['DATA']#, 'FCNH']
 
             for i, cut in enumerate(cutList):
                 if cut == '.':
@@ -304,7 +304,7 @@ if doPlots:
         for category in catSS:
             ss_plotter = copy.deepcopy(plotter)
             ss_plotter.add_datasets(samples[category], Clear=True)
-            ss_plotter._overlayList = ['DATA', 'FCNH']
+            ss_plotter._overlayList = ['DATA']#, 'FCNH']
 
             for i, cut in enumerate(cutList):
                 if cut == '.':
@@ -464,7 +464,6 @@ if doPlots:
             outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'barrel_leptons')
 
         bl_plotter.make_save_path(outFile, clean=True)
->>>>>>> cac6bd80f8aef852a02cafcdd72ad4746763a654
 
 
 ### End of configuration for PlotProducer ###

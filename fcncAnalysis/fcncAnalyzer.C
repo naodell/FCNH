@@ -382,21 +382,21 @@ bool fcncAnalyzer::Process(Long64_t entry)
         gJets = selector->GetSelectedGenJets();
 
         // Hack to split ttbar sample
-        if (suffix == "ttbar_had" && gLeptons.size() > 1)
+        if (suffix == "ttbarHad" && gLeptons.size() > 1)
             return kTRUE;
-        else if (suffix == "ttbar_lep" && gLeptons.size() != 2)
+        else if (suffix == "ttbarLep" && gLeptons.size() != 2)
             return kTRUE;
     }
 
     if (doGenPrint) {
         // Higgs
         for (unsigned i = 0; i < higgs.size(); ++i)
-            if (higgs[i].GetStatus() == 3) 
+            if (higgs[i].GetStatus() == 3 && higgs[i].Mother() != 0) 
                 cout << higgs[i].GetStatus() << ", " << higgs[i].M() << ", " << higgs[i].Mother()->GetPDGId() << ", higgs" << endl;
 
         // Vector bosons
         for (unsigned i = 0; i < dubyas.size(); ++i)
-            if (dubyas[i].GetStatus() == 3) 
+            if (dubyas[i].GetStatus() == 3 && dubyas[i].Mother() != 0) 
                 cout << "\t status = " << dubyas[i].GetStatus() <<  ", mass = " << dubyas[i].M() << ", pt = " << dubyas[i].Pt() << ", dubyas" << endl;
 
         for (unsigned i = 0; i < Zeds.size(); ++i)
@@ -1639,7 +1639,7 @@ void fcncAnalyzer::GenPlots(vector<TCGenParticle> gen, vObj leptons)
 
     for (unsigned i = 0; i < gen.size(); ++i) {
 
-        if (gen.size() == 3) {
+        /*if (gen.size() == 3) {
             if (gen[i].Mother()->Mother()->GetPDGId() == 25) {
                 string index = str(higgsLepCount + 1);
                 histManager->Fill1DHist(gen[i].Pt(),
@@ -1657,7 +1657,7 @@ void fcncAnalyzer::GenPlots(vector<TCGenParticle> gen, vObj leptons)
                 histManager->Fill1DHist(gen[i].Eta(),
                         "h1_TopLeptonEta", "top lepton #eta;#eta;Entries / bin", 50, -5., 5.);
             }
-        }
+        }*/
 
 
 

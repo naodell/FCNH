@@ -95,8 +95,6 @@ const string categoryNames[] = {
 };
 
 const unsigned short N_CUTS = 11;
-const string cutNames[] = {"preselection", "Z veto", "jet selection", "MET selection", "BDT", "WZ_CR", "ttbar_CR", "ZFake_CR", "0Jet_CR", "1Jet_CR", "2Jet_CR"};//, "high_dileptonMass_ss", "low_dileptonMass_ss", "barrel_only"};
-
 typedef vector<TCPhysObject> vObj;
 
 class fcncAnalyzer : public TSelector {

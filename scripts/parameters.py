@@ -58,6 +58,8 @@ styleDict['ZZ2mu2tau']          = (2, r.kOrange+5, 1, 1, 'ZZ#rightarrow 2#mu2#ta
 styleDict['top']                = (0, r.kBlue+1, 1, 1, 't#bar{t}/t')
 styleDict['single top']         = (0, r.kBlue+2, 3004, 1, 't')
 styleDict['ttbar']              = (0, r.kBlue+0, 1, 1, 't#bar{t}')
+styleDict['ttbar_had']          = (0, r.kBlue+3, 1, 1, 't#bar{t} (had)')
+styleDict['ttbar_lep']          = (0, r.kBlue+5, 1, 1, 't#bar{t} (lep)')
 styleDict['tW']                 = (2, r.kBlue-1, 1, 1, 'tW')
 styleDict['tbarW']              = (2, r.kBlue-2, 1, 1, '#bar{t}W')
 styleDict['t_t-channel']        = (2, r.kBlue-3, 1, 1, 't (t-channel)')
@@ -104,13 +106,8 @@ styleDict['GJets_15to30']       = (2, r.kYellow+2, 0, 1, 'gamma+jets')
 styleDict['higgs']              = (2, r.kBlue+3, 0, 1, 'higgs')
 
 #Misc
-<<<<<<< HEAD
-styleDict['BGERROR']            = (0, r.kBlack, 3018, 0, 'BG error')
-styleDict['FCNH']               = (3, r.kPink+3, 2, 22, 'FCNH')
-=======
 styleDict['BGERROR']            = (0, r.kBlack, 3018, 0, 'BG uncertainty')
 styleDict['FCNH']               = (3, r.kRed+3, 0, 20, 'FCNH')
->>>>>>> b6d8dd4cb7ee4998fe3169b80a4ae28da3ff3610
 styleDict['SUM_EFF']            = (2, r.kBlue, 1, 21, 'BG')
 styleDict['SIG_EFF']            = (2, r.kRed, 1, 21, 'Signal')
 styleDict['SIGNIFICANCE']       = (2, r.kGreen, 1, 21, 'Signficance')
@@ -142,6 +139,8 @@ scaleDict['2011']['WZJets2L2Q']         = 1.8329
 scaleDict['2011']['WWJets2L2Nu']        = 4.783
 
 scaleDict['2011']['ttbar']              = 165
+scaleDict['2011']['ttbar_had']          = 165*30*70
+scaleDict['2011']['ttbar_lep']          = 165*30*30
 scaleDict['2011']['tW']                 = 7.87
 scaleDict['2011']['tbarW']              = 7.87
 
@@ -183,7 +182,9 @@ scaleDict['2012']['WZJets3LNu']         = 1.086 #*1.309 #<-- WZ rescaled based o
 scaleDict['2012']['WZJets2L2Q']         = 5.09
 scaleDict['2012']['WWJets2L2Nu']        = 5.995
 
-scaleDict['2012']['ttbar']              = 234*1.046 #<-- ttbar rescaled based on e/mu lepton control region
+scaleDict['2012']['ttbar']              = 234
+scaleDict['2012']['ttbar_had']          = 234*30*70
+scaleDict['2012']['ttbar_lep']          = 234*30*30
 scaleDict['2012']['tW']                 = 11.77
 scaleDict['2012']['tbarW']              = 11.77
 scaleDict['2012']['t_t-channel']        = 55.53
@@ -264,7 +265,7 @@ combineDict['DATA']             = ['DATA_MUON', 'DATA_ELECTRON', 'DATA_MUEG']
 combineDict['VJets']            = ['ZJets_M-50', 'ZJets_M-10To50', 'WJets']
 combineDict['ZJets']            = ['ZJets_M-50', 'ZJets_M-10To50']
 combineDict['WGStar']           = ['WGStarLNu2E', 'WGStarLNu2Mu', 'WGStarLNu2Tau']
-combineDict['top']              = ['ttbar', 'tW', 'tbarW', 't_t-channel', 'tbar_t-channel']
+combineDict['top']              = ['ttbar_had', 'ttbar_lep', 'tW', 'tbarW', 't_t-channel', 'tbar_t-channel']
 combineDict['single top']       = ['tW', 'tbarW', 't_t-channel', 'tbar_t-channel']
 combineDict['ttV']              = ['ttZ', 'ttW']#, 'ttG']
 combineDict['Diboson']          = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'WZJets3LNu']
@@ -278,9 +279,9 @@ combineDict['higgs']            = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToW
 
 #combineDict['Fakes']            = ['Fakes_e', 'Fakes_mu', 'Fakes_ee', 'Fakes_emu', 'Fakes_mumu']
 combineDict['Fakes']            = ['Fakes_e', 'Fakes_mu', 'Fakes_ll']
-combineDict['FAKES_2l']         = ['WbbToLNu', 'ZJets_M-50', 'ZJets_M-10To50', 'ttbar', 'tbarW', 'tW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'ZZJets2L2Q']
+combineDict['FAKES_2l']         = ['WbbToLNu', 'ZJets_M-50', 'ZJets_M-10To50', 'ttbar_lep', 'ttbar_had', 'tbarW', 'tW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'ZZJets2L2Q']
 combineDict['FAKES_3l']         = ['WZJets3LNu']#, 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
-combineDict['Remove_ss']        = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbar']#, 'WWJets2L2Nu', 'ZZJets2L2Nu', 'ZZJets2L2Q']
+combineDict['Remove_ss']        = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbar_had', 'ttbar_lep']#, 'WWJets2L2Nu', 'ZZJets2L2Nu', 'ZZJets2L2Q']
 combineDict['Remove_3l']        = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'WWW', 'WWZ', 'WZZ', 'ZZZ']
 combineDict['Irreducible']      = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ', 'WWG', 'WZJets3LNu']
 

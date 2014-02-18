@@ -150,11 +150,12 @@ class AnalysisTools():
         if not hist:
             return None
 
-        if dataName.split('_')[0] == 'Fakes' and dataName != 'Fakes':
-            dataName = dataName.split('_')[2]
+        #if dataName.split('_')[0] == 'Fakes' and dataName != 'Fakes':
+        #    print dataName
+        #    dataName = dataName.split('_')[2]
 
-        #if dataName.split('_')[0] == 'Fakes' and len(dataName.split('_')) >= 3:
-        #    dataName = dataName.split('_', 2)[2]
+        if dataName.split('_')[0] == 'Fakes' and len(dataName.split('_')) >= 3:
+            dataName = dataName.split('_', 2)[2]
 
         if doScale:
             if dataName[:4] == 'DATA' or dataName in ['Fakes_e', 'Fakes_mu', 'Fakes_ee', 'Fakes_emu', 'Fakes_mumu', 'Fakes_ll', 'QFlips']:
@@ -191,7 +192,6 @@ class AnalysisTools():
                             else:
                                 if mc == 'ttbar':
                                     if self._category in ['ss_mumu', 'ss_emu'] and data == 'Fakes_mu': # h4x!!!
-                                        continue
                                         hist.Add(mc_hist, -0.60)
                                     elif self._category == 'ss_emu' and data == 'Fakes_e': # h4x!!!
                                         hist.Add(mc_hist, -0.60)

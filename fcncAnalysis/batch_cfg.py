@@ -73,8 +73,8 @@ if period == '2012':
         #cfg('WbbToLNu', filePath+'/nuTuples_v9_6_mc/WbbToLL', 20, 'WbbToLNu muon 2012'),
         #cfg('WG', filePath+'/nuTuples_v9_6_mc/WGToLNuG', 10, 'WG muon 2012'),
 
-        cfg('ttbar_lep', filePath+'/nuTuples_v9_6_mc/TTJets', 30, 'ttbar_lep muon 2012'),
-        cfg('ttbar_had', filePath+'/nuTuples_v9_6_mc/TTJets', 30, 'ttbar_had muon 2012'),
+        cfg('ttbarLep', filePath+'/nuTuples_v9_6_mc/TTJets', 30, 'ttbarLep muon 2012'),
+        cfg('ttbarHad', filePath+'/nuTuples_v9_6_mc/TTJets', 30, 'ttbarHad muon 2012'),
         cfg('tbarW', filePath+'/nuTuples_v9_6_mc/Tbar_tW', 5, 'tbarW muon 2012'),
         cfg('tW', filePath+'/nuTuples_v9_6_mc/T_tW', 5, 'tW muon 2012'),
         cfg('t_t-channel', filePath+'/nuTuples_v9_6_mc/T_t', 5, 't_t-channel muon 2012'),
