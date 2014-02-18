@@ -88,6 +88,10 @@ void fcncAnalyzer::Begin(TTree* tree)
             else
                 doQFlips = false;
 
+            // Samples for fake bg cleanup
+            string fakeMC_2l[] = {"ZJets_M-50", "ZJets_M-10To50", "ttbar", "WWJets2L2Nu", "ZZJets2L2Nu", "ZZJets2L2Q"};
+            string fakeMC_3l[] = {"WZJets3LNu", "ZZ4mu", "ZZ4e", "ZZ4tau", "ZZ2e2mu", "ZZ2mu2tau", "ZZ2e2tau", "ttZ", "ttW", "WWW", "WWZ", "WZZ", "ZZZ"};
+
             if (doFakes && (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON")) {
                 histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir("Fakes_e", "Fakes_e");
                 histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir("Fakes_mu", "Fakes_mu");
@@ -611,7 +615,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
             histManager->SetDirectory(categoryNames[cat] + "/" + subdir);
             GenPlots(gLeptons, leptons);
 
-            cat = GetHistCategory(2) - 10;
+            cat = GetHistCategory(2) + 4;
             histManager->SetDirectory(categoryNames[cat] + "/" + subdir);
             GenPlots(gLeptons, leptons);
         }
@@ -745,19 +749,17 @@ void fcncAnalyzer::Terminate()
     cout<<"| Z veto:                            |\t" << eventCount[6]  << "\t|\t" << eventCountWeighted[6] << "\t|"<<endl;
     cout<<"| At least two jets:                 |\t" << eventCount[7]  << "\t|\t" << eventCountWeighted[7] << "\t|"<<endl;
     cout<<"| MET cut:                           |\t" << eventCount[8]  << "\t|\t" << eventCountWeighted[8] << "\t|"<<endl;
-    cout<<"| HT cut:                            |\t" << eventCount[9]  << "\t|\t" << eventCountWeighted[9] << "\t|"<<endl;
-    cout<<"| BDT:                               |\t" << eventCount[15]  << "\t|\t" << eventCountWeighted[15] << "\t|"<<endl;
+    cout<<"| BDT:                               |\t" << eventCount[9] << "\t|\t" << eventCountWeighted[9] << "\t|"<<endl;
 
 
     // Control regions //
     cout<<"\nControl region event yields."<<"\n"<<endl;
-    cout<<"| WZ:                                |\t" << eventCount[9]   << "\t|\t" << eventCountWeighted[9]  << "\t|"<<endl;
-    cout<<"| ttbar:                             |\t" << eventCount[10]  << "\t|\t" << eventCountWeighted[10] << "\t|"<<endl;
-    cout<<"| Z+fake:                            |\t" << eventCount[11]  << "\t|\t" << eventCountWeighted[11] << "\t|"<<endl;
-    cout<<"| ZZ4l:                              |\t" << eventCount[12]  << "\t|\t" << eventCountWeighted[12] << "\t|"<<endl;
-    cout<<"| 0-jet:                             |\t" << eventCount[13]  << "\t|\t" << eventCountWeighted[13] << "\t|"<<endl;
-    cout<<"| 1-jet:                             |\t" << eventCount[14]  << "\t|\t" << eventCountWeighted[14] << "\t|"<<endl;
-    cout<<"| >= 2-jet:                          |\t" << eventCount[15]  << "\t|\t" << eventCountWeighted[15] << "\t|"<<endl;
+    cout<<"| WZ:                                |\t" << eventCount[10]  << "\t|\t" << eventCountWeighted[10]  << "\t|"<<endl;
+    cout<<"| ttbar:                             |\t" << eventCount[11]  << "\t|\t" << eventCountWeighted[11] << "\t|"<<endl;
+    cout<<"| Z+fake:                            |\t" << eventCount[12]  << "\t|\t" << eventCountWeighted[12] << "\t|"<<endl;
+    cout<<"| ZZ4l:                              |\t" << eventCount[13]  << "\t|\t" << eventCountWeighted[13] << "\t|"<<endl;
+    cout<<"| 0-jet:                             |\t" << eventCount[14]  << "\t|\t" << eventCountWeighted[14] << "\t|"<<endl;
+    cout<<"| 1-jet:                             |\t" << eventCount[15]  << "\t|\t" << eventCountWeighted[15] << "\t|"<<endl;
 
 
     //for (int i = 0; i < 8; ++i) fout[i].close();
@@ -843,24 +845,6 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
         SetYields(12);
     }
 
-    // 0-jet CR //
-    if (jets.size() + bJetsM.size() == 0) {
-        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 8);
-        SetYields(14);
-    }
-
-    // 1-jet CR //
-    if (jets.size() + bJetsM.size() == 1) {
-        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 9);
-        SetYields(15);
-    }
-
-    // > 1-jet CR //
-    if (jets.size() + bJetsM.size() >= 2) {
-        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 10);
-        SetYields(16);
-    }
-
 
     //!!!!!!!!!!!!!//
     // Do MVA Trees//
@@ -904,6 +888,21 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
     MakePlots(leptons, jets, bJetsM, *recoMET, PV, 0);
     SetYields(5);
 
+    if ( // Problematic region for same-sign
+            leptons.size() == 2 
+            && leptons[0].Type() == "muon" 
+            && leptons[1].Type() == "muon"
+            && (bJetsM.size() + jets.size()) == 0
+            && (leptons[0] + leptons[1]).M() < 30
+            && recoMET->Mod() < 40
+            //&& leptons[0].Pt() < 50
+            //&& fabs(leptons[0].Eta() - leptons[1].Eta()) <  1.
+       ) 
+        return true;
+
+    //    MakePlots(leptons, jets, bJetsM, *recoMET, PV, 1);
+    //    SetYields(6);
+
     //!! Z-veto !!//
     if (
             leptons.size() == 2 
@@ -919,11 +918,25 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
     MakePlots(leptons, jets, bJetsM, *recoMET, PV, 1);
     SetYields(6);
 
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
+    // 0-jet CR //
+    if (jets.size() + bJetsM.size() == 0) {
+        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 8);
+        SetYields(14);
+    }
 
-    //!! Require at least one b-jet !!//
+    // 1-jet CR //
+    if (jets.size() + bJetsM.size() == 1) {
+        MakePlots(leptons, jets, bJetsM, *recoMET, PV, 9);
+        SetYields(15);
+    }
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
+
+    //!! Require at least two jets !!//
     if (bJetsM.size() + jets.size() <= 1) return true;
     MakePlots(leptons, jets, bJetsM, *recoMET, PV, 2);
     SetYields(7);
+
 
     //!! Do mva selection !!//
     if (doMVACut) {
@@ -1017,7 +1030,7 @@ void fcncAnalyzer::GetFakeBG(vObj leptons, vObj fakeables, vector<TCJet> jets, v
         // Fake rate fudge 
         if (fakeables.size() == 1 && leptons.size() == 2) {
             if (fakeables[0].Type() == "electron") {
-                //fakeWeight *= 0.4;
+                fakeWeight *= 0.4;
             }
         }
 
@@ -1085,25 +1098,30 @@ void fcncAnalyzer::MakePlots(vObj leptons, vector<TCJet> jets, vector<TCJet> bJe
         switch (i) {
             case 1:
                 // inclusive lepton categories
-                histCategory = 1 + ((evtCategory.to_ulong() >> 2) & 0x3);
+                histCategory = 1 + ((evtCategory.to_ulong() & 0xF) >> 2);
                 break;
             case 2:
-                // flavor categories
-                histCategory = GetHistCategory(2) - 10;
+                // eta categories
+                histCategory = GetHistCategory(1) + 16;
                 break;
             case 3:
-                // WH categories
-                histCategory = GetHistCategory(3);
+                // flavor categories
+                histCategory = GetHistCategory(2) + 4;
                 break;
             case 4:
-                // eta categories
-                histCategory = GetHistCategory(2);
+                // WH categories
+                histCategory = GetHistCategory(3);
                 break;
             default:
                 histCategory = 0;
         }
 
-        if (i != 0 && histCategory == 0) continue;
+
+        if ((i != 0 && histCategory == 0) || histCategory >= N_CATEGORIES) continue;
+
+        //if (cutLevel == 0) {
+        //    cout << categoryNames[histCategory] << ":\t" << leptons[0].Type() << ", " << leptons[0].Eta() << ";\t" << leptons[1].Type() << ", " << leptons[1].Eta() <<  "|\t" << (bJets.size() + jets.size()) << endl;
+        //}
 
         histManager->SetDirectory(categoryNames[histCategory] + "/" + subdir);
 
@@ -1111,7 +1129,7 @@ void fcncAnalyzer::MakePlots(vObj leptons, vector<TCJet> jets, vector<TCJet> bJe
         MetPlots(met, leptons);
         JetPlots(jets, bJets);
         DileptonPlots2D(leptons);
-        //FakePlots(leptons, jets, bJets, PV);
+        FakePlots(leptons, jets, bJets, PV);
         MiscPlots();
 
         histManager->SetWeight(1);
@@ -1721,29 +1739,37 @@ void fcncAnalyzer::GenPlots(vector<TCGenParticle> gen, vObj leptons)
     }
 }
 
-//void fcncAnalyzer::FakePlots(vObj leptons)
-//{
-//
-//    if (fakeables.size() >= 1) {
-//        unsigned flCategory = GetHistCategory(2) - 10;
-//        histManager->SetFileNumber(0);
-//        histManager->SetDirectory(categoryNames[flCategory] + "/Fakes");
-//        histManager->Fill1DHist(recoMET->DeltaPhi(fakeables[0].P2()),
-//                "h1_MetFakeableDeltaPhi", "#Delta#phi(fakeable, MET);#Delta#phi(fakeable, MET);Entries / bin", 36, 0., TMath::Pi());
-//
-//        vector<TCJet> muFakeJets    = selector->GetSelectedJets("muFakes");
-//        vector<TCJet> eleFakeJets   = selector->GetSelectedJets("eleFakes");
-//
-//        for (unsigned i = 0; i < muFakeJets.size(); ++i) {
-//            histManager->Fill1DHist(muFakeJets[i].BDiscriminatorMap("CSV"),
-//                    "h1_MatchedMuJetBDiscr", "matched #mu-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
-//        }
-//        for (unsigned i = 0; i < eleFakeJets.size(); ++i) {
-//            histManager->Fill1DHist(eleFakeJets[i].BDiscriminatorMap("CSV"),
-//                    "h1_MatchedEleJetBDiscr", "matched e-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
-//        }
-//    }
-//}
+void fcncAnalyzer::FakePlots(vObj leptons, vector<TCJet> jets, vector<TCJet> bJets, TVector3 PV)
+{
+
+    // Find fakes if present
+    vObj fakeables;
+    bitset<3> fakeIndices;
+    for (unsigned i = 0; i < leptons.size(); ++i) {
+        if (leptons[i].IsFake()) {
+            fakeables.push_back(leptons[i]);
+            fakeIndices.set(i);
+        }
+    }
+
+    //if (fakeables.size() >= 1) {
+    //    unsigned flCategory = GetHistCategory(2) - 10;
+    //    histManager->Fill1DHist(recoMET->DeltaPhi(fakeables[0].P2()),
+    //            "h1_MetFakeableDeltaPhi", "#Delta#phi(fakeable, MET);#Delta#phi(fakeable, MET);Entries / bin", 36, 0., TMath::Pi());
+
+    //    vector<TCJet> muFakeJets    = selector->GetSelectedJets("muFakes");
+    //    vector<TCJet> eleFakeJets   = selector->GetSelectedJets("eleFakes");
+
+    //    for (unsigned i = 0; i < muFakeJets.size(); ++i) {
+    //        histManager->Fill1DHist(muFakeJets[i].BDiscriminatorMap("CSV"),
+    //                "h1_MatchedMuJetBDiscr", "matched #mu-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
+    //    }
+    //    for (unsigned i = 0; i < eleFakeJets.size(); ++i) {
+    //        histManager->Fill1DHist(eleFakeJets[i].BDiscriminatorMap("CSV"),
+    //                "h1_MatchedEleJetBDiscr", "matched e-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
+    //    }
+    //}
+}
 
 void fcncAnalyzer::SetEventCategory(vObj leptons)
 {
@@ -1840,9 +1866,8 @@ int fcncAnalyzer::GetHistCategory(unsigned shift)
     for (int i = 0; i < 4; ++i) sum += (category >> i) & 1;
 
     unsigned histCategory = 0;
-
     if (shift < 3) 
-        histCategory = 4 + 10*(shift - 1) + 3*lepCat + sum;
+        histCategory = 3*lepCat + sum;
     else 
         if (evtCategory.test(16))
             histCategory = 14;
@@ -1863,7 +1888,7 @@ string fcncAnalyzer::GetFakeCategory(vObj fakeables)
         if (fakeables[0].Type() == "muon") 
             cat = "mu";
     } 
-    
+
     if (fakeables.size() == 2) {
         cat = "ll";
         //if (fakeables[0].Type() == "electron" && fakeables[0].Type() == "electron") 
@@ -1880,9 +1905,9 @@ void fcncAnalyzer::FillYieldHists(string directory, float weight, unsigned cut)
 {
     for (unsigned i = 0; i < N_CUTS; ++i) {
         histManager->SetFileNumber(i);
-
         histManager->SetDirectory(directory);
         histManager->SetWeight(weight);
+
         histManager->Fill1DHist(cut+1, "h1_YieldByCut", "Weighted number of events passing cuts by cut; cut; Entries", 24, 0.5, 24.5);
         histManager->SetWeight(1);
         histManager->Fill1DHist(cut+1, "h1_YieldByCutRaw", "Raw number of events passing cuts by cut; cut; Entries", 24, 0.5, 24.5);
@@ -1904,12 +1929,17 @@ void fcncAnalyzer::SetYields(unsigned cut)
         unsigned lepCat = (evtCategory.to_ulong() >> 2) & 0x3;
         FillYieldHists(categoryNames[lepCat+1] + "/" + subdir, evtWeight, cut);
         // flavor category
-        unsigned flCat = GetHistCategory(2) - 10;
+        unsigned flCat = GetHistCategory(2) + 4;
         FillYieldHists(categoryNames[flCat] + "/" + subdir, evtWeight, cut);
         // WH category
         unsigned whCat = GetHistCategory(3);
         if (whCat != 0) {
             FillYieldHists(categoryNames[whCat] + "/" + subdir, evtWeight, cut);
+        }
+        // geometric category
+        unsigned geoCat = GetHistCategory(1) + 16;
+        if (geoCat < N_CATEGORIES) {
+            FillYieldHists(categoryNames[geoCat] + "/" + subdir, evtWeight, cut);
         }
     }
 

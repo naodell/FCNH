@@ -2,11 +2,31 @@ import sys, os, shutil, pickle, datetime
 from math import *
 import ROOT as r
 
-paramFile = open('scripts/fcncParams.pkl', 'rb')
-scales    = pickle.load(paramFile)
-styles    = pickle.load(paramFile)
-combos    = pickle.load(paramFile)
-categories = pickle.load(paramFile)
+paramFile   = open('scripts/fcncParams.pkl', 'rb')
+scales      = pickle.load(paramFile)
+styles      = pickle.load(paramFile)
+combos      = pickle.load(paramFile)
+categories  = pickle.load(paramFile)
+systematics = pickle.load(paramFile)
+
+
+def bin_by_bin_hist_addition(hist1, hist2, constant = -1.):
+    '''
+    Custom histogram adder that does not allow negative bins
+    '''
+
+    for bin in range(hist1.GetNbinsX()):
+        entries1, entries2  = hist1.GetBinContent(bin+1), hist2.GetBinContent(bin+1)
+        error1, error2      = hist1.GetBinError(bin+1), hist2.GetBinError(bin+1)
+
+        if hist1 > hist2:
+            hist1.SetBinContent(bin+1, entries1 + constant*entries2)
+            hist1.SetBinError(bin+1, sqrt(pow(error1, 2) + pow(constant*entries2, 2)))
+        else:
+            hist1.SetBinContent(bin+1, 0)
+            hist1.SetBinError(bin+1, 0)
+
+    return hist1
 
 class AnalysisTools():
     '''
@@ -150,9 +170,13 @@ class AnalysisTools():
         if not hist:
             return None
 
-        #if dataName.split('_')[0] == 'Fakes' and dataName != 'Fakes':
-        #    print dataName
-        #    dataName = dataName.split('_')[2]
+        if self._category in systematics:
+            if dataName == 'QFlips':
+                hist = self.add_systematic(hist, 'QFlips')
+            elif dataName in self._combineDict['Fakes']:
+                hist = self.add_systematic(hist, dataName)
+            elif dataName in self._combineDict['Irreducible']:
+                hist = self.add_systematic(hist, 'Irreducible')
 
         if dataName.split('_')[0] == 'Fakes' and len(dataName.split('_')) >= 3:
             dataName = dataName.split('_', 2)[2]
@@ -160,9 +184,9 @@ class AnalysisTools():
         if doScale:
             if dataName[:4] == 'DATA' or dataName in ['Fakes_e', 'Fakes_mu', 'Fakes_ee', 'Fakes_emu', 'Fakes_mumu', 'Fakes_ll', 'QFlips']:
                 if self._category == 'ss_mumu' and dataName == 'Fakes_ll':
-                    hist.Scale(1*self._scaleDict[self._period][dataName])
+                    hist.Scale(1.*self._scaleDict[self._period][dataName])
                 if self._category == 'ss_em' and dataName == 'Fakes_ll':
-                    hist.Scale(0.5*self._scaleDict[self._period][dataName])
+                    hist.Scale(1.*self._scaleDict[self._period][dataName])
                 else:
                     hist.Scale(self._scaleDict[self._period][dataName])
             else:
@@ -192,11 +216,14 @@ class AnalysisTools():
                             else:
                                 if mc == 'ttbar':
                                     if self._category in ['ss_mumu', 'ss_emu'] and data == 'Fakes_mu': # h4x!!!
-                                        hist.Add(mc_hist, -0.60)
-                                    elif self._category == 'ss_emu' and data == 'Fakes_e': # h4x!!!
-                                        hist.Add(mc_hist, -0.60)
+                                        hist.Add(mc_hist, -0.5)
+                                        #bin_by_bin_hist_addition(outHist, mc_hist, -0.5)
+                                    elif self._category == ['ss_emu', 'ss_ee'] and data == 'Fakes_e': # h4x!!!
+                                        hist.Add(mc_hist, -0.1)
+                                        #bin_by_bin_hist_addition(outHist, mc_hist, -0.1)
                                 else:
-                                    hist.Add(mc_hist, -1)
+                                    hist.Add(mc_hist, -1.)
+                                    #bin_by_bin_hist_addition(outHist, mc_hist, -1.)
 
                     if not outHist:
                         outHist = hist
@@ -214,12 +241,14 @@ class AnalysisTools():
                         elif mc_hist:
                             if mc == 'ttbar':
                                 if self._category in ['ss_mumu', 'ss_emu'] and dataName == 'Fakes_mu': # h4x!!!
-                                    #outHist.Add(mc_hist, -1.)
-                                    outHist.Add(mc_hist, -0.60)
+                                    outHist.Add(mc_hist, -0.5)
+                                    #bin_by_bin_hist_addition(outHist, mc_hist, -0.5)
                                 elif self._category == 'ss_emu' and dataName == 'Fakes_e': # h4x!!!
-                                    outHist.Add(mc_hist, -0.60)
+                                    outHist.Add(mc_hist, -0.5)
+                                    #bin_by_bin_hist_addition(outHist, mc_hist, -0.5)
                             else:
-                                outHist.Add(mc_hist, -1)
+                                outHist.Add(mc_hist, -1.)
+                                #bin_by_bin_hist_addition(outHist, mc_hist, -1.)
 
             else: # MC fakes
                 if dataName.split('_')[2] not in self._combineDict:
@@ -236,7 +265,6 @@ class AnalysisTools():
         else: # Non-fake datasets
             if dataName not in self._combineDict:
                 outHist = self.get_hist(var, dataName, histType)
-
             else:
                 for data in self._combineDict[dataName]:
                     hist = self.get_hist(var, data, histType)
@@ -248,3 +276,30 @@ class AnalysisTools():
 
         return outHist
 
+
+    def add_systematic(self, hist, dataset):
+        '''
+        Add a systematic uncertainty to a histogram based the data sample and the
+        category.
+        '''
+
+        if dataset not in systematics[self._category]:
+            return hist
+
+        for bin in range(hist.GetNbinsX()):
+
+            entries = hist.GetBinContent(bin+1)
+            if entries == 0:
+                continue
+
+            errorSq = pow(hist.GetBinError(bin+1), 2)
+            for syst in systematics[self._category][dataset]:
+                errorSq += pow(syst*entries, 2)
+
+            error = sqrt(errorSq)
+            #print self._category, dataset, entries, error, hist.GetBinError(bin+1)
+            hist.SetBinError(bin, error)
+
+
+
+        return hist

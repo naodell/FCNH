@@ -555,7 +555,7 @@ void fakeAnalyzer::Terminate()
 }
 
 
-void fakeAnalyzer::DoZTag(vObj leptons)
+void fakeAnalyzer::DoZTag(vObj& leptons)
 {
     // Reset OS variables for each event of interest//
     zTagged      = false;
@@ -590,7 +590,7 @@ void fakeAnalyzer::DoZTag(vObj leptons)
     }
 }
 
-void fakeAnalyzer::FillDenominatorHists(string cat, TCPhysObject probe)
+void fakeAnalyzer::FillDenominatorHists(string cat, TCPhysObject& probe)
 {
     histManager->SetDirectory(cat + "/" + suffix);
 
@@ -647,7 +647,7 @@ void fakeAnalyzer::FillDenominatorHists(string cat, TCPhysObject probe)
     }
 }
 
-void fakeAnalyzer::FillNumeratorHists(string cat, TCPhysObject passLep)
+void fakeAnalyzer::FillNumeratorHists(string cat, TCPhysObject& passLep)
 {
     histManager->SetDirectory(cat + "/" + suffix);
 
@@ -692,12 +692,9 @@ void fakeAnalyzer::FillNumeratorHists(string cat, TCPhysObject passLep)
     }
 }
 
-void fakeAnalyzer::FillClosureHists(string cat, TCPhysObject probe)
+void fakeAnalyzer::FillClosureHists(string cat, TCPhysObject& probe)
 {
-    vector<TCPhysObject> tmpObj;
-    tmpObj.push_back(probe);
-
-    histManager->SetWeight(weighter->GetFakeWeight(tmpObj, cat));
+    histManager->SetWeight(weighter->GetFakeWeight(probe, cat));
     histManager->SetDirectory(cat + "_inclusive/" + suffix);
 
     //cout << weighter->GetFakeWeight(tmpObj) << endl;
@@ -716,7 +713,7 @@ void fakeAnalyzer::FillClosureHists(string cat, TCPhysObject probe)
     histManager->SetWeight(1.);
 }
 
-void fakeAnalyzer::FillJetFlavorHists(string cat, TCPhysObject lepton, vector<TCJet> jets) 
+void fakeAnalyzer::FillJetFlavorHists(string cat, TCPhysObject& lepton, vector<TCJet>& jets) 
 {
     histManager->SetDirectory(cat + "_inclusive/" + suffix);
 
@@ -741,7 +738,7 @@ void fakeAnalyzer::FillJetFlavorHists(string cat, TCPhysObject lepton, vector<TC
     }
 }
 
-bool fakeAnalyzer::CheckQCD2lCR(vector<TCJet> tagJets, TCPhysObject probe) 
+bool fakeAnalyzer::CheckQCD2lCR(vector<TCJet>& tagJets, TCPhysObject& probe) 
 {
     // Make sure event is consistent with bbbar production //
 

@@ -270,7 +270,8 @@ combineDict['single top']       = ['tW', 'tbarW', 't_t-channel', 'tbar_t-channel
 combineDict['ttV']              = ['ttZ', 'ttW']#, 'ttG']
 combineDict['Diboson']          = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'WZJets3LNu']
 combineDict['WW/ZZ']            = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'WWJets2L2Nu', 'ZZJets2L2Nu']
-combineDict['ZZ4l']             = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
+#combineDict['ZZ4l']             = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
+combineDict['ZZ4l']             = ['ZZ4mu', 'ZZ4e', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
 combineDict['VV2l']             = ['ZZJets2L2Nu', 'ZZJets2L2Q', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'WZJets2L2Q']
 combineDict['Triboson']         = ['WWW', 'WWZ', 'WZZ', 'ZZZ', 'WWG']
 combineDict['QCD']              = ['QCD_20_MU', 'QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_EM', 'QCD_170-250_EM', 'QCD_250-350_EM', 'QCD_350_EM']
@@ -282,6 +283,7 @@ combineDict['Fakes']            = ['Fakes_e', 'Fakes_mu', 'Fakes_ll']
 combineDict['FAKES_2l']         = ['WbbToLNu', 'ZJets_M-50', 'ZJets_M-10To50', 'ttbar_lep', 'ttbar_had', 'tbarW', 'tW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'ZZJets2L2Q']
 combineDict['FAKES_3l']         = ['WZJets3LNu']#, 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
 combineDict['Remove_ss']        = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbar_had', 'ttbar_lep']#, 'WWJets2L2Nu', 'ZZJets2L2Nu', 'ZZJets2L2Q']
+#combineDict['Remove_ss']        = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbar', 'WWJets2L2Nu', 'ZZJets2L2Nu']#, 'ZZJets2L2Q']
 combineDict['Remove_3l']        = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'WWW', 'WWZ', 'WZZ', 'ZZZ']
 combineDict['Irreducible']      = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ', 'WWG', 'WZJets3LNu']
 
@@ -293,6 +295,7 @@ combineDict['PROMPT_3l']        = combineDict['FAKES_3l']
 
 categoryDict = {'inclusive':'inclusive',
                 'ss_inclusive':'ss inclusive', 'ss_mumu':'#mu^{#pm}#mu^{#pm}', 'ss_ee':'e^{#pm}e^{#pm}', 'ss_emu':'e^{#pm}#mu^{#pm}',
+                'ss_endcap':'ss (EE)', 'ss_mixed':'ss (EB)', 'ss_barrel':'ss (BB)',
                 'os_inclusive':'os inclusive', 'os_mumu':'#mu^{#pm}#mu^{#mp}', 'os_ee':'e^{#pm}e^{#mp}', 'os_emu':'e^{#pm}mu^{#mp}', 
                 '3l_inclusive':'3l inclusive', '3l_OSSF':'(l^{#pm}l^{#mp})l', '3l_SSSF':'(l^{#pm}l^{#pm})l',
                 '3l_eee':'eee', '3l_eemu':'ee#mu', '3l_emumu':'e#mu#mu','3l_mumumu':'#mu#mu#mu',
@@ -301,9 +304,74 @@ categoryDict = {'inclusive':'inclusive',
                 'low_met':'MET < 20', 'high_met':'45 < MET < 80'
                 }
 
+systDict    = {'ss_inclusive':{}, 'ss_ee':{}, 'ss_emu':{}, 'ss_mumu':{}, 'ss_barrel':{}, 'ss_mixed':{}, 'ss_endcap':{}, 
+               '3l_inclusive':{}, '3l_eee':{}, '3l_eemu':{}, '3l_emumu':{}, '3l_mumumu':{}}
+
+#                                           [lumi,   jes,    MET,   mu_eff, el_eff, qFlips, fakes, pileup]
+# same-sign dileptons systematics
+systDict['ss_inclusive']['Irreducible'] =  [0.026,  0.005,  0.04,  0.014,  0.015,  0.,    0.,    0.01]
+systDict['ss_inclusive']['Fakes_mu']    =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.10,  0.01]
+systDict['ss_inclusive']['Fakes_e']     =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.10,  0.01]
+systDict['ss_inclusive']['Fakes_ll']    =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.10,  0.01]
+systDict['ss_inclusive']['QFlips']      =  [0.,     0.005,  0.04,  0.014,  0.015,  0.01,  0.,    0.01]
+systDict['ss_ee']['Irreducible']        =  [0.026,  0.005,  0.04,  0.,     0.015,  0.,    0.,    0.01]
+systDict['ss_ee']['Fakes_mu']           =  [0.,     0.005,  0.04,  0.,     0.015,  0.,    0.,    0.01]
+systDict['ss_ee']['Fakes_e']            =  [0.,     0.005,  0.04,  0.,     0.015,  0.,    0.10,  0.01]
+systDict['ss_ee']['Fakes_ll']           =  [0.,     0.005,  0.04,  0.,     0.015,  0.,    0.10,  0.01]
+systDict['ss_ee']['QFlips']             =  [0.,     0.005,  0.04,  0.,     0.015,  0.01,  0.,    0.01]
+systDict['ss_emu']['Irreducible']       =  [0.026,  0.005,  0.04,  0.014,  0.015,  0.,    0.,    0.01]
+systDict['ss_emu']['Fakes_mu']          =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.10,  0.01]
+systDict['ss_emu']['Fakes_e']           =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.10,  0.01]
+systDict['ss_emu']['Fakes_ll']          =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.10,  0.01]
+systDict['ss_emu']['QFlips']            =  [0.,     0.005,  0.04,  0.014,  0.015,  0.01,  0.,    0.01]
+systDict['ss_mumu']['Irreducible']      =  [0.026,  0.005,  0.04,  0.014,  0.,     0.,    0.,    0.01]
+systDict['ss_mumu']['Fakes_mu']         =  [0.,     0.005,  0.04,  0.014,  0.,     0.,    0.10,  0.01]
+systDict['ss_mumu']['Fakes_e']          =  [0.,     0.005,  0.04,  0.014,  0.,     0.,    0.,    0.01]
+systDict['ss_mumu']['Fakes_ll']         =  [0.,     0.005,  0.04,  0.014,  0.,     0.,    0.10,  0.01]
+
+systDict['ss_barrel']['Irreducible']    =  [0.026,  0.005,  0.04,  0.014,  0.015,  0.,    0.,    0.01]
+systDict['ss_barrel']['Fakes_mu']       =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.10,  0.01]
+systDict['ss_barrel']['Fakes_e']        =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.10,  0.01]
+systDict['ss_barrel']['Fakes_ll']       =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.10,  0.01]
+systDict['ss_barrel']['QFlips']         =  [0.,     0.005,  0.04,  0.,     0.015,  0.01,  0.,    0.01]
+systDict['ss_mixed']['Irreducible']     =  [0.026,  0.005,  0.04,  0.014,  0.015,  0.,    0.,    0.01]
+systDict['ss_mixed']['Fakes_mu']        =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.10,  0.01]
+systDict['ss_mixed']['Fakes_e']         =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.10,  0.01]
+systDict['ss_mixed']['Fakes_ll']        =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.10,  0.01]
+systDict['ss_mixed']['QFlips']          =  [0.,     0.005,  0.04,  0.,     0.015,  0.01,  0.,    0.01]
+systDict['ss_endcap']['Irreducible']    =  [0.026,  0.005,  0.04,  0.014,  0.015,  0.,    0.,    0.01]
+systDict['ss_endcap']['Fakes_mu']       =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.10,  0.01]
+systDict['ss_endcap']['Fakes_e']        =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.10,  0.01]
+systDict['ss_endcap']['Fakes_ll']       =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.10,  0.01]
+systDict['ss_endcap']['QFlips']         =  [0.,     0.005,  0.04,  0.,     0.015,  0.01,  0.,    0.01]
+
+#                                           [lumi,   jes,    MET,   mu_eff, el_eff, fakes, pileup]
+# trilepton  systematics
+systDict['3l_inclusive']['Irreducible'] =  [0.026,  0.005,  0.04,  0.014,  0.015,  0.,    0.01]
+systDict['3l_inclusive']['Fakes_mu']    =  [0.,     0.005,  0.04,  0.014,  0.015,  0.10,  0.01]
+systDict['3l_inclusive']['Fakes_e']     =  [0.,     0.005,  0.04,  0.014,  0.015,  0.10,  0.01]
+systDict['3l_inclusive']['Fakes_ll']    =  [0.,     0.005,  0.04,  0.014,  0.015,  0.10,  0.01]
+systDict['3l_eee']['Irreducible']       =  [0.026,  0.005,  0.04,  0.014,  0.015,  0.,    0.01]
+systDict['3l_eee']['Fakes_mu']          =  [0.,     0.005,  0.04,  0.,     0.015,  0.,    0.01]
+systDict['3l_eee']['Fakes_e']           =  [0.,     0.005,  0.04,  0.,     0.015,  0.10,  0.01]
+systDict['3l_eee']['Fakes_ll']          =  [0.,     0.005,  0.04,  0.,     0.015,  0.10,  0.01]
+systDict['3l_eemu']['Irreducible']      =  [0.026,  0.005,  0.04,  0.014,  0.015,  0.,    0.01]
+systDict['3l_eemu']['Fakes_mu']         =  [0.,     0.005,  0.04,  0.014,  0.015,  0.10,  0.01]
+systDict['3l_eemu']['Fakes_e']          =  [0.,     0.005,  0.04,  0.014,  0.015,  0.10,  0.01]
+systDict['3l_eemu']['Fakes_ll']         =  [0.,     0.005,  0.04,  0.014,  0.015,  0.10,  0.01]
+systDict['3l_emumu']['Irreducible']     =  [0.026,  0.005,  0.04,  0.014,  0.015,  0.,    0.01]
+systDict['3l_emumu']['Fakes_mu']        =  [0.,     0.005,  0.04,  0.014,  0.015,  0.20,  0.01]
+systDict['3l_emumu']['Fakes_e']         =  [0.,     0.005,  0.04,  0.014,  0.015,  0.10,  0.01]
+systDict['3l_emumu']['Fakes_ll']        =  [0.,     0.005,  0.04,  0.014,  0.015,  0.10,  0.01]
+systDict['3l_mumumu']['Irreducible']    =  [0.026,  0.005,  0.04,  0.014,  0.015,  0.,    0.01]
+systDict['3l_mumumu']['Fakes_mu']       =  [0.,     0.005,  0.04,  0.014,  0.,     0.10,  0.01]
+systDict['3l_mumumu']['Fakes_e']        =  [0.,     0.005,  0.04,  0.014,  0.,     0.,    0.01]
+systDict['3l_mumumu']['Fakes_ll']       =  [0.,     0.005,  0.04,  0.014,  0.,     0.10,  0.01]
+
 paramFile = open('scripts/fcncParams.pkl', 'wb')
 pickle.dump(scaleDict, paramFile)
 pickle.dump(styleDict, paramFile)
 pickle.dump(combineDict, paramFile)
 pickle.dump(categoryDict, paramFile)
+pickle.dump(systDict, paramFile)
 paramFile.close()

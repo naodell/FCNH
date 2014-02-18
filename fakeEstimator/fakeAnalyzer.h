@@ -171,12 +171,12 @@ class fakeAnalyzer : public TSelector {
         //virtual void    SlaveTerminate() {};
         virtual void    Terminate();
 
-        virtual void    FillDenominatorHists(string, TCPhysObject);
-        virtual void    FillNumeratorHists(string, TCPhysObject);
-        virtual void    FillClosureHists(string, TCPhysObject);
-        virtual void    FillJetFlavorHists(string, TCPhysObject, vector<TCJet>);
-        virtual void    DoZTag(vObj leptons);
-        virtual bool    CheckQCD2lCR(vector<TCJet>, TCPhysObject);
+        virtual void    FillDenominatorHists(string, TCPhysObject&);
+        virtual void    FillNumeratorHists(string, TCPhysObject&);
+        virtual void    FillClosureHists(string, TCPhysObject&);
+        virtual void    FillJetFlavorHists(string, TCPhysObject&, vector<TCJet>&);
+        virtual void    DoZTag(vObj&);
+        virtual bool    CheckQCD2lCR(vector<TCJet>&, TCPhysObject&);
         virtual bool    CheckZPlusJetCR();
 
         virtual string  str(int i) {return static_cast<ostringstream*>( &(ostringstream() << i) )->str();}

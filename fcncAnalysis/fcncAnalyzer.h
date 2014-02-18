@@ -57,7 +57,7 @@
 
 using namespace std;
 
-const unsigned short N_CATEGORIES = 16;
+const unsigned short N_CATEGORIES = 19;
 const string categoryNames[] = {
     //inclusive
     "inclusive",
@@ -82,9 +82,9 @@ const string categoryNames[] = {
     "3l_OSSF",
 
     // geometric
-    //"ss_endcap",
-    //"ss_mixed",
-    //"ss_barrel",
+    "ss_endcap",
+    "ss_mixed",
+    "ss_barrel",
     //"os_endcap",
     //"os_mixed",
     //"os_barrel",
@@ -92,9 +92,10 @@ const string categoryNames[] = {
     //"3l_2end1bar",
     //"3l_1end2bar",
     //"3l_barrel",
+
 };
 
-const unsigned short N_CUTS = 11;
+const unsigned short N_CUTS = 10;
 typedef vector<TCPhysObject> vObj;
 
 class fcncAnalyzer : public TSelector {
@@ -277,6 +278,7 @@ class fcncAnalyzer : public TSelector {
         virtual void    MetPlots(TCMET, vObj);
         virtual void    DileptonPlots2D(vObj);
         virtual void    GenPlots(vector<TCGenParticle>, vObj);
+        virtual void    FakePlots(vObj, vector<TCJet>, vector<TCJet>, TVector3);
         virtual void    MiscPlots();
         virtual void    FillYieldHists(string, float, unsigned);
 

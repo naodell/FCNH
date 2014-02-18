@@ -25,9 +25,8 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-#cutList.extend(['2_Z_veto', '3_jet', '4_MET', '.'])#, '5_BDT'])
-#cutList.extend(['.', '.', '.'])
-#cutList.extend(['CR_0jet', 'CR_1jet', 'CR_2jet'])
+cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.'])#, '5_BDT'])
+cutList.extend(['.', '.', '.', 'X_0jet', 'X_1jet'])
 
 crList      = []#'CR_WZ', 'CR_ttbar', 'CR_ZFake']
 
@@ -46,11 +45,12 @@ doOS        = False
 doSS        = True
 do3l        = True
 
-doYields    = False
+doYields    = True
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive']
 catSS.extend(['ss_mumu', 'ss_ee', 'ss_emu'])
+#catSS.extend(['ss_endcap', 'ss_mixed', 'ss_barrel'])
 catOS       = ['os_inclusive']
 catOS.extend(['os_mumu', 'os_ee', 'os_emu']) 
 cat3l       = ['3l_inclusive']
@@ -85,6 +85,7 @@ samples['inclusive'].append('ZJets')
 samples['3l_inclusive'].append('Triboson')
 samples['3l_inclusive'].append('ttV')
 samples['3l_inclusive'].append('ZZ4l')
+#samples['3l_inclusive'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
 samples['3l_inclusive'].append('WZJets3LNu')
 
 ## eee
@@ -118,6 +119,7 @@ samples['3l_inclusive'].append('Fakes')
 samples['ss_inclusive'].append('Triboson')
 samples['ss_inclusive'].append('ttV')
 samples['ss_inclusive'].append('ZZ4l')
+#samples['ss_inclusive'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
 samples['ss_inclusive'].append('WZJets3LNu')
 
 ## dielectrons
@@ -134,8 +136,14 @@ samples['ss_emu'].extend(['Fakes_e', 'Fakes_mu', 'Fakes_ll'])
 samples['ss_mumu'].extend(samples['ss_inclusive'])
 samples['ss_mumu'].extend(['Fakes_mu', 'Fakes_ll'])
 
+## inclusive
 samples['ss_inclusive'].append('Fakes')
 samples['ss_inclusive'].append('QFlips')
+
+## geometric categories
+samples['ss_endcap']    = samples['ss_mumu']
+samples['ss_mixed']     = samples['ss_mumu']
+samples['ss_barrel']    = samples['ss_mumu']
 
 ## opposite-sign categories
 samples['os'].extend(['Diboson', 'top', 'ZJets'])
@@ -189,7 +197,9 @@ if doPlots:
                                            'Lepton1Pt', 'Lepton2Pt','Lepton3Pt',
                                            'Lepton1Eta', 'Lepton2Eta', 'Lepton3Eta',
                                            'ElectronPt', 'ElectronEta',
+                                           'ElectronDxy', 'ElectronDz',
                                            'MuonPt', 'MuonEta',
+                                           'MuonDxy', 'MuonDz',
                                            'Lepton1dxy', 'Lepton1dz',
                                            'Lepton2dxy', 'Lepton2dz',
                                            'Lepton3dxy', 'Lepton3dz',
@@ -305,12 +315,13 @@ if doPlots:
             ss_plotter = copy.deepcopy(plotter)
             ss_plotter.add_datasets(samples[category], Clear=True)
             ss_plotter._overlayList = ['DATA']#, 'FCNH']
+            #ss_plotter.set_clean_fakes(False)
 
             for i, cut in enumerate(cutList):
                 if cut == '.':
                     continue
 
-                inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
+                inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, i+1, period, batch)
 
                 if doLog:
                     outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, cut)
@@ -321,18 +332,19 @@ if doPlots:
                 p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(ss_plotter, category, inFile, outFile, do1D, do2D, False, doLog, doRatio, doEff)))
 
         ### overlay of fake distributions for single and double fakes ###
-        fake_plotter = copy.deepcopy(plotter)
-        fake_plotter.add_datasets(['Fakes_mu'], Clear=True)
-        fake_plotter._overlayList = ['Fakes_ll']
-        fake_plotter.draw_normalized(True)
+                if cut in ['1_preselection', 'X_0jet', 'X_1jet', '3_2jet']:
+                    fake_plotter = copy.deepcopy(plotter)
+                    fake_plotter._overlayList = ['Fakes_ll', 'Fakes_mu']
+                    fake_plotter.draw_normalized(True)
 
-        if doLog:
-            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix,  'fakes_overlay')
-        else:
-            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'fakes_overlay')
-        fake_plotter.make_save_path(outFile, clean=True)
+                    inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, i+1, period, batch)
+                    if doLog:
+                        outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix,  'fakes_overlay_{0}'.format(cut[2:]))
+                    else:
+                        outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'fakes_overlay_{0}'.format(cut[2:]))
+                    fake_plotter.make_save_path(outFile, clean=True)
 
-        p_plot.append(Process(name = 'fakes_overlay/{0}'.format('ss_mumu'), target = plotter_wrapper, args=(fake_plotter, 'ss_mumu', inFile, outFile, do1D, False, True, True, False, False)))
+                    p_plot.append(Process(name = 'fakes_overlay_{0}/{1}'.format(cut[2:], category), target = plotter_wrapper, args=(fake_plotter, category, inFile, outFile, do1D, False, True, True, False, False)))
 
 
     ### os selection ###
@@ -490,17 +502,17 @@ if doYields:
         yieldTable.get_scale_factors(['FCNH'])
 
     if do3l:
-        yieldTable._columnList  = ['Irreducible', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
-        #yieldTable._columnList  = samples['3l'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
+        #yieldTable._columnList  = ['Irreducible', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
+        yieldTable._columnList  = samples['3l_inclusive'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau','FCNH']# 'Significance'] 
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
-        yieldTable.add_datasets(['Irreducible', 'Fakes'], Clear = True)
-        #yieldTable.add_datasets(samples['3l'], Clear = True)
+        #yieldTable.add_datasets(['Irreducible', 'Fakes'], Clear = True)
+        yieldTable.add_datasets(samples['3l_inclusive'], Clear = True)
         yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
 
-        yieldTable._rowList = 5*['.'] + ['3 lepton', 'Z removal', '2+ jets', 'MET', 'HT'] + 5*['.'] + ['BDT']
+        yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets'] + 6*['.'] + ['0-jet', '1-jet']# + 7*['.'] + ['BDT']
 
         for category in cat3l:
             yieldTable._category = category
@@ -508,16 +520,15 @@ if doYields:
             yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
 
     if doSS:
-        yieldTable._columnList  = ['Irreducible', 'Fakes', 'QFlips', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
-        #yieldTable._columnList  = samples['ss'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
+        #yieldTable._columnList  = ['Irreducible', 'Fakes', 'QFlips', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
+        yieldTable._columnList  = samples['ss_inclusive'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
-        yieldTable.add_datasets(['Irreducible', 'Fakes', 'QFlips'], Clear = True)
-        #yieldTable.add_datasets(samples['ss'], Clear = True)
+        #yieldTable.add_datasets(['Irreducible', 'Fakes', 'QFlips'], Clear = True)
+        yieldTable.add_datasets(samples['ss_inclusive'], Clear = True)
         yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
-
-        yieldTable._rowList = ['.', '.', '.', '.', '.','ss lepton', 'Z removal', '2+ jets', 'MET', 'HT']  + 5*['.'] + ['BDT']
+        yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET'] + 5*['.'] + ['0-jet', '1-jet']# + 7*['.'] + ['BDT']
 
         for category in catSS:
             yieldTable._category = category
