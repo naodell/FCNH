@@ -577,6 +577,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
     } else if (leptons.size() > 4)
         return kTRUE;
 
+
     if (leptons.size() > 1) { // Only do signal extraction if there are at least two leptons
 
         //!! low mass resonance rejection !!//
@@ -608,6 +609,18 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
         SetEventCategory(leptons);
         SetEventVariables(leptons, jets, bJetsM, *recoMET); 
+
+        // Jet multiplicity sanity check
+        if (
+                leptons.size() == 2 
+                && leptons[0].Type() == "muon" 
+                && leptons[1].Type() == "muon" 
+                && leptons[0].Charge() == leptons[1].Charge()
+           ) {
+            histManager->SetDirectory("ss_mumu/" + subdir);
+            histManager->Fill1DHist(jets.size() + bJetsM.size(),
+                    "h1_JetMultSC", "jet multiplicity;Entries / bin;N_{jets}", 15, -0.5, 14.5);
+        }
 
         // Pre-selection mc-truth plots
         if (!isRealData) {
@@ -714,18 +727,15 @@ bool fcncAnalyzer::Process(Long64_t entry)
             histManager->Fill2DHist(leptons.size(), fakeables.size(),
                     "h2_LepMultVsFakeableMult", "lepton mult vs. fakeable mult", 5, -0.5, 4.5, 5, -0.5, 4.5);
 
-
             if (matchedFakeables.size() == 0) {
                 GetFakeBG(leptons, fakeables, fJets, fBJetsM, fBJetsL, selectedVtx);
             } else if (matchedFakeables.size() == 2) {
-                evtWeight = evtWeight/(matchedFakeables.size());
+                evtWeight /= matchedFakeables.size();
                 for (unsigned i = 0; i < matchedFakeables.size(); ++i) {
-                    //cout << matchedFakeables[i].Pt() << ", " << matchedFakeables[i].Eta() << endl;
                     vObj tmpFakeables = unmatchedFakeables;
                     tmpFakeables.push_back(matchedFakeables[i]);
                     GetFakeBG(leptons, tmpFakeables, fJets, fBJetsM, fBJetsL, selectedVtx);
                 }
-                //cout << endl;
                 evtWeight *= matchedFakeables.size();
             }
         }
@@ -746,20 +756,20 @@ void fcncAnalyzer::Terminate()
     cout<<"| Lepton selection:                  |\t" << eventCount[5]  << "\t|\t" << eventCountWeighted[5] << "\t|"<<endl;
 
     // FCNH selection //
-    cout<<"| Z veto:                            |\t" << eventCount[6]  << "\t|\t" << eventCountWeighted[6] << "\t|"<<endl;
-    cout<<"| At least two jets:                 |\t" << eventCount[7]  << "\t|\t" << eventCountWeighted[7] << "\t|"<<endl;
-    cout<<"| MET cut:                           |\t" << eventCount[8]  << "\t|\t" << eventCountWeighted[8] << "\t|"<<endl;
-    cout<<"| BDT:                               |\t" << eventCount[9] << "\t|\t" << eventCountWeighted[9] << "\t|"<<endl;
+    cout << "| Z veto:                            |\t" << eventCount[6]  << "\t|\t" << eventCountWeighted[6] << "\t|"<<endl;
+    cout << "| At least two jets:                 |\t" << eventCount[7]  << "\t|\t" << eventCountWeighted[7] << "\t|"<<endl;
+    cout << "| MET cut:                           |\t" << eventCount[8]  << "\t|\t" << eventCountWeighted[8] << "\t|"<<endl;
+    cout << "| BDT:                               |\t" << eventCount[9] << "\t|\t" << eventCountWeighted[9] << "\t|"<<endl;
 
 
     // Control regions //
-    cout<<"\nControl region event yields."<<"\n"<<endl;
-    cout<<"| WZ:                                |\t" << eventCount[10]  << "\t|\t" << eventCountWeighted[10]  << "\t|"<<endl;
-    cout<<"| ttbar:                             |\t" << eventCount[11]  << "\t|\t" << eventCountWeighted[11] << "\t|"<<endl;
-    cout<<"| Z+fake:                            |\t" << eventCount[12]  << "\t|\t" << eventCountWeighted[12] << "\t|"<<endl;
-    cout<<"| ZZ4l:                              |\t" << eventCount[13]  << "\t|\t" << eventCountWeighted[13] << "\t|"<<endl;
-    cout<<"| 0-jet:                             |\t" << eventCount[14]  << "\t|\t" << eventCountWeighted[14] << "\t|"<<endl;
-    cout<<"| 1-jet:                             |\t" << eventCount[15]  << "\t|\t" << eventCountWeighted[15] << "\t|"<<endl;
+    cout << "\nControl region event yields."<<"\n"<<endl;
+    cout << "| WZ:                                |\t" << eventCount[10]  << "\t|\t" << eventCountWeighted[10]  << "\t|"<<endl;
+    cout << "| ttbar:                             |\t" << eventCount[11]  << "\t|\t" << eventCountWeighted[11] << "\t|"<<endl;
+    cout << "| Z+fake:                            |\t" << eventCount[12]  << "\t|\t" << eventCountWeighted[12] << "\t|"<<endl;
+    cout << "| ZZ4l:                              |\t" << eventCount[13]  << "\t|\t" << eventCountWeighted[13] << "\t|"<<endl;
+    cout << "| 0-jet:                             |\t" << eventCount[14]  << "\t|\t" << eventCountWeighted[14] << "\t|"<<endl;
+    cout << "| 1-jet:                             |\t" << eventCount[15]  << "\t|\t" << eventCountWeighted[15] << "\t|"<<endl;
 
 
     //for (int i = 0; i < 8; ++i) fout[i].close();
@@ -1014,70 +1024,83 @@ void fcncAnalyzer::GetFakeBG(vObj leptons, vObj fakeables, vector<TCJet> jets, v
             || (fakeables.size() == 2 && (leptons.size() == 1 || leptons.size() == 0)) 
        ) {
 
-        string fakeCat = GetFakeCategory(fakeables);
-        //cout << fakeCat << endl;
-
         Float_t fakeWeight1 = 1.;
         Float_t fakeWeight2 = 1.;
         if (fakeables.size() == 2) {
             fakeWeight1 = weighter->GetFakeWeight(fakeables[0], "QCD2l");
             fakeWeight2 = weighter->GetFakeWeight(fakeables[1], "QCD2l");
-        } else if (fakeables.size() == 1) 
+        } else if (fakeables.size() == 1) {
             fakeWeight1 = weighter->GetFakeWeight(fakeables[0], "QCD2l");
-
-        Float_t fakeWeight = fakeWeight1*fakeWeight2;
+        }
 
         // Fake rate fudge 
-        if (fakeables.size() == 1 && leptons.size() == 2) {
-            if (fakeables[0].Type() == "electron") {
-                fakeWeight *= 0.4;
+        //if (fakeables.size() == 1 && leptons.size() == 2) {
+        //    if (fakeables[0].Type() == "electron") {
+        //        fakeWeight1 *= 0.4;
+        //    }
+        //}
+
+        if (fakeables.size() == 1 && fakeWeight1 > 0) {
+            evtWeight *= fakeWeight1;
+            DoFakes(leptons, fakeables, jets, bJetsM, bJetsL, PV);
+            evtWeight /= fakeWeight1;
+        } else if (fakeables.size() == 2 && (fakeWeight1 > 0 || fakeWeight2 > 0)) {
+            if (fakeWeight1 > 0 && fakeWeight2 > 0) {
+                evtWeight *= fakeWeight1*fakeWeight2;
+                DoFakes(leptons, fakeables, jets, bJetsM, bJetsL, PV);
+                evtWeight /= (fakeWeight1*fakeWeight2);
+            } else if (leptons.size() == 1 && fakeWeight1 > 0 && fakeWeight2 >= 0) {
+                evtWeight *= fakeWeight1*(1 - fakeWeight2);
+                vObj fakeable1;
+                fakeable1.push_back(fakeables[0]);
+                DoFakes(leptons, fakeable1, jets, bJetsM, bJetsL, PV);
+                evtWeight /= (fakeWeight1*(1 - fakeWeight2));
+            } else if (leptons.size() == 1 && fakeWeight1 >= 0 && fakeWeight2 > 0) {
+                evtWeight *= fakeWeight2*(1 - fakeWeight1);
+                vObj fakeable2;
+                fakeable2.push_back(fakeables[1]);
+                DoFakes(leptons, fakeable2, jets, bJetsM, bJetsL, PV);
+                evtWeight /= (fakeWeight2*(1 - fakeWeight1));
             }
         }
+    }
+}
 
-        if (fakeWeight <= 0)
-            return;
-        else
-            evtWeight *= fakeWeight;
+void fcncAnalyzer::DoFakes(vObj leptons, vObj fakeables, vector<TCJet> jets, vector<TCJet> bJetsM, vector<TCJet> bJetsL, TVector3 PV)
+{
+    string fakeCat = GetFakeCategory(fakeables);
+    //cout << fakeCat << endl;
 
-        vObj leptonsPlusFakes = leptons;
-        leptonsPlusFakes.insert(leptonsPlusFakes.end(), fakeables.begin(), fakeables.end());
-        sort(leptonsPlusFakes.begin(), leptonsPlusFakes.end(), P4SortCondition);
+    vObj leptonsPlusFakes = leptons;
+    leptonsPlusFakes.insert(leptonsPlusFakes.end(), fakeables.begin(), fakeables.end());
+    sort(leptonsPlusFakes.begin(), leptonsPlusFakes.end(), P4SortCondition);
 
-        SetEventCategory(leptonsPlusFakes);
-        SetEventVariables(leptonsPlusFakes, jets, bJetsM, *recoMET); 
-
-        for (unsigned i = 0; i < leptonsPlusFakes.size(); ++i) {
-            //cout << leptonsPlusFakes[i].IsFake() << ", " << leptonsPlusFakes[i].Type() << "\t";
+    SetEventCategory(leptonsPlusFakes);
+    SetEventVariables(leptonsPlusFakes, jets, bJetsM, *recoMET); 
+    // Enforce same-sign dilepton/trilepton selection with fake leptons
+    if (leptonsPlusFakes.size() == 2) { 
+        if (
+                leptonsPlusFakes[0].Charge() == leptonsPlusFakes[1].Charge()
+                && leptonsPlusFakes[0].Pt() > leptonPtCut[0] 
+                && leptonsPlusFakes[1].Pt() > leptonPtCut[1]
+           ) {
+            if (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON") 
+                AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, PV, "Fakes_" + fakeCat);
+            else                                                  
+                AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, PV, "Fakes_" + fakeCat + "_" + suffix);
         }
-        //cout << fakeWeight << endl;
-
-        // Enforce same-sign dilepton/trilepton selection with fake leptons
-        if (leptonsPlusFakes.size() == 2) { 
-            if (
-                    leptonsPlusFakes[0].Charge() == leptonsPlusFakes[1].Charge()
-                    && leptonsPlusFakes[0].Pt() > leptonPtCut[0] 
-                    && leptonsPlusFakes[1].Pt() > leptonPtCut[1]
-               ) {
-                if (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON") 
-                    AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, PV, "Fakes_" + fakeCat);
-                else                                                  
-                    AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, PV, "Fakes_" + fakeCat + "_" + suffix);
-            }
-        } else if (leptonsPlusFakes.size() == 3) {
-            if (
-                    leptonsPlusFakes[0].Pt() > leptonPtCut[0] 
-                    && leptonsPlusFakes[1].Pt() > leptonPtCut[1]
-                    && leptonsPlusFakes[2].Pt() > leptonPtCut[1]
-                    && fabs(leptonsPlusFakes[0].Charge() + leptonsPlusFakes[1].Charge() + leptonsPlusFakes[2].Charge()) == 1
-               ) {
-                if (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON") 
-                    AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, PV, "Fakes_" + fakeCat);
-                else                                                  
-                    AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, PV, "Fakes_" + fakeCat + "_" + suffix);
-            }
+    } else if (leptonsPlusFakes.size() == 3) {
+        if (
+                leptonsPlusFakes[0].Pt() > leptonPtCut[0] 
+                && leptonsPlusFakes[1].Pt() > leptonPtCut[1]
+                && leptonsPlusFakes[2].Pt() > leptonPtCut[1]
+                && fabs(leptonsPlusFakes[0].Charge() + leptonsPlusFakes[1].Charge() + leptonsPlusFakes[2].Charge()) == 1
+           ) {
+            if (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON") 
+                AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, PV, "Fakes_" + fakeCat);
+            else                                                  
+                AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, PV, "Fakes_" + fakeCat + "_" + suffix);
         }
-        //cout << fakeWeight << "\t" << leptonsPlusFakes.size() << endl;
-        evtWeight /= fakeWeight; // Remove fake weight from event weight
     }
 }
 

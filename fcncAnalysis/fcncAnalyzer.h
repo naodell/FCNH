@@ -268,6 +268,7 @@ class fcncAnalyzer : public TSelector {
 
         virtual bool    AnalysisSelection(vObj, vector<TCJet>, vector<TCJet>, vector<TCJet>, TVector3, string);
         virtual void    GetFakeBG(vObj, vObj, vector<TCJet>, vector<TCJet>, vector<TCJet>, TVector3);
+        virtual void    DoFakes(vObj, vObj, vector<TCJet>, vector<TCJet>, vector<TCJet>, TVector3);
 
         // Plot methods
         virtual void    MakePlots(vObj, vector<TCJet>, vector<TCJet>, TCMET, TVector3, unsigned);
