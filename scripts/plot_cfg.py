@@ -452,13 +452,13 @@ if doYields:
         yieldTable.get_scale_factors(['FCNH'])
 
     if do3l:
-        #yieldTable._columnList  = ['Irreducible', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
-        yieldTable._columnList  = samples['3l_inclusive'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
+        yieldTable._columnList  = ['Irreducible', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
+        #yieldTable._columnList  = samples['3l_inclusive'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau','FCNH']# 'Significance'] 
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
-        #yieldTable.add_datasets(['Irreducible', 'Fakes'], Clear = True)
-        yieldTable.add_datasets(samples['3l_inclusive'], Clear = True)
+        yieldTable.add_datasets(['Irreducible', 'Fakes'], Clear = True)
+        #yieldTable.add_datasets(samples['3l_inclusive'], Clear = True)
         yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
 
@@ -470,12 +470,12 @@ if doYields:
             yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
 
     if doSS:
-        #yieldTable._columnList  = ['Irreducible', 'Fakes', 'QFlips', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
-        yieldTable._columnList  = samples['ss_inclusive'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
+        yieldTable._columnList  = ['Irreducible', 'Fakes', 'QFlips', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
+        #yieldTable._columnList  = samples['ss_inclusive'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
-        #yieldTable.add_datasets(['Irreducible', 'Fakes', 'QFlips'], Clear = True)
-        yieldTable.add_datasets(samples['ss_inclusive'], Clear = True)
+        yieldTable.add_datasets(['Irreducible', 'Fakes', 'QFlips'], Clear = True)
+        #yieldTable.add_datasets(samples['ss_inclusive'], Clear = True)
         yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
         yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET'] + 5*['.'] + ['0-jet', '1-jet']# + 7*['.'] + ['BDT']

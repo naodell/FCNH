@@ -278,7 +278,7 @@ combineDict['FAKES_2l']         = ['WbbToLNu', 'ZJets_M-50', 'ZJets_M-10To50', '
 combineDict['FAKES_3l']         = ['WZJets3LNu']#, 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
 combineDict['Remove_ss']        = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbar', 'WWJets2L2Nu', 'ZZJets2L2Nu']#, 'ZZJets2L2Q']
 combineDict['Remove_3l']        = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'WWW', 'WWZ', 'WZZ', 'ZZZ']
-combineDict['Irreducible']      = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ', 'WWG', 'WZJets3LNu']
+combineDict['Irreducible']      = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'WWW', 'WWZ', 'WZZ', 'ZZZ', 'WWG', 'WZJets3LNu']
 
 combineDict['DATA_FAKES']       = combineDict['DATA']
 combineDict['PASS']             = combineDict['DATA']
