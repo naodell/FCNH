@@ -10,7 +10,6 @@ using namespace std;
 
 const bool  doQCDDileptonCR = true;
 const bool  doZPlusJetCR    = true;
-const bool  doGenPrint      = false;
 
 const float jetPtCut[]        = {25., 15.};
 const float muPtCut[]         = {10., 3.};
@@ -156,32 +155,6 @@ bool fakeAnalyzer::Process(Long64_t entry)
         gJets = selector->GetSelectedGenJets();
     }
 
-    if (doGenPrint) {
-        // Higgs
-        for (unsigned i = 0; i < higgs.size(); ++i)
-            if (higgs[i].GetStatus() == 3) 
-                cout << higgs[i].GetStatus() << ", " << higgs[i].M() << ", " << higgs[i].Mother() << ", higgs" << endl;
-
-        // Vector bosons
-        for (unsigned i = 0; i < dubyas.size(); ++i)
-            if (dubyas[i].GetStatus() == 3) 
-                cout << "\t status = " << dubyas[i].GetStatus() <<  ", mass = " << dubyas[i].M() << ", pt = " << dubyas[i].Pt() << ", mother = " << dubyas[i].Mother() << ", dubyas" << endl;
-        for (unsigned i = 0; i < Zeds.size(); ++i)
-            if (Zeds[i].GetStatus() == 3) 
-                cout << "\t status = " << Zeds[i].GetStatus() << ", mass = " << Zeds[i].M() << ", pt = " << Zeds[i].Pt() << ", mother = " << Zeds[i].Mother() << ", Zeds" << endl;
-
-        // leptons
-        if ((gElectrons.size() + gMuons.size() + gTaus.size()) > 0) {
-            for (unsigned i = 0; i < gElectrons.size(); ++i)
-                cout << "\t\t" << gElectrons[i].GetStatus() << ", " << gElectrons[i].Pt() << ", " << gElectrons[i].Eta() << ", " << gElectrons[i].Mother() << ", " << gElectrons[i].Grandmother() << ", electrons" << endl;
-            for (unsigned i = 0; i < gMuons.size(); ++i)
-                cout << "\t\t" << gMuons[i].GetStatus() << ", " << gMuons[i].Pt() << ", " << gMuons[i].Eta() << ", " << gMuons[i].Mother() << ", " << gMuons[i].Grandmother() << ", muons" << endl;
-            for (unsigned i = 0; i < gTaus.size(); ++i)
-                cout << "\t\t" << gTaus[i].GetStatus() << ", " << gTaus[i].Pt() << ", " << gTaus[i].Eta() << ", " << gTaus[i].Mother() << ", " << gTaus[i].Grandmother() << ", taus" << endl;
-        }
-
-        cout << "\n" << endl;
-    }
 
     //////////////////////
     // object selection //
@@ -271,16 +244,14 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
     if (doQCDDileptonCR && leptons.size() < 2) {
         // For description of QCD dilepton control region, see section 7.4.1 of
-        // ttH note (AN-13-159).
-        // First thing is to find the tag lepton and the probe lepton. For this
-        // control region, the tag is a muon that is displaced from the PV and
-        // is anti-isolated.  The probe is a lepton passing loose
-        // identification requirement without any isolation requirement
+        // ttH note (AN-13-159).  First thing is to find the tag lepton and the
+        // probe lepton. For this control region, the tag is a muon that is
+        // displaced from the PV and is anti-isolated.  The probe is a lepton
+        // passing loose identification requirement without any isolation
+        // requirement
 
         UInt_t nTags = selector->GetSelectedMuons("QCD2l_CR_tag").size();
-
         if (nTags == 1) { 
-
             tag = (TCPhysObject)selector->GetSelectedMuons("QCD2l_CR_tag")[0];
 
             // Make sure there is only one probe lepton and that it does not overlap with the tag 
@@ -345,8 +316,8 @@ bool fakeAnalyzer::Process(Long64_t entry)
             for (unsigned i = 0; i < muProbes.size(); ++i) {
                 TCPhysObject testProbe = (TCPhysObject)muProbes[i];
                 if (
-                        lep1.DeltaR(testProbe) > 0.1 
-                        && lep2.DeltaR(testProbe) > 0.1
+                        lep1.DeltaR(testProbe) > 0.3 
+                        && lep2.DeltaR(testProbe) > 0.3
                         && (tag + testProbe).M() > 12
                    ) {
                     muProbe = testProbe;
@@ -358,8 +329,8 @@ bool fakeAnalyzer::Process(Long64_t entry)
             for (unsigned i = 0; i < eleProbes.size(); ++i) {
                 TCPhysObject testProbe = (TCPhysObject)eleProbes[i];
                 if (
-                        lep1.DeltaR(testProbe) > 0.1 
-                        && lep2.DeltaR(testProbe) > 0.1
+                        lep1.DeltaR(testProbe) > 0.3 
+                        && lep2.DeltaR(testProbe) > 0.3
                         && (tag + testProbe).M() > 12
                    ) {
                     eleProbe = testProbe;

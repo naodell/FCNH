@@ -89,17 +89,23 @@ void fcncAnalyzer::Begin(TTree* tree)
                 doQFlips = false;
 
             // Samples for fake bg cleanup
-            string fakeMC_2l[] = {"ZJets_M-50", "ZJets_M-10To50", "ttbar", "WWJets2L2Nu", "ZZJets2L2Nu", "ZZJets2L2Q"};
-            string fakeMC_3l[] = {"WZJets3LNu", "ZZ4mu", "ZZ4e", "ZZ4tau", "ZZ2e2mu", "ZZ2mu2tau", "ZZ2e2tau", "ttZ", "ttW", "WWW", "WWZ", "WZZ", "ZZZ"};
-
+            bool doFakeMC = false;
+            string fakeMC[] = {"ZJets_M-50", "ZJets_M-10To50", "ttbar", "WWJets2L2Nu", "ZZJets2L2Nu", "ZZJets2L2Q", "WZJets3LNu", "ZZ4mu", "ZZ4e", "ZZ4tau", "ZZ2e2mu", "ZZ2mu2tau", "ZZ2e2tau", "ttZ", "ttW", "WWW", "WWZ", "WZZ", "ZZZ"};
+            for (unsigned j = 0; j < 18; ++j) {
+                if (suffix == fakeMC[j]) { 
+                    doFakeMC = true;
+                    break;
+                }
+            }
+            
             if (doFakes && (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON")) {
-                histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir("Fakes_e", "Fakes_e");
-                histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir("Fakes_mu", "Fakes_mu");
-                histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir("Fakes_ll", "Fakes_ll");
-            } else if (categoryNames[i].substr(0,2) != "os" || suffix.substr(0, 4) != "FCNC") {
-                histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir(("Fakes_e_"+suffix).c_str(), ("Fakes_e_"+suffix).c_str());
-                histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir(("Fakes_mu_"+suffix).c_str(), ("Fakes_mu_"+suffix).c_str());
-                histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir(("Fakes_ll_"+suffix).c_str(), ("Fakes_ll_"+suffix).c_str());
+                histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir("eFakes", "eFakes");
+                histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir("muFakes", "muFakes");
+                histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir("llFakes", "llFakes");
+            } else if (categoryNames[i].substr(0,2) != "os" && doFakeMC) {
+                histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir(("eFakes"+suffix).c_str(), ("eFakes_"+suffix).c_str());
+                histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir(("muFakes_"+suffix).c_str(), ("muFakes_"+suffix).c_str());
+                histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir(("llFakes_"+suffix).c_str(), ("llFakes_"+suffix).c_str());
             }
         }
     }
@@ -404,7 +410,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
                 cout << "\t status = " << dubyas[i].GetStatus() <<  ", mass = " << dubyas[i].M() << ", pt = " << dubyas[i].Pt() << ", dubyas" << endl;
 
         for (unsigned i = 0; i < Zeds.size(); ++i)
-            if (Zeds[i].GetStatus() == 3) 
+            if (Zeds[i].GetStatus() == 3 && dubyas[i].Mother() != 0) 
                 cout << "\t status = " << Zeds[i].GetStatus() << ", mass = " << Zeds[i].M() << ", pt = " << Zeds[i].Pt() << ", mother = " << Zeds[i].Mother()->GetPDGId() << ", Zeds" << endl;
 
         // leptons
@@ -723,7 +729,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
             histManager->SetFileNumber(0);
             histManager->SetDirectory("inclusive/" + subdir);
             histManager->Fill1DHist(matchedFakeables.size()/2.,
-                    "h1_fakeableOverlapMult", ";e #mu overlap pairs;Entries", 3, -0.5, 2.5);
+                    "h1_FakeableOverlapMult", ";e #mu overlap pairs;Entries", 3, -0.5, 2.5);
             histManager->Fill2DHist(leptons.size(), fakeables.size(),
                     "h2_LepMultVsFakeableMult", "lepton mult vs. fakeable mult", 5, -0.5, 4.5, 5, -0.5, 4.5);
 
@@ -1044,17 +1050,20 @@ void fcncAnalyzer::GetFakeBG(vObj leptons, vObj fakeables, vector<TCJet> jets, v
             evtWeight *= fakeWeight1;
             DoFakes(leptons, fakeables, jets, bJetsM, bJetsL, PV);
             evtWeight /= fakeWeight1;
+
         } else if (fakeables.size() == 2 && (fakeWeight1 > 0 || fakeWeight2 > 0)) {
             if (fakeWeight1 > 0 && fakeWeight2 > 0) {
                 evtWeight *= fakeWeight1*fakeWeight2;
                 DoFakes(leptons, fakeables, jets, bJetsM, bJetsL, PV);
                 evtWeight /= (fakeWeight1*fakeWeight2);
+
             } else if (leptons.size() == 1 && fakeWeight1 > 0 && fakeWeight2 >= 0) {
                 evtWeight *= fakeWeight1*(1 - fakeWeight2);
                 vObj fakeable1;
                 fakeable1.push_back(fakeables[0]);
                 DoFakes(leptons, fakeable1, jets, bJetsM, bJetsL, PV);
                 evtWeight /= (fakeWeight1*(1 - fakeWeight2));
+
             } else if (leptons.size() == 1 && fakeWeight1 >= 0 && fakeWeight2 > 0) {
                 evtWeight *= fakeWeight2*(1 - fakeWeight1);
                 vObj fakeable2;

@@ -46,19 +46,19 @@ signal  = []
 if period == '2012':
     data.extend([
         cfg('muon_2012A', dataDir+'/DoubleMu_Run2012A', 40, 'DATA_MUON muon 2012'),
-        cfg('muon_2012B', dataDir+'/DoubleMu_Run2012B', 40, 'DATA_MUON muon 2012'),
-        cfg('muon_2012C', dataDir+'/DoubleMu_Run2012C', 40, 'DATA_MUON muon 2012'),
-        cfg('muon_2012D', dataDir+'/DoubleMu_Run2012D', 45, 'DATA_MUON muon 2012'),
+        cfg('muon_2012B', dataDir+'/DoubleMu_Run2012B', 50, 'DATA_MUON muon 2012'),
+        cfg('muon_2012C', dataDir+'/DoubleMu_Run2012C', 50, 'DATA_MUON muon 2012'),
+        cfg('muon_2012D', dataDir+'/DoubleMu_Run2012D', 55, 'DATA_MUON muon 2012'),
 
         cfg('electron_2012A', dataDir+'/DoubleElectron_Run2012A', 40, 'DATA_ELECTRON electron 2012'),
-        cfg('electron_2012B', dataDir+'/DoubleElectron_Run2012B', 40, 'DATA_ELECTRON electron 2012'),
-        cfg('electron_2012C', dataDir+'/DoubleElectron_Run2012C', 40, 'DATA_ELECTRON electron 2012'),
-        cfg('electron_2012D', dataDir+'/DoubleElectron_Run2012D', 45, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012B', dataDir+'/DoubleElectron_Run2012B', 50, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012C', dataDir+'/DoubleElectron_Run2012C', 50, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012D', dataDir+'/DoubleElectron_Run2012D', 55, 'DATA_ELECTRON electron 2012'),
 
-        cfg('muEG_2012A', dataDir+'/MuEG_Run2012A', 20, 'DATA_MUEG muEG 2012'),
-        cfg('muEG_2012B', dataDir+'/MuEG_Run2012B', 20, 'DATA_MUEG muEG 2012'),
-        cfg('muEG_2012C', dataDir+'/MuEG_Run2012C', 20, 'DATA_MUEG muEG 2012'),
-        cfg('muEG_2012D', dataDir+'/MuEG_Run2012D', 25, 'DATA_MUEG muEG 2012')
+        cfg('muEG_2012A', dataDir+'/MuEG_Run2012A', 40, 'DATA_MUEG muEG 2012'),
+        cfg('muEG_2012B', dataDir+'/MuEG_Run2012B', 40, 'DATA_MUEG muEG 2012'),
+        cfg('muEG_2012C', dataDir+'/MuEG_Run2012C', 40, 'DATA_MUEG muEG 2012'),
+        cfg('muEG_2012D', dataDir+'/MuEG_Run2012D', 45, 'DATA_MUEG muEG 2012')
         ])
 
     bg.extend([

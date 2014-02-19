@@ -10,6 +10,8 @@ void run(Long64_t nEntries = 4e4, string args = "TEST muon 2012") {
 
     //container classes
     gROOT->LoadMacro("../src/TCPhysObject.cc+");
+    gROOT->LoadMacro("../src/TCTrack.cc+");
+    gROOT->LoadMacro("../src/TCEGamma.cc+");
     gROOT->LoadMacro("../src/TCJet.cc+");
     gROOT->LoadMacro("../src/TCMET.cc+");
     gROOT->LoadMacro("../src/TCElectron.cc+");
