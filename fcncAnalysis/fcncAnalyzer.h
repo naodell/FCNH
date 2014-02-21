@@ -57,7 +57,7 @@
 
 using namespace std;
 
-const unsigned short N_CATEGORIES = 19;
+const unsigned short N_CATEGORIES = 16;
 const string categoryNames[] = {
     //inclusive
     "inclusive",
@@ -96,7 +96,6 @@ const string categoryNames[] = {
 };
 
 const unsigned short N_CUTS = 10;
-
 typedef vector<TCPhysObject> vObj;
 
 class fcncAnalyzer : public TSelector {
@@ -269,6 +268,7 @@ class fcncAnalyzer : public TSelector {
 
         virtual bool    AnalysisSelection(vObj, vector<TCJet>, vector<TCJet>, vector<TCJet>, TVector3, string);
         virtual void    GetFakeBG(vObj, vObj, vector<TCJet>, vector<TCJet>, vector<TCJet>, TVector3);
+        virtual void    DoFakes(vObj, vObj, vector<TCJet>, vector<TCJet>, vector<TCJet>, TVector3);
 
         // Plot methods
         virtual void    MakePlots(vObj, vector<TCJet>, vector<TCJet>, TCMET, TVector3, unsigned);

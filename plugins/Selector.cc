@@ -243,11 +243,9 @@ void Selector::MuonSelector(TClonesArray* muons)
         float muISO = 0.;
         muISO = (thisMuon->IsoMap("pfChargedHadronPt_R04") + TMath::Max(0.0, (double)thisMuon->IsoMap("pfPhotonEt_R04") 
                     + thisMuon->IsoMap("pfNeutralHadronEt_R04") - 0.5*thisMuon->IsoMap("pfPUPt_R04"))
-                    //+ thisMuon->IsoMap("pfNeutralHadronEt_R04") - TMath::Max(0.0, (double)_rho*EffectiveArea(thisMuon)))
                 )/thisMuon->Pt();
 
         thisMuon->SetIsoMap("IsoRel", muISO);
-        //cout << "(" << thisMuon->Pt() << ", " << thisMuon->Eta() << "),\t";
 
         // pt cuts, identification, and isolation
         if (thisMuon->Pt() > _muPtCuts[0]) {
@@ -285,8 +283,6 @@ void Selector::MuonSelector(TClonesArray* muons)
                )
                 _selMuons["loose"].push_back(*thisMuon);
     }
-
-    //cout << endl;
 }
 
 
