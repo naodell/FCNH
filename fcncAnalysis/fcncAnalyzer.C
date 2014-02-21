@@ -20,6 +20,7 @@ const bool      doLepTree   = false;
 // Data-driven BG estimation switches
 bool doQFlips = true;
 bool doFakes  = true;
+bool doFakeMC = false;
 
 
 /////////////////
@@ -89,7 +90,6 @@ void fcncAnalyzer::Begin(TTree* tree)
                 doQFlips = false;
 
             // Samples for fake bg cleanup
-            bool doFakeMC = false;
             string fakeMC[] = {"ZJets_M-50", "ZJets_M-10To50", "ttbar", "WWJets2L2Nu", "ZZJets2L2Nu", "ZZJets2L2Q", "WZJets3LNu", "ZZ4mu", "ZZ4e", "ZZ4tau", "ZZ2e2mu", "ZZ2mu2tau", "ZZ2e2tau", "ttZ", "ttW", "WWW", "WWZ", "WZZ", "ZZZ"};
             for (unsigned j = 0; j < 18; ++j) {
                 if (suffix == fakeMC[j]) { 
@@ -98,12 +98,12 @@ void fcncAnalyzer::Begin(TTree* tree)
                 }
             }
             
-            if (doFakes && (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON")) {
+            if (doFakes && (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON" || suffix == "TEST")) {
                 histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir("eFakes", "eFakes");
                 histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir("muFakes", "muFakes");
                 histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir("llFakes", "llFakes");
             } else if (categoryNames[i].substr(0,2) != "os" && doFakeMC) {
-                histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir(("eFakes"+suffix).c_str(), ("eFakes_"+suffix).c_str());
+                histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir(("eFakes_"+suffix).c_str(), ("eFakes_"+suffix).c_str());
                 histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir(("muFakes_"+suffix).c_str(), ("muFakes_"+suffix).c_str());
                 histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir(("llFakes_"+suffix).c_str(), ("llFakes_"+suffix).c_str());
             }
@@ -1039,12 +1039,7 @@ void fcncAnalyzer::GetFakeBG(vObj leptons, vObj fakeables, vector<TCJet> jets, v
             fakeWeight1 = weighter->GetFakeWeight(fakeables[0], "QCD2l");
         }
 
-        // Fake rate fudge 
-        //if (fakeables.size() == 1 && leptons.size() == 2) {
-        //    if (fakeables[0].Type() == "electron") {
-        //        fakeWeight1 *= 0.4;
-        //    }
-        //}
+        //cout << fakeWeight1 << ", " << fakeWeight2 << endl;
 
         if (fakeables.size() == 1 && fakeWeight1 > 0) {
             evtWeight *= fakeWeight1;
@@ -1093,10 +1088,10 @@ void fcncAnalyzer::DoFakes(vObj leptons, vObj fakeables, vector<TCJet> jets, vec
                 && leptonsPlusFakes[0].Pt() > leptonPtCut[0] 
                 && leptonsPlusFakes[1].Pt() > leptonPtCut[1]
            ) {
-            if (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON") 
-                AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, PV, "Fakes_" + fakeCat);
-            else                                                  
-                AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, PV, "Fakes_" + fakeCat + "_" + suffix);
+            if (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON" || suffix == "TEST") 
+                AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, PV, fakeCat + "Fakes");
+            else if (doFakeMC)                                                 
+                AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, PV, fakeCat + "Fakes_" + suffix);
         }
     } else if (leptonsPlusFakes.size() == 3) {
         if (
@@ -1105,10 +1100,10 @@ void fcncAnalyzer::DoFakes(vObj leptons, vObj fakeables, vector<TCJet> jets, vec
                 && leptonsPlusFakes[2].Pt() > leptonPtCut[1]
                 && fabs(leptonsPlusFakes[0].Charge() + leptonsPlusFakes[1].Charge() + leptonsPlusFakes[2].Charge()) == 1
            ) {
-            if (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON") 
-                AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, PV, "Fakes_" + fakeCat);
-            else                                                  
-                AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, PV, "Fakes_" + fakeCat + "_" + suffix);
+            if (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON" || suffix == "TEST") 
+                AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, PV, fakeCat + "Fakes");
+            else if (doFakeMC)                                                 
+                AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, PV, fakeCat + "Fakes_" + suffix);
         }
     }
 }
@@ -1347,9 +1342,9 @@ void fcncAnalyzer::LeptonPlots(vObj leptons, vector<TCJet> jets, vector<TCJet> b
     histManager->Fill1DHist(centralCount,
             "h1_Centrality", "Event Centrality;centrality;Entries / bin", 10, -0.5, 9.5);
     histManager->Fill1DHist(HT,
-            "h1_HT", "HT;HT;Entries / 10 GeV", 75, 0., 1500.);
+            "h1_HT", "HT;HT;Entries / 20 GeV", 75, 0., 1500.);
     histManager->Fill1DHist(sqrt(HT),
-            "h1_HT", "HT;HT;Entries / bin", 80, 0., 40.);
+            "h1_sqrtHT", "HT;HT;Entries / bin", 80, 0., 40.);
     histManager->Fill1DHist(HTs + MET,
             "h1_HTs", "HT_{s};HT_{s};Entries / 10 GeV", 100, 0., 2000.);
     histManager->Fill1DHist(MHT/HTs,

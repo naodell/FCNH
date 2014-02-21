@@ -45,7 +45,7 @@ doOS        = False
 doSS        = True
 do3l        = True
 
-doYields    = True
+doYields    = False
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive']
@@ -90,19 +90,19 @@ samples['3l_inclusive'].append('WZJets3LNu')
 
 ## eee
 samples['3l_eee'].extend(samples['3l_inclusive'])
-samples['3l_eee'].extend(['Fakes_e', 'Fakes_ll'])
+samples['3l_eee'].extend(['eFakes', 'llFakes'])
 
 ## eemu
 samples['3l_eemu'].extend(samples['3l_inclusive'])
-samples['3l_eemu'].extend(['Fakes_e', 'Fakes_mu', 'Fakes_ll'])
+samples['3l_eemu'].extend(['eFakes', 'muFakes', 'llFakes'])
 
 ## emumu
 samples['3l_emumu'].extend(samples['3l_inclusive'])
-samples['3l_emumu'].extend(['Fakes_e', 'Fakes_mu', 'Fakes_ll'])
+samples['3l_emumu'].extend(['eFakes', 'muFakes', 'llFakes'])
 
 ## mumumu
 samples['3l_mumumu'].extend(samples['3l_inclusive'])
-samples['3l_mumumu'].extend(['Fakes_mu', 'Fakes_ll'])
+samples['3l_mumumu'].extend(['muFakes', 'llFakes'])
 
 ## inclusive
 samples['3l_inclusive'].append('Fakes')
@@ -125,16 +125,16 @@ samples['ss_inclusive'].append('WZJets3LNu')
 ## dielectrons
 samples['ss_ee'].extend(samples['ss_inclusive'])
 samples['ss_ee'].append('QFlips')
-samples['ss_ee'].extend(['Fakes_e', 'Fakes_ll'])
+samples['ss_ee'].extend(['eFakes', 'llFakes'])
 
 ## electron+muon
 samples['ss_emu'].extend(samples['ss_inclusive'])
 samples['ss_emu'].append('QFlips')
-samples['ss_emu'].extend(['Fakes_e', 'Fakes_mu', 'Fakes_ll'])
+samples['ss_emu'].extend(['eFakes', 'muFakes', 'llFakes'])
 
 ## dimuons
 samples['ss_mumu'].extend(samples['ss_inclusive'])
-samples['ss_mumu'].extend(['Fakes_mu', 'Fakes_ll'])
+samples['ss_mumu'].extend(['muFakes', 'llFakes'])
 
 ## inclusive
 samples['ss_inclusive'].append('Fakes')
@@ -166,7 +166,7 @@ if doPlots:
     plotter = PlotProducer(inputFile = 'fcncAnalysis/combined_histos/{0}_cut1_{1}_{2}.root'.format(selection, period, batch), savePath = '', scale = LUMIDATA, isAFS = False)
     plotter.set_period(period)
     plotter.set_output_type(plotType)
-    #plotter.set_clean_fakes(False)
+    plotter.set_clean_fakes(False)
 
     ### DATASETS ###
     ### Specify the datasets you wish to stack 
@@ -331,10 +331,10 @@ if doPlots:
                 ss_plotter.make_save_path(outFile, clean=True)
                 p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(ss_plotter, category, inFile, outFile, do1D, do2D, False, doLog, doRatio, doEff)))
 
-        ### overlay of fake distributions for single and double fakes ###
+                ### overlay of fake distributions for single and double fakes ###
                 if cut in ['1_preselection', 'X_0jet', 'X_1jet', '3_2jet']:
                     fake_plotter = copy.deepcopy(plotter)
-                    fake_plotter._overlayList = ['Fakes_ll', 'Fakes_mu']
+                    fake_plotter._overlayList = ['llFakes', 'muFakes']
                     fake_plotter.draw_normalized(True)
 
                     inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, i+1, period, batch)

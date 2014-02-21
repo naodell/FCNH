@@ -18,9 +18,9 @@ const float phoPtCut[]        = {10., 10.};
 
 
 unsigned  nMetBins      = 10;
-unsigned  nPtBins       = 6;
+unsigned  nPtBins       = 8;
 float     metBins[]     = {0., 10., 20., 30., 40., 50., 60., 70., 80., 100., 300.}; 
-float     ptBins[]      = {5., 10., 20., 30., 45., 60, 100.}; 
+float     ptBins[]      = {5., 10., 15., 20., 30., 40., 55., 70., 100.}; 
 float     etaBinsMu[]   = {0., 1.5, 2.5};
 float     etaBinsEle[]  = {0., 0.8, 1.479, 2.5};
 
@@ -475,7 +475,6 @@ bool fakeAnalyzer::Process(Long64_t entry)
     if (eleMatched) {
         if (recoMET->Mod() < 50)
             FillNumeratorHists(crType + "_inclusive", elePass);
-
         if (crType == "QCD2l") {
             if (recoMET->Mod() < 20)
                 FillNumeratorHists(crType + "_low_met", elePass);
@@ -484,11 +483,9 @@ bool fakeAnalyzer::Process(Long64_t entry)
         }
     } else if (nEleProbes == 1)
         FillClosureHists(crType, eleProbe);
-
     if (muMatched) {
         if (recoMET->Mod() < 50)
             FillNumeratorHists(crType + "_inclusive", muPass);
-
         if (crType == "QCD2l") {
             if (recoMET->Mod() < 20)
                 FillNumeratorHists(crType + "_low_met", muPass);
@@ -536,7 +533,7 @@ void fakeAnalyzer::DoZTag(vObj& leptons)
     for (unsigned i = 0; i < leptons.size(); ++i) {
         for (unsigned j = leptons.size()-1; j > i; --j) {
 
-            //Find lepton pair that is consisten with a Z in +- 10 GeV window
+            //Find lepton pair that is consistent with a Z in +- 10 GeV window
             if (
                     fabs((leptons[i] + leptons[j]).M() - 91.2) < 10 
                     && leptons[i].Type() == leptons[j].Type()
@@ -577,11 +574,11 @@ void fakeAnalyzer::FillDenominatorHists(string cat, TCPhysObject& probe)
     histManager->Fill1DHist(tag.Eta(),
             "h1_TagLepEta", "tag lepton #eta;#eta;Entries / bin", 25, -2.5, 2.5);
 
-    float probePt = probe.Pt();
-    //if (probe.Pt() < 100.)
-    //    probePt = probe.Pt();
-    //else (probe.Pt() > 100.)
-    //    probePt = 99.;
+    float probePt;
+    if (probe.Pt() < 100.)
+        probePt = probe.Pt();
+    else
+        probePt = 99.;
 
     string lepType = probe.Type();
     if (lepType == "muon") {
@@ -622,11 +619,11 @@ void fakeAnalyzer::FillNumeratorHists(string cat, TCPhysObject& passLep)
 {
     histManager->SetDirectory(cat + "/" + suffix);
 
-    float passPt = passLep.Pt();
-    //if (passLep.Pt() < 100.)
-    //    passPt = passLep.Pt();
-    //else
-    //    passPt = 99.;
+    float passPt;
+    if (passLep.Pt() < 100.)
+        passPt = passLep.Pt();
+    else
+        passPt = 99.;
 
     string lepType = passLep.Type();
     if (lepType == "muon") {

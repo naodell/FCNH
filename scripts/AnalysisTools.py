@@ -178,17 +178,12 @@ class AnalysisTools():
             elif dataName in self._combineDict['Irreducible']:
                 hist = self.add_systematic(hist, 'Irreducible')
 
-        if dataName.split('_')[0] == 'Fakes' and len(dataName.split('_')) >= 3:
-            dataName = dataName.split('_', 2)[2]
+        if dataName.split('_')[0] in ['Fakes', 'eFakes', 'muFakes', 'llFakes'] and len(dataName.split('_')) > 1:
+            dataName = dataName.split('_')[1]
 
         if doScale:
-            if dataName[:4] == 'DATA' or dataName in ['Fakes_e', 'Fakes_mu', 'Fakes_ee', 'Fakes_emu', 'Fakes_mumu', 'Fakes_ll', 'QFlips']:
-                if self._category == 'ss_mumu' and dataName == 'Fakes_ll':
-                    hist.Scale(1.*self._scaleDict[self._period][dataName])
-                if self._category == 'ss_em' and dataName == 'Fakes_ll':
-                    hist.Scale(1.*self._scaleDict[self._period][dataName])
-                else:
-                    hist.Scale(self._scaleDict[self._period][dataName])
+            if dataName[:4] == 'DATA' or dataName in ['eFakes', 'muFakes', 'llFakes', 'QFlips']:
+                hist.Scale(self._scaleDict[self._period][dataName])
             else:
                 hist.Scale(self._scale*self._scaleDict[self._period][dataName]) 
 
@@ -201,9 +196,9 @@ class AnalysisTools():
 
         outHist = None
         doFakes = False
-        fakeCats = ['Fakes_e', 'Fakes_mu', 'Fakes_ee', 'Fakes_emu', 'Fakes_mumu', 'Fakes_ll']
+        fakeCats = ['eFakes', 'muFakes', 'llFakes']
 
-        if dataName.split('_')[0] == 'Fakes': # Treat fakes separately 
+        if dataName.split('_')[0] in ['Fakes', 'eFakes', 'muFakes', 'llFakes']: # Treat fakes separately 
             if dataName is 'Fakes': # fakes from data
                 for data in self._combineDict['Fakes']:
                     hist = self.get_hist(var, data, histType)
@@ -214,16 +209,8 @@ class AnalysisTools():
                             if mc_hist is None:
                                 continue
                             else:
-                                if mc == 'ttbar':
-                                    if self._category in ['ss_mumu', 'ss_emu'] and data == 'Fakes_mu': # h4x!!!
-                                        hist.Add(mc_hist, -0.5)
-                                        #bin_by_bin_hist_addition(outHist, mc_hist, -0.5)
-                                    elif self._category in ['ss_emu', 'ss_ee'] and data == 'Fakes_e': # h4x!!!
-                                        hist.Add(mc_hist, -0.1)
-                                        #bin_by_bin_hist_addition(outHist, mc_hist, -0.1)
-                                else:
-                                    hist.Add(mc_hist, -1.)
-                                    #bin_by_bin_hist_addition(outHist, mc_hist, -1.)
+                                hist.Add(mc_hist, -1.)
+                                #bin_by_bin_hist_addition(outHist, mc_hist, -1.)
 
                     if not outHist:
                         outHist = hist
@@ -239,23 +226,15 @@ class AnalysisTools():
                         if not mc_hist:
                             continue
                         elif mc_hist:
-                            if mc == 'ttbar':
-                                if self._category in ['ss_mumu', 'ss_emu'] and dataName == 'Fakes_mu': # h4x!!!
-                                    outHist.Add(mc_hist, -0.1)
-                                    #bin_by_bin_hist_addition(outHist, mc_hist, -0.5)
-                                elif self._category in ['ss_emu', 'ss_ee']  and dataName == 'Fakes_e': # h4x!!!
-                                    outHist.Add(mc_hist, -0.1)
-                                    #bin_by_bin_hist_addition(outHist, mc_hist, -0.5)
-                            else:
-                                outHist.Add(mc_hist, -1.)
-                                #bin_by_bin_hist_addition(outHist, mc_hist, -1.)
+                            outHist.Add(mc_hist, -1.)
+                            #bin_by_bin_hist_addition(outHist, mc_hist, -1.)
 
             else: # MC fakes
                 if dataName.split('_')[2] not in self._combineDict:
                     outHist = self.get_hist(var, dataName, histType)
                 else:
-                    for data in self._combineDict[dataName.split('_')[2]]:
-                        hist = self.get_hist(var, 'Fakes_' + dataName.split('_')[1] + '_' + data, histType)
+                    for data in self._combineDict[dataName.split('_')[1]]:
+                        hist = self.get_hist(var, dataName, histType)
 
                         if not outHist:
                             outHist = hist
@@ -299,7 +278,5 @@ class AnalysisTools():
             error = sqrt(errorSq)
             #print self._category, dataset, entries, error, hist.GetBinError(bin+1)
             hist.SetBinError(bin, error)
-
-
 
         return hist

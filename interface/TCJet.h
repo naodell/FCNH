@@ -46,7 +46,6 @@ class TCJet : public TCPhysObject {
         TCJet();
         virtual ~TCJet();
 
-
         float ChHadFrac() const;
         float NeuHadFrac() const;
         float ChEmFrac() const;

@@ -57,7 +57,7 @@
 
 using namespace std;
 
-const unsigned short N_CATEGORIES = 19;
+const unsigned short N_CATEGORIES = 16;
 const string categoryNames[] = {
     //inclusive
     "inclusive",
