@@ -57,15 +57,24 @@ if period == '2012':
         ])
 
     bg.extend([
-        cfg('ZJets_M-50', '{0}/DYJets'.format(path), 30, 'ZJets_M-50 muon 2012'),
-        cfg('ZJets_M-10To50', '{0}/DYJets_M-10To50'.format(path), 10, 'ZJets_M-10To50 muon 2012'),
+        cfg('ZJets_M-50',      '{0}/DYJets'.format(path),                         30,  'ZJets_M-50      muon  2012'),
+        cfg('ZJets_M-10To50',  '{0}/DYJets_M-10To50'.format(path),                10,  'ZJets_M-10To50  muon  2012'),
+        #cfg('WbbToLNu',        '{0}/naodell/nuTuples_v7_4/WbbToLL'.format(path),  20,  'WbbToLNu        muon  2012'),
 
-        cfg('ttbar', '{0}/TTJets'.format(path), 30, 'ttbar muon 2012'),
-        cfg('tbarW', '{0}/Tbar_tW'.format(path), 5, 'tbarW muon 2012'),
-        cfg('tW', '{0}/T_tW'.format(path), 5, 'tW muon 2012')
-        #cfg('WWJets2L2Nu', dCache+'/naodell/nuTuples_v7_4/WWJetsTo2L2Nu', 5, 'WWJets2L2Nu muon 2012'),
-        #cfg('ZZJets2L2Nu', dCache+'/naodell/nuTuples_v7_4/ZZJetsTo2L2Nu', 5, 'ZZJets2L2Nu muon 2012'),
-        #cfg('ZZJets2L2Q', dCache+'/naodell/nuTuples_v7_4/ZZJetsTo2L2Q', 5, 'ZZJets2L2Q muon 2012')
+        cfg('ttbar',  '{0}/TTJets'.format(path),   30,  'ttbar  muon  2012'),
+        cfg('tbarW',  '{0}/Tbar_tW'.format(path),  5,   'tbarW  muon  2012'),
+        cfg('tW',     '{0}/T_tW'.format(path),     5,   'tW     muon  2012'),
+
+        cfg('WWJets2L2Nu',  '{0}/WWJetsTo2L2Nu'.format(path),  5,  'WWJets2L2Nu  muon  2012'),
+        cfg('ZZJets2L2Nu',  '{0}/ZZJetsTo2L2Nu'.format(path),  5,  'ZZJets2L2Nu  muon  2012'),
+        cfg('ZZJets2L2Q',   '{0}/ZZJetsTo2L2Q'.format(path),   5,  'ZZJets2L2Q   muon  2012'),
+
+        cfg('ZZTo4e',       '{0}/ZZTo4e'.format(path),       5,  'ZZ4e       muon  2012'),
+        cfg('ZZTo4mu',      '{0}/ZZTo4mu'.format(path),      5,  'ZZ4mu      muon  2012'),
+        cfg('ZZTo4tau',     '{0}/ZZTo4tau'.format(path),     5,  'ZZ4tau     muon  2012'),
+        cfg('ZZTo2e2mu',    '{0}/ZZTo2e2mu'.format(path),    5,  'ZZ2e2mu    muon  2012'),
+        cfg('ZZTo2e2tau',   '{0}/ZZTo2e2tau'.format(path),   5,  'ZZ2e2tau   muon  2012'),
+        cfg('ZZTo2mu2tau',  '{0}/ZZTo2mu2tau'.format(path),  5,  'ZZ2mu2tau  muon  2012')
         ])
 
 
