@@ -43,6 +43,7 @@ bool BTagSortCondition(TCJet j1, TCJet j2) {return (j1.BDiscriminatorMap("CSV") 
 void fcncAnalyzer::Begin(TTree* tree) 
 {
     // Job config
+    TString option  = GetOption();
     TObjArray *args = (TObjArray*)fOption.Tokenize(" ");
 
     suffix      = (string)((TObjString*)args->At(0))->GetString();
@@ -65,7 +66,6 @@ void fcncAnalyzer::Begin(TTree* tree)
     triggerSelector = new TriggerSelector(selection, period, *triggerNames, true);
 
     // Initialize histograms //
-    TString option = GetOption();
     TH1::SetDefaultSumw2(kTRUE);
     TH2::SetDefaultSumw2(kTRUE);
 
@@ -90,8 +90,15 @@ void fcncAnalyzer::Begin(TTree* tree)
                 doQFlips = false;
 
             // Samples for fake bg cleanup
-            string fakeMC[] = {"ZJets_M-50", "ZJets_M-10To50", "ttbar", "WWJets2L2Nu", "ZZJets2L2Nu", "ZZJets2L2Q", "WZJets3LNu", "ZZ4mu", "ZZ4e", "ZZ4tau", "ZZ2e2mu", "ZZ2mu2tau", "ZZ2e2tau", "ttZ", "ttW", "WWW", "WWZ", "WZZ", "ZZZ"};
-            for (unsigned j = 0; j < 18; ++j) {
+            string fakeMC[21] = {
+                                "ZJets_M-50", "ZJets_M-10To50", 
+                                "ttbarLep", "ttbarHad", "ttbar", 
+                                "WWJets2L2Nu", "ZZJets2L2Nu", "ZZJets2L2Q", "WZJets3LNu", 
+                                "ZZ4mu", "ZZ4e", "ZZ4tau", "ZZ2e2mu", "ZZ2mu2tau", "ZZ2e2tau", 
+                                "ttZ", "ttW", "WWW", "WWZ", "WZZ", "ZZZ"
+                                };
+
+            for (unsigned j = 0; j < 21; ++j) {
                 if (suffix == fakeMC[j]) { 
                     doFakeMC = true;
                     break;
@@ -341,7 +348,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
     }
 
     selector->PVSelector(primaryVtx);
-
     if (selector->GetSelectedPVs().size() < 1) 
         return kTRUE;
     else
@@ -488,8 +494,8 @@ bool fcncAnalyzer::Process(Long64_t entry)
     allJets.insert(allJets.end(), jets.begin(), jets.end());
     allJets.insert(allJets.end(), fwdJets.begin(), fwdJets.end());
     allJets.insert(allJets.end(), bJetsM.begin(), bJetsM.end());
-    allJets.insert(allJets.end(), muJets.begin(), muJets.end());
-    allJets.insert(allJets.end(), eleJets.begin(), eleJets.end());
+    //allJets.insert(allJets.end(), muJets.begin(), muJets.end());
+    //allJets.insert(allJets.end(), eleJets.begin(), eleJets.end());
 
     // Order collections by pt
     sort(extraLeptons.begin(), extraLeptons.end(), P4SortCondition);
@@ -616,18 +622,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
         SetEventCategory(leptons);
         SetEventVariables(leptons, jets, bJetsM, *recoMET); 
 
-        // Jet multiplicity sanity check
-        if (
-                leptons.size() == 2 
-                && leptons[0].Type() == "muon" 
-                && leptons[1].Type() == "muon" 
-                && leptons[0].Charge() == leptons[1].Charge()
-           ) {
-            histManager->SetDirectory("ss_mumu/" + subdir);
-            histManager->Fill1DHist(jets.size() + bJetsM.size(),
-                    "h1_JetMultSC", "jet multiplicity;Entries / bin;N_{jets}", 15, -0.5, 14.5);
-        }
-
         // Pre-selection mc-truth plots
         if (!isRealData) {
             unsigned cat = 1 + ((evtCategory.to_ulong() >> 2) & 0x3);
@@ -735,7 +729,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
             if (matchedFakeables.size() == 0) {
                 GetFakeBG(leptons, fakeables, fJets, fBJetsM, fBJetsL, selectedVtx);
-            } else if (matchedFakeables.size() == 2) {
+            } /*else if (matchedFakeables.size() == 2) {
                 evtWeight /= matchedFakeables.size();
                 for (unsigned i = 0; i < matchedFakeables.size(); ++i) {
                     vObj tmpFakeables = unmatchedFakeables;
@@ -743,7 +737,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
                     GetFakeBG(leptons, tmpFakeables, fJets, fBJetsM, fBJetsL, selectedVtx);
                 }
                 evtWeight *= matchedFakeables.size();
-            }
+            }*/
         }
     }
 
@@ -900,21 +894,21 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
     //!!!!!!!!!!!!!!!!!!!!!!//
 
 
-    // Preselection Plots
-    MakePlots(leptons, jets, bJetsM, *recoMET, PV, 0);
-    SetYields(5);
-
     if ( // Problematic region for same-sign
             leptons.size() == 2 
-            && leptons[0].Type() == "muon" 
-            && leptons[1].Type() == "muon"
+            && leptons[0].Type() == leptons[1].Type() 
             && (bJetsM.size() + jets.size()) == 0
             && (leptons[0] + leptons[1]).M() < 30
-            && recoMET->Mod() < 40
+            && recoMET->Mod() < 50
             //&& leptons[0].Pt() < 50
             //&& fabs(leptons[0].Eta() - leptons[1].Eta()) <  1.
        ) 
         return true;
+
+
+    // Preselection Plots
+    MakePlots(leptons, jets, bJetsM, *recoMET, PV, 0);
+    SetYields(5);
 
     //    MakePlots(leptons, jets, bJetsM, *recoMET, PV, 1);
     //    SetYields(6);
@@ -1030,6 +1024,10 @@ void fcncAnalyzer::GetFakeBG(vObj leptons, vObj fakeables, vector<TCJet> jets, v
             || (fakeables.size() == 2 && (leptons.size() == 1 || leptons.size() == 0)) 
        ) {
 
+        if (leptons.size() == 2)
+            if (leptons[0].Charge() == leptons[1].Charge())
+                return;
+
         Float_t fakeWeight1 = 1.;
         Float_t fakeWeight2 = 1.;
         if (fakeables.size() == 2) {
@@ -1060,9 +1058,9 @@ void fcncAnalyzer::GetFakeBG(vObj leptons, vObj fakeables, vector<TCJet> jets, v
                 evtWeight /= (fakeWeight1*(1 - fakeWeight2));
 
             } else if (leptons.size() == 1 && fakeWeight1 >= 0 && fakeWeight2 > 0) {
-                evtWeight *= fakeWeight2*(1 - fakeWeight1);
                 vObj fakeable2;
                 fakeable2.push_back(fakeables[1]);
+                evtWeight *= fakeWeight2*(1 - fakeWeight1);
                 DoFakes(leptons, fakeable2, jets, bJetsM, bJetsL, PV);
                 evtWeight /= (fakeWeight2*(1 - fakeWeight1));
             }
@@ -1081,6 +1079,7 @@ void fcncAnalyzer::DoFakes(vObj leptons, vObj fakeables, vector<TCJet> jets, vec
 
     SetEventCategory(leptonsPlusFakes);
     SetEventVariables(leptonsPlusFakes, jets, bJetsM, *recoMET); 
+
     // Enforce same-sign dilepton/trilepton selection with fake leptons
     if (leptonsPlusFakes.size() == 2) { 
         if (

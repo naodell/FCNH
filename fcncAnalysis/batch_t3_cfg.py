@@ -72,7 +72,8 @@ if period == '2012':
         #cfg('WbbToLNu', inputDir+'/nuTuples_v7_4/WbbToLL', 20, 'WbbToLNu muon 2012'),
         #cfg('WG', inputDir+'/nuTuples_v7_4/WGToLNuG', 10, 'WG muon 2012'),
 
-        cfg('ttbar', inputDir+'/nuTuples_v7_4/TTJets', 30, 'ttbar muon 2012'),
+        cfg('ttbarHad', inputDir+'/nuTuples_v7_4/TTJets', 30, 'ttbarHad muon 2012'),
+        cfg('ttbarLep', inputDir+'/nuTuples_v7_4/TTJets', 30, 'ttbarLep muon 2012'),
         cfg('tbarW', inputDir+'/nuTuples_v7_4/Tbar_tW', 5, 'tbarW muon 2012'),
         cfg('tW', inputDir+'/nuTuples_v7_4/T_tW', 5, 'tW muon 2012'),
         cfg('t_t-channel', inputDir+'/nuTuples_v7_4/T_t', 5, 't_t-channel muon 2012'),
@@ -88,8 +89,8 @@ if period == '2012':
         cfg('WWG', inputDir+'/nuTuples_v7_4/WWGJets', 5, 'WWG muon 2012'),
 
         cfg('ZZJets2L2Nu', inputDir+'/nuTuples_v7_4/ZZJetsTo2L2Nu', 5, 'ZZJets2L2Nu muon 2012'),
-        cfg('ZZJets2L2Q', inputDir+'/nuTuples_v7_4/ZZJetsTo2L2Q', 5, 'ZZJets2L2Q muon 2012'),
-        #cfg('ZZJets4L', inputDir+'/nuTuples_v7_4/ZZJetsTo4L', 5, 'ZZJets4L muon 2012'),
+        #cfg('ZZJets2L2Q', inputDir+'/nuTuples_v7_4/ZZJetsTo2L2Q', 5, 'ZZJets2L2Q muon 2012'),
+        ##cfg('ZZJets4L', inputDir+'/nuTuples_v7_4/ZZJetsTo4L', 5, 'ZZJets4L muon 2012'),
         cfg('ZZTo4e', inputDir+'/nuTuples_v7_4/ZZTo4e', 5, 'ZZ4e muon 2012'),
         cfg('ZZTo4mu', inputDir+'/nuTuples_v7_4/ZZTo4mu', 5, 'ZZ4mu muon 2012'),
         cfg('ZZTo4tau', inputDir+'/nuTuples_v7_4/ZZTo4tau', 5, 'ZZ4tau muon 2012'),
@@ -108,10 +109,10 @@ if period == '2012':
         #cfg('QCD_350_EM', inputDir+'/nuTuples_v7_4/QCD_Pt_350_EMEnriched', 10, 'QCD_350_EM muon 2012'),
         #cfg('QCD_20_MU', inputDir+'/nuTuples_v7_4/QCD_Pt_20_MuEnrichedPt_15', 10, 'QCD_20_MU muon 2012'),
 
-        cfg('ggHToZZ4L_M-125', inputDir+'/nuTuples_v7_4/GluGluToHToZZTo4L_M-125', 2, 'ggHToZZ4L_M-125 muon 2012'),
-        cfg('ggHToWW2L2Nu_M-125', inputDir+'/nuTuples_v7_4/GluGluToHToWWTo2LAndTau2Nu_M-125', 2, 'ggHToWW2L2Nu_M-125 muon 2012'),
-        cfg('WHToWWW3L_M-125', inputDir+'/nuTuples_v7_4/WH_HToWW_3l_M-125', 2, 'WHToWWW3L_M-125 muon 2012'),
-        cfg('TTH_M-125', inputDir+'/nuTuples_v7_4/TTH_Inclusive_M-125', 2, 'TTH_M-125 muon 2012')
+        cfg('ggHToZZ4L_M-125', inputDir+'/nuTuples_v7_4/GluGluToHToZZTo4L_M-125', 5, 'ggHToZZ4L_M-125 muon 2012'),
+        cfg('ggHToWW2L2Nu_M-125', inputDir+'/nuTuples_v7_4/GluGluToHToWWTo2LAndTau2Nu_M-125', 5, 'ggHToWW2L2Nu_M-125 muon 2012'),
+        cfg('WHToWWW3L_M-125', inputDir+'/nuTuples_v7_4/WH_HToWW_3l_M-125', 5, 'WHToWWW3L_M-125 muon 2012'),
+        cfg('TTH_M-125', inputDir+'/nuTuples_v7_4/TTH_Inclusive_M-125', 5, 'TTH_M-125 muon 2012')
 
         ])
 

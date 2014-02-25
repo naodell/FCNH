@@ -24,8 +24,9 @@ else:
 plotType    = '.png'
 selection   = 'fcnh'
 
-cutList     = ['1_preselection', '2_Z_veto']
-fakeType    = 'Fakes_mu'
+cutList     = ['1_preselection']
+#cutList.extend(['2_Z_veto', '3_jet', '4_MET'])
+fakeType    = 'eFakes'
 
 period      = '2012'
 LUMIDATA    = 19.712 
@@ -52,7 +53,7 @@ cat3l.extend(['3l_eee', '3l_eemu', '3l_emumu', '3l_mumumu'])
 ### Samples to be included in stacks ###
 samples     = {'all':[], 'inclusive':[], '3l':[], 'ss':[]}
 
-samples['all'].append('higgs')
+#samples['all'].append('higgs')
 samples['all'].append('Triboson')
 samples['all'].append('ttV')
 samples['all'].append('Diboson')
@@ -62,27 +63,23 @@ samples['all'].append('ZJets')
 #samples['all'].append('QCD')
 #samples['all'].extend(['ZbbToLL', 'WbbToLNu']) #, 'ZGstar'])
 
-samples['3l'].append(fakeType + '_Triboson')
+#samples['3l'].append(fakeType + '_Triboson')
 samples['3l'].append(fakeType + '_ttV')
 samples['3l'].append(fakeType + '_ZZ4l')
 samples['3l'].append(fakeType + '_WZJets3LNu')
-samples['3l'].append(fakeType + '_top')
+samples['3l'].append(fakeType + '_ttbarHad')
+samples['3l'].append(fakeType + '_ttbarLep')
 samples['3l'].append(fakeType + '_ZJets')
 
-#samples['ss'].append('Fakes_Triboson')
-#samples['ss'].append('Fakes_ttV')
-#samples['ss'].append(fakeType + '_ZZ4l')
-#samples['ss'].append(fakeType + '_Diboson')
-samples['ss'].append(fakeType + '_WWJets2L2Nu')
-samples['ss'].append(fakeType + '_ZZJets2L2Nu')
+#samples['ss'].append(fakeType + '_WWJets2L2Nu')
+#samples['ss'].append(fakeType + '_ZZJets2L2Nu')
 #samples['ss'].append(fakeType + '_ZZJets2L2Q')
-#samples['ss'].append(fakeType + '_Diboson')
-samples['ss'].append(fakeType + '_ttbar')
-samples['ss'].append(fakeType + '_tW')
-samples['ss'].append(fakeType + '_tbarW')
-#samples['ss'].append('Fakes_WJets')
-#samples['ss'].append('Fakes_QCD')
+samples['ss'].append(fakeType + '_Diboson')
+samples['ss'].append(fakeType + '_ttbarLep')
+samples['ss'].append(fakeType + '_ttbarHad')
 samples['ss'].append(fakeType + '_ZJets')
+#samples['ss'].append(fakeType + '_WJets')
+#samples['ss'].append(fakeType + '_QCD')
 
 p_plot = []
 

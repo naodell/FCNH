@@ -65,9 +65,9 @@ if period == '2012':
         cfg('tbarW',  '{0}/Tbar_tW'.format(path),  5,   'tbarW  muon  2012'),
         cfg('tW',     '{0}/T_tW'.format(path),     5,   'tW     muon  2012'),
 
+        cfg('WZJets3LNu',   '{0}/WZJetsTo3LNu'.format(path),   5,  'WZJets3LNu   muon  2012'),
         cfg('WWJets2L2Nu',  '{0}/WWJetsTo2L2Nu'.format(path),  5,  'WWJets2L2Nu  muon  2012'),
         cfg('ZZJets2L2Nu',  '{0}/ZZJetsTo2L2Nu'.format(path),  5,  'ZZJets2L2Nu  muon  2012'),
-        cfg('ZZJets2L2Q',   '{0}/ZZJetsTo2L2Q'.format(path),   5,  'ZZJets2L2Q   muon  2012'),
 
         cfg('ZZTo4e',       '{0}/ZZTo4e'.format(path),       5,  'ZZ4e       muon  2012'),
         cfg('ZZTo4mu',      '{0}/ZZTo4mu'.format(path),      5,  'ZZ4mu      muon  2012'),

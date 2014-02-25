@@ -45,7 +45,7 @@ doOS        = False
 doSS        = True
 do3l        = True
 
-doYields    = True
+doYields    = False
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive']
@@ -62,16 +62,18 @@ samples     = {'all':[], 'inclusive':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[],
                 '3l_inclusive':[], '3l_eee':[], '3l_eemu':[], '3l_emumu':[], '3l_mumumu':[], 
                 'ss_inclusive':[], 'ss_ee':[], 'ss_emu':[], 'ss_mumu':[]}
 
-samples['all'].append('higgs')
+#samples['all'].append('higgs')
 samples['all'].append('Triboson')
 samples['all'].append('ttV')
 samples['all'].append('Diboson')
 samples['all'].append('top')
 samples['all'].append('ZJets')
+#samples['all'].append('ZZ4l')
+#samples['all'].append('WZJets3LNu')
 #samples['all'].append('QCD')
 #samples['all'].extend(['ZbbToLL', 'WbbToLNu']) #, 'ZGstar'])
 
-samples['inclusive'].append('higgs')
+#samples['inclusive'].append('higgs')
 samples['inclusive'].append('Triboson')
 samples['inclusive'].append('ttV')
 samples['inclusive'].append('Diboson')
@@ -79,7 +81,7 @@ samples['inclusive'].append('top')
 samples['inclusive'].append('ZJets')
 
 ## trilepton categories
-samples['3l_inclusive'].append('higgs')
+#samples['3l_inclusive'].append('higgs')
 samples['3l_inclusive'].append('Triboson')
 samples['3l_inclusive'].append('ttV')
 samples['3l_inclusive'].append('ZZ4l')
@@ -88,19 +90,19 @@ samples['3l_inclusive'].append('WZJets3LNu')
 
 ## eee
 samples['3l_eee'].extend(samples['3l_inclusive'])
-samples['3l_eee'].extend(['Fakes_e', 'Fakes_ll'])
+samples['3l_eee'].extend(['eFakes', 'llFakes'])
 
 ## eemu
 samples['3l_eemu'].extend(samples['3l_inclusive'])
-samples['3l_eemu'].extend(['Fakes_e', 'Fakes_mu', 'Fakes_ll'])
+samples['3l_eemu'].extend(['eFakes', 'muFakes', 'llFakes'])
 
 ## emumu
 samples['3l_emumu'].extend(samples['3l_inclusive'])
-samples['3l_emumu'].extend(['Fakes_e', 'Fakes_mu', 'Fakes_ll'])
+samples['3l_emumu'].extend(['eFakes', 'muFakes', 'llFakes'])
 
 ## mumumu
 samples['3l_mumumu'].extend(samples['3l_inclusive'])
-samples['3l_mumumu'].extend(['Fakes_mu', 'Fakes_ll'])
+samples['3l_mumumu'].extend(['muFakes', 'llFakes'])
 
 ## inclusive
 samples['3l_inclusive'].append('Fakes')
@@ -113,7 +115,7 @@ samples['3l_inclusive'].append('Fakes')
 #samples['3l'].extend(['WGStarLNu2E', 'WGStarLNu2Mu', 'WGStarLNu2Tau'])
 
 ## same-sign categories
-samples['ss_inclusive'].append('higgs')
+#samples['ss_inclusive'].append('higgs')
 samples['ss_inclusive'].append('Triboson')
 samples['ss_inclusive'].append('ttV')
 samples['ss_inclusive'].append('ZZ4l')
@@ -123,16 +125,16 @@ samples['ss_inclusive'].append('WZJets3LNu')
 ## dielectrons
 samples['ss_ee'].extend(samples['ss_inclusive'])
 samples['ss_ee'].append('QFlips')
-samples['ss_ee'].extend(['Fakes_e', 'Fakes_ll'])
+samples['ss_ee'].extend(['eFakes', 'llFakes'])
 
 ## electron+muon
 samples['ss_emu'].extend(samples['ss_inclusive'])
 samples['ss_emu'].append('QFlips')
-samples['ss_emu'].extend(['Fakes_e', 'Fakes_mu', 'Fakes_ll'])
+samples['ss_emu'].extend(['eFakes', 'muFakes', 'llFakes'])
 
 ## dimuons
 samples['ss_mumu'].extend(samples['ss_inclusive'])
-samples['ss_mumu'].extend(['Fakes_mu', 'Fakes_ll'])
+samples['ss_mumu'].extend(['muFakes', 'llFakes'])
 
 ## inclusive
 samples['ss_inclusive'].append('Fakes')
@@ -146,11 +148,8 @@ samples['ss_barrel']    = samples['ss_mumu']
 ## opposite-sign categories
 samples['os'].extend(['Diboson', 'top', 'ZJets'])
 
-samples['WZ'].extend(['Fakes', 'WZJets3LNu'])
+samples['WZ'].extend(['WW/ZZ', 'top', 'ZJets', 'WZJets3LNu'])
 samples['ttbar'].extend(['single top', 'ZJets', 'ttbar'])
-#samples['WZ'].extend(['WW/ZZ', 'top', 'ZJets', 'WZJets3LNu'])
-#samples['ttbar'].extend(['single top', 'ZJets', 'ttbar'])
-
 samples['ttZ'].extend(['top', 'ZJets', 'ZZ4l', 'WZJets3LNu', 'ttW', 'ttG', 'ttZ'])
 samples['ZFake'].extend(['ZZ4l', 'WZJets3LNu', 'Fakes'])
 
@@ -167,7 +166,7 @@ if doPlots:
     plotter = PlotProducer(inputFile = 'fcncAnalysis/combined_histos/{0}_cut1_{1}_{2}.root'.format(selection, period, batch), savePath = '', scale = LUMIDATA, isAFS = False)
     plotter.set_period(period)
     plotter.set_output_type(plotType)
-    #plotter.set_clean_fakes(False)
+    plotter.set_clean_fakes(True)
 
     ### DATASETS ###
     ### Specify the datasets you wish to stack 
@@ -175,10 +174,10 @@ if doPlots:
 
     plotter.add_datasets(samples['all'])
     plotter._overlayList.extend(['DATA'])
-    plotter._overlayList.extend(['FCNH'])
+    #plotter._overlayList.extend(['FCNH'])
 
-    plotter.get_scale_factors(['FCNH'])
-    #plotter.get_scale_factors()
+    plotter.get_scale_factors()
+    #plotter.get_scale_factors(['FCNH'])
 
     ### VARIABLES ###
     ### First specify the directories in which your
@@ -192,7 +191,7 @@ if doPlots:
     plotter._directoryList2D            = ['2D']
 
     plotter._variableDict['Misc']       = ['PvMult', 'YieldByCut', 'YieldByCutRaw', 'EventWeight', 'TriggerStatus', 
-                                            'FakeWeightUncertainty', 'BDT', 'FakeCategory']
+                                            'FakeWeightUncertainty', 'BDT']
 
     plotter._variableDict['Lepton']     = ['LeptonCharge', 'LeptonFlavor', 
                                            'Lepton1Pt', 'Lepton2Pt','Lepton3Pt',
@@ -204,8 +203,7 @@ if doPlots:
                                            'Lepton1dxy', 'Lepton1dz',
                                            'Lepton2dxy', 'Lepton2dz',
                                            'Lepton3dxy', 'Lepton3dz',
-                                           'LeptonMult', 'fakeableOverlapMult'
-                                           'OverlapEleMu', 'MuEleDeltaR']
+                                           'LeptonMult', 'OverlapEleMu', 'fakeableOverlapMult']
                                            #'Lepton1Phi', 'Lepton2Phi', 'Lepton3Phi']
 
     plotter._variableDict['Dilepton']   = ['DileptonMass21', 'DileptonTransMass21', 'DileptonQt21',
@@ -246,8 +244,7 @@ if doPlots:
 
     plotter._variableDict['MET']        = ['Met', 'MHT', 'METLD', 'MHT-MET', 'MetPhi', 'MetSumEt',
                                            'MetLepton1DeltaPhi', 'MetLepton2DeltaPhi', 'MetLepton3DeltaPhi'
-                                           'MetLepDeltaPhiMin', 'nearLepIndex', 'ProjectedMet',
-                                           'MetFakeableDeltaPhi'] 
+                                           'MetLepDeltaPhiMin', 'nearLepIndex', 'ProjectedMet'] 
 
     plotter._variableDict['GEN']        = ['GenChargeMisId', 'GenMisIdPt', 'GenMisIdEta',
                                            'GenDeltaR', 'GenBalance']
@@ -258,7 +255,7 @@ if doPlots:
                                             'DileptonMVsDeltaROS', 'DileptonQtVsDeltaROS',
                                             #'DileptonM13VsM21', 'DileptonM12VsM31', 'DileptonM21VsM32',
                                             #'DalitzM13VsM21', 'DalitzM12VsM31', 'DalitzM21VsM32',
-                                            'LepChargeVsFlavor', 'LepMultVsFakeableMult']
+                                            'LepChargeVsFlavor']
 
 
      ###################   
@@ -296,7 +293,7 @@ if doPlots:
         for category in cat3l:
             plotter_3l = copy.deepcopy(plotter)
             plotter_3l.add_datasets(samples[category], Clear=True)
-            plotter_3l._overlayList = ['DATA', 'FCNH']
+            plotter_3l._overlayList = ['DATA']#, 'FCNH']
 
             for i, cut in enumerate(cutList):
                 if cut == '.':
@@ -317,7 +314,7 @@ if doPlots:
         for category in catSS:
             ss_plotter = copy.deepcopy(plotter)
             ss_plotter.add_datasets(samples[category], Clear=True)
-            ss_plotter._overlayList = ['DATA', 'FCNH']
+            ss_plotter._overlayList = ['DATA']#, 'FCNH']
             #ss_plotter.set_clean_fakes(False)
 
             for i, cut in enumerate(cutList):
@@ -334,10 +331,10 @@ if doPlots:
                 ss_plotter.make_save_path(outFile, clean=True)
                 p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(ss_plotter, category, inFile, outFile, do1D, do2D, False, doLog, doRatio, doEff)))
 
-        ### overlay of fake distributions for single and double fakes ###
+                ### overlay of fake distributions for single and double fakes ###
                 if cut in ['1_preselection', 'X_0jet', 'X_1jet', '3_2jet']:
                     fake_plotter = copy.deepcopy(plotter)
-                    fake_plotter._overlayList = ['Fakes_ll', 'Fakes_mu']
+                    fake_plotter._overlayList = ['llFakes', 'muFakes']
                     fake_plotter.draw_normalized(True)
 
                     inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, i+1, period, batch)
@@ -409,6 +406,8 @@ if doPlots:
 
         p_plot.append(Process(name = 'CR_ttbar/os_emu', target = plotter_wrapper, args=(ttbar_plotter, 'os_emu', inFile, outFile, do1D, False, False, doLog, doRatio, False)))
 
+    doLog = True
+
     ### ZPlusFake control region
     if 'CR_ZFake' in crList:
         ZFake_plotter = copy.deepcopy(plotter)
@@ -426,6 +425,57 @@ if doPlots:
 
         for category in cat3l:
             p_plot.append(Process(name = 'CR_ZFake/' + category, target = plotter_wrapper, args=(ZFake_plotter, category, inFile, outFile, do1D, False, False, doLog, doRatio, False)))
+    
+    ### low delta eta ss control region
+    if 'high_mass_ss' in crList:
+        hm_plotter = copy.deepcopy(plotter)
+        hm_plotter.add_datasets(samples['ss'],  Clear=True)
+        hm_plotter._overlayList = ['DATA']
+
+        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 9, period, batch)
+
+        if doLog:
+            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'high_mass_ss')
+        else:
+            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'high_mass_ss')
+
+        hm_plotter.make_save_path(outFile, clean=True)
+
+        for category in catSS:
+            p_plot.append(Process(name = 'high_mass_ss/' + category, target = plotter_wrapper, args=(hm_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False)))
+
+    ### low delta eta ss control region
+    if 'low_mass_ss' in crList:
+        lm_plotter = copy.deepcopy(plotter)
+        lm_plotter.add_datasets(samples['ss'],  Clear=True)
+        lm_plotter._overlayList = ['DATA']
+
+        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 10, period, batch)
+
+        if doLog:
+            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'low_mass_ss')
+        else:
+            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'low_mass_ss')
+
+        lm_plotter.make_save_path(outFile, clean=True)
+
+        for category in catSS:
+            p_plot.append(Process(name = 'high_mass_ss/' + category, target = plotter_wrapper, args=(lm_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False)))
+
+    ### low delta eta ss control region
+    if 'barrel_leptons' in crList:
+        bl_plotter = copy.deepcopy(plotter)
+        bl_plotter.add_datasets(samples['ss'],  Clear=True)
+        bl_plotter._overlayList = ['DATA']
+
+        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 11, period, batch)
+
+        if doLog:
+            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'barrel_leptons')
+        else:
+            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'barrel_leptons')
+
+        bl_plotter.make_save_path(outFile, clean=True)
 
 
 ### End of configuration for PlotProducer ###
@@ -452,13 +502,13 @@ if doYields:
         yieldTable.get_scale_factors(['FCNH'])
 
     if do3l:
-        yieldTable._columnList  = ['Irreducible', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
-        #yieldTable._columnList  = samples['3l_inclusive'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
+        #yieldTable._columnList  = ['Irreducible', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
+        yieldTable._columnList  = samples['3l_inclusive'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau','FCNH']# 'Significance'] 
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
-        yieldTable.add_datasets(['Irreducible', 'Fakes'], Clear = True)
-        #yieldTable.add_datasets(samples['3l_inclusive'], Clear = True)
+        #yieldTable.add_datasets(['Irreducible', 'Fakes'], Clear = True)
+        yieldTable.add_datasets(samples['3l_inclusive'], Clear = True)
         yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
 
@@ -470,12 +520,12 @@ if doYields:
             yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
 
     if doSS:
-        yieldTable._columnList  = ['Irreducible', 'Fakes', 'QFlips', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
-        #yieldTable._columnList  = samples['ss_inclusive'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
+        #yieldTable._columnList  = ['Irreducible', 'Fakes', 'QFlips', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
+        yieldTable._columnList  = samples['ss_inclusive'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
-        yieldTable.add_datasets(['Irreducible', 'Fakes', 'QFlips'], Clear = True)
-        #yieldTable.add_datasets(samples['ss_inclusive'], Clear = True)
+        #yieldTable.add_datasets(['Irreducible', 'Fakes', 'QFlips'], Clear = True)
+        yieldTable.add_datasets(samples['ss_inclusive'], Clear = True)
         yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
         yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET'] + 5*['.'] + ['0-jet', '1-jet']# + 7*['.'] + ['BDT']
@@ -485,9 +535,9 @@ if doYields:
             histDict = yieldTable.get_hist_dict('YieldByCut')
             yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
 
-    crCats = {'CR_WZ':['3l_inclusive'], 'CR_ttbar':['os_emu'], 'CR_ttZ':['3l_inclusive'], 'CR_ZFake':['3l_eee', '3l_eemu', '3l_emumu', '3l_mumumu']}
+    crCats = {'CR_WZ':'3l_inclusive', 'CR_ttbar':'os_emu', 'CR_ttZ':'3l_inclusive'}
     for i,CR in enumerate(crList):
-        if CR[:2] != 'CR': continue
+        if CR[:2] != 'CR' or CR == 'CR_ZFake': continue
 
         yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, i+5, period, batch))
         yieldTable._columnList  = samples[CR[3:]] + ['BG', 'DATA']
@@ -497,10 +547,9 @@ if doYields:
 
         yieldTable._rowList = ['preselection'] + (4+i)*['.'] + [CR[3:]]
 
-        for cat in crCats[CR]:
-            yieldTable._category = cat 
-            histDict = yieldTable.get_hist_dict('YieldByCut')
-            yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 6)
+        yieldTable._category = crCats[CR]
+        histDict = yieldTable.get_hist_dict('YieldByCut')
+        yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 6)
 
     ### Special case for ZZ->4l control region ###
     #yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut1_{1}_{2}.root'.format(selection, period, batch))

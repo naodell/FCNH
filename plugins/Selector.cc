@@ -218,7 +218,6 @@ bool Selector::MuonLooseID(TCMuon* muon)
 
 void Selector::MuonSelector(TClonesArray* muons) 
 {
-
     //cout << "Muons(" << muons->GetSize() << "): ";
 
     for (int i = 0; i < muons->GetSize(); ++ i) {
@@ -268,7 +267,7 @@ void Selector::MuonSelector(TClonesArray* muons)
                 _selMuons["tight"].push_back(*thisMuon);
             else if (
                     thisMuon->IsPF()
-                    //&& muISO < 0.2
+                    && muISO > 0.14
                     && fabs(thisMuon->Dz(_selVertices[0]))  < 0.05 
                     && fabs(thisMuon->Dxy(_selVertices[0])) < 0.015
                     ) {
@@ -509,16 +508,16 @@ void Selector::JetSelector(TClonesArray* jets)
         // Prevent lepton overlap //
         std::bitset<4> overlap;
         for (int j = 0; j < (int)_selMuons["tight"].size(); ++j) 
-            if (thisJet->DeltaR(_selMuons["tight"][j]) < 0.5) overlap.set(0);
+            if (thisJet->DeltaR(_selMuons["tight"][j]) < 0.3) overlap.set(0);
 
         for (int j = 0; j < (int)_selElectrons["tight"].size(); ++j) 
-            if (thisJet->DeltaR(_selElectrons["tight"][j]) < 0.5) overlap.set(1);
+            if (thisJet->DeltaR(_selElectrons["tight"][j]) < 0.3) overlap.set(1);
 
         for (int j = 0; j < (int)_selMuons["fakeable"].size(); ++j) 
-            if (thisJet->DeltaR(_selMuons["fakeable"][j]) < 0.5) overlap.set(2);
+            if (thisJet->DeltaR(_selMuons["fakeable"][j]) < 0.3) overlap.set(2);
 
         for (int j = 0; j < (int)_selElectrons["fakeable"].size(); ++j) 
-            if (thisJet->DeltaR(_selElectrons["fakeable"][j]) < 0.5) overlap.set(3);
+            if (thisJet->DeltaR(_selElectrons["fakeable"][j]) < 0.3) overlap.set(3);
 
         // Apply JER corrections; maybe better to do in the analysis code...
         TCJet corJet = this->JERCorrections(thisJet);
@@ -573,7 +572,7 @@ void Selector::JetSelector(TClonesArray* jets)
                     }
                 }
             }
-        } else if (fabs(corJet.Eta()) < 3.5) {
+        } else if (fabs(corJet.Eta()) < 4.7) {
             if (
                     corJet.Pt() > _jetPtCuts[0]
                     && corJet.NumConstit() > 1

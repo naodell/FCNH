@@ -404,8 +404,6 @@ float WeightUtils::GetFakeWeight(TCPhysObject fakeable, string controlRegion)
         
         if (fakeable.Pt() < 50) 
             fakeablePt = fakeable.Pt();
-        else if (fakeable.Pt() > 80)
-            return 0;
         else
             fakeablePt = 50;
 
