@@ -19,9 +19,9 @@ const float phoPtCut[]        = {10., 10.};
 
 
 unsigned  nMetBins      = 10;
-unsigned  nPtBins       = 6;
+unsigned  nPtBins       = 8;
 float     metBins[]     = {0., 10., 20., 30., 40., 50., 60., 70., 80., 100., 300.}; 
-float     ptBins[]      = {5., 10., 20., 30., 45., 60, 100.}; 
+float     ptBins[]      = {5., 10., 15., 20., 30., 40., 55, 70., 100.}; 
 float     etaBinsMu[]   = {0., 1.5, 2.5};
 float     etaBinsEle[]  = {0., 0.8, 1.479, 2.5};
 
@@ -260,6 +260,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
     // The control region is largely defined by the tag, but we'll first check
     // for any probes since they will be the same for both regions of interest
 
+    vector<TCMuon>      muTags      = selector->GetSelectedMuons("QCD2l_CR_tag");
     vector<TCMuon>      muProbes    = selector->GetSelectedMuons("QCD2l_CR_probe");
     vector<TCElectron>  eleProbes   = selector->GetSelectedElectrons("QCD2l_CR_probe");
 
@@ -277,11 +278,11 @@ bool fakeAnalyzer::Process(Long64_t entry)
         // is anti-isolated.  The probe is a lepton passing loose
         // identification requirement without any isolation requirement
 
-        UInt_t nTags = selector->GetSelectedMuons("QCD2l_CR_tag").size();
+        UInt_t nTags = muTags.size();
 
         if (nTags == 1) { 
 
-            tag = (TCPhysObject)selector->GetSelectedMuons("QCD2l_CR_tag")[0];
+            tag = (TCPhysObject)muTags[0];
 
             // Make sure there is only one probe lepton and that it does not overlap with the tag 
             // Consider probes that are both muons and electrons
@@ -309,7 +310,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
             if (nEleProbes == 1 && nMuProbes == 1) {
                 // Only allow events with muon and electron probes 
                 // if they are the same object
-                if (eleProbe.DeltaR(muProbe) > 0.1)
+                if (eleProbe.DeltaR(muProbe) < 0.1)
                     singleProbe = false;
             }
 
@@ -375,16 +376,22 @@ bool fakeAnalyzer::Process(Long64_t entry)
                     singleProbe = false;
             }
 
-            if ((nEleProbes == 1 || nMuProbes == 1) && singleProbe) {
-                if (CheckZPlusJetCR()) {
-
-                    // Probe object is found and event is consistent with QCD 2l
-                    // control region requirements. Now fill histograms for
-                    // parameterizing fake rates by pt and eta.
-
-                    isTP    = true;
-                    crType  = "ZPlusJet";
-                }
+            if (singleProbe) {
+                // Probe object is found and event is consistent with QCD 2l
+                // control region requirements. Now fill histograms for
+                // parameterizing fake rates by pt and eta.
+                if (nEleProbes == 1) {
+                    if (CheckZPlusJetCR(eleProbe)) {
+                        isTP    = true;
+                        crType  = "ZPlusJet";
+                    }
+                } 
+                if (nMuProbes == 1) {
+                    if (CheckZPlusJetCR(muProbe)) {
+                        isTP    = true;
+                        crType  = "ZPlusJet";
+                    }
+                } 
             }
         }
     }
@@ -399,10 +406,13 @@ bool fakeAnalyzer::Process(Long64_t entry)
         vObj triggerLeps;
         if (crType == "ZPlusJet") {
             triggerLeps = leptons;
-        } /*else if (crType == "QCD2l") {
+        } else if (crType == "QCD2l") {
             triggerLeps.push_back(tag);
-            triggerLeps.push_back(probe);
-            }*/ 
+            if (nMuProbes == 1)
+                triggerLeps.push_back(muProbe);
+            else if (nEleProbes == 1)
+                triggerLeps.push_back(eleProbe);
+        } 
 
         if (!isRealData) {
             weighter->SetObjects(triggerLeps, jets, nPUVerticesTrue, passNames[0]);
@@ -555,7 +565,7 @@ void fakeAnalyzer::DoZTag(vObj& leptons)
 {
     // Reset OS variables for each event of interest//
     zTagged      = false;
-    dileptonMass = -1.;
+    dileptonMass = 0.;
 
     float zCandidateMass = 0.;
     for (unsigned i = 0; i < leptons.size(); ++i) {
@@ -749,8 +759,8 @@ bool fakeAnalyzer::CheckQCD2lCR(vector<TCJet>& tagJets, TCPhysObject& probe)
         }
     }
 
-    if (!jetMatched) 
-        return false;
+    //if (!jetMatched) 
+    //    return false;
 
     // Check tag/probe pair is back-to-back
     Float_t tpDeltaPhi  = tag.DeltaPhi(probe);
@@ -771,8 +781,21 @@ bool fakeAnalyzer::CheckQCD2lCR(vector<TCJet>& tagJets, TCPhysObject& probe)
     return true;
 }
 
-bool fakeAnalyzer::CheckZPlusJetCR()
+bool fakeAnalyzer::CheckZPlusJetCR(TCPhysObject& probe)
 {
+    // Check tag/probe pair is back-to-back
+    Float_t tpDeltaPhi  = tag.DeltaPhi(probe);
+    Float_t tpBalance   = probe.Pt()/tag.Pt(); 
+
+    histManager->Fill1DHist(fabs(tpDeltaPhi),
+            "h1_TagProbeDeltaPhi", "#Delta #phi (tag,probe);#Delta #phi (tag,probe);Entries / bin", 36, 0., TMath::Pi());
+    histManager->Fill1DHist(fabs(tpBalance),
+            "h1_TagProbePtBalance", "balance (tag,probe);balance (tag,probe);Entries / bin", 40, 0., 4.);
+
+    if (fabs(tpDeltaPhi) < 2.5 || tpBalance > 1) 
+        return false;
+
+    return true;
     if (recoMET->Mod() > 30)
         return false;
     else
