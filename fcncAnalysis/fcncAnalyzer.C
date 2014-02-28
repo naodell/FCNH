@@ -1186,6 +1186,9 @@ void fcncAnalyzer::LeptonPlots(vObj leptons, vector<TCJet> jets, vector<TCJet> b
         histManager->Fill1DHist(leptons[i].Dz(&PV), 
                 "h1_Lepton" + index + "dz", "d_{z} leptons " + index + ";d_{z} (cm);Entries / bin", 100., -0.15, 0.15);
 
+        histManager->Fill1DHist(leptons[i].IsoMap("IsoRel"), 
+                "h1_Lepton" + index + "IsoRel", "Iso_{Rel} leptons " + index + ";Iso_{Rel} (cm);Entries / bin", 42, -0.1, 2.);
+
         if (leptons[i].Type() == "electron") {
             histManager->Fill1DHist(leptons[i].Pt(),
                     "h1_ElectronPt", "p_{T} Electron;p_{T,e} (GeV);Entries / 5 GeV", 70, 0., 350.);
@@ -1199,6 +1202,9 @@ void fcncAnalyzer::LeptonPlots(vObj leptons, vector<TCJet> jets, vector<TCJet> b
             histManager->Fill1DHist(leptons[i].Dz(&PV), 
                     "h1_ElectronDz", "electron d_{z};d_{z} (cm);Entries / bin", 100., -0.15, 0.15);
 
+            histManager->Fill1DHist(leptons[i].IsoMap("IsoRel"), 
+                    "h1_ElectronIsoRel", "Iso_{Rel} electrons;Iso_{Rel} (cm);Entries / bin", 42, -0.1, 2.);
+
         } else if (leptons[i].Type() == "muon") {
             histManager->Fill1DHist(leptons[i].Pt(),
                     "h1_MuonPt", "p_{T} muon;p_{T,#mu} (GeV);Entries / 5 GeV", 70, 0., 350.);
@@ -1211,6 +1217,9 @@ void fcncAnalyzer::LeptonPlots(vObj leptons, vector<TCJet> jets, vector<TCJet> b
                     "h1_MuonDxy", "muon d_{xy};d_{xy};Entries / bin", 100., -.02, 0.02);
             histManager->Fill1DHist(leptons[i].Dz(&PV), 
                     "h1_MuonDz", "muon d_{z};d_{z};Entries / bin", 100., -0.15, 0.15);
+
+            histManager->Fill1DHist(leptons[i].IsoMap("IsoRel"), 
+                    "h1_MuonIsoRel", "Iso_{Rel} muons;Iso_{Rel} (cm);Entries / bin", 42, -0.1, 2.);
         }
 
         if (fabs(leptons[i].Eta()) < 1.) 
@@ -1472,7 +1481,6 @@ void fcncAnalyzer::JetPlots(vector<TCJet> jets, vector<TCJet> bJets)
                     "h1_BTruthNumerPt", "b flavor jet p_{T};p_{T}", 10, ptBins);
             histManager->Fill1DHistUnevenBins(bJets[i].Pt(),
                     "h1_BTruthDenomPt", "b flavor jet p_{T};p_{T}", 10, ptBins);
-        } else if (abs(bJets[i].JetFlavor()) == 4) {
             histManager->Fill1DHistUnevenBins(bJets[i].Pt(),
                     "h1_CTruthDenomPt", "c flavor jet p_{T};p_{T}", 10, ptBins);
         } else if (abs(bJets[i].JetFlavor()) != 0) { // misidentified b-jets (b-tagged light jets)
@@ -1770,31 +1778,47 @@ void fcncAnalyzer::FakePlots(vObj leptons, vector<TCJet> jets, vector<TCJet> bJe
 
     // Find fakes if present
     vObj fakeables;
-    bitset<3> fakeIndices;
     for (unsigned i = 0; i < leptons.size(); ++i) {
         if (leptons[i].IsFake()) {
             fakeables.push_back(leptons[i]);
-            fakeIndices.set(i);
         }
     }
 
-    //if (fakeables.size() >= 1) {
-    //    unsigned flCategory = GetHistCategory(2) - 10;
-    //    histManager->Fill1DHist(recoMET->DeltaPhi(fakeables[0].P2()),
-    //            "h1_MetFakeableDeltaPhi", "#Delta#phi(fakeable, MET);#Delta#phi(fakeable, MET);Entries / bin", 36, 0., TMath::Pi());
+    if (fakeables.size() >= 1) {
+        unsigned flCategory = GetHistCategory(2) - 10;
+        histManager->Fill1DHist(recoMET->DeltaPhi(fakeables[0].P2()),
+                "h1_MetFakeableDeltaPhi", "#Delta#phi(fakeable, MET);#Delta#phi(fakeable, MET);Entries / bin", 36, 0., TMath::Pi());
 
-    //    vector<TCJet> muFakeJets    = selector->GetSelectedJets("muFakes");
-    //    vector<TCJet> eleFakeJets   = selector->GetSelectedJets("eleFakes");
+        vector<TCJet> muFakeJets    = selector->GetSelectedJets("muFakes");
+        vector<TCJet> eleFakeJets   = selector->GetSelectedJets("eleFakes");
 
-    //    for (unsigned i = 0; i < muFakeJets.size(); ++i) {
-    //        histManager->Fill1DHist(muFakeJets[i].BDiscriminatorMap("CSV"),
-    //                "h1_MatchedMuJetBDiscr", "matched #mu-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
-    //    }
-    //    for (unsigned i = 0; i < eleFakeJets.size(); ++i) {
-    //        histManager->Fill1DHist(eleFakeJets[i].BDiscriminatorMap("CSV"),
-    //                "h1_MatchedEleJetBDiscr", "matched e-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
-    //    }
-    //}
+        for (unsigned i = 0; i < muFakeJets.size(); ++i) {
+            histManager->Fill1DHist(muFakeJets[i].BDiscriminatorMap("CSV"),
+                    "h1_MatchedMuJetBDiscr", "matched #mu-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
+        }
+        for (unsigned i = 0; i < eleFakeJets.size(); ++i) {
+            histManager->Fill1DHist(eleFakeJets[i].BDiscriminatorMap("CSV"),
+                    "h1_MatchedEleJetBDiscr", "matched e-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
+        }
+
+        histManager->Fill1DHist(fakeables[0].Pt(),
+                "h1_FakeablePt", "p_{T} fakeables;p_{T}^{l} (GeV);Entries / 5 GeV", 70, 0., 350.);
+        histManager->Fill1DHist(fakeables[0].Eta(),
+                "h1_FakeableEta", "#eta fakeables;#eta^{l};Entries / bin", 50, -2.5, 2.5);
+        histManager->Fill1DHist(fakeables[0].Phi(),
+                "h1_FakeablePhi", "#phi fakeables;#phi^{l};Entries / bin", 36, -TMath::Pi(), TMath::Pi());
+
+
+        histManager->Fill1DHist(fakeables[0].Dxy(&PV), 
+                "h1_FakeableDxy", "d_{xy} fakeables;d_{xy} (cm);Entries / bin", 100., -.02, 0.02);
+        histManager->Fill1DHist(fakeables[0].Dz(&PV), 
+                "h1_FakeableDz", "d_{z} fakeables;d_{z} (cm);Entries / bin", 100., -0.15, 0.15);
+
+        histManager->Fill1DHist(fakeables[0].IsoMap("IsoRel"), 
+                "h1_FakeableIsoRel", "Iso_{Rel} fakeabless;Iso_{Rel} (cm);Entries / bin", 42, -0.1, 2.);
+        histManager->Fill2DHist(fakeables[0].Pt(), fakeables[0].IsoMap("IsoRel"), 
+                "h2_FakeableIsoRelVsPt", "Iso_{Rel} vs p_{T} fakeables;p_{T};Iso_{Rel} (cm) / bin", 29, 10., 150., 42, -0.1, 2.);
+    }
 }
 
 void fcncAnalyzer::SetEventCategory(vObj leptons)

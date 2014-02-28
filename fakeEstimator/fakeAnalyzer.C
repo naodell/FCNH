@@ -12,16 +12,16 @@ const bool  doQCDDileptonCR = true;
 const bool  doZPlusJetCR    = true;
 const bool  doGenPrint      = false;
 
-const float jetPtCut[]        = {25., 15.};
-const float muPtCut[]         = {10., 3.};
-const float elePtCut[]        = {10., 10.};
-const float phoPtCut[]        = {10., 10.};
+const float jetPtCut[]  = {25., 15.};
+const float muPtCut[]   = {10., 3.};
+const float elePtCut[]  = {10., 10.};
+const float phoPtCut[]  = {10., 10.};
 
 
 unsigned  nMetBins      = 10;
 unsigned  nPtBins       = 8;
 float     metBins[]     = {0., 10., 20., 30., 40., 50., 60., 70., 80., 100., 300.}; 
-float     ptBins[]      = {5., 10., 15., 20., 25., 30., 40., 50, 70.}; 
+float     ptBins[]      = {10., 15., 20., 25., 30., 35., 40., 45., 50.}; 
 float     etaBinsMu[]   = {0., 1.5, 2.5};
 float     etaBinsEle[]  = {0., 0.8, 1.479, 2.5};
 
@@ -84,6 +84,10 @@ void fakeAnalyzer::Begin(TTree* tree)
     histoFile->GetDirectory("QCD2l_low_met", "QCD2l_low_met")->mkdir(suffix.c_str(), suffix.c_str());
     histoFile->mkdir("QCD2l_high_met", "QCD2l_high_met");
     histoFile->GetDirectory("QCD2l_high_met", "QCD2l_high_met")->mkdir(suffix.c_str(), suffix.c_str());
+    histoFile->mkdir("QCD2l_low_jet", "QCD2l_low_jet");
+    histoFile->GetDirectory("QCD2l_low_jet", "QCD2l_low_jet")->mkdir(suffix.c_str(), suffix.c_str());
+    histoFile->mkdir("QCD2l_high_jet", "QCD2l_high_jet");
+    histoFile->GetDirectory("QCD2l_high_jet", "QCD2l_high_jet")->mkdir(suffix.c_str(), suffix.c_str());
 
     histoFile->mkdir("ZPlusJet_inclusive", "ZPlusJet_inclusive");
     histoFile->GetDirectory("ZPlusJet_inclusive", "ZPlusJet_inclusive")->mkdir(suffix.c_str(), suffix.c_str());
@@ -347,11 +351,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
             nMuProbes = 0;
             for (unsigned i = 0; i < muProbes.size(); ++i) {
                 TCPhysObject testProbe = (TCPhysObject)muProbes[i];
-                if (
-                        lep1.DeltaR(testProbe) > 0.1 
-                        && lep2.DeltaR(testProbe) > 0.1
-                        && (tag + testProbe).M() > 12
-                   ) {
+                if (lep1.DeltaR(testProbe) > 0.1 && lep2.DeltaR(testProbe) > 0.1) {
                     muProbe = testProbe;
                     ++nMuProbes;
                 }
@@ -360,11 +360,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
             nEleProbes = 0;
             for (unsigned i = 0; i < eleProbes.size(); ++i) {
                 TCPhysObject testProbe = (TCPhysObject)eleProbes[i];
-                if (
-                        lep1.DeltaR(testProbe) > 0.1 
-                        && lep2.DeltaR(testProbe) > 0.1
-                        && (tag + testProbe).M() > 12
-                   ) {
+                if (lep1.DeltaR(testProbe) > 0.1 && lep2.DeltaR(testProbe) > 0.1) {
                     eleProbe = testProbe;
                     ++nEleProbes;
                 }
@@ -446,6 +442,11 @@ bool fakeAnalyzer::Process(Long64_t entry)
                 FillDenominatorHists(crType + "_low_met", eleProbe);
             else if (recoMET->Mod() > 45 && recoMET->Mod() < 80)
                 FillDenominatorHists(crType + "_high_met", eleProbe);
+
+            if (bJetsL.size() < 2)
+                FillDenominatorHists(crType + "_low_jet", eleProbe);
+            else 
+                FillDenominatorHists(crType + "_high_jet", eleProbe);
         }
 
         if (nMuProbes == 1) {
@@ -458,6 +459,11 @@ bool fakeAnalyzer::Process(Long64_t entry)
                 FillDenominatorHists(crType + "_low_met", muProbe);
             else if (recoMET->Mod() > 45 && recoMET->Mod() < 80)
                 FillDenominatorHists(crType + "_high_met", muProbe);
+
+            if (bJetsL.size() < 2)
+                FillDenominatorHists(crType + "_low_jet", muProbe);
+            else 
+                FillDenominatorHists(crType + "_high_jet", muProbe);
         }
     } else if (crType == "ZPlusJet" && leptons.size() < 4 && leptons.size() >= 2) {
         if (nEleProbes == 1) {

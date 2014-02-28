@@ -68,6 +68,7 @@ samples['all'].append('ttV')
 samples['all'].append('Diboson')
 samples['all'].append('top')
 samples['all'].append('ZJets')
+samples['all'].append('WG')
 #samples['all'].append('ZZ4l')
 #samples['all'].append('WZJets3LNu')
 #samples['all'].append('QCD')
@@ -121,6 +122,7 @@ samples['ss_inclusive'].append('ttV')
 samples['ss_inclusive'].append('ZZ4l')
 #samples['ss_inclusive'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
 samples['ss_inclusive'].append('WZJets3LNu')
+samples['ss_inclusive'].append('WG')
 
 ## dielectrons
 samples['ss_ee'].extend(samples['ss_inclusive'])
@@ -196,10 +198,11 @@ if doPlots:
     plotter._variableDict['Lepton']     = ['LeptonCharge', 'LeptonFlavor', 
                                            'Lepton1Pt', 'Lepton2Pt','Lepton3Pt',
                                            'Lepton1Eta', 'Lepton2Eta', 'Lepton3Eta',
+                                           'Lepton1IsoRel', 'Lepton2IsoRel', 'Lepton3IsoRel' 
                                            'ElectronPt', 'ElectronEta',
-                                           'ElectronDxy', 'ElectronDz',
+                                           'ElectronDxy', 'ElectronDz','ElectronIsoRel', 
                                            'MuonPt', 'MuonEta',
-                                           'MuonDxy', 'MuonDz',
+                                           'MuonDxy', 'MuonDz', 'MuonIsoRel',
                                            'Lepton1dxy', 'Lepton1dz',
                                            'Lepton2dxy', 'Lepton2dz',
                                            'Lepton3dxy', 'Lepton3dz',
@@ -207,11 +210,11 @@ if doPlots:
                                            #'Lepton1Phi', 'Lepton2Phi', 'Lepton3Phi']
 
     plotter._variableDict['Dilepton']   = ['DileptonMass21', 'DileptonTransMass21', 'DileptonQt21',
-                                           'DileptonDeltaPhi21', 'DileptonDeltaEta21', 'DileptonDeltaR21', 'DileptonDeltaPt21',
-                                           'DileptonMass31', 'DileptonTransMass31', 'DileptonQt31', 
-                                           'DileptonDeltaPhi31', 'DileptonDeltaEta31', 'DileptonDeltaR31', 'DileptonDeltaPt31',
-                                           'DileptonMass32', 'DileptonTransMass32', 'DileptonQt32', 
-                                           'DileptonDeltaPhi32', 'DileptonDeltaEta32', 'DileptonDeltaR32', 'DileptonDeltaPt32']
+                                           'DileptonDeltaPhi21', 'DileptonDeltaEta21', 'DileptonDeltaR21', 'DileptonDeltaPt21']
+                                           #'DileptonMass31', 'DileptonTransMass31', 'DileptonQt31', 
+                                           #'DileptonDeltaPhi31', 'DileptonDeltaEta31', 'DileptonDeltaR31', 'DileptonDeltaPt31',
+                                           #'DileptonMass32', 'DileptonTransMass32', 'DileptonQt32', 
+                                           #'DileptonDeltaPhi32', 'DileptonDeltaEta32', 'DileptonDeltaR32', 'DileptonDeltaPt32']
 
     plotter._variableDict['DileptonOS'] = ['DileptonOSMass', 'DileptonOSTransMass', 'DileptonOSBalance',
                                            'DileptonOSQt', 'DileptonOSDeltaPt', 'DileptonOSDeltaR', 
@@ -221,11 +224,11 @@ if doPlots:
                                            'Lep3MetMT', 'TrileptonMass', 'TrileptonPt']
 
     plotter._variableDict['Lep+Jet']    = ['Lepton1BJetDeltaPhi', 'Lepton1BJetDeltaEta', 'Lepton1BJetDeltaR', 'Lepton1BJetDeltaPt',
-                                           'Lepton2BJetDeltaPhi', 'Lepton2BJetDeltaEta', 'Lepton2BJetDeltaR', 'Lepton2BJetDeltaPt',
-                                           'Lepton3BJetDeltaPhi', 'Lepton3BJetDeltaEta', 'Lepton3BJetDeltaR', 'Lepton3BJetDeltaPt',
+                                           #'Lepton2BJetDeltaPhi', 'Lepton2BJetDeltaEta', 'Lepton2BJetDeltaR', 'Lepton2BJetDeltaPt',
+                                           #'Lepton3BJetDeltaPhi', 'Lepton3BJetDeltaEta', 'Lepton3BJetDeltaR', 'Lepton3BJetDeltaPt',
                                            'Lepton1JetDeltaPhi', 'Lepton1JetDeltaEta', 'Lepton1JetDeltaR', 'Lepton1JetDeltaPt',
-                                           'Lepton2JetDeltaPhi', 'Lepton2JetDeltaEta', 'Lepton2JetDeltaR', 'Lepton2JetDeltaPt',
-                                           'Lepton3JetDeltaPhi', 'Lepton3JetDeltaEta', 'Lepton3JetDeltaR', 'Lepton3JetDeltaPt',
+                                           #'Lepton2JetDeltaPhi', 'Lepton2JetDeltaEta', 'Lepton2JetDeltaR', 'Lepton2JetDeltaPt',
+                                           #'Lepton3JetDeltaPhi', 'Lepton3JetDeltaEta', 'Lepton3JetDeltaR', 'Lepton3JetDeltaPt',
                                            'DileptonJetDeltaPhi', 'DileptonJetDeltaEta', 'DileptonJetDeltaR', 'DileptonJetDeltaPt',
                                            'DileptonBJetDeltaPhi', 'DileptonBJetDeltaEta', 'DileptonBJetDeltaR', 'DileptonBJetDeltaPt',
                                            'OverlapJetMult'
@@ -242,9 +245,12 @@ if doPlots:
                                            'MatchedMuJetBDiscr', 'MatchedEleJetBDiscr', 
                                            'DijetMass']
 
-    plotter._variableDict['MET']        = ['Met', 'MHT', 'METLD', 'MHT-MET', 'MetPhi', 'MetSumEt',
-                                           'MetLepton1DeltaPhi', 'MetLepton2DeltaPhi', 'MetLepton3DeltaPhi'
-                                           'MetLepDeltaPhiMin', 'nearLepIndex', 'ProjectedMet'] 
+    plotter._variableDict['MET']        = ['Met']#, 'MHT', 'METLD', 'MHT-MET', 'MetPhi', 'MetSumEt',
+                                           #'MetLepton1DeltaPhi', 'MetLepton2DeltaPhi', 'MetLepton3DeltaPhi'
+                                           #'MetLepDeltaPhiMin', 'nearLepIndex', 'ProjectedMet'] 
+
+    plotter._variableDict['Fakes']      = ['FakeablePt', 'FakeableEta', 'FakeablePhi'
+                                           'FakeableDxy', 'FakeableDz', 'FakeableIsoRel']
 
     plotter._variableDict['GEN']        = ['GenChargeMisId', 'GenMisIdPt', 'GenMisIdEta',
                                            'GenDeltaR', 'GenBalance']
