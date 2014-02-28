@@ -548,10 +548,10 @@ void Selector::JetSelector(TClonesArray* jets)
                         else if (overlap[3])
                             _selJets["eleFakes"].push_back(corJet);
 
-                    } else if (
-                            corJet.VtxNTracks() > 0
-                            && corJet.VtxSumPtFrac() > 0. 
-                            && ((int)corJet.VtxSumPtIndex() == 1)
+                    } else if (true
+                            //corJet.VtxNTracks() > 0
+                            //&& corJet.VtxSumPtFrac() > 0. 
+                            //&& ((int)corJet.VtxSumPtIndex() == 1)
                             ) { 
                         _selJets["tight"].push_back(corJet);
 

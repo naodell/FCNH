@@ -246,9 +246,12 @@ class fcncAnalyzer : public TSelector {
         TBranch        *b_NoiseFilters;   //!
 
         //For counting events
-        int          eventCount[24];
+        int         eventCount[24];
+        int         eventCountOS, eventCountOS_NoJet;
+        int         eventCountSS, eventCountSS_NoJet;
+        int         eventCount3l;
         //For counting weighted events
-        float        eventCountWeighted[24];
+        float       eventCountWeighted[24];
 
         fcncAnalyzer(TTree * /*tree*/ =0) { }
         virtual ~fcncAnalyzer() { }

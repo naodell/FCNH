@@ -269,10 +269,15 @@ void fcncAnalyzer::Begin(TTree* tree)
     }
 
     // initialize some global variables
-    for (unsigned i = 0; i < 16; ++i) {
+    for (unsigned i = 0; i < 24; ++i) {
         eventCount[i] = 0;
         eventCountWeighted[i] = 0;
     }
+    eventCountOS        = 0;
+    eventCountOS_NoJet  = 0;
+    eventCountSS        = 0;
+    eventCountSS_NoJet  = 0;
+    eventCount3l        = 0;
 
     evtWeight   = 1.;
 }
@@ -569,6 +574,18 @@ bool fcncAnalyzer::Process(Long64_t entry)
         if ( leptons[0].Pt() < leptonPtCut[0] || leptons[1].Pt() < leptonPtCut[1]) 
             return kTRUE;
 
+        if (leptons[0].Type() == "muon" && leptons[1].Type() == "muon") {
+            if (leptons[0].Charge() == leptons[1].Charge()) {
+                ++eventCountSS;
+                if (jets.size() + bJetsM.size() == 0)
+                    ++eventCountSS_NoJet;
+            } else if (leptons[0].Charge() != leptons[1].Charge()) {
+                ++eventCountOS;
+                if (jets.size() + bJetsM.size() == 0)
+                    ++eventCountOS_NoJet;
+            }
+        }
+
     } else if (leptons.size() == 3) {
 
         //!!! Trilepton selection !!!//
@@ -579,6 +596,8 @@ bool fcncAnalyzer::Process(Long64_t entry)
                 || fabs(leptons[0].Charge() + leptons[1].Charge() + leptons[2].Charge()) != 1
            ) 
             return kTRUE;
+        else
+            ++eventCount3l;
 
     } else if (leptons.size() == 4) {
 
@@ -746,31 +765,35 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
 void fcncAnalyzer::Terminate()
 {
-    cout<<"\nRunning over "<<suffix<<" dataset with "<<selection<<" selection for "<<period<<" data."<<"\n"<<endl;
-    cout<<"| CUT DESCRIPTION                    |\t" << "\t|"<<endl;
-    cout<<"| Initial number of events:          |\t" << eventCountWeighted[0] << "\t|"<<endl;
-    cout<<"| Number of events ntuplized:        |\t" << eventCount[1]  << "\t|\t" << eventCountWeighted[1] << "\t|"<<endl;
-    cout<<"| Pass HLT selection:                |\t" << eventCount[2]  << "\t|\t" << eventCountWeighted[2] << "\t|"<<endl;
-    cout<<"| Good PV:                           |\t" << eventCount[3]  << "\t|\t" << eventCountWeighted[3] << "\t|"<<endl;
-    cout<<"| Data quality bits:                 |\t" << eventCount[4]  << "\t|\t" << eventCountWeighted[4] << "\t|"<<endl;
-    cout<<"| Lepton selection:                  |\t" << eventCount[5]  << "\t|\t" << eventCountWeighted[5] << "\t|"<<endl;
-
+    cout << "\nRunning over "<<suffix<<" dataset with "<<selection<<" selection for "<<period<<" data."<<"\n"<<endl;
+    cout << "| CUT DESCRIPTION             |\t inclusive\t|"<<endl;
+    cout << "| Initial number of events:   |\t" << eventCountWeighted[0] << "\t|"<<endl;
+    cout << "| Number of events ntuplized: |\t" << eventCount[1]  << "\t|\t" << eventCountWeighted[1] << "\t|"<<endl;
+    cout << "| Pass HLT selection:         |\t" << eventCount[2]  << "\t|\t" << eventCountWeighted[2] << "\t|"<<endl;
+    cout << "| Good PV:                    |\t" << eventCount[3]  << "\t|\t" << eventCountWeighted[3] << "\t|"<<endl;
+    cout << "| Data quality bits:          |\t" << eventCount[4]  << "\t|\t" << eventCountWeighted[4] << "\t|"<<endl;
     // FCNH selection //
-    cout << "| Z veto:                            |\t" << eventCount[6]  << "\t|\t" << eventCountWeighted[6] << "\t|"<<endl;
-    cout << "| At least two jets:                 |\t" << eventCount[7]  << "\t|\t" << eventCountWeighted[7] << "\t|"<<endl;
-    cout << "| MET cut:                           |\t" << eventCount[8]  << "\t|\t" << eventCountWeighted[8] << "\t|"<<endl;
-    cout << "| BDT:                               |\t" << eventCount[9] << "\t|\t" << eventCountWeighted[9] << "\t|"<<endl;
+    cout << "| Lepton selection:           |\t" << eventCount[5] << "\t|\t" << eventCountWeighted[5]  << "\t|"<<endl;
+    cout << "| Z veto:                     |\t" << eventCount[6] << "\t|\t" << eventCountWeighted[6]  << "\t|"<<endl;
+    cout << "| At least two jets:          |\t" << eventCount[7] << "\t|\t" << eventCountWeighted[7]  << "\t|"<<endl;
+    cout << "| MET cut:                    |\t" << eventCount[8] << "\t|\t" << eventCountWeighted[8]  << "\t|"<<endl;
+    cout << "| BDT:                        |\t" << eventCount[9] << "\t|\t" << eventCountWeighted[9]  << "\t|"<<endl;
 
 
     // Control regions //
     cout << "\nControl region event yields."<<"\n"<<endl;
-    cout << "| WZ:                                |\t" << eventCount[10]  << "\t|\t" << eventCountWeighted[10]  << "\t|"<<endl;
-    cout << "| ttbar:                             |\t" << eventCount[11]  << "\t|\t" << eventCountWeighted[11] << "\t|"<<endl;
-    cout << "| Z+fake:                            |\t" << eventCount[12]  << "\t|\t" << eventCountWeighted[12] << "\t|"<<endl;
-    cout << "| ZZ4l:                              |\t" << eventCount[13]  << "\t|\t" << eventCountWeighted[13] << "\t|"<<endl;
-    cout << "| 0-jet:                             |\t" << eventCount[14]  << "\t|\t" << eventCountWeighted[14] << "\t|"<<endl;
-    cout << "| 1-jet:                             |\t" << eventCount[15]  << "\t|\t" << eventCountWeighted[15] << "\t|"<<endl;
+    cout << "| WZ:                         |\t" << eventCount[10]  << "\t|\t" << eventCountWeighted[10]  << "\t|"<<endl;
+    cout << "| ttbar:                      |\t" << eventCount[11]  << "\t|\t" << eventCountWeighted[11] << "\t|"<<endl;
+    cout << "| Z+fake:                     |\t" << eventCount[12]  << "\t|\t" << eventCountWeighted[12] << "\t|"<<endl;
+    cout << "| ZZ4l:                       |\t" << eventCount[13]  << "\t|\t" << eventCountWeighted[13] << "\t|"<<endl;
+    cout << "| 0-jet:                      |\t" << eventCount[14]  << "\t|\t" << eventCountWeighted[14] << "\t|"<<endl;
+    cout << "| 1-jet:                      |\t" << eventCount[15]  << "\t|\t" << eventCountWeighted[15] << "\t|"<<endl;
 
+    cout << "\n\n";
+    cout << "| number of same-sign dimuon events:               " << eventCountSS << "\t|"<<endl;
+    cout << "| number of same-sign dimuon events (jetless):     " << eventCountSS_NoJet << "\t|"<<endl;
+    cout << "| number of opposite-sign dimuon events:           " << eventCountOS << "\t|"<<endl;
+    cout << "| number of opposite-sign dimuon events (jetless): " << eventCountOS_NoJet << "\t|"<<endl;
 
     //for (int i = 0; i < 8; ++i) fout[i].close();
 
