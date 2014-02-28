@@ -534,8 +534,10 @@ void Selector::JetSelector(TClonesArray* jets)
 
                 if (overlap[0]) 
                     _selJets["muJets"].push_back(corJet);
-                //else if (overlap[1]) 
-                //    _selJets["eleJets"].push_back(corJet);
+                else
+                    _selJets["tight"].push_back(corJet);
+                /*else if (overlap[1]) 
+                    _selJets["eleJets"].push_back(corJet);
                 else {
                     if (BTagModifier(corJet, "CSVM")) {
                         _selJets["bJetsMedium"].push_back(corJet);
@@ -569,7 +571,7 @@ void Selector::JetSelector(TClonesArray* jets)
                         if (!overlap[2] && !overlap[3])
                             _selJets["bJetsLoose_NoFakes"].push_back(corJet);
                     }
-                }
+                }*/
             }
         } else if (fabs(corJet.Eta()) < 4.7) {
             if (
