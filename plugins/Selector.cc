@@ -468,7 +468,6 @@ bool Selector::PhotonTightID(TCPhoton* photon)
 
 void Selector::PhotonSelector(TClonesArray* photons) 
 {
-
     for (int i = 0; i <  photons->GetSize(); ++i) {
         TCPhoton* thisPho = (TCPhoton*) photons->At(i);    
 
@@ -520,7 +519,7 @@ void Selector::JetSelector(TClonesArray* jets)
             if (thisJet->DeltaR(_selElectrons["fakeable"][j]) < 0.5) overlap.set(3);
 
         // Apply JER corrections; maybe better to do in the analysis code...
-        TCJet corJet = this->JERCorrections(thisJet);
+        TCJet corJet = *thisJet; //this->JERCorrections(thisJet);
 
         if (fabs(corJet.Eta()) < 2.4) {
             if (
@@ -535,8 +534,8 @@ void Selector::JetSelector(TClonesArray* jets)
 
                 if (overlap[0]) 
                     _selJets["muJets"].push_back(corJet);
-                else if (overlap[1]) 
-                    _selJets["eleJets"].push_back(corJet);
+                //else if (overlap[1]) 
+                //    _selJets["eleJets"].push_back(corJet);
                 else {
                     if (BTagModifier(corJet, "CSVM")) {
                         _selJets["bJetsMedium"].push_back(corJet);

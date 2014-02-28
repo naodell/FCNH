@@ -553,7 +553,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
         GenPlots(gLeptons, leptons);
     }
 
-
     if (leptons.size() == 1) {
 
         //!!! Single leptons just for fakes !!!//

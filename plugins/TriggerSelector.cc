@@ -67,8 +67,8 @@ void TriggerSelector::TriggerDefaults()
     // double muon triggers
     _triggers.push_back("HLT_Mu17_Mu8_v");
     _triggers.push_back("HLT_Mu17_TkMu8_v");
-    _triggers.push_back("HLT_Mu22_TkMu8_v");
-    _triggers.push_back("HLT_Mu22_TkMu22_v");
+    //_triggers.push_back("HLT_Mu22_TkMu8_v");
+    //_triggers.push_back("HLT_Mu22_TkMu22_v");
 
     // double electron triggers
     _triggers.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");

@@ -1,1 +1,10 @@
-/eos/uscms/store/user/naodell/data/nuTuples_v7_4/WZJetsTo3LNu/nuTuple_100_1_W2c.root
+/tthome/naodell/storage/data/nuTuples_v7_4/TTJets/nuTuple_1000_1_3nC.root
+/tthome/naodell/storage/data/nuTuples_v7_4/TTJets/nuTuple_1001_1_d3i.root
+/tthome/naodell/storage/data/nuTuples_v7_4/TTJets/nuTuple_1002_1_dRy.root
+/tthome/naodell/storage/data/nuTuples_v7_4/TTJets/nuTuple_100_1_yvl.root
+/tthome/naodell/storage/data/nuTuples_v7_4/TTJets/nuTuple_101_1_pq0.root
+/tthome/naodell/storage/data/nuTuples_v7_4/TTJets/nuTuple_102_1_krV.root
+/tthome/naodell/storage/data/nuTuples_v7_4/TTJets/nuTuple_103_1_1Od.root
+/tthome/naodell/storage/data/nuTuples_v7_4/TTJets/nuTuple_104_1_pQy.root
+/tthome/naodell/storage/data/nuTuples_v7_4/TTJets/nuTuple_105_1_5ZH.root
+/tthome/naodell/storage/data/nuTuples_v7_4/TTJets/nuTuple_106_1_ofb.root
