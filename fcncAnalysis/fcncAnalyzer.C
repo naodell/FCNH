@@ -576,8 +576,10 @@ bool fcncAnalyzer::Process(Long64_t entry)
         if (leptons[0].Type() == "muon" && leptons[1].Type() == "muon") {
             if (leptons[0].Charge() == leptons[1].Charge()) {
                 ++eventCountSS;
-                if (jets.size() + bJetsM.size() == 0)
+                if (jets.size() + bJetsM.size() == 0){
+                    cout << "run number: " << runNumber << "\tlumi section: " << lumiSection << "\tevent number: " << eventNumber << endl;
                     ++eventCountSS_NoJet;
+                }
             } else if (leptons[0].Charge() != leptons[1].Charge()) {
                 ++eventCountOS;
                 if (jets.size() + bJetsM.size() == 0)
