@@ -573,14 +573,15 @@ bool fcncAnalyzer::Process(Long64_t entry)
         if ( leptons[0].Pt() < leptonPtCut[0] || leptons[1].Pt() < leptonPtCut[1]) 
             return kTRUE;
 
+        // Yields for syncing with Stoyan //
         if (leptons[0].Type() == "muon" && leptons[1].Type() == "muon") {
             if (leptons[0].Charge() == leptons[1].Charge()) {
                 ++eventCountSS;
-                if (jets.size() + bJetsM.size() == 0)
+                if (jets.size() == 0)
                     ++eventCountSS_NoJet;
             } else if (leptons[0].Charge() != leptons[1].Charge()) {
                 ++eventCountOS;
-                if (jets.size() + bJetsM.size() == 0)
+                if (jets.size() == 0)
                     ++eventCountOS_NoJet;
             }
         }
@@ -607,6 +608,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
     } else if (leptons.size() > 4)
         return kTRUE;
 
+    return kTRUE;
 
     if (leptons.size() > 1) { // Only do signal extraction if there are at least two leptons
 

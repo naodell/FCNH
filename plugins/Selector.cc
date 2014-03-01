@@ -535,7 +535,8 @@ void Selector::JetSelector(TClonesArray* jets)
                 if (overlap[0]) 
                     _selJets["muJets"].push_back(corJet);
                 else
-                    _selJets["tight"].push_back(corJet);
+                        _selJets["tight"].push_back(corJet);
+
                 /*else if (overlap[1]) 
                     _selJets["eleJets"].push_back(corJet);
                 else {
