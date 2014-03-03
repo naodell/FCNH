@@ -810,6 +810,26 @@ class PlotProducer(AnalysisTools):
 
                 #legend.Draw()
 
+    def make_overlay_2D_projections(self, varName, samples, directory):
+
+        canvas = r.TCanvas('canvas', 'canvas', 650, 700)
+
+        #self.make_save_path(self._savePath + '/' + self._category + '/' + directory)
+
+        hist = self.combine_samples(varName, samples[0], '2D')
+        for sample in samples[1:]:
+            hist.Add(self.combine_samples(varName, sample, '2D'))
+
+        hist.Print()
+        for i in range(hist.GetYaxis().GetNbins()):
+            h_Proj = hist.ProjectionX('h_{0}_{1}'.format(varName, i+1), i, i+1)
+            if i is 0:
+                h_Proj.Draw('HIST')
+            else:
+                h_Proj.Draw('HIST SAME')
+
+        #canvas.Print('{0}/{1}/{2}/{3}.png'.format(self._savePath, self._category, directory, varName))
+        canvas.Print('TEST.png')
 
 ####                                      ####  
 #### End of PlotProducer class definition ####

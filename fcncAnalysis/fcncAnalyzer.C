@@ -11,6 +11,7 @@ using namespace std;
 
 const bool      doPrintout  = false;
 const bool      doGenPrint  = false;
+const bool      doSync      = false;
 
 // MVA switches
 const bool      doMVACut    = true;
@@ -574,15 +575,17 @@ bool fcncAnalyzer::Process(Long64_t entry)
             return kTRUE;
 
         // Yields for syncing with Stoyan //
-        if (leptons[0].Type() == "muon" && leptons[1].Type() == "muon") {
-            if (leptons[0].Charge() == leptons[1].Charge()) {
-                ++eventCountSS;
-                if (jets.size() == 0)
-                    ++eventCountSS_NoJet;
-            } else if (leptons[0].Charge() != leptons[1].Charge()) {
-                ++eventCountOS;
-                if (jets.size() == 0)
-                    ++eventCountOS_NoJet;
+        if (doSync) {
+            if (leptons[0].Type() == "muon" && leptons[1].Type() == "muon") {
+                if (leptons[0].Charge() == leptons[1].Charge()) {
+                    ++eventCountSS;
+                    if (jets.size() == 0)
+                        ++eventCountSS_NoJet;
+                } else if (leptons[0].Charge() != leptons[1].Charge()) {
+                    ++eventCountOS;
+                    if (jets.size() == 0)
+                        ++eventCountOS_NoJet;
+                }
             }
         }
 
@@ -608,7 +611,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
     } else if (leptons.size() > 4)
         return kTRUE;
 
-    return kTRUE;
+    if (doSync) return kTRUE;
 
     if (leptons.size() > 1) { // Only do signal extraction if there are at least two leptons
 
@@ -1840,8 +1843,8 @@ void fcncAnalyzer::FakePlots(vObj leptons, vector<TCJet> jets, vector<TCJet> bJe
 
         histManager->Fill1DHist(fakeables[0].IsoMap("IsoRel"), 
                 "h1_FakeableIsoRel", "Iso_{Rel} fakeabless;Iso_{Rel} (cm);Entries / bin", 42, -0.1, 2.);
-        histManager->Fill2DHist(fakeables[0].Pt(), fakeables[0].IsoMap("IsoRel"), 
-                "h2_FakeableIsoRelVsPt", "Iso_{Rel} vs p_{T} fakeables;p_{T};Iso_{Rel} (cm) / bin", 29, 10., 150., 42, -0.1, 2.);
+        histManager->Fill2DHist(fakeables[0].IsoMap("IsoRel"), fakeables[0].Pt(), 
+                "h2_FakeableIsoRelVsPt", "Iso_{Rel} vs p_{T} fakeables;p_{T};Iso_{Rel} (cm) / bin", 42, -0.1, 2., 9, 10., 100.);
     }
 }
 

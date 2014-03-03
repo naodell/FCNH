@@ -216,6 +216,10 @@ if doPlots:
                 outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
 
             ss_plotter.make_save_path(outFile, clean=True)
+            ss_plotter.set_input_file(inFile)
+            ss_plotter.set_save_path(outFile)
+            ss_plotter.set_category(category)
+            ss_plotter.make_overlay_2D_projections('FakeableIsoRelVsPt', ['muFakes'], 'TEST')
 
             for category in catSS:
                 p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(ss_plotter, category, inFile, outFile, do1D, do2D, False, doLog, doRatio, doEff)))

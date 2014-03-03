@@ -43,7 +43,7 @@ do2D        = True
 
 doOS        = False
 doSS        = True
-do3l        = True
+do3l        = False
 
 doYields    = False
 
@@ -189,7 +189,7 @@ if doPlots:
     ### plot while giving a key value which is the 
     ### directory that they are located in as a key.
 
-    plotter._directoryList1D            = ['Misc', 'Lepton', 'Lep+Jet', 'Dilepton', 'DileptonOS', 'Trilepton', 'MET', 'Jet', 'GEN', '4l']
+    plotter._directoryList1D            = ['Misc', 'Lepton', 'Lep+Jet', 'Dilepton', 'DileptonOS', 'Trilepton', 'MET', 'Jet', 'Fakes', 'GEN', '4l']
     plotter._directoryList2D            = ['2D']
 
     plotter._variableDict['Misc']       = ['PvMult', 'YieldByCut', 'YieldByCutRaw', 'EventWeight', 'TriggerStatus', 

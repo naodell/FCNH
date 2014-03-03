@@ -267,7 +267,7 @@ void Selector::MuonSelector(TClonesArray* muons)
                 _selMuons["tight"].push_back(*thisMuon);
             else if (
                     thisMuon->IsPF()
-                    && muISO > 0.2 
+                    && muISO > 0.12 
                     && fabs(thisMuon->Dz(_selVertices[0]))  < 0.05 
                     && fabs(thisMuon->Dxy(_selVertices[0])) < 0.015
                     ) {
@@ -534,10 +534,9 @@ void Selector::JetSelector(TClonesArray* jets)
 
                 if (overlap[0]) 
                     _selJets["muJets"].push_back(corJet);
-                else
-                        _selJets["tight"].push_back(corJet);
-
-                /*else if (overlap[1]) 
+                //else
+                //        _selJets["tight"].push_back(corJet);
+                else if (overlap[1]) 
                     _selJets["eleJets"].push_back(corJet);
                 else {
                     if (BTagModifier(corJet, "CSVM")) {
@@ -572,7 +571,7 @@ void Selector::JetSelector(TClonesArray* jets)
                         if (!overlap[2] && !overlap[3])
                             _selJets["bJetsLoose_NoFakes"].push_back(corJet);
                     }
-                }*/
+                }
             }
         } else if (fabs(corJet.Eta()) < 4.7) {
             if (
