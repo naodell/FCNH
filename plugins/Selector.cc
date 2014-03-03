@@ -180,13 +180,12 @@ bool Selector::MuonTightID(TCMuon* muon)
 {
     bool pass = false;
     if (
-            (muon->IsTRK() && muon->IsGLB() && muon->IsPF())
+            //(muon->IsTRK() && muon->IsGLB() && muon->IsPF())
             //&& muon->PtError()/muon->Pt() < 0.1
+            (muon->IsGLB() && muon->IsPF())
             && muon->NormalizedChi2()  < 10
             && muon->NumberOfValidMuonHits()  > 0
             && muon->NumberOfMatchedStations() > 1
-            && muon->NumberOfValidPixelHits() > 0
-            && muon->TrackLayersWithMeasurement() > 5
             && ((
                     fabs(muon->Eta()) < 1.5 
                     && fabs(muon->Dz(_selVertices[0]))  < 0.05
@@ -195,7 +194,9 @@ bool Selector::MuonTightID(TCMuon* muon)
                     fabs(muon->Eta()) > 1.5 
                     && fabs(muon->Dz(_selVertices[0]))  < 0.05
                     && fabs(muon->Dxy(_selVertices[0])) < 0.015 // Should probably reduce this to 0.005
-                    ))
+                ))
+            && muon->NumberOfValidPixelHits() > 0
+            && muon->TrackLayersWithMeasurement() > 5
        ) pass = true;
 
     return pass;
@@ -228,7 +229,7 @@ void Selector::MuonSelector(TClonesArray* muons)
         thisMuon->SetType("muon");
 
         // momentum scale corrections (Rochestor corrections)
-        TLorentzVector tmpP4 = *thisMuon;
+        /*TLorentzVector tmpP4 = *thisMuon;
         float muPtErr = 1.;
         if (_isRealData) {
             muCorrector->momcor_data(tmpP4, (float)thisMuon->Charge(), 0, muPtErr);
@@ -236,7 +237,7 @@ void Selector::MuonSelector(TClonesArray* muons)
             muCorrector->momcor_data(tmpP4, (float)thisMuon->Charge(), 0, muPtErr);
         }
 
-        thisMuon->SetPtEtaPhiM(tmpP4.Pt(), tmpP4.Eta(), tmpP4.Phi(), tmpP4.M());
+        thisMuon->SetPtEtaPhiM(tmpP4.Pt(), tmpP4.Eta(), tmpP4.Phi(), tmpP4.M());*/
 
         // isolation
         float muISO = 0.;
@@ -524,22 +525,22 @@ void Selector::JetSelector(TClonesArray* jets)
         if (fabs(corJet.Eta()) < 2.4) {
             if (
                     corJet.Pt() > _jetPtCuts[0]
-                    && corJet.NumConstit() > 1
-                    && corJet.NeuHadFrac() < 0.99
-                    && corJet.NeuEmFrac() < 0.99
-                    && corJet.ChHadFrac() > 0.
-                    && corJet.NumChPart() > 0.
-                    && corJet.ChEmFrac() < 0.99
+                    && corJet.NumConstit()  > 1
+                    && corJet.NeuHadFrac()  < 0.99
+                    && corJet.NeuEmFrac()   < 0.99
+                    && corJet.ChHadFrac()   > 0.
+                    && corJet.NumChPart()   > 0.
+                    && corJet.ChEmFrac()    < 0.99
                ) {
 
                 if (overlap[0]) 
                     _selJets["muJets"].push_back(corJet);
-                else
-                    _selJets["tight"].push_back(corJet);
-                /*else if (overlap[1]) 
-                    _selJets["eleJets"].push_back(corJet);
                 else {
-                    if (BTagModifier(corJet, "CSVM")) {
+                    _selJets["tight"].push_back(corJet);
+
+                //else if (overlap[1]) 
+                //    _selJets["eleJets"].push_back(corJet);
+                    /*if (BTagModifier(corJet, "CSVM")) {
                         _selJets["bJetsMedium"].push_back(corJet);
 
                         if (!overlap[2] && !overlap[3])
@@ -564,14 +565,13 @@ void Selector::JetSelector(TClonesArray* jets)
                             _selJets["eleFakes"].push_back(corJet);
                     }
 
-                    //} else if (BTagModifier(corJet, "CSVL")) {
                 if (corJet.BDiscriminatorMap("CSV") > 0.244 && corJet.BDiscriminatorMap("CSV") < 0.679) {
                         _selJets["bJetsLoose"].push_back(corJet);
 
                         if (!overlap[2] && !overlap[3])
                             _selJets["bJetsLoose_NoFakes"].push_back(corJet);
-                    }
-                }*/
+                    }*/
+                }
             }
         } else if (fabs(corJet.Eta()) < 4.7) {
             if (

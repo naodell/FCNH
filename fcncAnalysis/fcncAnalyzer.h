@@ -302,6 +302,8 @@ class fcncAnalyzer : public TSelector {
         virtual float           CalculateTransMass(TCPhysObject, TCMET);
         virtual bool            CosmicMuonFilter(TCPhysObject, TCPhysObject);
         virtual float           CalculateFourLeptonMass(vObj);
+        virtual void            PrintJetIDVars(TCJet&);
+        virtual void            PrintMuonIDVars(TCMuon&, TVector3&);
         //virtual float           CalculateChi2Mass(vObj, vObj, vObj, TCMET);
 
         ClassDef(fcncAnalyzer,0);
