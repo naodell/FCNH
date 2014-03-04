@@ -813,6 +813,7 @@ class PlotProducer(AnalysisTools):
     def make_overlay_2D_projections(self, varName, samples, directory):
 
         canvas = r.TCanvas('canvas', 'canvas', 650, 700)
+        canvas.SetLogy()
 
         #self.make_save_path(self._savePath + '/' + self._category + '/' + directory)
 
@@ -820,13 +821,17 @@ class PlotProducer(AnalysisTools):
         for sample in samples[1:]:
             hist.Add(self.combine_samples(varName, sample, '2D'))
 
-        hist.Print()
         for i in range(hist.GetYaxis().GetNbins()):
-            h_Proj = hist.ProjectionX('h_{0}_{1}'.format(varName, i+1), i, i+1)
+            h_Proj = hist.ProjectionY('h_{0}_{1}'.format(varName, i+1), i+1, hist.GetYaxis().GetNbins())
+            h_Proj.SetLineWidth(3)
+            h_Proj.SetLineColor(i+1)
             if i is 0:
-                h_Proj.Draw('HIST')
+                h_Proj.SetMaximum(1.10*h_Proj.GetMaximum())
+                h_Proj.DrawNormalized('HIST')
             else:
-                h_Proj.Draw('HIST SAME')
+                h_Proj.DrawNormalized('HIST SAME')
+
+
 
         #canvas.Print('{0}/{1}/{2}/{3}.png'.format(self._savePath, self._category, directory, varName))
         canvas.Print('TEST.png')

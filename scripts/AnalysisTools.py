@@ -34,6 +34,7 @@ class AnalysisTools():
     '''
     def __init__(self, inputFile, scale, savePath = ''):
         self._histFile      = r.TFile(inputFile, 'OPEN')
+        #self._outFile       = r.TFile('test.root', 'OPEN')
         self._period        = '2012'
         self._savePath      = savePath
         self._scale         = scale

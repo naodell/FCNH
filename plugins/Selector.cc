@@ -256,7 +256,8 @@ void Selector::MuonSelector(TClonesArray* muons)
                ) 
                 _selMuons["QCD2l_CR_tag"].push_back(*thisMuon);
             else if (
-                    thisMuon->IsPF()
+                    //thisMuon->IsPF()
+                    MuonTightID(thisMuon)
                     && fabs(thisMuon->Dz(_selVertices[0]))  < 0.05
                     && fabs(thisMuon->Dxy(_selVertices[0])) < 0.015
                     )
@@ -266,7 +267,8 @@ void Selector::MuonSelector(TClonesArray* muons)
             if (MuonTightID(thisMuon) && muISO < 0.12) 
                 _selMuons["tight"].push_back(*thisMuon);
             else if (
-                    thisMuon->IsPF()
+                    //thisMuon->IsPF()
+                    MuonTightID(thisMuon)
                     && muISO > 0.12 
                     && fabs(thisMuon->Dz(_selVertices[0]))  < 0.05 
                     && fabs(thisMuon->Dxy(_selVertices[0])) < 0.015
