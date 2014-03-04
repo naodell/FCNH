@@ -5,8 +5,7 @@ import sys
 cfg = b.JobConfig
 
 ''' Specify parameters '''
-mcDir       = '/tthome/naodell/storage/data/nuTuples_v9.6_8TeV/MC'
-dataDir     = '/tthome/bpollack/storage/nuTuples_v9.6_8TeV/Data/'
+mcDir       = '/tthome/naodell/storage/data/nuTuples_v7_4'
 executable  = 'execBatch.sh'
 
 selection   = 'fcnc'
@@ -41,55 +40,41 @@ signal  = []
 
 if period == '2012':
     data.extend([
-        cfg('muon_2012A', '{0}/DoubleMu_Run2012A'.format(dataDir), 10, 'DATA_MUON muon 2012'),
-        cfg('muon_2012B', '{0}/DoubleMu_Run2012B'.format(dataDir), 10, 'DATA_MUON muon 2012'),
-        cfg('muon_2012C', '{0}/DoubleMu_Run2012C'.format(dataDir), 10, 'DATA_MUON muon 2012'),
-        cfg('muon_2012D', '{0}/DoubleMu_Run2012D'.format(dataDir), 15, 'DATA_MUON muon 2012'),
+        cfg('muon_2012A', '{0}/DoubleMu_Run2012A'.format(path), 20, 'DATA_MUON muon 2012'),
+        cfg('muon_2012B', '{0}/DoubleMu_Run2012B'.format(path), 20, 'DATA_MUON muon 2012'),
+        cfg('muon_2012C', '{0}/DoubleMu_Run2012C'.format(path), 20, 'DATA_MUON muon 2012'),
+        cfg('muon_2012D', '{0}/DoubleMu_Run2012D'.format(path), 25, 'DATA_MUON muon 2012'),
 
-        cfg('electron_2012A', '{0}/DoubleElectron_Run2012A'.format(dataDir), 10, 'DATA_ELECTRON electron 2012'),
-        cfg('electron_2012B', '{0}/DoubleElectron_Run2012B'.format(dataDir), 10, 'DATA_ELECTRON electron 2012'),
-        cfg('electron_2012C', '{0}/DoubleElectron_Run2012C'.format(dataDir), 10, 'DATA_ELECTRON electron 2012'),
-        cfg('electron_2012D', '{0}/DoubleElectron_Run2012D'.format(dataDir), 15, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012A', '{0}/DoubleElectron_Run2012A'.format(path), 20, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012B', '{0}/DoubleElectron_Run2012B'.format(path), 20, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012C', '{0}/DoubleElectron_Run2012C'.format(path), 20, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012D', '{0}/DoubleElectron_Run2012D'.format(path), 25, 'DATA_ELECTRON electron 2012'),
 
-        cfg('muEG_2012A', '{0}/MuEG_Run2012A'.format(dataDir), 10, 'DATA_MUEG muEG 2012'),
-        cfg('muEG_2012B', '{0}/MuEG_Run2012B'.format(dataDir), 10, 'DATA_MUEG muEG 2012'),
-        cfg('muEG_2012C', '{0}/MuEG_Run2012C'.format(dataDir), 10, 'DATA_MUEG muEG 2012'),
-        cfg('muEG_2012D', '{0}/MuEG_Run2012D'.format(dataDir), 15, 'DATA_MUEG muEG 2012')
-        ])
+        cfg('muEG_2012A', '{0}/MuEG_Run2012A'.format(path), 20, 'DATA_MUEG muEG 2012'),
+        cfg('muEG_2012B', '{0}/MuEG_Run2012B'.format(path), 20, 'DATA_MUEG muEG 2012'),
+        cfg('muEG_2012C', '{0}/MuEG_Run2012C'.format(path), 20, 'DATA_MUEG muEG 2012'),
+        cfg('muEG_2012D', '{0}/MuEG_Run2012D'.format(path), 25, 'DATA_MUEG muEG 2012')
+    ])
 
     bg.extend([
-        cfg('ZJets_M-50', mcDir+'/DYJetsToLL_M-50', 50, 'ZJets_M-50 muon 2012'),
-        cfg('ZJets_M-10To50', mcDir+'/DYJetsToLL_M-10To50filter', 35, 'ZJets_M-10To50 muon 2012'),
-        #cfg('ZbbToLL', mcDir+'/ZbbToLL', 20, 'ZbbToLL muon 2012'),
-        #cfg('ZG', mcDir+'/ZGToLLG', 10, 'ZG muon 2012'),
-        #cfg('WJets', mcDir+'/WJetsToLNu', 20, 'WJets muon 2012'),
-        #cfg('WGStarLNu2E', mcDir+'/WGStarToLNu2E', 5, 'WGStarLNu2E muon 2012'),
-        #cfg('WGStarLNu2Mu', mcDir+'/WGStarToLNu2Mu', 5, 'WGStarLNu2Mu muon 2012'),
-        #cfg('WGStarLNu2Tau', mcDir+'/WGStarToLNu2Tau', 5, 'WGStarLNu2Tau muon 2012'),
-        #cfg('WbbToLNu', mcDir+'/WbbJetsToLNu', 20, 'WbbToLNu muon 2012'),
-        #cfg('WbbToLNu', mcDir+'/WbbToLL', 20, 'WbbToLNu muon 2012'),
-        #cfg('WG', mcDir+'/WGToLNuG', 10, 'WG muon 2012'),
+        cfg('ZJets_M-50',      '{0}/DYJets'.format(path),           30,  'ZJets_M-50      muon  2012'),
+        cfg('ZJets_M-10To50',  '{0}/DYJets_M-10To50'.format(path),  10,  'ZJets_M-10To50  muon  2012'),
+        cfg('WbbToLNu',        '{0}/WbbToLL'.format(path),          20,  'WbbToLNu        muon  2012'),
 
-        cfg('ttbarHad', mcDir+'/TTJets', 30, 'ttbarHad muon 2012'),
-        cfg('ttbarLep', mcDir+'/TTJets', 30, 'ttbarLep muon 2012'),
-        cfg('tbarW', mcDir+'/Tbar_tW', 5, 'tbarW muon 2012'),
-        cfg('tW', mcDir+'/T_tW', 5, 'tW muon 2012'),
-        cfg('t_t-channel', mcDir+'/T_t', 5, 't_t-channel muon 2012'),
-        cfg('tbar_t-channel', mcDir+'/Tbar_t', 5, 'tbar_t-channel muon 2012'),
+        cfg('ttbar',           '{0}/TTJets'.format(path),           30,  'ttbar           muon  2012'),
+        cfg('tbarW',           '{0}/Tbar_tW'.format(path),          5,   'tbarW           muon  2012'),
+        cfg('tW',              '{0}/T_tW'.format(path),             5,   'tW              muon  2012'),
 
-        cfg('ZZJets2L2Nu', mcDir+'/ZZJetsTo2L2Nu', 5, 'ZZJets2L2Nu muon 2012'),
-        #cfg('ZZJets2L2Q', mcDir+'/ZZJetsTo2L2Q', 5, 'ZZJets2L2Q muon 2012'),
-        #cfg('ZZJets4L', mcDir+'/ZZJetsTo4L', 5, 'ZZJets4L muon 2012'),
-        cfg('ZZTo4e', mcDir+'/ZZTo4e', 5, 'ZZ4e muon 2012'),
-        cfg('ZZTo4mu', mcDir+'/ZZTo4mu', 5, 'ZZ4mu muon 2012'),
-        cfg('ZZTo4tau', mcDir+'/ZZTo4tau', 5, 'ZZ4tau muon 2012'),
-        cfg('ZZTo2e2mu', mcDir+'/ZZTo2e2mu', 5, 'ZZ2e2mu muon 2012'),
-        cfg('ZZTo2e2tau', mcDir+'/ZZTo2e2tau', 5, 'ZZ2e2tau muon 2012'),
-        cfg('ZZTo2mu2tau', mcDir+'/ZZTo2mu2tau', 5, 'ZZ2mu2tau muon 2012'),
-        cfg('WWJets2L2Nu', mcDir+'/WWJetsTo2L2Nu', 5, 'WWJets2L2Nu muon 2012'),
-        cfg('WZJets3LNu', mcDir+'/WZJetsTo3LNu', 5, 'WZJets3LNu muon 2012'),
-        cfg('WZJets2L2Q', mcDir+'/WZJetsTo2L2Q', 10, 'WZJets2L2Q muon 2012'),
-        ])
+        cfg('WZJets3LNu',      '{0}/WZJetsTo3LNu'.format(path),     5,   'WZJets3LNu      muon  2012'),
+        cfg('WWJets2L2Nu',     '{0}/WWJetsTo2L2Nu'.format(path),    5,   'WWJets2L2Nu     muon  2012'),
+        cfg('ZZJets2L2Nu',     '{0}/ZZJetsTo2L2Nu'.format(path),    5,   'ZZJets2L2Nu     muon  2012'),
+        cfg('ZZTo4e',          '{0}/ZZTo4e'.format(path),           5,   'ZZ4e            muon  2012'),
+        cfg('ZZTo4mu',         '{0}/ZZTo4mu'.format(path),          5,   'ZZ4mu           muon  2012'),
+        cfg('ZZTo4tau',        '{0}/ZZTo4tau'.format(path),         5,   'ZZ4tau          muon  2012'),
+        cfg('ZZTo2e2mu',       '{0}/ZZTo2e2mu'.format(path),        5,   'ZZ2e2mu         muon  2012'),
+        cfg('ZZTo2e2tau',      '{0}/ZZTo2e2tau'.format(path),       5,   'ZZ2e2tau        muon  2012'),
+        cfg('ZZTo2mu2tau',     '{0}/ZZTo2mu2tau'.format(path),      5,   'ZZ2mu2tau       muon  2012')
+    ])
 
 
 inputSamples = []

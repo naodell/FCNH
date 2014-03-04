@@ -5,8 +5,7 @@ import sys
 cfg = b.JobConfig
 
 ''' Specify parameters '''
-lpchzgPath  = '/eos/uscms/store/user/lpchzg/'
-filePath    = '/eos/uscms/store/user/naodell/data/'
+path  = '/eos/uscms/store/user/naodell/data/nuTuples_v7_4'
 executable  = 'execBatch.csh'
 
 selection   = 'fcnc'
@@ -44,76 +43,75 @@ signal  = []
 
 if period == '2012':
     data.extend([
-        cfg('muon_2012A', lpchzgPath+'/nuTuples_v9.6_8TeV/Data/DoubleMu_Run2012A', 10, 'DATA_MUON muon 2012'),
-        cfg('muon_2012B', lpchzgPath+'/nuTuples_v9.6_8TeV/Data/DoubleMu_Run2012B', 10, 'DATA_MUON muon 2012'),
-        cfg('muon_2012C', lpchzgPath+'/nuTuples_v9.6_8TeV/Data/DoubleMu_Run2012C', 10, 'DATA_MUON muon 2012'),
-        cfg('muon_2012D', lpchzgPath+'/nuTuples_v9.6_8TeV/Data/DoubleMu_Run2012D', 15, 'DATA_MUON muon 2012'),
+        cfg('muon_2012A', '{0}/DoubleMu_Run2012A'.format(path), 10, 'DATA_MUON muon 2012'),
+        #cfg('muon_2012B', '{0}/DoubleMu_Run2012B'.format(path), 10, 'DATA_MUON muon 2012'),
+        #cfg('muon_2012C', '{0}/DoubleMu_Run2012C'.format(path), 10, 'DATA_MUON muon 2012'),
+        #cfg('muon_2012D', '{0}/DoubleMu_Run2012D'.format(path), 15, 'DATA_MUON muon 2012'),
 
-        cfg('electron_2012A', lpchzgPath+'/nuTuples_v9.6_8TeV/Data/DoubleElectron_Run2012A', 10, 'DATA_ELECTRON electron 2012'),
-        cfg('electron_2012B', lpchzgPath+'/nuTuples_v9.6_8TeV/Data/DoubleElectron_Run2012B', 10, 'DATA_ELECTRON electron 2012'),
-        cfg('electron_2012C', lpchzgPath+'/nuTuples_v9.6_8TeV/Data/DoubleElectron_Run2012C', 10, 'DATA_ELECTRON electron 2012'),
-        cfg('electron_2012D', lpchzgPath+'/nuTuples_v9.6_8TeV/Data/DoubleElectron_Run2012D', 15, 'DATA_ELECTRON electron 2012'),
+        #cfg('electron_2012A', '{0}/DoubleElectron_Run2012A'.format(path), 10, 'DATA_ELECTRON electron 2012'),
+        #cfg('electron_2012B', '{0}/DoubleElectron_Run2012B'.format(path), 10, 'DATA_ELECTRON electron 2012'),
+        #cfg('electron_2012C', '{0}/DoubleElectron_Run2012C'.format(path), 10, 'DATA_ELECTRON electron 2012'),
+        #cfg('electron_2012D', '{0}/DoubleElectron_Run2012D'.format(path), 15, 'DATA_ELECTRON electron 2012'),
 
-        cfg('muEG_2012A', lpchzgPath+'/nuTuples_v9.6_8TeV/Data/MuEG_Run2012A', 10, 'DATA_MUEG muEG 2012'),
-        cfg('muEG_2012B', lpchzgPath+'/nuTuples_v9.6_8TeV/Data/MuEG_Run2012B', 10, 'DATA_MUEG muEG 2012'),
-        cfg('muEG_2012C', lpchzgPath+'/nuTuples_v9.6_8TeV/Data/MuEG_Run2012C', 10, 'DATA_MUEG muEG 2012'),
-        cfg('muEG_2012D', lpchzgPath+'/nuTuples_v9.6_8TeV/Data/MuEG_Run2012D', 15, 'DATA_MUEG muEG 2012')
+        #cfg('muEG_2012A', '{0}/MuEG_Run2012A'.format(path), 10, 'DATA_MUEG muEG 2012'),
+        #cfg('muEG_2012B', '{0}/MuEG_Run2012B'.format(path), 10, 'DATA_MUEG muEG 2012'),
+        #cfg('muEG_2012C', '{0}/MuEG_Run2012C'.format(path), 10, 'DATA_MUEG muEG 2012'),
+        #cfg('muEG_2012D', '{0}/MuEG_Run2012D'.format(path), 15, 'DATA_MUEG muEG 2012')
         ])
 
     bg.extend([
-        cfg('ZJets_M-50', filePath+'/nuTuples_v9_6_mc/DYJetsToLL_M-50', 30, 'ZJets_M-50 muon 2012'),
-        cfg('ZJets_M-10To50', filePath+'/nuTuples_v9_6_mc/DYJetsToLL_M-10To50filter', 10, 'ZJets_M-10To50 muon 2012'),
-        #cfg('ZbbToLL', filePath+'/nuTuples_v9_6_mc/ZbbToLL', 20, 'ZbbToLL muon 2012'),
-        #cfg('ZG', filePath+'/nuTuples_v9_6_mc/ZGToLLG', 10, 'ZG muon 2012'),
-        #cfg('WJets', filePath+'/nuTuples_v9_6_mc/WJetsToLNu', 20, 'WJets muon 2012'),
-        #cfg('WGStarLNu2E', filePath+'/nuTuples_v9_6_mc/WGStarToLNu2E', 5, 'WGStarLNu2E muon 2012'),
-        #cfg('WGStarLNu2Mu', filePath+'/nuTuples_v9_6_mc/WGStarToLNu2Mu', 5, 'WGStarLNu2Mu muon 2012'),
-        #cfg('WGStarLNu2Tau', filePath+'/nuTuples_v9_6_mc/WGStarToLNu2Tau', 5, 'WGStarLNu2Tau muon 2012'),
-        #cfg('WbbToLNu', filePath+'/nuTuples_v9_6_mc/WbbJetsToLNu', 20, 'WbbToLNu muon 2012'),
-        #cfg('WbbToLNu', filePath+'/nuTuples_v9_6_mc/WbbToLL', 20, 'WbbToLNu muon 2012'),
-        #cfg('WG', filePath+'/nuTuples_v9_6_mc/WGToLNuG', 10, 'WG muon 2012'),
+        #cfg('ZJets_M-50', '{0}/DYJets'.format(path), 30, 'ZJets_M-50 muon 2012'),
+        #cfg('ZJets_M-10To50', '{0}/DYJets_M-10To50'.format(path), 10, 'ZJets_M-10To50 muon 2012'),
+        #cfg('ZbbToLL', '{0}/ZbbToLL'.format(path), 20, 'ZbbToLL muon 2012'),
+        #cfg('ZG', '{0}/ZGToLLG'.format(path), 10, 'ZG muon 2012'),
+        #cfg('WJets', '{0}/WJetsToLNu'.format(path), 20, 'WJets muon 2012'),
+        #cfg('WGStarLNu2E', '{0}/WGStarToLNu2E'.format(path), 5, 'WGStarLNu2E muon 2012'),
+        #cfg('WGStarLNu2Mu', '{0}/WGStarToLNu2Mu'.format(path), 5, 'WGStarLNu2Mu muon 2012'),
+        #cfg('WGStarLNu2Tau', '{0}/WGStarToLNu2Tau'.format(path), 5, 'WGStarLNu2Tau muon 2012'),
+        #cfg('WbbToLNu', '{0}/WbbJetsToLNu'.format(path), 20, 'WbbToLNu muon 2012'),
+        #cfg('WbbToLNu', '{0}/WbbToLL'.format(path), 20, 'WbbToLNu muon 2012'),
+        #cfg('WG', '{0}/WGToLNuG'.format(path), 10, 'WG muon 2012'),
 
-        cfg('ttbarLep', filePath+'/nuTuples_v9_6_mc/TTJets', 30, 'ttbarLep muon 2012'),
-        cfg('ttbarHad', filePath+'/nuTuples_v9_6_mc/TTJets', 30, 'ttbarHad muon 2012'),
-        cfg('tbarW', filePath+'/nuTuples_v9_6_mc/Tbar_tW', 5, 'tbarW muon 2012'),
-        cfg('tW', filePath+'/nuTuples_v9_6_mc/T_tW', 5, 'tW muon 2012'),
-        cfg('t_t-channel', filePath+'/nuTuples_v9_6_mc/T_t', 5, 't_t-channel muon 2012'),
-        cfg('tbar_t-channel', filePath+'/nuTuples_v9_6_mc/Tbar_t', 5, 'tbar_t-channel muon 2012'),
-        cfg('ttW', filePath+'/nuTuples_v9_6_mc/TTWJets', 5, 'ttW muon 2012'),
-        cfg('ttZ', filePath+'/nuTuples_v9_6_mc/TTZJets', 5, 'ttZ muon 2012'),
-        cfg('ttG', filePath+'/nuTuples_v9_6_mc/TTGJets', 5, 'ttG muon 2012'),
+        #cfg('ttbar', '{0}/TTJets'.format(path), 30, 'ttbar muon 2012'),
+        #cfg('tbarW', '{0}/Tbar_tW'.format(path), 5, 'tbarW muon 2012'),
+        #cfg('tW', '{0}/T_tW'.format(path), 5, 'tW muon 2012'),
+        #cfg('t_t-channel', '{0}/T_t'.format(path), 5, 't_t-channel muon 2012'),
+        #cfg('tbar_t-channel', '{0}/Tbar_t'.format(path), 5, 'tbar_t-channel muon 2012'),
+        #cfg('ttW', '{0}/TTWJets'.format(path), 5, 'ttW muon 2012'),
+        #cfg('ttZ', '{0}/TTZJets'.format(path), 5, 'ttZ muon 2012'),
+        #cfg('ttG', '{0}/TTGJets'.format(path), 5, 'ttG muon 2012'),
 
-        cfg('WWW', filePath+'/nuTuples_v9_6_mc/WWWJets', 5, 'WWW muon 2012'),
-        cfg('WWZ', filePath+'/nuTuples_v9_6_mc/WWZNoGstarJets', 5, 'WWZ muon 2012'),
-        cfg('WZZ', filePath+'/nuTuples_v9_6_mc/WZZNoGstarJets', 5, 'WZZ muon 2012'),
-        cfg('ZZZ', filePath+'/nuTuples_v9_6_mc/ZZZNoGstarJets', 5, 'ZZZ muon 2012'),
-        cfg('WWG', filePath+'/nuTuples_v9_6_mc/WWGJets', 5, 'WWG muon 2012'),
+        #cfg('WWW', '{0}/WWWJets'.format(path), 5, 'WWW muon 2012'),
+        #cfg('WWZ', '{0}/WWZNoGstarJets'.format(path), 5, 'WWZ muon 2012'),
+        #cfg('WZZ', '{0}/WZZNoGstarJets'.format(path), 5, 'WZZ muon 2012'),
+        #cfg('ZZZ', '{0}/ZZZNoGstarJets'.format(path), 5, 'ZZZ muon 2012'),
+        #cfg('WWG', '{0}/WWGJets'.format(path), 5, 'WWG muon 2012'),
 
-        cfg('ZZJets2L2Nu', filePath+'/nuTuples_v9_6_mc/ZZJetsTo2L2Nu', 5, 'ZZJets2L2Nu muon 2012'),
-        #cfg('ZZJets2L2Q', filePath+'/nuTuples_v9_6_mc/ZZJetsTo2L2Q', 5, 'ZZJets2L2Q muon 2012'),
-        cfg('ZZTo4e', filePath+'/nuTuples_v9_6_mc/ZZTo4e', 5, 'ZZ4e muon 2012'),
-        cfg('ZZTo4mu', filePath+'/nuTuples_v9_6_mc/ZZTo4mu', 5, 'ZZ4mu muon 2012'),
-        cfg('ZZTo4tau', filePath+'/nuTuples_v9_6_mc/ZZTo4tau', 5, 'ZZ4tau muon 2012'),
-        cfg('ZZTo2e2mu', filePath+'/nuTuples_v9_6_mc/ZZTo2e2mu', 5, 'ZZ2e2mu muon 2012'),
-        cfg('ZZTo2e2tau', filePath+'/nuTuples_v9_6_mc/ZZTo2e2tau', 5, 'ZZ2e2tau muon 2012'),
-        cfg('ZZTo2mu2tau', filePath+'/nuTuples_v9_6_mc/ZZTo2mu2tau', 5, 'ZZ2mu2tau muon 2012'),
-        cfg('WWJets2L2Nu', filePath+'/nuTuples_v9_6_mc/WWJetsTo2L2Nu', 5, 'WWJets2L2Nu muon 2012'),
-        cfg('WZJets3LNu', filePath+'/nuTuples_v9_6_mc/WZJetsTo3LNu', 5, 'WZJets3LNu muon 2012'),
-        cfg('WZJets2L2Q', filePath+'/nuTuples_v9_6_mc/WZJetsTo2L2Q', 10, 'WZJets2L2Q muon 2012'),
+        #cfg('ZZJets2L2Nu', '{0}/ZZJetsTo2L2Nu'.format(path), 5, 'ZZJets2L2Nu muon 2012'),
+        #cfg('ZZJets2L2Q', '{0}/ZZJetsTo2L2Q'.format(path), 5, 'ZZJets2L2Q muon 2012'),
+        #cfg('ZZJets4L', '{0}/ZZJetsTo4L'.format(path), 5, 'ZZJets4L muon 2012'),
+        #cfg('ZZTo4e', '{0}/ZZTo4e'.format(path), 5, 'ZZ4e muon 2012'),
+        #cfg('ZZTo4mu', '{0}/ZZTo4mu'.format(path), 5, 'ZZ4mu muon 2012'),
+        #cfg('ZZTo4tau', '{0}/ZZTo4tau'.format(path), 5, 'ZZ4tau muon 2012'),
+        #cfg('ZZTo2e2mu', '{0}/ZZTo2e2mu'.format(path), 5, 'ZZ2e2mu muon 2012'),
+        #cfg('ZZTo2e2tau', '{0}/ZZTo2e2tau'.format(path), 5, 'ZZ2e2tau muon 2012'),
+        #cfg('ZZTo2mu2tau', '{0}/ZZTo2mu2tau'.format(path), 5, 'ZZ2mu2tau muon 2012'),
+        #cfg('WWJets2L2Nu', '{0}/WWJetsTo2L2Nu'.format(path), 5, 'WWJets2L2Nu muon 2012'),
+        cfg('WZJets3LNu', '{0}/WZJetsTo3LNu'.format(path), 5, 'WZJets3LNu muon 2012'),
+        #cfg('WZJets2L2Q', '{0}/WZJetsTo2L2Q'.format(path), 10, 'WZJets2L2Q muon 2012'),
 
-        #cfg('QCD_20-30_EM', filePath+'/nuTuples_v9_6_mc/QCD_Pt_20_30_EMEnriched', 10, 'QCD_20-30_EM muon 2012'),
-        #cfg('QCD_30-80_EM', filePath+'/nuTuples_v9_6_mc/QCD_Pt_30_80_EMEnriched', 10, 'QCD_30-80_EM muon 2012'),
-        #cfg('QCD_80-170_EM', filePath+'/nuTuples_v9_6_mc/QCD_Pt_80_170_EMEnriched', 10, 'QCD_80-170_EM muon 2012'),
-        #cfg('QCD_170-250_EM', filePath+'/nuTuples_v9_6_mc/QCD_Pt_170_250_EMEnriched', 10, 'QCD_170-250_EM muon 2012'),
-        #cfg('QCD_250-350_EM', filePath+'/nuTuples_v9_6_mc/QCD_Pt_250_350_EMEnriched', 10, 'QCD_250-350_EM muon 2012'),
-        #cfg('QCD_350_EM', filePath+'/nuTuples_v9_6_mc/QCD_Pt_350_EMEnriched', 10, 'QCD_350_EM muon 2012'),
-        #cfg('QCD_20_MU', filePath+'/nuTuples_v9_6_mc/QCD_Pt_20_MuEnrichedPt_15', 10, 'QCD_20_MU muon 2012'),
+        #cfg('QCD_20-30_EM', '{0}/QCD_Pt_20_30_EMEnriched'.format(path), 10, 'QCD_20-30_EM muon 2012'),
+        #cfg('QCD_30-80_EM', '{0}/QCD_Pt_30_80_EMEnriched'.format(path), 10, 'QCD_30-80_EM muon 2012'),
+        #cfg('QCD_80-170_EM', '{0}/QCD_Pt_80_170_EMEnriched'.format(path), 10, 'QCD_80-170_EM muon 2012'),
+        #cfg('QCD_170-250_EM', '{0}/QCD_Pt_170_250_EMEnriched'.format(path), 10, 'QCD_170-250_EM muon 2012'),
+        #cfg('QCD_250-350_EM', '{0}/QCD_Pt_250_350_EMEnriched'.format(path), 10, 'QCD_250-350_EM muon 2012'),
+        #cfg('QCD_350_EM', '{0}/QCD_Pt_350_EMEnriched', 10, 'QCD_350_EM muon 2012'),
+        #cfg('QCD_20_MU', '{0}/QCD_Pt_20_MuEnrichedPt_15', 10, 'QCD_20_MU muon 2012'),
 
-        cfg('ggHToZZ4L_M-125', filePath+'/nuTuples_v9_6_mc/GluGluToHToZZTo4L_M-125', 2, 'ggHToZZ4L_M-125 muon 2012'),
-        cfg('ggHToWW2L2Nu_M-125', filePath+'/nuTuples_v9_6_mc/GluGluToHToWWTo2LAndTau2Nu_M-125', 2, 'ggHToWW2L2Nu_M-125 muon 2012'),
-        cfg('WHToWWW3L_M-125', filePath+'/nuTuples_v9_6_mc/WH_HToWW_3l_M-125', 2, 'WHToWWW3L_M-125 muon 2012'),
-        #cfg('TTH_M-125', filePath+'/nuTuples_v9_6_mc/TTH_Inclusive_M-125', 2, 'TTH_M-125 muon 2012')
-
+        #cfg('ggHToZZ4L_M-125', '{0}/GluGluToHToZZTo4L_M-125', 2, 'ggHToZZ4L_M-125 muon 2012'),
+        #cfg('ggHToWW2L2Nu_M-125', '{0}/GluGluToHToWWTo2LAndTau2Nu_M-125', 2, 'ggHToWW2L2Nu_M-125 muon 2012'),
+        #cfg('WHToWWW3L_M-125', '{0}/WH_HToWW_3l_M-125', 2, 'WHToWWW3L_M-125 muon 2012'),
+        #cfg('TTH_M-125', '{0}/TTH_Inclusive_M-125', 2, 'TTH_M-125 muon 2012')
         ])
 
     signal.extend([

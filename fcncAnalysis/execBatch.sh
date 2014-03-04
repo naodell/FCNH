@@ -16,9 +16,9 @@ export OSG_APP=/software/tier3/osg
 export SCRAM_ARCH=slc5_amd64_gcc462
 source /software/tier3/osg/cmsset_default.sh
 
-scram p CMSSW CMSSW_5_3_2
-cd ./CMSSW_5_3_2/src
-cmsenv
+scram p CMSSW CMSSW_5_3_10
+cd ./CMSSW_5_3_10/src
+cmsenv 
 
 cp ../../source.tar.gz .
 tar -xzf source.tar.gz

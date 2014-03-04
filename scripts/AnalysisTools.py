@@ -179,10 +179,10 @@ class AnalysisTools():
                 hist = self.add_systematic(hist, 'Irreducible')
 
         if dataName.split('_')[0] in ['Fakes', 'eFakes', 'muFakes', 'llFakes'] and len(dataName.split('_')) > 1:
-            dataName = dataName.split('_')[1]
+            dataName = dataName.split('_', 1)[1]
 
         if doScale:
-            if dataName[:4] == 'DATA' or dataName in ['eFakes', 'muFakes', 'llFakes', 'QFlips']:
+            if dataName[:4] == 'DATA' or dataName in ['Fakes', 'eFakes', 'muFakes', 'llFakes', 'QFlips']:
                 hist.Scale(self._scaleDict[self._period][dataName])
             else:
                 hist.Scale(self._scale*self._scaleDict[self._period][dataName]) 
@@ -196,9 +196,9 @@ class AnalysisTools():
 
         outHist = None
         doFakes = False
-        fakeCats = ['eFakes', 'muFakes', 'llFakes']
+        fakeCats = ['eFakes', 'muFakes', 'llFakes', 'Fakes']
 
-        if dataName.split('_')[0] in ['Fakes', 'eFakes', 'muFakes', 'llFakes']: # Treat fakes separately 
+        if dataName.split('_')[0] in fakeCats: # Treat fakes separately 
             if dataName is 'Fakes': # fakes from data
                 for data in self._combineDict['Fakes']:
                     hist = self.get_hist(var, data, histType)
@@ -230,11 +230,11 @@ class AnalysisTools():
                             #bin_by_bin_hist_addition(outHist, mc_hist, -1.)
 
             else: # MC fakes
-                if dataName.split('_')[2] not in self._combineDict:
+                if dataName.split('_')[1] not in self._combineDict:
                     outHist = self.get_hist(var, dataName, histType)
                 else:
                     for data in self._combineDict[dataName.split('_')[1]]:
-                        hist = self.get_hist(var, dataName, histType)
+                        hist = self.get_hist(var, dataName.split('_')[0] + '_' + data, histType)
 
                         if not outHist:
                             outHist = hist

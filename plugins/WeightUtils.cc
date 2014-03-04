@@ -402,12 +402,11 @@ float WeightUtils::GetFakeWeight(TCPhysObject fakeable, string controlRegion)
     float fakeablePt;  
     if (fakeable.Type() == "muon") {
         
-        if (fakeable.Pt() < 50) 
+        fakeablePt = fakeable.Pt();
+        if (fakeable.Pt() < 40) 
             fakeablePt = fakeable.Pt();
-        else if (fakeable.Pt() > 80)
-            return 0;
         else
-            fakeablePt = 50;
+            fakeablePt = 40;
 
         if (fabs(fakeable.Eta()) < 1.5) {
             fakeRate  = g_MuonFakesPtB[controlRegion]->Eval(fakeablePt);
@@ -419,6 +418,11 @@ float WeightUtils::GetFakeWeight(TCPhysObject fakeable, string controlRegion)
     } else if (fakeable.Type() == "electron") {
 
         fakeablePt = fakeable.Pt();
+        if (fakeable.Pt() < 40) 
+            fakeablePt = fakeable.Pt();
+        else
+            fakeablePt = 40;
+
 
         if (fabs(fakeable.Eta()) < 0.8) {
             fakeRate  = g_ElectronFakesPtB[controlRegion]->Eval(fakeablePt);

@@ -135,6 +135,16 @@ class RatioMaker(AnalysisTools):
 
                 self._hists.append(h2_Eff)
 
+    def combine_rates(self, categories):
+        ### Combines fake rates for differenct categories
+
+        for category in categories:
+            sourceDir = self._outFile.GetDirectory(categories[0])
+
+            for 
+
+
+
     def charge_flip_fitter(self, ratioSample, nToys = 10):
         ### Converts 2D (double electron) charge flip probabilities to 1D
         ### (single electron) charge flip probabilities.  Assumes mapping is
@@ -287,6 +297,9 @@ if __name__ == '__main__':
 
             ratioMaker.set_ratio_2D(fakeDict2D)
             ratioMaker.make_2D_ratios('DATA', bgType, doProjections = True, removePass = False)
+
+        # Combined fakeCategory rates
+        ratioMaker.combine_rates(fakeCategories)
 
         # ttH fake rate estimation using low/high met categories
 

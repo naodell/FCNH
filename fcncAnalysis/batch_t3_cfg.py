@@ -118,7 +118,6 @@ if period == '2012':
         cfg('ggHToWW2L2Nu_M-125', mcDir+'/GluGluToHToWWTo2LAndTau2Nu_M-125', 2, 'ggHToWW2L2Nu_M-125 muon 2012'),
         cfg('WHToWWW3L_M-125', mcDir+'/WH_HToWW_3l_M-125', 2, 'WHToWWW3L_M-125 muon 2012'),
         #cfg('TTH_M-125', mcDir+'/TTH_Inclusive_M-125', 2, 'TTH_M-125 muon 2012')
-
         ])
 
     signal.extend([
