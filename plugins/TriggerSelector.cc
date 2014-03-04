@@ -71,21 +71,21 @@ void TriggerSelector::TriggerDefaults()
     //_triggers.push_back("HLT_Mu22_TkMu22_v");
 
     // double electron triggers
-    _triggers.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+    //_triggers.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
 
     // muEG triggers
-    _triggers.push_back("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
-    _triggers.push_back("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+    //_triggers.push_back("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+    //_triggers.push_back("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
 
-    if (!_isRealData) {
-        _triggers.push_back("HLT_Mu17_Ele8_CaloIdL_v");
-        _triggers.push_back("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v");
-        _triggers.push_back("HLT_Mu8_Ele17_CaloIdL_v");
-        _triggers.push_back("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v");
-        _triggers.push_back("HLT_Mu13_Mu8_v");
-        _triggers.push_back("HLT_DoubleMu7_v");
-        _triggers.push_back("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v"); 
-    }
+    //if (!_isRealData) {
+    //    _triggers.push_back("HLT_Mu17_Ele8_CaloIdL_v");
+    //    _triggers.push_back("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v");
+    //    _triggers.push_back("HLT_Mu8_Ele17_CaloIdL_v");
+    //    _triggers.push_back("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v");
+    //    _triggers.push_back("HLT_Mu13_Mu8_v");
+    //    _triggers.push_back("HLT_DoubleMu7_v");
+    //    _triggers.push_back("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v"); 
+    //}
 
 }
 

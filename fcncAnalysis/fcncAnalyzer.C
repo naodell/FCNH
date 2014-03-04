@@ -11,6 +11,7 @@ using namespace std;
 
 const bool      doPrintout  = false;
 const bool      doGenPrint  = false;
+const bool      doSync      = true;
 
 // MVA switches
 const bool      doMVACut    = true;
@@ -274,10 +275,10 @@ void fcncAnalyzer::Begin(TTree* tree)
         eventCountWeighted[i] = 0;
     }
 
-    fout[0].open("os_inclusive.txt");
-    fout[1].open("os_0jet.txt");
-    fout[2].open("ss_inclusive.txt");
-    fout[3].open("ss_0jet.txt");
+    fout[0].open("sync_files/mine_os_inclusive.txt");
+    fout[1].open("sync_files/mine_os_0jet.txt");
+    fout[2].open("sync_files/mine_ss_inclusive.txt");
+    fout[3].open("sync_files/mine_ss_0jet.txt");
 
     eventCountOS        = 0;
     eventCountOS_NoJet  = 0;
@@ -561,88 +562,93 @@ bool fcncAnalyzer::Process(Long64_t entry)
         GenPlots(gLeptons, leptons);
     }
 
-    if (eventNumber == 4238484) {
-        cout << "run number: " << runNumber << "\tlumi section: " << lumiSection << "\tevent number: " << eventNumber << endl;
-        cout << "\t" << muons.size() << "\t" << recoMuons->GetSize() << "\t" << recoJets->GetSize() << endl;
+    if (doSync) {
 
-        for (unsigned i = 0; i < recoJets->GetSize(); ++i) {
-            TCJet* thisJet = (TCJet*) recoJets->At(i);    
-            PrintJetIDVars(*thisJet);
-            for (unsigned j = 0; j < recoMuons->GetSize(); ++j) {
-                TCMuon* thisMuon = (TCMuon*) recoMuons->At(j);    
-                cout << thisMuon->DeltaR(*thisJet) << "\t";
+        if (false) {
+            cout << "run number: " << runNumber << "\tlumi section: " << lumiSection << "\tevent number: " << eventNumber << endl;
+            cout << "\t" << muons.size() << "\t" << recoMuons->GetSize() << "\t" << recoJets->GetSize() << endl;
+
+            for (unsigned i = 0; i < recoJets->GetSize(); ++i) {
+                TCJet* thisJet = (TCJet*) recoJets->At(i);    
+                PrintJetIDVars(*thisJet);
+                for (unsigned j = 0; j < recoMuons->GetSize(); ++j) {
+                    TCMuon* thisMuon = (TCMuon*) recoMuons->At(j);    
+                    cout << thisMuon->DeltaR(*thisJet) << "\t";
+                }
+                cout << endl;
+            }
+            cout << endl;
+
+            for (unsigned i = 0; i < recoMuons->GetSize(); ++i) {
+                TCMuon* thisMuon = (TCMuon*) recoMuons->At(i);    
+                PrintMuonIDVars(*thisMuon, selectedVtx);
+                cout << endl;
             }
             cout << endl;
         }
-        cout << endl;
 
-        for (unsigned i = 0; i < recoMuons->GetSize(); ++i) {
-            TCMuon* thisMuon = (TCMuon*) recoMuons->At(i);    
-            PrintMuonIDVars(*thisMuon, selectedVtx);
-            cout << endl;
-        }
-        cout << endl;
-    }
+        if (muons.size() == 2) {
+            if (muons[0].Pt() > leptonPtCut[0] && muons[1].Pt() > leptonPtCut[1]) { 
 
-    if (muons.size() == 2) {
-        if (muons[0].Pt() > leptonPtCut[0] && muons[1].Pt() > leptonPtCut[1]) { 
+                // Yields for syncing with Stoyan //
+                if (muons[0].Charge() == muons[1].Charge()) {
+                    fout[2] << "run number: " << runNumber << "   lumi section: " << lumiSection << " event number: " << eventNumber << "\n";
+                    histManager->Fill1DHist(1, "h1_SyncYields", ";cut;Entries", 5, 0.5, 5.5);
+                    ++eventCountSS;
 
-            // Yields for syncing with Stoyan //
-            if (muons[0].Charge() == muons[1].Charge()) {
-                fout[2] << "run number: " << runNumber << "   lumi section: " << lumiSection << " event number: " << eventNumber << "\n";
-                ++eventCountSS;
+                    if (false) {
+                        cout << "run number: " << runNumber << "\tlumi section: " << lumiSection << "\tevent number: " << eventNumber << endl;
+                        cout << "\t" << recoMuons->GetSize() << "\t" << recoJets->GetSize() << endl;
 
-                if (false) {
-                    cout << "run number: " << runNumber << "\tlumi section: " << lumiSection << "\tevent number: " << eventNumber << endl;
-                    cout << "\t" << recoMuons->GetSize() << "\t" << recoJets->GetSize() << endl;
-
-                    for (unsigned i = 0; i < recoJets->GetSize(); ++i) {
-                        TCJet* thisJet = (TCJet*) recoJets->At(i);    
-                        PrintJetIDVars(*thisJet);
-                        for (unsigned j = 0; j < recoMuons->GetSize(); ++j) {
-                            TCMuon* thisMuon = (TCMuon*) recoMuons->At(j);    
-                            cout << thisMuon->DeltaR(*thisJet) << "\t";
+                        for (unsigned i = 0; i < recoJets->GetSize(); ++i) {
+                            TCJet* thisJet = (TCJet*) recoJets->At(i);    
+                            PrintJetIDVars(*thisJet);
+                            for (unsigned j = 0; j < recoMuons->GetSize(); ++j) {
+                                TCMuon* thisMuon = (TCMuon*) recoMuons->At(j);    
+                                cout << thisMuon->DeltaR(*thisJet) << "\t";
+                            }
+                            cout << endl;
                         }
                         cout << endl;
                     }
-                    cout << endl;
-                }
 
-                if (jets.size() == 0){
-                    fout[3] << "run number: " << runNumber << "   lumi section: " << lumiSection << " event number: " << eventNumber << "\n";
-                    ++eventCountSS_NoJet;
-                }
-            } else if (muons[0].Charge() != muons[1].Charge()) {
-                fout[0] << "run number: " << runNumber << "   lumi section: " << lumiSection << " event number: " << eventNumber << endl;
-                ++eventCountOS;
+                    if (jets.size() == 0){
+                        fout[3] << "run number: " << runNumber << "   lumi section: " << lumiSection << " event number: " << eventNumber << "\n";
+                        histManager->Fill1DHist(2, "h1_SyncYields", ";cut;Entries", 5, 0.5, 5.5);
+                        ++eventCountSS_NoJet;
+                    }
+                } else if (muons[0].Charge() != muons[1].Charge()) {
+                    fout[0] << "run number: " << runNumber << "   lumi section: " << lumiSection << " event number: " << eventNumber << endl;
+                    histManager->Fill1DHist(3, "h1_SyncYields", ";cut;Entries", 5, 0.5, 5.5);
+                    ++eventCountOS;
 
-                if (eventNumber == 4238484) {
-                    cout << "run number: " << runNumber << "\tlumi section: " << lumiSection << "\tevent number: " << eventNumber << endl;
-                    cout << "\t" << recoMuons->GetSize() << "\t" << recoJets->GetSize() << endl;
-                    PrintJetIDVars(jets[0]);
+                    if (eventNumber == 4238484) {
+                        cout << "run number: " << runNumber << "\tlumi section: " << lumiSection << "\tevent number: " << eventNumber << endl;
+                        cout << "\t" << recoMuons->GetSize() << "\t" << recoJets->GetSize() << endl;
+                        PrintJetIDVars(jets[0]);
 
-                    for (unsigned i = 0; i < recoJets->GetSize(); ++i) {
-                        TCJet* thisJet = (TCJet*) recoJets->At(i);    
-                        PrintJetIDVars(*thisJet);
-                        for (unsigned j = 0; j < recoMuons->GetSize(); ++j) {
-                            TCMuon* thisMuon = (TCMuon*) recoMuons->At(j);    
-                            cout << thisMuon->DeltaR(*thisJet) << "\t";
+                        for (unsigned i = 0; i < recoJets->GetSize(); ++i) {
+                            TCJet* thisJet = (TCJet*) recoJets->At(i);    
+                            PrintJetIDVars(*thisJet);
+                            for (unsigned j = 0; j < recoMuons->GetSize(); ++j) {
+                                TCMuon* thisMuon = (TCMuon*) recoMuons->At(j);    
+                                cout << thisMuon->DeltaR(*thisJet) << "\t";
+                            }
+                            cout << endl;
                         }
                         cout << endl;
                     }
-                    cout << endl;
-                }
 
-                if (jets.size() == 0) {
-                    fout[1] << "run number: " << runNumber << "   lumi section: " << lumiSection << " event number: " << eventNumber << endl;
-                    ++eventCountOS_NoJet;
+                    if (jets.size() == 0) {
+                        fout[1] << "run number: " << runNumber << "   lumi section: " << lumiSection << " event number: " << eventNumber << endl;
+                        histManager->Fill1DHist(4, "h1_SyncYields", ";cut;Entries", 5, 0.5, 5.5);
+                        ++eventCountOS_NoJet;
+                    }
                 }
             }
         }
+        return kTRUE;
     }
-
-    // Remember this guy
-    return kTRUE;
 
     if (leptons.size() == 1) {
 
