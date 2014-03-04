@@ -105,24 +105,24 @@ if period == '2012':
         #cfg('QCD_80-170_EM', '{0}/QCD_Pt_80_170_EMEnriched'.format(path), 10, 'QCD_80-170_EM muon 2012'),
         #cfg('QCD_170-250_EM', '{0}/QCD_Pt_170_250_EMEnriched'.format(path), 10, 'QCD_170-250_EM muon 2012'),
         #cfg('QCD_250-350_EM', '{0}/QCD_Pt_250_350_EMEnriched'.format(path), 10, 'QCD_250-350_EM muon 2012'),
-        #cfg('QCD_350_EM', '{0}/QCD_Pt_350_EMEnriched', 10, 'QCD_350_EM muon 2012'),
-        #cfg('QCD_20_MU', '{0}/QCD_Pt_20_MuEnrichedPt_15', 10, 'QCD_20_MU muon 2012'),
+        #cfg('QCD_350_EM', '{0}/QCD_Pt_350_EMEnriched'.format(path), 10, 'QCD_350_EM muon 2012'),
+        #cfg('QCD_20_MU', '{0}/QCD_Pt_20_MuEnrichedPt_15'.format(path), 10, 'QCD_20_MU muon 2012'),
 
-        #cfg('ggHToZZ4L_M-125', '{0}/GluGluToHToZZTo4L_M-125', 2, 'ggHToZZ4L_M-125 muon 2012'),
-        #cfg('ggHToWW2L2Nu_M-125', '{0}/GluGluToHToWWTo2LAndTau2Nu_M-125', 2, 'ggHToWW2L2Nu_M-125 muon 2012'),
-        #cfg('WHToWWW3L_M-125', '{0}/WH_HToWW_3l_M-125', 2, 'WHToWWW3L_M-125 muon 2012'),
-        #cfg('TTH_M-125', '{0}/TTH_Inclusive_M-125', 2, 'TTH_M-125 muon 2012')
+        #cfg('ggHToZZ4L_M-125', '{0}/GluGluToHToZZTo4L_M-125'.format(path), 2, 'ggHToZZ4L_M-125 muon 2012'),
+        #cfg('ggHToWW2L2Nu_M-125', '{0}/GluGluToHToWWTo2LAndTau2Nu_M-125'.format(path), 2, 'ggHToWW2L2Nu_M-125 muon 2012'),
+        #cfg('WHToWWW3L_M-125', '{0}/WH_HToWW_3l_M-125'.format(path), 2, 'WHToWWW3L_M-125 muon 2012'),
+        #cfg('TTH_M-125', '{0}/TTH_Inclusive_M-125'.format(path), 2, 'TTH_M-125 muon 2012')
         ])
 
     signal.extend([
-        #cfg('FCNC_M125_tHj', filePath+'/nuTuples_v7_4/TToFCNHToWWTo2l2nuPlusTop_M125', 1, 'FCNC_M125_t mc 2012'),
-        #cfg('FCNC_M125_tbarHj', filePath+'/nuTuples_v7_4/TbarToFCNHToWWTo2l2nuPlusTop_M125/', 1, 'FCNC_M125_tbar mc 2012')
-        cfg('FCNC_M125_tHj', filePath+'/nuTuples_v7_4/T_FCNH_M-125_WW_lep', 1, 'FCNC_M125_t mc 2012'),
-        #cfg('FCNC_M125_tHj', filePath+'/nuTuples_v6_8TeV/FCNH_M125_t', 1, 'FCNC_M125_t mc 2012'),
-        #cfg('FCNC_M125_tbarHj', filePath+'/nuTuples_v6_8TeV/FCNH_M125_tbar', 1, 'FCNC_M125_tbar mc 2012'),
-        cfg('FCNC_M125_tHj_semilep', filePath+'/nuTuples_v7_4/T_FCNH_M-125_WW_semihadronic', 1, 'FCNC_M125_t_semilep mc 2012'),
-        cfg('FCNC_M125_tHj_ZZ', filePath+'/nuTuples_v7_4/T_FCNH_M-125_ZZ', 1, 'FCNC_M125_t_ZZ mc 2012'),
-        cfg('FCNC_M125_tHj_TauTau', filePath+'/nuTuples_v7_4/T_FCNH_M-125_TauTau', 1, 'FCNC_M125_t_TauTau mc 2012')
+        #cfg('FCNC_M125_tHj', '{0}/TToFCNHToWWTo2l2nuPlusTop_M125'.format(path), 1, 'FCNC_M125_t mc 2012'),
+        #cfg('FCNC_M125_tbarHj', '{0}/TbarToFCNHToWWTo2l2nuPlusTop_M125/'.format(path), 1, 'FCNC_M125_tbar mc 2012')
+        cfg('FCNC_M125_tHj', '{0}/T_FCNH_M-125_WW_lep'.format(path), 1, 'FCNC_M125_t mc 2012'),
+        #cfg('FCNC_M125_tHj', '{0}/FCNH_M125_t'.format(path), 1, 'FCNC_M125_t mc 2012'),
+        #cfg('FCNC_M125_tbarHj', '{0}/FCNH_M125_tbar'.format(path), 1, 'FCNC_M125_tbar mc 2012'),
+        cfg('FCNC_M125_tHj_semilep', '{0}/T_FCNH_M-125_WW_semihadronic'.format(path), 1, 'FCNC_M125_t_semilep mc 2012'),
+        cfg('FCNC_M125_tHj_ZZ', '{0}/T_FCNH_M-125_ZZ'.format(path), 1, 'FCNC_M125_t_ZZ mc 2012'),
+        cfg('FCNC_M125_tHj_TauTau', '{0}/T_FCNH_M-125_TauTau'.format(path), 1, 'FCNC_M125_t_TauTau mc 2012')
         ])
 
 
