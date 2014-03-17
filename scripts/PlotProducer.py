@@ -733,7 +733,7 @@ class PlotProducer(AnalysisTools):
 
                 ## Draw info box ##
 
-                if var not in hists.keys() and var not in stacks.keys(): continue
+                if var not in hists.keys() or var not in stacks.keys(): continue
 
                 r.gStyle.SetOptTitle(0)
 
@@ -810,31 +810,74 @@ class PlotProducer(AnalysisTools):
 
                 #legend.Draw()
 
-    def make_overlay_2D_projections(self, varName, samples, directory):
+    def make_overlay_2D_projections(self, varName, samples, directory, projection = 'normal'):
+        ### Makes 1D histograms by projecting onto one of the axes of a 2D histogram
 
         canvas = r.TCanvas('canvas', 'canvas', 650, 700)
         canvas.SetLogy()
 
-        #self.make_save_path(self._savePath + '/' + self._category + '/' + directory)
+        self.make_save_path(self._savePath + '/' + self._category + '/' + directory)
 
         hist = self.combine_samples(varName, samples[0], '2D')
         for sample in samples[1:]:
             hist.Add(self.combine_samples(varName, sample, '2D'))
 
-        for i in range(hist.GetYaxis().GetNbins()):
-            h_Proj = hist.ProjectionY('h_{0}_{1}'.format(varName, i+1), i+1, hist.GetYaxis().GetNbins())
+        legend = r.TLegend(0.55,0.6,.95,0.93)
+        legend.SetFillColor(0)
+        #legend.SetFillStyle(1)
+        legend.SetLineWidth(1)
+        legend.SetLineColor(1)
+        legend.SetTextSize(0.03)
+
+        nBins   = hist.GetYaxis().GetNbins()
+        xMin    = hist.GetYaxis().GetXmax()
+        xMax    = hist.GetYaxis().GetXmax()
+
+        for i in range(nBins):
+            if projection == 'normal':
+                h_Proj = hist.ProjectionX('h_{0}_{1}'.format(varName, i+1), i, nBins-1)
+            elif projection == 'reverse':
+                h_Proj = hist.ProjectionX('h_{0}_{1}'.format(varName, i+1), 0, nBins-i)
+            elif projection == 'exclusive':
+                h_Proj = hist.ProjectionX('h_{0}_{1}'.format(varName, i+1), i, i+1)
+
+            #h_Proj.SetTitle('')
             h_Proj.SetLineWidth(3)
-            h_Proj.SetLineColor(i+1)
+            if i != 4:
+                h_Proj.SetLineColor(i+1)
+            else:
+                h_Proj.SetLineColor(38)
+
+            if projection == 'normal':
+                if i is 0:
+                    legend.AddEntry(h_Proj, 'IsoRel > 0.12')
+                else:
+                    legend.AddEntry(h_Proj, 'IsoRel > {0:.2f}'.format(i*xMax/nBins))
+            elif projection == 'reverse':
+                if i is 0:
+                    legend.AddEntry(h_Proj, 'IsoRel > 0.12')
+                else:
+                    legend.AddEntry(h_Proj, '0.12 < IsoRel < {0:.2f}'.format(xMax*(1 - float(i)/nBins)))
+            elif projection == 'exclusive':
+                if i is 0:
+                    legend.AddEntry(h_Proj, '0.12 < IsoRel < {0:.2f}'.format(xMax/nBins))
+                else:
+                    legend.AddEntry(h_Proj, '{0:.2f} < IsoRel < {1:.2f}'.format(i*xMax/nBins, (i + 1)*xMax/nBins))
+
             if i is 0:
-                h_Proj.SetMaximum(1.10*h_Proj.GetMaximum())
+                h_Proj.SetMaximum(1.50*h_Proj.GetMaximum())
                 h_Proj.DrawNormalized('HIST')
             else:
                 h_Proj.DrawNormalized('HIST SAME')
 
+            legend.Draw()
 
-
-        #canvas.Print('{0}/{1}/{2}/{3}.png'.format(self._savePath, self._category, directory, varName))
-        canvas.Print('TEST.png')
+        if projection == 'normal':
+            canvas.Print('{0}/{1}/{2}/{3}_normal.png'.format(self._savePath, self._category, directory, varName))
+        elif projection == 'reverse':
+            canvas.Print('{0}/{1}/{2}/{3}_reverse.png'.format(self._savePath, self._category, directory, varName))
+        elif projection == 'exclusive':
+            canvas.Print('{0}/{1}/{2}/{3}_exclusive.png'.format(self._savePath, self._category, directory, varName))
 
 ####                                      ####  
 #### End of PlotProducer class definition ####

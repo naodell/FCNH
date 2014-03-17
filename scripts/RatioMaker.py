@@ -169,7 +169,6 @@ class RatioMaker(AnalysisTools):
             nBinsY = h2_Eff.GetNbinsY()
 
             prob0 = [[0.5*h2_Eff.GetBinContent(i+1, i+1) for i in range(nBinsX)], [0.5*h2_Eff.GetBinError(i+1, i+1) for i in range(nBinsX)]]
-            print prob0
 
             for toy in range(nToys):
 
@@ -200,13 +199,8 @@ class RatioMaker(AnalysisTools):
                     prob0[1][binX] = 1./sqrt(probs[1][binX])
 
 
-                if toy%9 == 0:
-                    print prob0
-
-            print prob0[0]
-            print prob0[1]
-
-            ptBins = [15., 25., 37.5, 57.5, 85., 125.]
+            #ptBins = [15., 25., 37.5, 57.5, 85., 125.]
+            ptBins = [20., 55., 110., 150.]
             g_ProbB = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][:nBinsX/2]), array('f', [0.1 for bin in ptBins]), array('f', prob0[1][:nBinsX/2]))
             g_ProbB.SetName('g_QFlipB')
             g_ProbB.SetTitle('barrel electron charge flips;iPt;#varepsilon')
@@ -230,8 +224,8 @@ if __name__ == '__main__':
         print 'A batch must specified.  Otherwise, do some hacking so this thing knows about your inputs.'
         exit()
 
-    doQFlips    = False
-    doFakes     = True
+    doQFlips    = True
+    doFakes     = False
     doMetFake   = False
 
     ### For electron charge misID efficiencies ###
@@ -249,7 +243,7 @@ if __name__ == '__main__':
             }
 
         ratioMaker.set_ratio_2D(eMisQDict)
-        ratioMaker.charge_flip_fitter('DATA_ELECTRON')
+        ratioMaker.charge_flip_fitter('DATA_ELECTRON', nToys = 50)
         #ratioMaker.make_2D_ratios('DATA', doProjections = False)
 
         ratioMaker.write_outfile()

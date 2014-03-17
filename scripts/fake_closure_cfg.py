@@ -26,7 +26,7 @@ selection   = 'fcnh'
 
 cutList     = ['1_preselection']
 #cutList.extend(['2_Z_veto', '3_jet', '4_MET'])
-fakeType    = 'eFakes'
+fakeType    = 'muFakes'
 
 period      = '2012'
 LUMIDATA    = 19.712 
@@ -41,7 +41,7 @@ do2D        = False
 doYields    = False
 
 doSS        = True
-do3l        = True
+do3l        = False
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive']
@@ -75,9 +75,10 @@ samples['3l'].append(fakeType + '_ZJets')
 #samples['ss'].append(fakeType + '_ZZJets2L2Nu')
 #samples['ss'].append(fakeType + '_ZZJets2L2Q')
 samples['ss'].append(fakeType + '_Diboson')
-samples['ss'].append(fakeType + '_ttbarLep')
-samples['ss'].append(fakeType + '_ttbarHad')
 samples['ss'].append(fakeType + '_ZJets')
+samples['ss'].append(fakeType + '_ttbarLep')
+#samples['ss'].append(fakeType + '_WG')
+samples['ss'].append(fakeType + '_ttbarHad')
 #samples['ss'].append(fakeType + '_WJets')
 #samples['ss'].append(fakeType + '_QCD')
 
@@ -110,7 +111,7 @@ if doPlots:
     ### plot while giving a key value which is the 
     ### directory that they are located in as a key.
 
-    plotter._directoryList1D            = ['Misc', 'Lepton', 'Lep+Jet', 'Dilepton', 'DileptonOS', 'Trilepton', 'MET', 'Jet', 'GEN', '4l']
+    plotter._directoryList1D            = ['Misc', 'Lepton', 'Lep+Jet', 'Dilepton', 'DileptonOS', 'Trilepton', 'MET', 'Jet', 'Fakes']
 
     plotter._variableDict['Misc']       = ['PvMult', 'YieldByCut', 'YieldByCutRaw', 'EventWeight', 'TriggerStatus', 
                                             'FakeWeightUncertainty', 'BDT', 'FakeCategory']
@@ -167,11 +168,8 @@ if doPlots:
                                            'MetLepDeltaPhiMin', 'nearLepIndex', 'ProjectedMet',
                                            'MetFakeableDeltaPhi'] 
 
-    plotter._variableDict['GEN']        = ['GenChargeMisId', 'GenMisIdPt', 'GenMisIdEta',
-                                           'GenDeltaR', 'GenBalance']
-
-    plotter._variableDict['4l']         = ['4lMass', '4lPt', '4lSumPt', '4lMet']
-
+    plotter._variableDict['Fakes']      = ['FakeablePt', 'FakeableEta', 'FakeablePhi'
+                                           'FakeableDxy', 'FakeableDz', 'FakeableIsoRel']
 
 
      ###################   
@@ -218,28 +216,35 @@ if doPlots:
             ss_plotter.make_save_path(outFile, clean=True)
             ss_plotter.set_input_file(inFile)
             ss_plotter.set_save_path(outFile)
-            ss_plotter.set_category(category)
-            ss_plotter.make_overlay_2D_projections('FakeableIsoRelVsPt', ['muFakes'], 'TEST')
 
+            fakeType = {'ss_mumu':['muFakes'], 'ss_ee':['eFakes'], 'ss_emu':['eFakes', 'muFakes']}
             for category in catSS:
+                ss_plotter.set_category(category)
+
+                projection = 'exclusive'
+                ss_plotter.make_overlay_2D_projections('FakeableIsoRelVsPt', fakeType[category], 'Fake_tests', projection)
+                ss_plotter.make_overlay_2D_projections('FakeableIsoRelVsMET', fakeType[category], 'Fake_tests', projection)
+                ss_plotter.make_overlay_2D_projections('FakeableIsoRelVsDileptonMass', fakeType[category], 'Fake_tests', projection)
+                ss_plotter.make_overlay_2D_projections('FakeableIsoRelVsJetMultiplicity', fakeType[category], 'Fake_tests', projection)
+
                 p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(ss_plotter, category, inFile, outFile, do1D, do2D, False, doLog, doRatio, doEff)))
 
     ### ZPlusFake control region
-    ZFake_plotter = copy.deepcopy(plotter)
-    ZFake_plotter.add_datasets(samples['3l'],  Clear=True)
-    ZFake_plotter._overlayList = [fakeType]
+    #ZFake_plotter = copy.deepcopy(plotter)
+    #ZFake_plotter.add_datasets(samples['3l'],  Clear=True)
+    #ZFake_plotter._overlayList = [fakeType]
 
-    inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 10, period, batch)
+    #inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 10, period, batch)
 
-    if doLog:
-        outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'CR_ZFake')
-    else:
-        outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'CR_ZFake')
+    #if doLog:
+    #    outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'CR_ZFake')
+    #else:
+    #    outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'CR_ZFake')
 
-    ZFake_plotter.make_save_path(outFile, clean=True)
+    #ZFake_plotter.make_save_path(outFile, clean=True)
 
-    for category in cat3l:
-        p_plot.append(Process(name = 'CR_ZFake/' + category, target = plotter_wrapper, args=(ZFake_plotter, category, inFile, outFile, do1D, False, False, doLog, doRatio, False)))
+    #for category in cat3l:
+    #    p_plot.append(Process(name = 'CR_ZFake/' + category, target = plotter_wrapper, args=(ZFake_plotter, category, inFile, outFile, do1D, False, False, doLog, doRatio, False)))
 
 ### End of configuration for PlotProducer ###
 

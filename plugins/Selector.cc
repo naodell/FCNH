@@ -229,15 +229,15 @@ void Selector::MuonSelector(TClonesArray* muons)
         thisMuon->SetType("muon");
 
         // momentum scale corrections (Rochestor corrections)
-        /*TLorentzVector tmpP4 = *thisMuon;
-          float muPtErr = 1.;
-          if (_isRealData) {
-          muCorrector->momcor_data(tmpP4, (float)thisMuon->Charge(), 0, muPtErr);
-          } else {
-          muCorrector->momcor_data(tmpP4, (float)thisMuon->Charge(), 0, muPtErr);
-          }
+        TLorentzVector tmpP4 = *thisMuon;
+        float muPtErr = 1.;
+        if (_isRealData) {
+            muCorrector->momcor_data(tmpP4, (float)thisMuon->Charge(), 0, muPtErr);
+        } else {
+            muCorrector->momcor_data(tmpP4, (float)thisMuon->Charge(), 0, muPtErr);
+        }
 
-          thisMuon->SetPtEtaPhiM(tmpP4.Pt(), tmpP4.Eta(), tmpP4.Phi(), tmpP4.M());*/
+        thisMuon->SetPtEtaPhiM(tmpP4.Pt(), tmpP4.Eta(), tmpP4.Phi(), tmpP4.M());
 
         // isolation
         float muISO = 0.;
@@ -259,6 +259,7 @@ void Selector::MuonSelector(TClonesArray* muons)
             else if (
                     //thisMuon->IsPF()
                     MuonTightID(thisMuon)
+                    && muISO < 0.6 
                     && fabs(thisMuon->Dz(_selVertices[0]))  < 0.05
                     && fabs(thisMuon->Dxy(_selVertices[0])) < 0.015
                     )
@@ -270,7 +271,8 @@ void Selector::MuonSelector(TClonesArray* muons)
             else if (
                     //thisMuon->IsPF()
                     MuonTightID(thisMuon)
-                    && muISO > 0.12 
+                    && muISO > 0.2 
+                    && muISO < 0.6 
                     && fabs(thisMuon->Dz(_selVertices[0]))  < 0.05 
                     && fabs(thisMuon->Dxy(_selVertices[0])) < 0.015
                     ) {
@@ -279,9 +281,9 @@ void Selector::MuonSelector(TClonesArray* muons)
             }
 
         } else if (thisMuon->Pt() > _muPtCuts[1]) 
-            if (MuonLooseID(thisMuon)
-                    //&& (muISO > 0.1 && thisMuon->Pt() > 20)
-                    //&& (muISO < 0.15 && thisMuon->Pt() < 20)
+            if (
+                    MuonLooseID(thisMuon)
+                    && ((thisMuon->Pt() > 20 && muISO > 0.2) || (thisMuon->Pt() < 20 && muISO < 0.25))
                )
                 _selMuons["loose"].push_back(*thisMuon);
     }
@@ -419,7 +421,8 @@ void Selector::ElectronSelector(TClonesArray* electrons)
         // analysis electrons
         if (thisElec->IdMap("preSelPassV1")) {
 
-            _selElectrons["QCD2l_CR_probe"].push_back(*thisElec);
+            if (!muOverlap && eleISO < 1.)
+                _selElectrons["QCD2l_CR_probe"].push_back(*thisElec);
 
             if (ElectronMVA(thisElec) && !muOverlap)
                 _selElectrons["premva"].push_back(*thisElec);
@@ -431,7 +434,7 @@ void Selector::ElectronSelector(TClonesArray* electrons)
                     _selElectrons["tight"].push_back(*thisElec);			
                 else
                     _selElectrons["tight_overlap"].push_back(*thisElec);			
-            } else if (!muOverlap) {
+            } else if (!muOverlap && eleISO < 1.) {
                 thisElec->SetFake(true);
                 _selElectrons["fakeable"].push_back(*thisElec);
             }
@@ -522,7 +525,7 @@ void Selector::JetSelector(TClonesArray* jets)
             if (thisJet->DeltaR(_selElectrons["fakeable"][j]) < 0.3) overlap.set(3);
 
         // Apply JER corrections; maybe better to do in the analysis code...
-        TCJet corJet = *thisJet; //this->JERCorrections(thisJet);
+        TCJet corJet = this->JERCorrections(thisJet);
 
         if (fabs(corJet.Eta()) < 2.4) {
             if (
@@ -550,11 +553,12 @@ void Selector::JetSelector(TClonesArray* jets)
                         else if (overlap[3])
                             _selJets["eleFakes"].push_back(corJet);
 
-                        //corJet.VtxNTracks() > 0
-                        //&& corJet.VtxSumPtFrac() > 0. 
-                        //&& ((int)corJet.VtxSumPtIndex() == 1
-                    } else { 
-                        _selJets["tight"].push_back(corJet);
+                    } else if ( true
+                            //corJet.VtxNTracks() > 0
+                            //&& corJet.VtxSumPtFrac() > 0. 
+                            //&& ((int)corJet.VtxSumPtIndex() == 1)
+                            ) {
+                            _selJets["tight"].push_back(corJet);
 
                         if (!overlap[2] && !overlap[3])
                             _selJets["tight_NoFakes"].push_back(corJet);

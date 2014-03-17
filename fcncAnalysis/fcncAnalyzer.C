@@ -11,7 +11,7 @@ using namespace std;
 
 const bool      doPrintout  = false;
 const bool      doGenPrint  = false;
-const bool      doSync      = true;
+const bool      doSync      = false;
 
 // MVA switches
 const bool      doMVACut    = true;
@@ -91,8 +91,8 @@ void fcncAnalyzer::Begin(TTree* tree)
                 doQFlips = false;
 
             // Samples for fake bg cleanup
-            string fakeMC[21] = {
-                "ZJets_M-50", "ZJets_M-10To50", 
+            string fakeMC[23] = {
+                "ZJets_M-50", "ZJets_M-10To50", "WGstarToLNu2Mu", "WGstarToLNu2E", 
                 "ttbarLep", "ttbarHad", "ttbar", 
                 "WWJets2L2Nu", "ZZJets2L2Nu", "ZZJets2L2Q", "WZJets3LNu", 
                 "ZZ4mu", "ZZ4e", "ZZ4tau", "ZZ2e2mu", "ZZ2mu2tau", "ZZ2e2tau", 
@@ -275,10 +275,12 @@ void fcncAnalyzer::Begin(TTree* tree)
         eventCountWeighted[i] = 0;
     }
 
-    fout[0].open("sync_files/mine_os_inclusive.txt");
-    fout[1].open("sync_files/mine_os_0jet.txt");
-    fout[2].open("sync_files/mine_ss_inclusive.txt");
-    fout[3].open("sync_files/mine_ss_0jet.txt");
+    if (doSync) {
+        fout[0].open("sync_files/mine_os_inclusive.txt");
+        fout[1].open("sync_files/mine_os_0jet.txt");
+        fout[2].open("sync_files/mine_ss_inclusive.txt");
+        fout[3].open("sync_files/mine_ss_0jet.txt");
+    }
 
     eventCountOS        = 0;
     eventCountOS_NoJet  = 0;
@@ -879,6 +881,7 @@ void fcncAnalyzer::Terminate()
     cout << "| number of opposite-sign dimuon events:          :" << eventCountOS << endl;
     cout << "| number of opposite-sign dimuon events (0-jet)   :" << eventCountOS_NoJet << endl;
 
+    if (doSync)
     for (int i = 0; i < 4; ++i) fout[i].close();
 
     // Set alphanumeric bins for charge and flavor histograms
@@ -1157,20 +1160,20 @@ void fcncAnalyzer::GetFakeBG(vObj leptons, vObj fakeables, vector<TCJet> jets, v
                 DoFakes(leptons, fakeables, jets, bJetsM, bJetsL, PV);
                 evtWeight /= (fakeWeight1*fakeWeight2);
 
-            } else if (leptons.size() == 1 && fakeWeight1 > 0 && fakeWeight2 >= 0) {
-                evtWeight *= fakeWeight1*(1 - fakeWeight2);
+            } /*else if (leptons.size() == 1 && fakeWeight1 > 0 && fakeWeight2 >= 0) {
+                evtWeight *= fakeWeight1*(1 - fakeWeight2)/2.;
                 vObj fakeable1;
                 fakeable1.push_back(fakeables[0]);
                 DoFakes(leptons, fakeable1, jets, bJetsM, bJetsL, PV);
-                evtWeight /= (fakeWeight1*(1 - fakeWeight2));
+                evtWeight /= (2*fakeWeight1*(1 - fakeWeight2));
 
             } else if (leptons.size() == 1 && fakeWeight1 >= 0 && fakeWeight2 > 0) {
                 vObj fakeable2;
                 fakeable2.push_back(fakeables[1]);
                 evtWeight *= fakeWeight2*(1 - fakeWeight1);
                 DoFakes(leptons, fakeable2, jets, bJetsM, bJetsL, PV);
-                evtWeight /= (fakeWeight2*(1 - fakeWeight1));
-            }
+                evtWeight /= (2*fakeWeight2*(1 - fakeWeight1));
+            }*/
         }
     }
 }
@@ -1295,6 +1298,8 @@ void fcncAnalyzer::LeptonPlots(vObj leptons, vector<TCJet> jets, vector<TCJet> b
 
         histManager->Fill1DHist(leptons[i].IsoMap("IsoRel"), 
                 "h1_Lepton" + index + "IsoRel", "Iso_{Rel} leptons " + index + ";Iso_{Rel} (cm);Entries / bin", 42, -0.1, 2.);
+        histManager->Fill1DHist(leptons[i].IsoMap("IsoRel")*leptons[i].Pt(), 
+                "h1_Lepton" + index + "Iso", "Iso leptons " + index + ";Iso (cm);Entries / bin", 4, 0., 20.);
 
         if (leptons[i].Type() == "electron") {
             histManager->Fill1DHist(leptons[i].Pt(),
@@ -1310,7 +1315,9 @@ void fcncAnalyzer::LeptonPlots(vObj leptons, vector<TCJet> jets, vector<TCJet> b
                     "h1_ElectronDz", "electron d_{z};d_{z} (cm);Entries / bin", 100., -0.15, 0.15);
 
             histManager->Fill1DHist(leptons[i].IsoMap("IsoRel"), 
-                    "h1_ElectronIsoRel", "Iso_{Rel} electrons;Iso_{Rel} (cm);Entries / bin", 42, -0.1, 2.);
+                    "h1_ElectronIsoRel", "Iso_{Rel} electrons;Iso_{Rel} ;Entries / bin", 42, -0.1, 2.);
+            histManager->Fill1DHist(leptons[i].IsoMap("IsoRel")*leptons[i].Pt(), 
+                    "h1_ElectronIso", "Iso electrons;Iso;Entries / bin", 4, 0., 20.);
 
         } else if (leptons[i].Type() == "muon") {
             histManager->Fill1DHist(leptons[i].Pt(),
@@ -1327,6 +1334,8 @@ void fcncAnalyzer::LeptonPlots(vObj leptons, vector<TCJet> jets, vector<TCJet> b
 
             histManager->Fill1DHist(leptons[i].IsoMap("IsoRel"), 
                     "h1_MuonIsoRel", "Iso_{Rel} muons;Iso_{Rel} (cm);Entries / bin", 42, -0.1, 2.);
+            histManager->Fill1DHist(leptons[i].IsoMap("IsoRel")*leptons[i].Pt(), 
+                    "h1_MuonIso", "Iso muons;Iso;Entries / bin", 4, 0., 20.);
         }
 
         if (fabs(leptons[i].Eta()) < 1.) 
@@ -1922,9 +1931,26 @@ void fcncAnalyzer::FakePlots(vObj leptons, vector<TCJet> jets, vector<TCJet> bJe
                 "h1_FakeableDz", "d_{z} fakeables;d_{z} (cm);Entries / bin", 100., -0.15, 0.15);
 
         histManager->Fill1DHist(fakeables[0].IsoMap("IsoRel"), 
-                "h1_FakeableIsoRel", "Iso_{Rel} fakeabless;Iso_{Rel} (cm);Entries / bin", 42, -0.1, 2.);
-        histManager->Fill2DHist(fakeables[0].IsoMap("IsoRel"), fakeables[0].Pt(), 
-                "h2_FakeableIsoRelVsPt", "Iso_{Rel} vs p_{T} fakeables;p_{T};Iso_{Rel} (cm) / bin", 42, -0.1, 2., 9, 10., 100.);
+                "h1_FakeableIsoRel", "Iso_{Rel} fakeabless;Iso_{Rel} (cm);Entries / bin", 42, -0.1, 4.);
+        histManager->Fill2DHist(fakeables[0].Pt(), fakeables[0].IsoMap("IsoRel"), 
+                "h2_FakeableIsoRelVsPt", "Iso_{Rel} vs p_{T} fakeables;p_{T};Iso_{Rel}", 18, 10., 100., 5, 0., 3.);
+        histManager->Fill2DHist(recoMET->Mod(), fakeables[0].IsoMap("IsoRel"), 
+                "h2_FakeableIsoRelVsMET", "Iso_{Rel} vs MET fakeables;MET;Iso_{Rel}", 28, 10., 150., 5, 0., 3.);
+        histManager->Fill2DHist(dileptonMassOS, fakeables[0].IsoMap("IsoRel"),                 
+                "h2_FakeableIsoRelVsDileptonMass", "Iso_{Rel} vs M_{ll} fakeables;M_{ll};Iso_{Rel}", 28, 10., 150., 5, 0., 3.);
+        histManager->Fill2DHist(jets.size() + bJets.size(), fakeables[0].IsoMap("IsoRel"), 
+                "h2_FakeableIsoRelVsJetMultiplicity", "Iso_{Rel} vs jet multiplicity fakeables;N_{jets};Iso_{Rel}", 10, -0.5, 9.5, 5, 0., 3.);
+
+        histManager->Fill1DHist(fakeables[0].IsoMap("IsoRel")*fakeables[0].Pt(), 
+                "h1_FakeableIso", "Iso fakeabless;Iso (cm);Entries / bin", 30, 0., 150.);
+        histManager->Fill2DHist(fakeables[0].Pt(), fakeables[0].IsoMap("IsoRel")*fakeables[0].Pt(), 
+                "h2_FakeableIsoVsPt", "Iso vs p_{T} fakeables;p_{T};Iso", 18, 10., 100., 5, 0., 150.);
+        histManager->Fill2DHist(recoMET->Mod(), fakeables[0].IsoMap("IsoRel")*fakeables[0].Pt(), 
+                "h2_FakeableIsoVsMET", "Iso vs MET fakeables;MET;Iso", 28, 10., 150., 5, 0., 150.);
+        histManager->Fill2DHist(dileptonMassOS, fakeables[0].IsoMap("IsoRel")*fakeables[0].Pt(),                 
+                "h2_FakeableIsoVsDileptonMass", "Iso vs M_{ll} fakeables;M_{ll};Iso", 28, 10., 150., 5, 0., 150.);
+        histManager->Fill2DHist(jets.size() + bJets.size(), fakeables[0].IsoMap("IsoRel")*fakeables[0].Pt(), 
+                "h2_FakeableIsoVsJetMultiplicity", "Iso vs jet multiplicity fakeables;N_{jets};Iso", 10, -0.5, 9.5, 5, 0., 150.);
     }
 }
 

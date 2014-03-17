@@ -65,7 +65,7 @@ if period == '2012':
         #cfg('ZbbToLL', inputDir+'/nuTuples_v7_4/ZbbToLL', 20, 'ZbbToLL muon 2012'),
         #cfg('ZG', inputDir+'/nuTuples_v7_4/ZGToLLG', 10, 'ZG muon 2012'),
         #cfg('WJets', inputDir+'/nuTuples_v7_4/WJetsToLNu', 20, 'WJets muon 2012'),
-        cfg('WGStarLNu2E', inputDir+'/nuTuples_v7_4/WGstarToLNu2E', 5, 'WGStarLNu2E muon 2012'),
+        #cfg('WGStarLNu2E', inputDir+'/nuTuples_v7_4/WGstarToLNu2E', 5, 'WGStarLNu2E muon 2012'),
         cfg('WGStarLNu2Mu', inputDir+'/nuTuples_v7_4/WGstarToLNu2Mu', 5, 'WGStarLNu2Mu muon 2012'),
         #cfg('WGStarLNu2Tau', inputDir+'/nuTuples_v7_4/WGStarToLNu2Tau', 5, 'WGStarLNu2Tau muon 2012'),
         #cfg('WbbToLNu', inputDir+'/nuTuples_v7_4/WbbJetsToLNu', 20, 'WbbToLNu muon 2012'),

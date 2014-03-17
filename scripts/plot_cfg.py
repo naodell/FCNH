@@ -28,7 +28,7 @@ cutList     = ['1_preselection']
 cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.'])#, '5_BDT'])
 cutList.extend(['.', '.', '.', 'X_0jet', 'X_1jet'])
 
-crList      = []#'CR_WZ', 'CR_ttbar', 'CR_ZFake']
+crList      = ['CR_WZ', 'CR_ttbar', 'CR_ZFake']
 
 period      = '2012'
 LUMIDATA    = 19.712 
@@ -43,9 +43,9 @@ do2D        = True
 
 doOS        = False
 doSS        = True
-do3l        = False
+do3l        = True
 
-doYields    = False
+doYields    = True
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive']
@@ -198,7 +198,7 @@ if doPlots:
     plotter._variableDict['Lepton']     = ['LeptonCharge', 'LeptonFlavor', 
                                            'Lepton1Pt', 'Lepton2Pt','Lepton3Pt',
                                            'Lepton1Eta', 'Lepton2Eta', 'Lepton3Eta',
-                                           'Lepton1IsoRel', 'Lepton2IsoRel', 'Lepton3IsoRel' 
+                                           'Lepton1IsoRel', 'Lepton2IsoRel', 'Lepton3IsoRel', 
                                            'ElectronPt', 'ElectronEta',
                                            'ElectronDxy', 'ElectronDz','ElectronIsoRel', 
                                            'MuonPt', 'MuonEta',
@@ -209,7 +209,7 @@ if doPlots:
                                            'LeptonMult', 'OverlapEleMu', 'fakeableOverlapMult']
                                            #'Lepton1Phi', 'Lepton2Phi', 'Lepton3Phi']
 
-    plotter._variableDict['Dilepton']   = ['DileptonMass21', 'DileptonTransMass21', 'DileptonQt21',
+    plotter._variableDict['Dilepton']   = ['DileptonMass21', 'DileptonTransMass21', 'DileptonQt21', 'DileptonBalance21',
                                            'DileptonDeltaPhi21', 'DileptonDeltaEta21', 'DileptonDeltaR21', 'DileptonDeltaPt21']
                                            #'DileptonMass31', 'DileptonTransMass31', 'DileptonQt31', 
                                            #'DileptonDeltaPhi31', 'DileptonDeltaEta31', 'DileptonDeltaR31', 'DileptonDeltaPt31',
@@ -245,9 +245,9 @@ if doPlots:
                                            'MatchedMuJetBDiscr', 'MatchedEleJetBDiscr', 
                                            'DijetMass']
 
-    plotter._variableDict['MET']        = ['Met']#, 'MHT', 'METLD', 'MHT-MET', 'MetPhi', 'MetSumEt',
-                                           #'MetLepton1DeltaPhi', 'MetLepton2DeltaPhi', 'MetLepton3DeltaPhi'
-                                           #'MetLepDeltaPhiMin', 'nearLepIndex', 'ProjectedMet'] 
+    plotter._variableDict['MET']        = ['Met', 'MHT', 'METLD', 'MHT-MET', 'MetPhi', 'MetSumEt',
+                                           'MetLepton1DeltaPhi', 'MetLepton2DeltaPhi', 'MetLepton3DeltaPhi'
+                                           'MetLepDeltaPhiMin', 'nearLepIndex', 'ProjectedMet'] 
 
     plotter._variableDict['Fakes']      = ['FakeablePt', 'FakeableEta', 'FakeablePhi'
                                            'FakeableDxy', 'FakeableDz', 'FakeableIsoRel']
@@ -504,18 +504,18 @@ if doYields:
     yieldTable.add_datasets(samples['all'], Clear = True)
 
     if not doPlots:
-        #yieldTable.get_scale_factors()
-        yieldTable.get_scale_factors(['FCNH'])
+        yieldTable.get_scale_factors()
+        #yieldTable.get_scale_factors(['FCNH'])
 
     if do3l:
         #yieldTable._columnList  = ['Irreducible', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
-        yieldTable._columnList  = samples['3l_inclusive'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
+        yieldTable._columnList  = samples['3l_inclusive'] + ['BG', 'DATA']#, 'FCNH']#, 'Significance'] 
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau','FCNH']# 'Significance'] 
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
         #yieldTable.add_datasets(['Irreducible', 'Fakes'], Clear = True)
         yieldTable.add_datasets(samples['3l_inclusive'], Clear = True)
-        yieldTable.add_datasets('FCNH')
+        #yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
 
         yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets'] + 6*['.'] + ['0-jet', '1-jet']# + 7*['.'] + ['BDT']
@@ -527,12 +527,12 @@ if doYields:
 
     if doSS:
         #yieldTable._columnList  = ['Irreducible', 'Fakes', 'QFlips', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
-        yieldTable._columnList  = samples['ss_inclusive'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
+        yieldTable._columnList  = samples['ss_inclusive'] + ['BG', 'DATA']#, 'FCNH']#, 'Significance'] 
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
         #yieldTable.add_datasets(['Irreducible', 'Fakes', 'QFlips'], Clear = True)
         yieldTable.add_datasets(samples['ss_inclusive'], Clear = True)
-        yieldTable.add_datasets('FCNH')
+        #yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
         yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET'] + 5*['.'] + ['0-jet', '1-jet']# + 7*['.'] + ['BDT']
 
