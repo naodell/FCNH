@@ -652,6 +652,27 @@ bool fcncAnalyzer::Process(Long64_t entry)
         return kTRUE;
     }
 
+    vector<TCMuon> muonsNoIso = selector->GetSelectedMuons("tight_id");
+    for (unsigned i = 0; i < muonsNoIso.size(); ++i) {
+        TCMuon mu = muonsNoIso[i];
+        histManager->Fill2DHist(mu.Pt(), mu.IsoMap("IsoRel")*mu.Pt(), 
+                "h1_MuonIsoVsPt", "muon Iso vs p_{T};p_{T};Iso", 5, 0., 150., 5, 0., 150.);
+        histManager->Fill2DHist(mu.Pt(), mu.IsoMap("IsoRel")*mu.Eta(), 
+                "h1_MuonIsoVsEta", "muon Iso vs #eta;#eta;Iso", 5, -2.5, 2.5, 5, 0., 150.);
+
+    }
+
+    vector<TCElectron> electronsNoIso = selector->GetSelectedElectrons("tight_id");
+    for (unsigned i = 0; i < electronsNoIso.size(); ++i) {
+        TCElectron ele = electronsNoIso[i];
+        histManager->Fill2DHist(ele.Pt(), ele.IsoMap("IsoRel")*ele.Pt(), 
+                "h1_ElectronIsoVsPt", "electron Iso vs p_{T};p_{T};Iso", 5, 0., 150., 5, 0., 150.);
+        histManager->Fill2DHist(ele.Pt(), ele.IsoMap("IsoRel")*ele.Eta(), 
+                "h1_ElectronIsoVsEta", "electron Iso vs #eta;#eta;Iso", 5, -2.5, 2.5, 5, 0., 150.);
+
+    }
+
+
     if (leptons.size() == 1) {
 
         //!!! Single leptons just for fakes !!!//
@@ -958,6 +979,7 @@ bool fcncAnalyzer::AnalysisSelection(vObj leptons, vector<TCJet> jets, vector<TC
     // Z+fake control region //
     if (
             zTagged 
+            && bJetsM.size() == 1
             && leptons.size() == 3 
             && MET < 30
        ) {
@@ -1934,6 +1956,8 @@ void fcncAnalyzer::FakePlots(vObj leptons, vector<TCJet> jets, vector<TCJet> bJe
                 "h1_FakeableIsoRel", "Iso_{Rel} fakeabless;Iso_{Rel} (cm);Entries / bin", 42, -0.1, 4.);
         histManager->Fill2DHist(fakeables[0].Pt(), fakeables[0].IsoMap("IsoRel"), 
                 "h2_FakeableIsoRelVsPt", "Iso_{Rel} vs p_{T} fakeables;p_{T};Iso_{Rel}", 18, 10., 100., 5, 0., 3.);
+        histManager->Fill2DHist(fakeables[0].Eta(), fakeables[0].IsoMap("IsoRel"), 
+                "h2_FakeableIsoRelVsEta", "Iso_{Rel} vs #eta fakeables;#eta;Iso", 25, -2.5, 2.5, 5, 0., 1.);
         histManager->Fill2DHist(recoMET->Mod(), fakeables[0].IsoMap("IsoRel"), 
                 "h2_FakeableIsoRelVsMET", "Iso_{Rel} vs MET fakeables;MET;Iso_{Rel}", 28, 10., 150., 5, 0., 3.);
         histManager->Fill2DHist(dileptonMassOS, fakeables[0].IsoMap("IsoRel"),                 
@@ -1945,6 +1969,8 @@ void fcncAnalyzer::FakePlots(vObj leptons, vector<TCJet> jets, vector<TCJet> bJe
                 "h1_FakeableIso", "Iso fakeabless;Iso (cm);Entries / bin", 30, 0., 150.);
         histManager->Fill2DHist(fakeables[0].Pt(), fakeables[0].IsoMap("IsoRel")*fakeables[0].Pt(), 
                 "h2_FakeableIsoVsPt", "Iso vs p_{T} fakeables;p_{T};Iso", 18, 10., 100., 5, 0., 150.);
+        histManager->Fill2DHist(fakeables[0].Eta(), fakeables[0].IsoMap("IsoRel")*fakeables[0].Pt(), 
+                "h2_FakeableIsoVsEta", "Iso vs #eta fakeables;#eta;Iso", 25, -2.5, 2.5, 5, 0., 150.);
         histManager->Fill2DHist(recoMET->Mod(), fakeables[0].IsoMap("IsoRel")*fakeables[0].Pt(), 
                 "h2_FakeableIsoVsMET", "Iso vs MET fakeables;MET;Iso", 28, 10., 150., 5, 0., 150.);
         histManager->Fill2DHist(dileptonMassOS, fakeables[0].IsoMap("IsoRel")*fakeables[0].Pt(),                 

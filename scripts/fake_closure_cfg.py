@@ -218,7 +218,7 @@ if doPlots:
             ss_plotter.set_save_path(outFile)
 
             fakeType = {'ss_mumu':['muFakes'], 'ss_ee':['eFakes'], 'ss_emu':['eFakes', 'muFakes']}
-            for category in catSS:
+            for category in ['ss_mumu']:#, 'ss_ee']:
                 ss_plotter.set_category(category)
 
                 projection = 'exclusive'
