@@ -496,7 +496,7 @@ class PlotProducer(AnalysisTools):
         canvas = r.TCanvas('canvas', 'canvas', 650, 700)
 
         if (doRatio or doEff):
-            pad1 = r.TPad('pad1', '', 0.02, 0.34, 0.89, 0.98, 0)
+            pad1 = r.TPad('pad1', '', 0.02, 0.35, 0.89, 0.98, 0)
             pad2 = r.TPad('pad2', '', 0.02, 0.02, 0.89, 0.35, 0)
 
             pad1.SetBottomMargin(0.)
@@ -810,8 +810,8 @@ class PlotProducer(AnalysisTools):
 
                 #legend.Draw()
 
-    def make_overlay_2D_projections(self, varName, samples, directory, projection = 'normal'):
-        ### Makes 1D histograms by projecting onto one of the axes of a 2D histogram
+    def make_overlay_2D_projections(self, varName, samples, directory, axis = 'X', projection = 'normal'):
+        ### Makes 1D histograms by projecting onto one of the axes of a 2D histogram ###
 
         canvas = r.TCanvas('canvas', 'canvas', 650, 700)
         canvas.SetLogy()
@@ -834,12 +834,20 @@ class PlotProducer(AnalysisTools):
         xMax    = hist.GetYaxis().GetXmax()
 
         for i in range(nBins):
-            if projection == 'normal':
-                h_Proj = hist.ProjectionX('h_{0}_{1}'.format(varName, i+1), i, nBins-1)
-            elif projection == 'reverse':
-                h_Proj = hist.ProjectionX('h_{0}_{1}'.format(varName, i+1), 0, nBins-i)
-            elif projection == 'exclusive':
-                h_Proj = hist.ProjectionX('h_{0}_{1}'.format(varName, i+1), i, i+1)
+            if axis == 'X':
+                if projection == 'normal':
+                    h_Proj = hist.ProjectionX('h_{0}_{1}'.format(varName, i+1), i, nBins-1)
+                elif projection == 'reverse':
+                    h_Proj = hist.ProjectionX('h_{0}_{1}'.format(varName, i+1), 0, nBins-i)
+                elif projection == 'exclusive':
+                    h_Proj = hist.ProjectionX('h_{0}_{1}'.format(varName, i+1), i, i+1)
+            if axis == 'Y':
+                if projection == 'normal':
+                    h_Proj = hist.ProjectionY('h_{0}_{1}'.format(varName, i+1), i, nBins-1)
+                elif projection == 'reverse':
+                    h_Proj = hist.ProjectionY('h_{0}_{1}'.format(varName, i+1), 0, nBins-i)
+                elif projection == 'exclusive':
+                    h_Proj = hist.ProjectionY('h_{0}_{1}'.format(varName, i+1), i, i+1)
 
             #h_Proj.SetTitle('')
             h_Proj.SetLineWidth(3)

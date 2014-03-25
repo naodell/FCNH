@@ -50,6 +50,7 @@ class Selector : public TObject {
         bool    MuonTightID(TCMuon*);
         bool    MuonLooseID(TCMuon*);
         bool    PhotonTightID(TCPhoton*);
+        bool    PhotonIsolation(TCPhoton*);
         //bool    PhotonLooseID(TCPhoton*);
 
         EGammaMvaEleEstimator *electronMVA;
@@ -61,7 +62,8 @@ class Selector : public TObject {
 
         // Useful tools
         bool    IsZCandidate(TCPhysObject*, TCPhysObject*, float);
-        float   EffectiveArea(TCPhysObject*); 
+        float*  PhotonEffectiveArea(TCPhysObject*); 
+        float   LeptonEffectiveArea(TCPhysObject*); 
         bool    BTagModifier(TCJet, string);
 
         //Get processed collections

@@ -570,10 +570,10 @@ bool fcncAnalyzer::Process(Long64_t entry)
             cout << "run number: " << runNumber << "\tlumi section: " << lumiSection << "\tevent number: " << eventNumber << endl;
             cout << "\t" << muons.size() << "\t" << recoMuons->GetSize() << "\t" << recoJets->GetSize() << endl;
 
-            for (unsigned i = 0; i < recoJets->GetSize(); ++i) {
+            for (int i = 0; i < recoJets->GetSize(); ++i) {
                 TCJet* thisJet = (TCJet*) recoJets->At(i);    
                 PrintJetIDVars(*thisJet);
-                for (unsigned j = 0; j < recoMuons->GetSize(); ++j) {
+                for (int j = 0; j < recoMuons->GetSize(); ++j) {
                     TCMuon* thisMuon = (TCMuon*) recoMuons->At(j);    
                     cout << thisMuon->DeltaR(*thisJet) << "\t";
                 }
@@ -581,7 +581,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
             }
             cout << endl;
 
-            for (unsigned i = 0; i < recoMuons->GetSize(); ++i) {
+            for (int i = 0; i < recoMuons->GetSize(); ++i) {
                 TCMuon* thisMuon = (TCMuon*) recoMuons->At(i);    
                 PrintMuonIDVars(*thisMuon, selectedVtx);
                 cout << endl;
@@ -602,10 +602,10 @@ bool fcncAnalyzer::Process(Long64_t entry)
                         cout << "run number: " << runNumber << "\tlumi section: " << lumiSection << "\tevent number: " << eventNumber << endl;
                         cout << "\t" << recoMuons->GetSize() << "\t" << recoJets->GetSize() << endl;
 
-                        for (unsigned i = 0; i < recoJets->GetSize(); ++i) {
+                        for (int i = 0; i < recoJets->GetSize(); ++i) {
                             TCJet* thisJet = (TCJet*) recoJets->At(i);    
                             PrintJetIDVars(*thisJet);
-                            for (unsigned j = 0; j < recoMuons->GetSize(); ++j) {
+                            for (int j = 0; j < recoMuons->GetSize(); ++j) {
                                 TCMuon* thisMuon = (TCMuon*) recoMuons->At(j);    
                                 cout << thisMuon->DeltaR(*thisJet) << "\t";
                             }
@@ -629,10 +629,10 @@ bool fcncAnalyzer::Process(Long64_t entry)
                         cout << "\t" << recoMuons->GetSize() << "\t" << recoJets->GetSize() << endl;
                         PrintJetIDVars(jets[0]);
 
-                        for (unsigned i = 0; i < recoJets->GetSize(); ++i) {
+                        for (int i = 0; i < recoJets->GetSize(); ++i) {
                             TCJet* thisJet = (TCJet*) recoJets->At(i);    
                             PrintJetIDVars(*thisJet);
-                            for (unsigned j = 0; j < recoMuons->GetSize(); ++j) {
+                            for (int j = 0; j < recoMuons->GetSize(); ++j) {
                                 TCMuon* thisMuon = (TCMuon*) recoMuons->At(j);    
                                 cout << thisMuon->DeltaR(*thisJet) << "\t";
                             }
@@ -655,21 +655,43 @@ bool fcncAnalyzer::Process(Long64_t entry)
     vector<TCMuon> muonsNoIso = selector->GetSelectedMuons("tight_id");
     for (unsigned i = 0; i < muonsNoIso.size(); ++i) {
         TCMuon mu = muonsNoIso[i];
-        histManager->Fill2DHist(mu.Pt(), mu.IsoMap("IsoRel")*mu.Pt(), 
-                "h1_MuonIsoVsPt", "muon Iso vs p_{T};p_{T};Iso", 5, 0., 150., 5, 0., 150.);
-        histManager->Fill2DHist(mu.Pt(), mu.IsoMap("IsoRel")*mu.Eta(), 
-                "h1_MuonIsoVsEta", "muon Iso vs #eta;#eta;Iso", 5, -2.5, 2.5, 5, 0., 150.);
+        histManager->Fill2DHist(mu.Pt(), mu.IsoMap("IsoRel"), 
+                "h1_MuonIsoVsPt", "muon Iso vs p_{T};p_{T};Iso", 5, 0., 150., 16, 0., 2.);
+        histManager->Fill2DHist(mu.Eta(), mu.IsoMap("IsoRel"), 
+                "h1_MuonIsoVsEta", "muon Iso vs #eta;#eta;Iso", 5, -2.5, 2.5, 16, 0., 2.);
 
     }
 
     vector<TCElectron> electronsNoIso = selector->GetSelectedElectrons("tight_id");
     for (unsigned i = 0; i < electronsNoIso.size(); ++i) {
         TCElectron ele = electronsNoIso[i];
-        histManager->Fill2DHist(ele.Pt(), ele.IsoMap("IsoRel")*ele.Pt(), 
-                "h1_ElectronIsoVsPt", "electron Iso vs p_{T};p_{T};Iso", 5, 0., 150., 5, 0., 150.);
-        histManager->Fill2DHist(ele.Pt(), ele.IsoMap("IsoRel")*ele.Eta(), 
-                "h1_ElectronIsoVsEta", "electron Iso vs #eta;#eta;Iso", 5, -2.5, 2.5, 5, 0., 150.);
+        histManager->Fill2DHist(ele.Pt(), ele.IsoMap("IsoRel"), 
+                "h1_ElectronIsoVsPt", "electron Iso vs p_{T};p_{T};Iso", 5, 0., 150., 16, 0., 2.);
+        histManager->Fill2DHist(ele.Eta(), ele.IsoMap("IsoRel"), 
+                "h1_ElectronIsoVsEta", "electron Iso vs #eta;#eta;Iso", 5, -2.5, 2.5, 16, 0., 2.);
 
+        if (ele.IsoMap("pfChIso_R04") != 0) {
+            cout << ele.IsoMap("pfChIso_R04") << endl;
+            histManager->Fill2DHist(ele.Pt(), ele.IsoMap("pfChIso_R04")/ele.Pt(), 
+                    "h1_ElectronChHadIsoVsPt", "electron Iso vs p_{T};p_{T};Charged Iso", 5, 0., 150., 16, 0., 2.);
+            histManager->Fill2DHist(fabs(ele.Eta()), ele.IsoMap("pfChIso_R04")/ele.Pt(), 
+                    "h1_ElectronChHadIsoVsEta", "electron Iso vs #eta;#eta;Charged Iso", 5, 0., 2.5, 16, 0., 2.);
+        }
+        if (ele.IsoMap("pfPhoIso_R04") != 0) {
+            histManager->Fill2DHist(ele.Pt(), ele.IsoMap("pfPhoIso_R04")/ele.Pt(), 
+                    "h1_ElectronPhoIsoVsPt", "electron Iso vs p_{T};p_{T};#gamma Iso", 5, 0., 150., 16, 0., 2.);
+            histManager->Fill2DHist(fabs(ele.Eta()), ele.IsoMap("pfPhoIso_R04")/ele.Pt(), 
+                    "h1_ElectronPhoIsoVsEta", "electron Iso vs #eta;#eta;#gamma Iso", 5, 0., 2.5, 16, 0., 2.);
+        }
+        if (ele.IsoMap("pfNeuIso_R04") != 0) {
+            histManager->Fill2DHist(ele.Pt(), ele.IsoMap("pfNeuIso_R04")/ele.Pt(), 
+                    "h1_ElectronNeuIsoVsPt", "electron Iso vs p_{T};p_{T};Neutral Iso", 5, 0., 150., 16, 0., 2.);
+            histManager->Fill2DHist(fabs(ele.Eta()), ele.IsoMap("pfNeuIso_R04")/ele.Pt(), 
+                    "h1_ElectronNeuIsoVsEta", "electron Iso vs #eta;#eta;Neutral Iso", 5, 0., 2.5, 16, 0., 2.);
+        }
+
+        histManager->Fill2DHist(ele.IsoMap("IsoRel"), ele.HadOverEm(), 
+                "h1_ElectronIsoVsHOverE", "H/E vs electron Iso;Neutral Iso;H/E", 16, 0., 2., 15, 0., .15);
     }
 
 
@@ -1573,6 +1595,7 @@ void fcncAnalyzer::JetPlots(vector<TCJet> jets, vector<TCJet> bJets)
                 "h1_DijetMass", "M_{jj};M_{jj};Entries / 20 GeV", 50, 0, 1000);
 
     for (unsigned i = 0; i < jets.size(); ++i) {
+        if (i > 3) break;
         string index = str(i+1);
 
         histManager->Fill1DHist(jets[i].BDiscriminatorMap("CSV"),
@@ -1601,6 +1624,7 @@ void fcncAnalyzer::JetPlots(vector<TCJet> jets, vector<TCJet> bJets)
     }
 
     for (unsigned i = 0; i < bJets.size(); ++i) {
+        if (i > 2) break;
         string index = str(i+1);
 
         histManager->Fill1DHist(bJets[i].BDiscriminatorMap("CSV"),
