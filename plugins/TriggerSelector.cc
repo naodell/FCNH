@@ -71,11 +71,11 @@ void TriggerSelector::TriggerDefaults()
     //_triggers.push_back("HLT_Mu22_TkMu22_v");
 
     // double electron triggers
-    //_triggers.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+    _triggers.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
 
     // muEG triggers
-    //_triggers.push_back("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
-    //_triggers.push_back("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+    _triggers.push_back("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+    _triggers.push_back("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
 
     //if (!_isRealData) {
     //    _triggers.push_back("HLT_Mu17_Ele8_CaloIdL_v");
@@ -124,13 +124,13 @@ bool TriggerSelector::CheckOverlap() {
 
     //cout << "Checking for overlap...";
 
-    string muonTrigs[]  = {"HLT_Mu17_Mu8_v", "HLT_Mu17_TkMu8_v", "HLT_Mu22_TkMu8_v", "HLT_Mu22_TkMu22_v"};
+    string muonTrigs[]  = {"HLT_Mu17_Mu8_v", "HLT_Mu17_TkMu8_v"};//, "HLT_Mu22_TkMu8_v", "HLT_Mu22_TkMu22_v"};
     string eleTrigs[]   = {"HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v"};
 
     bool overlap = false;
 
     if (_type == "muEG" || _type == "electron" ) {
-        for (unsigned i = 0; i < 4; ++i) {
+        for (unsigned i = 0; i < 2; ++i) {
             if (find(_passNames.begin(), _passNames.end(), muonTrigs[i]) != _passNames.end())
                 overlap = true;
         }

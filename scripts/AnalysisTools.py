@@ -34,6 +34,7 @@ class AnalysisTools():
     '''
     def __init__(self, inputFile, scale, savePath = ''):
         self._histFile      = r.TFile(inputFile, 'OPEN')
+        #self._outFile       = r.TFile('test.root', 'OPEN')
         self._period        = '2012'
         self._savePath      = savePath
         self._scale         = scale
@@ -164,6 +165,7 @@ class AnalysisTools():
 
         if not self._histFile.GetDirectory(self._category + '/' + dataName):
             print self._category, dataName, histogramName
+            return None
 
         hist = self._histFile.GetDirectory(self._category + '/' + dataName).Get(histogramName)
 

@@ -120,26 +120,56 @@ bool Selector::IsZCandidate(TCPhysObject* cand1, TCPhysObject* cand2, float wind
     return isZCandidate;
 }
 
-float Selector::EffectiveArea(TCPhysObject *lepton) 
+float* Selector::PhotonEffectiveArea(TCPhysObject* photon)
 {
-    float area = 0;
+    //Get effective area components
+    float EAPho[7][3] = {
+        {0.012, 0.030, 0.148}, // eta < 1.0
+        {0.010, 0.057, 0.130}, // 1.0 < eta < 1.479
+        {0.014, 0.039, 0.112}, // 1.479 < eta < 2.0
+        {0.012, 0.015, 0.216}, // 2.0 < eta < 2.2
+        {0.016, 0.024, 0.262}, // 2.2 < eta < 2.3
+        {0.020, 0.039, 0.260}, // 2.3 < eta < 2.4
+        {0.012, 0.072, 0.266} // 2.5 < eta
+    };
+        
+    float eta = fabs(photon->Eta());
+    if (eta < 1.)
+        return EAPho[0];
+    else if (eta > 1. && eta < 1.479)
+        return EAPho[1];
+    else if (eta > 1.479 && eta < 2.)
+        return EAPho[2];
+    else if (eta > 2. && eta < 2.2)
+        return EAPho[3];
+    else if (eta > 2.2 && eta < 2.3)
+        return EAPho[4];
+    else if (eta > 2.3 && eta < 2.4)
+        return EAPho[5];
+    else
+        return EAPho[6];
+}
 
-    if (fabs(lepton->Eta())<1.0)          
-        area = 0.674;
-    else if  (fabs(lepton->Eta())<1.5) 
-        area = 0.565;
-    else if  (fabs(lepton->Eta())<2.0) 
-        area = 0.442;
-    else if  (fabs(lepton->Eta())<2.2) 
-        area = 0.515;
-    else if  (fabs(lepton->Eta())<2.3) 
-        area = 0.821;
-    else if  (fabs(lepton->Eta())<2.4) 
-        area = 0.660;
-    else                               
-        area = 0.00;
+float Selector::LeptonEffectiveArea(TCPhysObject* lepton) 
+{
 
-    return area;
+    if (lepton->Type() == "electron") {
+        float eta = fabs(lepton->Eta());
+        if (eta < 1.0)          
+            return 0.674;
+        else if  (eta < 1.5) 
+            return 0.565;
+        else if  (eta < 2.0) 
+            return 0.442;
+        else if  (eta < 2.2) 
+            return 0.515;
+        else if  (eta < 2.3) 
+            return 0.821;
+        else if  (eta < 2.4) 
+            return 0.660;
+        else                               
+            return 0.00;
+    }
 }
 
 
@@ -259,29 +289,29 @@ void Selector::MuonSelector(TClonesArray* muons)
             else if (
                     //thisMuon->IsPF()
                     MuonTightID(thisMuon)
+                    && muISO < 0.6 
                     && fabs(thisMuon->Dz(_selVertices[0]))  < 0.05
                     && fabs(thisMuon->Dxy(_selVertices[0])) < 0.015
                     )
                 _selMuons["QCD2l_CR_probe"].push_back(*thisMuon);
 
             // analysis lepton selection
-            if (MuonTightID(thisMuon) && muISO < 0.12) 
-                _selMuons["tight"].push_back(*thisMuon);
-            else if (
+            if (MuonTightID(thisMuon)) { 
+                _selMuons["tight_id"].push_back(*thisMuon);
+                if (muISO < 0.12)
+                    _selMuons["tight"].push_back(*thisMuon);
+            } else if (
                     //thisMuon->IsPF()
-                    MuonTightID(thisMuon)
-                    && muISO > 0.12 
-                    && fabs(thisMuon->Dz(_selVertices[0]))  < 0.05 
-                    && fabs(thisMuon->Dxy(_selVertices[0])) < 0.015
+                    MuonTightID(thisMuon) && muISO > 0.2 && muISO < 0.6 
                     ) {
                 thisMuon->SetFake(true);
                 _selMuons["fakeable"].push_back(*thisMuon);
             }
 
         } else if (thisMuon->Pt() > _muPtCuts[1]) 
-            if (MuonLooseID(thisMuon)
-                    //&& (muISO > 0.1 && thisMuon->Pt() > 20)
-                    //&& (muISO < 0.15 && thisMuon->Pt() < 20)
+            if (
+                    MuonLooseID(thisMuon)
+                    && ((thisMuon->Pt() > 20 && muISO > 0.2) || (thisMuon->Pt() < 20 && muISO < 0.25))
                )
                 _selMuons["loose"].push_back(*thisMuon);
     }
@@ -419,10 +449,11 @@ void Selector::ElectronSelector(TClonesArray* electrons)
         // analysis electrons
         if (thisElec->IdMap("preSelPassV1")) {
 
-            _selElectrons["QCD2l_CR_probe"].push_back(*thisElec);
+            if (!muOverlap && eleISO < 1.)
+                _selElectrons["QCD2l_CR_probe"].push_back(*thisElec);
 
             if (ElectronMVA(thisElec) && !muOverlap)
-                _selElectrons["premva"].push_back(*thisElec);
+                _selElectrons["tight_id"].push_back(*thisElec);
 
             if (ElectronMVA(thisElec) && eleISO < 0.15 
                     //&& electron->MissingHits() // <-- ??
@@ -431,7 +462,11 @@ void Selector::ElectronSelector(TClonesArray* electrons)
                     _selElectrons["tight"].push_back(*thisElec);			
                 else
                     _selElectrons["tight_overlap"].push_back(*thisElec);			
-            } else if (!muOverlap) {
+            } else if (
+                    !muOverlap 
+                    && ElectronMVA(thisElec)
+                    && eleISO < 1.
+                    ) {
                 thisElec->SetFake(true);
                 _selElectrons["fakeable"].push_back(*thisElec);
             }
@@ -453,6 +488,7 @@ bool Selector::PhotonTightID(TCPhoton* photon)
     bool pass = false;
     if (
             ((fabs(photon->Eta()) < 1.442     
+              && photon->ConversionVeto()           
               && photon->SigmaIEtaIEta()            < 0.01  
               && photon->HadOverEm()                < 0.05      
              ) ||
@@ -460,13 +496,24 @@ bool Selector::PhotonTightID(TCPhoton* photon)
               && photon->SigmaIEtaIEta()            < 0.028 
               && photon->HadOverEm()                < 0.065
              ))
-            && photon->R9()                       > 0.94
+            && photon->ConversionVeto()           
+            //&& photon->R9()                       > 0.94
             //&& fabs(photon->Dxy(_selVertices[0])) < 0.02
             //&& fabs(photon->Dz(_selVertices[0]))  < 0.1
-            //&& photon->ConversionVeto()
        ) pass = true;
 
     return pass;
+}
+
+bool Selector::PhotonIsolation(TCPhoton* photon)
+{
+    float* EA = PhotonEffectiveArea(photon);
+
+    float chIsoCor = photon->IsoMap("chIso03") - _rho*EA[0];
+    float nhIsoCor = photon->IsoMap("nhIso03") - _rho*EA[1];
+    float phIsoCor = photon->IsoMap("phIso03") - _rho*EA[2];
+
+    return true;
 }
 
 void Selector::PhotonSelector(TClonesArray* photons) 
@@ -479,15 +526,10 @@ void Selector::PhotonSelector(TClonesArray* photons)
         // photon preselection
         if (thisPho->Pt() < _phoPtCuts[0] || fabs(thisPho->Eta()) > 2.5 ) continue;
 
-
-        float phoISO = (thisPho->IsoMap("chIso03") 
-                + max(0., (double)(thisPho->IsoMap("nhIso03") 
-                        + thisPho->IsoMap("phIso03") 
-                        - _rho*EffectiveArea(thisPho))))/thisPho->Pt(); 
-
+        bool passIso = PhotonIsolation(thisPho);
 
         // analysis photons
-        if (PhotonTightID(thisPho) && phoISO < 0.15) {
+        if (PhotonTightID(thisPho) && passIso) {
             _selPhotons["tight"].push_back(*thisPho);			
 
         } else {
@@ -550,11 +592,12 @@ void Selector::JetSelector(TClonesArray* jets)
                         else if (overlap[3])
                             _selJets["eleFakes"].push_back(corJet);
 
-                        //corJet.VtxNTracks() > 0
-                        //&& corJet.VtxSumPtFrac() > 0. 
-                        //&& ((int)corJet.VtxSumPtIndex() == 1
-                    } else { 
-                        _selJets["tight"].push_back(corJet);
+                    } else if ( true
+                            //corJet.VtxNTracks() > 0
+                            //&& corJet.VtxSumPtFrac() > 0. 
+                            //&& ((int)corJet.VtxSumPtIndex() == 1)
+                            ) {
+                            _selJets["tight"].push_back(corJet);
 
                         if (!overlap[2] && !overlap[3])
                             _selJets["tight_NoFakes"].push_back(corJet);

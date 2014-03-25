@@ -611,6 +611,8 @@ void fakeAnalyzer::FillDenominatorHists(string cat, TCPhysObject& probe)
                 "h1_MuProbeLepPt", "probe muon p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
         histManager->Fill1DHist(probe.Eta(),
                 "h1_MuProbeLepEta", "probe muon #eta;#eta;Entries / bin", 25, -2.5, 2.5);
+        histManager->Fill1DHist(probe.IsoMap("IsoRel"),
+                "h1_MuDenomIsoRel", "probe muon IsoRel;IsoRel;Entries", 40, 0., 4.);
 
         histManager->Fill1DHistUnevenBins(probe.Pt(),
                 "h1_MuDenomPt", "probe muon p_{T};p_{T};Entries / bin", nPtBins, ptBins);
@@ -627,6 +629,8 @@ void fakeAnalyzer::FillDenominatorHists(string cat, TCPhysObject& probe)
                 "h1_EleProbeLepPt", "probe electron p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
         histManager->Fill1DHist(probe.Eta(),
                 "h1_EleProbeLepEta", "probe electron #eta;#eta;Entries / bin", 25, -2.5, 2.5);
+        histManager->Fill1DHist(probe.IsoMap("IsoRel"),
+                "h1_EleDenomIsoRel", "probe electron IsoRel;IsoRel;Entries", 40, 0., 4.);
 
         histManager->Fill1DHistUnevenBins(probe.Pt(),
                 "h1_EleDenomPt", "probe electron p_{T};p_{T};Entries / bin", nPtBins, ptBins);
@@ -650,6 +654,8 @@ void fakeAnalyzer::FillNumeratorHists(string cat, TCPhysObject& passLep)
                 "h1_MuPassLepPt", "pass muon p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
         histManager->Fill1DHist(passLep.Eta(),
                 "h1_MuPassLepEta", "pass muon #eta;#eta;Entries / bin", 25, -2.5, 2.5);
+        histManager->Fill1DHist(passLep.IsoMap("IsoRel"),
+                "h1_MuNumerIsoRel", "pass electron IsoRel;IsoRel;Entries", 40, 0., 0.20);
 
         histManager->Fill1DHistUnevenBins(passLep.Pt(),
                 "h1_MuNumerPt", "pass muon p_{T};p_{T};Entries", nPtBins, ptBins);
@@ -666,6 +672,8 @@ void fakeAnalyzer::FillNumeratorHists(string cat, TCPhysObject& passLep)
                 "h1_ElePassLepPt", "pass electron p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
         histManager->Fill1DHist(passLep.Eta(),
                 "h1_ElePassLepEta", "pass electron #eta;#eta;Entries / bin", 25, -2.5, 2.5);
+        histManager->Fill1DHist(passLep.IsoMap("IsoRel"),
+                "h1_EleNumerIsoRel", "pass electron IsoRel;IsoRel;Entries", 40, 0., 0.20);
 
         histManager->Fill1DHistUnevenBins(passLep.Pt(),
                 "h1_EleNumerPt", "pass electron p_{T};p_{T};Entries / 3 GeV", nPtBins, ptBins);
