@@ -1,1 +1,2 @@
-/uscms/home/naodell/eos/data/nuTuples_v7_4/WZJetsTo3LNu/nuTuple_100_1_W2c.root
+/eos/uscms/store/user/naodell/data/nuTuples_v7_4/DoubleMu_Run2012A/nuTuple_131_1_DJe.root
+/eos/uscms/store/user/naodell/data/nuTuples_v7_4/DoubleMu_Run2012A/nuTuple_131_1_dfG.root

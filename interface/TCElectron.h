@@ -3,153 +3,116 @@
 
 #include "TObject.h"
 #include "TLorentzVector.h"
-#include "TCEGamma.h"
-#include "TCTrack.h"
+#include "TCPhysObject.h"
 
-class TCElectron : public TCEGamma {
- public:
-  class Track : public TCTrack{ ClassDef(Track, 1); };
+class TCElectron : public TCPhysObject {
+    private:
 
- private:
+        float _ptError;
+        float _hadOverEm;
+        float _dPhiSuperCluster;
+        float _dEtaSuperCluster;
+        float _sigmaIetaIeta;
+        float _eOverP;
+        float _fBrem;
+        float _r9;
 
-  float _normChi2kf;
-  float _ptError;
+        float _scEta;
 
-  float _fBrem;
-  float _inverseEnergyMomentumDiff;
+        bool  _convVeto;
+        short _convMissHits;
 
-  float _EoP;
-  float _EoPout;
-  float _ESeedOverP;
+        bool _isEB;        // true if particle is in ECAL Barrel
+        bool _isEE;        // true if particle is in ECAL Endcaps
+        bool _isInGap;
 
-  float _ip3d;
-  float _ip3dSig;
+        float _normalizedChi2;
+        int _numberOfValidPixelHits;
+        int _numberOfValidTrackerHits;
+        int _numberOfLostPixelHits;
+        int _numberOfLostTrackerHits;
 
-  float _deltaEtaSeedCluster;
-  float _deltaPhiSeedCluster;
+        int _cut95;
+        int _cut90;
+        int _cut85;
+        int _cut80;
+        int _cut70;
+        int _cut60;
 
-  float _mvaID_Old;
-  float _mvaID_HZZ;
-  float _regEne;
-  float _regErr;
-
-  bool  _passConvVeto;
-  short _convMissHits;
-
-  float _convDcot;
-  float _convDist;
-  float _convRadius;
-
-  int _trackerLayersWithMeasurement;
-  int _numberOfValidHits;
-  int _numberOfValidPixelHits;
-  int _numberOfValidTrackerHits;
-  int _numberOfLostPixelHits;
-  int _numberOfLostTrackerHits;
+        TLorentzVector _regressionMomCombP4;
 
 
-  TLorentzVector _regressionMomCombP4;
-  float _effArea;
+    public:
+        TCElectron();
+        virtual ~TCElectron();
 
-  vector<TCElectron::Track> _tracks;
+        // "get" methods -----------
 
- public:
-  TCElectron();
-  virtual ~TCElectron();
+        float PtError() const;
 
-  // "get" methods -----------
-  vector<TCElectron::Track> GetTracks() const;
+        float HadOverEm() const;
+        float DphiSuperCluster() const;
+        float DetaSuperCluster() const;
+        float SigmaIEtaIEta() const;
+        float FBrem() const;
+        float EOverP() const;
+        float NormalizedChi2() const;
 
-  float NormalizedChi2() const;
-  float NormalizedChi2Gsf() const;
-  float NormalizedChi2Kf() const;
+        float SCEta() const;
+        float R9() const; 
 
-  float InverseEnergyMomentumDiff() const;
+        bool  ConversionVeto() const;
+        short ConversionMissHits() const;
 
-  float EoP() const;
-  float EoPout() const;
-  float ESeedOverP() const;
+        bool IsEB() const;
+        bool IsEE() const;
+        bool IsInGap() const;
 
-  float IP3d() const;
-  float IP3dSig() const;
-  float DeltaEtaSeedCluster() const;
-  float DeltaPhiSeedCluster() const;
+        int NumberOfValidPixelHits() const;
+        int NumberOfValidTrackerHits() const;
+        int NumberOfLostPixelHits() const;
+        int NumberOfLostTrackerHits() const;
 
-  float PtError() const;
+        int CutLevel(int lvl) const;
+        bool PassID(int lvl) const;
+        bool PassConversion(int lvl) const;
+        bool PassIsolation(int lvl) const;
 
-  float FBrem() const;
+        TLorentzVector RegressionMomCombP4() const;
 
-  float MvaID_Old() const;
-  float MvaID_HZZ() const;
-  float MvaID() const;
-  float EnergyRegression() const;
-  float EnergyRegressionErr() const;
+        //--------------------------
+        // "set" methods ---------
+        //--------------------------
 
-  bool  PassConversionVeto() const;
-  short ConversionMissHits() const;
+        void SetPtError(float e);
+        void SetHadOverEm(float h);
+        void SetDphiSuperCluster(float dp);
+        void SetDetaSuperCluster(float de);
+        void SetSigmaIEtaIEta(float sieie);
+        void SetEOverP(float e);
+        void SetFBrem(float fb);
 
-  float ConversionDcot() const;
-  float ConversionDist() const;
-  float ConversionRadius() const;
+        void SetSCEta(float);
 
-  int TrackerLayersWithMeasurement() const;
-  int NumberOfValidHits() const;
-  int NumberOfValidPixelHits() const;
-  int NumberOfValidTrackerHits() const;
-  int NumberOfLostPixelHits() const;
-  int NumberOfLostTrackerHits() const;
+        void SetConversionVeto(bool);
+        void SetConversionMissHits(short);
 
-  TLorentzVector RegressionMomCombP4() const;
+        void SetNumberOfValidPixelHits(int n);
+        void SetNumberOfValidTrackerHits(int n);
+        void SetNumberOfLostPixelHits(int n);
+        void SetNumberOfLostTrackerHits(int n);
+        void SetNormalizedChi2(float n);
+        void SetR9(float r);
 
-  float EffArea() const;
+        void SetIsEB(bool b);
+        void SetIsEE(bool b);
+        void SetIsInGap(bool b);
 
-  //--------------------------
-  // "set" methods ---------
-  //--------------------------
-  void AddTrack(TCElectron::Track);
+        void SetCutLevel(int cut, int lvl);
 
-  void SetNormalizedChi2Kf(float);
+        void SetRegressionMomCombP4(TLorentzVector tmpP4);
 
-  void SetInverseEnergyMomentumDiff(float);
-
-  void SetIP3d(float);
-  void SetIP3dSig(float);
-  void SetDeltaEtaSeedCluster(float);
-  void SetDeltaPhiSeedCluster(float);
-
-  void SetEoP(float);
-  void SetEoPout(float);
-  void SetESeedOverP(float);
-
-  void SetPtError(float);
-
-  void SetFBrem(float);
-
-  void SetPassConversionVeto(bool);
-  void SetConversionMissHits(short);
-
-  void SetConversionDcot(float);
-  void SetConversionDist(float);
-  void SetConversionRadius(float);
-
-  void SetTrackerLayersWithMeasurement(int);
-  void SetNumberOfValidHits(int);
-  void SetNumberOfValidPixelHits(int);
-  void SetNumberOfValidTrackerHits(int);
-  void SetNumberOfLostPixelHits(int);
-  void SetNumberOfLostTrackerHits(int);
-
-
-  void SetMvaID_Old(float);
-  void SetMvaID_HZZ(float);
-  void SetEnergyRegression(float);
-  void SetEnergyRegressionErr(float);
-
-  void SetRegressionMomCombP4(TLorentzVector tmpP4);
-
-  void SetEffArea(float);
-
-  ClassDef(TCElectron, 1);
+        ClassDef(TCElectron, 1);
 };
 
 #endif	/* _TCELECTRON_H */

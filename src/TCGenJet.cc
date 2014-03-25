@@ -1,10 +1,3 @@
-/* 
- * File:   TCGenJet.cc
- * Author: Nate O.
- * 
- * Created on Nov 29, 2010, 1:08 PM
- */
-
 #include "../interface/TCGenJet.h"
 #include "../interface/TCGenJetLinkDef.h"
 

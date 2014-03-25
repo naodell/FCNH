@@ -23,11 +23,14 @@ tar -xzf source.tar.gz
 cd Analysis_CMS/fcncAnalysis
 cp ../../../../input_${dataName}_${count}.txt input.txt
 rm histos/*root
+mkdir sync_files
 
 root -l -b -q 'run.C(1e9, "'$suffix' '$selection' '$period'")'
 
 ### Copy output and cleanup ###
 rename .root _${dataName}_$count.root histos/fcncHistograms*
+rename .txt _${dataName}_$count.txt sync_files/*
 
 #cp histos/fcncHistograms_*.root $outDir/.
 cp histos/fcncHistograms_*.root ${_CONDOR_SCRATCH_DIR}
+cp sync_files/mine*txt ${_CONDOR_SCRATCH_DIR}

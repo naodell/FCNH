@@ -326,9 +326,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
     bool triggerPass = false;
     triggerPass = triggerSelector->SelectTrigger(triggerStatus, hltPrescale);
 
-    // Double electron workaround.  Gets rid of hopelessly prescaled events fo July 20-26, 2011
-    //if (selection == "electron" && (runNumber > 171200 && runNumber < 171600)) return kTRUE;
-
     if (!triggerPass) 
         return kTRUE;
     else
@@ -498,6 +495,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
     vector<TCJet> fwdJets   = selector->GetSelectedJets("forward");
     vector<TCJet> muJets    = selector->GetSelectedJets("muJets");
     vector<TCJet> eleJets   = selector->GetSelectedJets("eleJets");
+    vector<TCJet> mlJets    = selector->GetSelectedJets("looseMu");
 
     //jets.insert(jets.end(), fwdJets.begin(), fwdJets.end());
     //jets.insert(jets.end(), bJetsL.begin(), bJetsL.end());
@@ -514,9 +512,9 @@ bool fcncAnalyzer::Process(Long64_t entry)
     sort(allJets.begin(), allJets.end(), P4SortCondition);
     sort(bJetsM.begin(), bJetsM.end(), BTagSortCondition);
     sort(bJetsL.begin(), bJetsL.end(), BTagSortCondition);
-    sort(leptons.begin(), leptons.end(), P4SortCondition);
     sort(muons.begin(), muons.end(), P4SortCondition);
     sort(electrons.begin(), electrons.end(), P4SortCondition);
+    sort(leptons.begin(), leptons.end(), P4SortCondition);
 
     // Fill lepton mva tree
     if (doLepTree)
@@ -563,7 +561,11 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
     if (doSync) {
 
-        if (false) {
+        if (runNumber == 191834 && lumiSection < 20)  
+            cout << "run number: " << runNumber << "\tlumi section: " << lumiSection << "\tevent number: " << eventNumber << endl;
+
+        if (runNumber == 191834 && lumiSection == 13 && eventNumber == 12177438) {
+
             cout << "run number: " << runNumber << "\tlumi section: " << lumiSection << "\tevent number: " << eventNumber << endl;
             cout << "\t" << muons.size() << "\t" << recoMuons->GetSize() << "\t" << recoJets->GetSize() << endl;
 
@@ -587,12 +589,13 @@ bool fcncAnalyzer::Process(Long64_t entry)
         }
 
         if (muons.size() == 2) {
+
             if (muons[0].Pt() > leptonPtCut[0] && muons[1].Pt() > leptonPtCut[1]) { 
 
                 // Yields for syncing with Stoyan //
                 if (muons[0].Charge() == muons[1].Charge()) {
-                    fout[2] << "run number: " << runNumber << "   lumi section: " << lumiSection << " event number: " << eventNumber << "\n";
-                    histManager->Fill1DHist(1, "h1_SyncYields", ";cut;Entries", 5, 0.5, 5.5);
+                    fout[2] << "run number: " << runNumber << "\t lumi section: " << lumiSection << "\t event number: " << eventNumber << "\n";
+                    histManager->Fill1DHist(1, "h1_SyncYields", ";cut;Entries", 10, 0.5, 10.5);
                     ++eventCountSS;
 
                     if (false) {
@@ -612,13 +615,20 @@ bool fcncAnalyzer::Process(Long64_t entry)
                     }
 
                     if (jets.size() == 0){
-                        fout[3] << "run number: " << runNumber << "   lumi section: " << lumiSection << " event number: " << eventNumber << "\n";
-                        histManager->Fill1DHist(2, "h1_SyncYields", ";cut;Entries", 5, 0.5, 5.5);
+                        fout[3] << "run number: " << runNumber << "\t lumi section: " << lumiSection << "\t event number: " << eventNumber << "\n";
+                        histManager->Fill1DHist(2, "h1_SyncYields", ";cut;Entries", 10, 0.5, 10.5);
                         ++eventCountSS_NoJet;
                     }
+
+                    if (mlJets.size() == 0)
+                        histManager->Fill1DHist(5, "h1_SyncYields", ";cut;Entries", 10, 0.5, 10.5);
+                    else if (mlJets.size() == 1)
+                        histManager->Fill1DHist(6, "h1_SyncYields", ";cut;Entries", 10, 0.5, 10.5);
+                    else if (mlJets.size() >= 2)
+                        histManager->Fill1DHist(7, "h1_SyncYields", ";cut;Entries", 10, 0.5, 10.5);
                 } else if (muons[0].Charge() != muons[1].Charge()) {
-                    fout[0] << "run number: " << runNumber << "   lumi section: " << lumiSection << " event number: " << eventNumber << endl;
-                    histManager->Fill1DHist(3, "h1_SyncYields", ";cut;Entries", 5, 0.5, 5.5);
+                    fout[0] << "run number: " << runNumber << "\t lumi section: " << lumiSection << "\t event number: " << eventNumber << endl;
+                    histManager->Fill1DHist(3, "h1_SyncYields", ";cut;Entries", 10, 0.5, 10.5);
                     ++eventCountOS;
 
                     if (eventNumber == 4238484) {
@@ -639,10 +649,16 @@ bool fcncAnalyzer::Process(Long64_t entry)
                     }
 
                     if (jets.size() == 0) {
-                        fout[1] << "run number: " << runNumber << "   lumi section: " << lumiSection << " event number: " << eventNumber << endl;
-                        histManager->Fill1DHist(4, "h1_SyncYields", ";cut;Entries", 5, 0.5, 5.5);
+                        fout[1] << "run number: " << runNumber << "\t lumi section: " << lumiSection << "\t event number: " << eventNumber << endl;
+                        histManager->Fill1DHist(4, "h1_SyncYields", ";cut;Entries", 10, 0.5, 10.5);
                         ++eventCountOS_NoJet;
                     }
+                    if (mlJets.size() == 0)
+                        histManager->Fill1DHist(8, "h1_SyncYields", ";cut;Entries", 10, 0.5, 10.5);
+                    else if (mlJets.size() == 1)
+                        histManager->Fill1DHist(9, "h1_SyncYields", ";cut;Entries", 10, 0.5, 10.5);
+                    else if (mlJets.size() >= 2)
+                        histManager->Fill1DHist(10, "h1_SyncYields", ";cut;Entries", 10, 0.5, 10.5);
                 }
             }
         }

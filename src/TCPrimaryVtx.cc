@@ -1,10 +1,3 @@
-/* 
- * File:   TCPrimaryVtx.cc
- * Author: Anton A.
- * 
- * Created on May 21, 2010, 11:16 AM
- */
-
 #include "../interface/TCPrimaryVtx.h"
 #include "../interface/TCPrimaryVtxLinkDef.h"
 

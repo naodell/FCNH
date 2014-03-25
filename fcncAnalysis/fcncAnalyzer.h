@@ -110,6 +110,7 @@ class fcncAnalyzer : public TSelector {
         string  suffix;
         string  selection;
         string  period;
+        string  fileName;
 
         // Random number generator
         TRandom3* rnGenerator;
@@ -377,8 +378,12 @@ bool fcncAnalyzer::Notify()
     TFile   *inFile  = thisTree->GetCurrentFile();
     TTree   *jobTree = (TTree*)inFile->Get("ntupleProducer/jobTree");
     TBranch *nEvents = jobTree->GetBranch("nEvents");
+    fileName = inFile->GetName();
 
-    cout << "Analyzing file " << inFile->GetName() << endl;
+    cout << "Analyzing file " << fileName << endl;
+
+    for (unsigned i = 0; i < 4; ++i)
+        fout[i] << fileName << endl;
 
     nEvents->SetAddress(&initEvents);
     nEvents->GetEntry(0);

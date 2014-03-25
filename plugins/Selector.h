@@ -23,6 +23,7 @@
 #include "../interface/TCGenParticle.h"
 #include "../interface/TCGenJet.h"
 
+#include "EGammaMvaEleEstimator.h"
 #include "rochcor2012jan22.h"
 
 using namespace std;
@@ -44,7 +45,6 @@ class Selector : public TObject {
         void    GenJetSelector(TClonesArray*);
 
         bool    ElectronMVA(TCElectron*);
-        bool    ElectronMVAPreSel(TCElectron*);
         bool    ElectronTightID(TCElectron*);
         bool    ElectronLooseID(TCElectron*);
         bool    MuonTightID(TCMuon*);
@@ -52,6 +52,7 @@ class Selector : public TObject {
         bool    PhotonTightID(TCPhoton*);
         //bool    PhotonLooseID(TCPhoton*);
 
+        EGammaMvaEleEstimator *electronMVA;
         rochcor2012 *muCorrector;
 
         //Set internal variables

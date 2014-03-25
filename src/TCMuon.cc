@@ -1,5 +1,6 @@
 #include "../interface/TCMuon.h"
 #include "../interface/TCMuonLinkDef.h"
+#include <iostream>
 
 TCMuon::TCMuon() {
 }
@@ -22,21 +23,7 @@ bool TCMuon::IsTRK() const {
 }
 
 bool TCMuon::IsPF() const {
-  return _isPF;
-}
-
-bool TCMuon::IsSoft() const {
-  return _isSoft;
-}
-bool TCMuon::IsTight() const {
-  return _isTight;
-}
-
-bool TCMuon::IsGood() const {
-  return _isGood;
-}
-bool TCMuon::IsGoodLoose() const {
-  return _isGoodLoose;
+   return _isPF;
 }
 
 int TCMuon::NumberOfMatchedStations() const {
@@ -45,9 +32,6 @@ int TCMuon::NumberOfMatchedStations() const {
 
 int TCMuon::TrackLayersWithMeasurement() const {
   return _trackLayersWithMeasurement;
-}
-int TCMuon::PixelLayersWithMeasurement() const {
-  return _pixelLayersWithMeasurement;
 }
 
 int TCMuon::NumberOfValidPixelHits() const {
@@ -73,9 +57,6 @@ int TCMuon::NumberOfLostTrackerHits() const {
 float TCMuon::NormalizedChi2() const {
   return _normalizedChi2;
 }
-float TCMuon::NormalizedChi2_tracker() const {
-  return _normalizedChi2_tracker;
-}
 
 int TCMuon::NumberOfMatches() const {
    return _numberOfMatches;
@@ -89,26 +70,6 @@ float TCMuon::SegComp() const {
    return _segComp;
 }
 
-float TCMuon::PfIsoPU() const {
-  return _pfIsoPU;
-}
-float TCMuon::PfIsoCharged() const {
-  return _pfIsoChargedHad;
-}
-float TCMuon::PfIsoChargedHad() const {
-  return _pfIsoChargedHad;
-}
-float TCMuon::PfIsoChargedPart() const {
-  return _pfIsoChargedPart;
-}
-float TCMuon::PfIsoNeutral() const {
-  return _pfIsoNeutral;
-}
-float TCMuon::PfIsoPhoton() const {
-  return _pfIsoPhoton;
-}
-
-
 // "set" methods ---------------------------------------------
 void TCMuon::SetNumberOfMatchedStations(int n){
   _numberOfMatchedStations = n;
@@ -116,9 +77,6 @@ void TCMuon::SetNumberOfMatchedStations(int n){
 
 void TCMuon::SetTrackLayersWithMeasurement(int n) {
   _trackLayersWithMeasurement = n;
-}
-void TCMuon::SetPixelLayersWithMeasurement(int n) {
-  _pixelLayersWithMeasurement = n;
 }
 
 void TCMuon::SetPtError(float er){
@@ -133,20 +91,7 @@ void TCMuon::SetIsTRK(bool t){
    _isTRK = t;
 }
 void TCMuon::SetIsPF(bool t){
-  _isPF = t;
-}
-
-void TCMuon::SetIsSoft(bool t){
-  _isSoft = t;
-}
-void TCMuon::SetIsTight(bool t){
-  _isTight = t;
-}
-void TCMuon::SetIsGood(bool g){
-  _isGood = g;
-}
-void TCMuon::SetIsGoodLoose(bool g){
-  _isGoodLoose = g;
+   _isPF = t;
 }
 
 void TCMuon::SetNumberOfValidMuonHits(int n) {
@@ -172,9 +117,6 @@ void TCMuon::SetNumberOfLostTrackerHits(int n) {
 void TCMuon::SetNormalizedChi2(float n) {
   _normalizedChi2 = n;
 }
-void TCMuon::SetNormalizedChi2_tracker(float n) {
-  _normalizedChi2_tracker = n;
-}
 
 void TCMuon::SetNumberOfMatches(int n) {
   _numberOfMatches = n;
@@ -188,18 +130,3 @@ void TCMuon::SetSegComp(float s){
    _segComp = s;
 }
 
-void TCMuon::SetPfIsoPU(float f) {
-  _pfIsoPU = f;
-}
-void TCMuon::SetPfIsoChargedHad(float f) {
-  _pfIsoChargedHad = f;
-}
-void TCMuon::SetPfIsoChargedPart(float f) {
-  _pfIsoChargedPart = f;
-}
-void TCMuon::SetPfIsoNeutral(float f) {
-  _pfIsoNeutral = f;
-}
-void TCMuon::SetPfIsoPhoton(float f) {
-  _pfIsoPhoton = f;
-}
