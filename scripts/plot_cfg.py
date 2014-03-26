@@ -11,7 +11,7 @@ currentDate = '{0:02d}/{1:02d}/{2:02d}'.format(now.year, now.month, now.day)
 
 ### Get command line arguements
 
-if len(sys.argv) > 2:
+if len(sys.argv) == 3:
     batch   = sys.argv[1]
     suffix  = sys.argv[2]
 else:

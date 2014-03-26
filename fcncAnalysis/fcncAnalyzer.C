@@ -493,6 +493,13 @@ bool fcncAnalyzer::Process(Long64_t entry)
     fakeables.insert(fakeables.end(), fakeableElectrons.begin(), fakeableElectrons.end());
     fakeables.insert(fakeables.end(), fakeableMuons.begin(), fakeableMuons.end());
 
+    // Get photons
+    vector<TCPhoton> photons = selector->GetSelectedPhotons("tight");
+    sort(photons.begin(), photons.end(), P4SortCondition);
+
+    if (photons.size() > 0)
+        cout << photons[0].Pt() << endl;
+
     // Get jets
     vector<TCJet> allJets;
     vector<TCJet> jets      = selector->GetSelectedJets("tight");
@@ -671,7 +678,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
                 "h1_ElectronIsoVsEta", "electron Iso vs #eta;#eta;Iso", 5, -2.5, 2.5, 16, 0., 2.);
 
         if (ele.IsoMap("pfChIso_R04") != 0) {
-            cout << ele.IsoMap("pfChIso_R04") << endl;
             histManager->Fill2DHist(ele.Pt(), ele.IsoMap("pfChIso_R04")/ele.Pt(), 
                     "h1_ElectronChHadIsoVsPt", "electron Iso vs p_{T};p_{T};Charged Iso", 5, 0., 150., 16, 0., 2.);
             histManager->Fill2DHist(fabs(ele.Eta()), ele.IsoMap("pfChIso_R04")/ele.Pt(), 

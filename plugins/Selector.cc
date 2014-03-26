@@ -483,6 +483,7 @@ void Selector::ElectronSelector(TClonesArray* electrons)
 // Photons //
 /////////////
 
+
 bool Selector::PhotonTightID(TCPhoton* photon)
 {
     bool pass = false;
@@ -505,16 +506,37 @@ bool Selector::PhotonTightID(TCPhoton* photon)
     return pass;
 }
 
+
 bool Selector::PhotonIsolation(TCPhoton* photon)
 {
     float* EA = PhotonEffectiveArea(photon);
 
-    float chIsoCor = photon->IsoMap("chIso03") - _rho*EA[0];
-    float nhIsoCor = photon->IsoMap("nhIso03") - _rho*EA[1];
-    float phIsoCor = photon->IsoMap("phIso03") - _rho*EA[2];
+    float chIsoCor = max(photon->IsoMap("chIso03") - _rho*EA[0], float(0.));
+    float nhIsoCor = max(photon->IsoMap("nhIso03") - _rho*EA[1], float(0.));
+    float phIsoCor = max(photon->IsoMap("phIso03") - _rho*EA[2], float(0.));
 
-    return true;
+    float eta = photon->Eta();
+    if (
+            eta < 1.442
+            && chIsoCor < 1.5
+            && nhIsoCor < 1.0 + 0.04*photon->Pt()
+            && phIsoCor < 0.7 + 0.005*photon->Pt()
+       ) 
+        return true;
+    else
+        return false;
+
+    if (
+            eta > 1.566
+            && chIsoCor < 1.2
+            && nhIsoCor < 1.5 + 0.04*photon->Pt()
+            && phIsoCor < 1.0 + 0.005*photon->Pt()
+       ) 
+        return true;
+    else
+        return false;
 }
+
 
 void Selector::PhotonSelector(TClonesArray* photons) 
 {
@@ -529,15 +551,15 @@ void Selector::PhotonSelector(TClonesArray* photons)
         bool passIso = PhotonIsolation(thisPho);
 
         // analysis photons
-        if (PhotonTightID(thisPho) && passIso) {
+        if (PhotonTightID(thisPho)) {// && passIso) {
             _selPhotons["tight"].push_back(*thisPho);			
-
         } else {
             _selPhotons["loose"].push_back(*thisPho);
 
         }
     }
 }
+
 
 //////////
 // Jets //
