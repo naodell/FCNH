@@ -15,6 +15,7 @@ Selector::Selector(const float* muPtCuts, const float* elePtCuts, const float* j
     _muPtCuts   = muPtCuts;
     _elePtCuts  = elePtCuts;
     _jetPtCuts  = jetPtCuts;
+    _phoPtCuts  = phoPtCuts;
     _vtxIndex   = 0;
     _isRealData = false;
 
@@ -513,7 +514,26 @@ bool Selector::PhotonIsolation(TCPhoton* photon)
     float nhIsoCor = photon->IsoMap("nhIso03") - _rho*EA[1];
     float phIsoCor = photon->IsoMap("phIso03") - _rho*EA[2];
 
-    return true;
+    float eta = photon->Eta();
+    if (
+            eta < 1.442
+            && chIsoCor < 1.5
+            && nhIsoCor < 1.0 + 0.04*photon->Pt()
+            && phIsoCor < 0.7 + 0.005*photon->Pt()
+       )
+        return true;
+    else
+        return false;
+
+    if (
+            eta > 1.566
+            && chIsoCor < 1.2
+            && nhIsoCor < 1.5 + 0.04*photon->Pt()
+            && phIsoCor < 1.0 + 0.005*photon->Pt()
+       )
+        return true;
+    else
+        return false;
 }
 
 void Selector::PhotonSelector(TClonesArray* photons) 

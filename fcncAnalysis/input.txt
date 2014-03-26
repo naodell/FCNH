@@ -1,2 +1,10 @@
-/eos/uscms/store/user/naodell/data/nuTuples_v7_4/DoubleMu_Run2012A/nuTuple_131_1_DJe.root
-/eos/uscms/store/user/naodell/data/nuTuples_v7_4/DoubleMu_Run2012A/nuTuple_131_1_dfG.root
+/uscms/home/naodell/eos/../lpchzg/nuTuples_v7.4_8TeV/Data/DoubleMu_Run2012A/nuTuple_100_1_gQC.root
+/uscms/home/naodell/eos/../lpchzg/nuTuples_v7.4_8TeV/Data/DoubleMu_Run2012A/nuTuple_101_1_sn6.root
+/uscms/home/naodell/eos/../lpchzg/nuTuples_v7.4_8TeV/Data/DoubleMu_Run2012A/nuTuple_102_1_ymF.root
+/uscms/home/naodell/eos/../lpchzg/nuTuples_v7.4_8TeV/Data/DoubleMu_Run2012A/nuTuple_103_1_aIX.root
+/uscms/home/naodell/eos/../lpchzg/nuTuples_v7.4_8TeV/Data/DoubleMu_Run2012A/nuTuple_104_1_HEC.root
+/uscms/home/naodell/eos/../lpchzg/nuTuples_v7.4_8TeV/Data/DoubleMu_Run2012A/nuTuple_105_1_mur.root
+/uscms/home/naodell/eos/../lpchzg/nuTuples_v7.4_8TeV/Data/DoubleMu_Run2012A/nuTuple_106_1_SS5.root
+/uscms/home/naodell/eos/../lpchzg/nuTuples_v7.4_8TeV/Data/DoubleMu_Run2012A/nuTuple_107_1_qsW.root
+/uscms/home/naodell/eos/../lpchzg/nuTuples_v7.4_8TeV/Data/DoubleMu_Run2012A/nuTuple_108_1_KXH.root
+/uscms/home/naodell/eos/../lpchzg/nuTuples_v7.4_8TeV/Data/DoubleMu_Run2012A/nuTuple_109_1_c2y.root

@@ -22,6 +22,7 @@ const bool      doLepTree   = false;
 bool doQFlips = true;
 bool doFakes  = true;
 bool doFakeMC = false;
+bool doZGamma = true;
 
 
 /////////////////
@@ -462,6 +463,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
     selector->MuonSelector(recoMuons);
     selector->ElectronSelector(recoElectrons);
+    selector->PhotonSelector(recoPhotons);
     selector->JetSelector(recoJets);
 
     // Get analysis leptons
@@ -488,6 +490,10 @@ bool fcncAnalyzer::Process(Long64_t entry)
     vector<TCMuon>      fakeableMuons      = selector->GetSelectedMuons("fakeable");
     fakeables.insert(fakeables.end(), fakeableElectrons.begin(), fakeableElectrons.end());
     fakeables.insert(fakeables.end(), fakeableMuons.begin(), fakeableMuons.end());
+
+    // Get photons
+    vector<TCPhoton> photons = selector->GetSelectedPhotons("tight");
+    sort(photons.begin(), photons.end(), P4SortCondition);
 
     // Get jets
     vector<TCJet> allJets;
@@ -686,7 +692,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
                 "h1_ElectronIsoVsEta", "electron Iso vs #eta;#eta;Iso", 5, -2.5, 2.5, 16, 0., 2.);
 
         if (ele.IsoMap("pfChIso_R04") != 0) {
-            cout << ele.IsoMap("pfChIso_R04") << endl;
             histManager->Fill2DHist(ele.Pt(), ele.IsoMap("pfChIso_R04")/ele.Pt(), 
                     "h1_ElectronChHadIsoVsPt", "electron Iso vs p_{T};p_{T};Charged Iso", 5, 0., 150., 16, 0., 2.);
             histManager->Fill2DHist(fabs(ele.Eta()), ele.IsoMap("pfChIso_R04")/ele.Pt(), 
@@ -786,18 +791,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
         SetEventCategory(leptons);
         SetEventVariables(leptons, jets, bJetsM, *recoMET); 
 
-        // Jet multiplicity sanity check
-        if (
-                leptons.size() == 2 
-                && leptons[0].Type() == "muon" 
-                && leptons[1].Type() == "muon" 
-                && leptons[0].Charge() == leptons[1].Charge()
-           ) {
-            histManager->SetDirectory("ss_mumu/" + subdir);
-            histManager->Fill1DHist(jets.size() + bJetsM.size(),
-                    "h1_JetMultSC", "jet multiplicity;Entries / bin;N_{jets}", 15, -0.5, 14.5);
-        }
-
         // Pre-selection mc-truth plots
         if (!isRealData) {
             unsigned cat = 1 + ((evtCategory.to_ulong() >> 2) & 0x3);
@@ -839,6 +832,48 @@ bool fcncAnalyzer::Process(Long64_t entry)
             }
         }
     } 
+
+    if (doZGamma && photons.size() == 1) { 
+        if (leptons.size() == 2) {
+            if (leptons[0].Type() == leptons[1].Type() && leptons[0].Charge() != leptons[1].Charge()) {
+                if (leptons[0].Type() == "muon") {
+                    histManager->SetFileNumber(0);
+                    histManager->SetDirectory("os_mumu/" + subdir);
+                    histManager->Fill1DHist((leptons[0] + leptons[1] + photons[0]).M(),
+                            "h1_DimuonPhotonMass", "M_{#mu#mu#gamma};M_{#mu#mu#gamma};Entries / 5 GeV", 60, 0., 300.); 
+                    histManager->Fill1DHist((leptons[0] + leptons[1]).DeltaR(photons[0]),
+                            "h1_DimuonPhotonDeltaR", "#DeltaR(#mu#mu,#gamma);DeltaR(#mu#mu,#gamma);Entries / 5 GeV", 70, 0., 7.); 
+                }
+                if (leptons[0].Type() == "electron") {
+                    histManager->SetFileNumber(0);
+                    histManager->SetDirectory("os_ee/" + subdir);
+                    histManager->Fill1DHist((leptons[0] + leptons[1] + photons[0]).M(),
+                            "h1_DielectronPhotonMass", "M_{ee#gamma};M_{ee#gamma};Entries / 5 GeV", 60, 0., 300.); 
+                    histManager->Fill1DHist((leptons[0] + leptons[1]).DeltaR(photons[0]),
+                            "h1_DielectronPhotonDeltaR", "#DeltaR(ee,#gamma);DeltaR(ee,#gamma);Entries / 5 GeV", 70, 0., 7.); 
+                }
+            }
+        }
+        if (leptons.size() == 1) {
+            if (leptons[0].Type() == "muon") {
+                histManager->SetFileNumber(0);
+                histManager->SetDirectory("os_mumu/" + subdir);
+                histManager->Fill1DHist((leptons[0] + photons[0]).M(),
+                        "h1_MuonPhotonMass", "M_{#mu#gamma};M_{#mu#gamma};Entries / 5 GeV", 60, 0., 300.); 
+                histManager->Fill1DHist((leptons[0]).DeltaR(photons[0]),
+                        "h1_MuonPhotonDeltaR", "#DeltaR(#mu,#gamma);DeltaR(#mu,#gamma);Entries / 5 GeV", 70, 0., 7.); 
+            }
+            if (leptons[0].Type() == "electron") {
+                histManager->SetFileNumber(0);
+                histManager->SetDirectory("os_ee/" + subdir);
+                histManager->Fill1DHist((leptons[0] + photons[0]).M(),
+                        "h1_ElectronPhotonMass", "M_{e#gamma};M_{e#gamma};Entries / 5 GeV", 60, 0., 300.); 
+                histManager->Fill1DHist((leptons[0]).DeltaR(photons[0]),
+                        "h1_ElectronPhotonDeltaR", "#DeltaR(e,#gamma);DeltaR(e,#gamma);Entries / 5 GeV", 70, 0., 7.); 
+            }
+        }
+    }
+            
 
     if (doFakes) {
 
@@ -1623,7 +1658,7 @@ void fcncAnalyzer::JetPlots(vector<TCJet> jets, vector<TCJet> bJets)
                 "h1_DijetMass", "M_{jj};M_{jj};Entries / 20 GeV", 50, 0, 1000);
 
     for (unsigned i = 0; i < jets.size(); ++i) {
-        if (i > 3) break;
+        if (i > 2) break;
         string index = str(i+1);
 
         histManager->Fill1DHist(jets[i].BDiscriminatorMap("CSV"),
