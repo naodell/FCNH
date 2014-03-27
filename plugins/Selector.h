@@ -45,6 +45,7 @@ class Selector : public TObject {
         void    GenJetSelector(TClonesArray*);
 
         bool    ElectronMVA(TCElectron*);
+        bool    ElectronMVAPreSel(TCElectron*);
         bool    ElectronTightID(TCElectron*);
         bool    ElectronLooseID(TCElectron*);
         bool    MuonTightID(TCMuon*);

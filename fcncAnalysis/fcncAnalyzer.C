@@ -676,9 +676,9 @@ bool fcncAnalyzer::Process(Long64_t entry)
     vector<TCMuon> muonsNoIso = selector->GetSelectedMuons("tight_id");
     for (unsigned i = 0; i < muonsNoIso.size(); ++i) {
         TCMuon mu = muonsNoIso[i];
-        histManager->Fill2DHist(mu.Pt(), mu.IsoMap("IsoRel"), 
+        histManager->Fill2DHist(mu.Pt(), mu.IdMap("IsoRel"), 
                 "h1_MuonIsoVsPt", "muon Iso vs p_{T};p_{T};Iso", 5, 0., 150., 16, 0., 2.);
-        histManager->Fill2DHist(mu.Eta(), mu.IsoMap("IsoRel"), 
+        histManager->Fill2DHist(mu.Eta(), mu.IdMap("IsoRel"), 
                 "h1_MuonIsoVsEta", "muon Iso vs #eta;#eta;Iso", 5, -2.5, 2.5, 16, 0., 2.);
 
     }
@@ -686,31 +686,31 @@ bool fcncAnalyzer::Process(Long64_t entry)
     vector<TCElectron> electronsNoIso = selector->GetSelectedElectrons("tight_id");
     for (unsigned i = 0; i < electronsNoIso.size(); ++i) {
         TCElectron ele = electronsNoIso[i];
-        histManager->Fill2DHist(ele.Pt(), ele.IsoMap("IsoRel"), 
+        histManager->Fill2DHist(ele.Pt(), ele.IdMap("IsoRel"), 
                 "h1_ElectronIsoVsPt", "electron Iso vs p_{T};p_{T};Iso", 5, 0., 150., 16, 0., 2.);
-        histManager->Fill2DHist(ele.Eta(), ele.IsoMap("IsoRel"), 
+        histManager->Fill2DHist(ele.Eta(), ele.IdMap("IsoRel"), 
                 "h1_ElectronIsoVsEta", "electron Iso vs #eta;#eta;Iso", 5, -2.5, 2.5, 16, 0., 2.);
 
-        if (ele.IsoMap("pfChIso_R04") != 0) {
-            histManager->Fill2DHist(ele.Pt(), ele.IsoMap("pfChIso_R04")/ele.Pt(), 
+        if (ele.PfIsoCharged() != 0) {
+            histManager->Fill2DHist(ele.Pt(), ele.PfIsoCharged()/ele.Pt(), 
                     "h1_ElectronChHadIsoVsPt", "electron Iso vs p_{T};p_{T};Charged Iso", 5, 0., 150., 16, 0., 2.);
-            histManager->Fill2DHist(fabs(ele.Eta()), ele.IsoMap("pfChIso_R04")/ele.Pt(), 
+            histManager->Fill2DHist(fabs(ele.Eta()), ele.PfIsoCharged()/ele.Pt(), 
                     "h1_ElectronChHadIsoVsEta", "electron Iso vs #eta;#eta;Charged Iso", 5, 0., 2.5, 16, 0., 2.);
         }
-        if (ele.IsoMap("pfPhoIso_R04") != 0) {
-            histManager->Fill2DHist(ele.Pt(), ele.IsoMap("pfPhoIso_R04")/ele.Pt(), 
+        if (ele.PfIsoPhoton() != 0) {
+            histManager->Fill2DHist(ele.Pt(), ele.PfIsoPhoton()/ele.Pt(), 
                     "h1_ElectronPhoIsoVsPt", "electron Iso vs p_{T};p_{T};#gamma Iso", 5, 0., 150., 16, 0., 2.);
-            histManager->Fill2DHist(fabs(ele.Eta()), ele.IsoMap("pfPhoIso_R04")/ele.Pt(), 
+            histManager->Fill2DHist(fabs(ele.Eta()), ele.PfIsoPhoton()/ele.Pt(), 
                     "h1_ElectronPhoIsoVsEta", "electron Iso vs #eta;#eta;#gamma Iso", 5, 0., 2.5, 16, 0., 2.);
         }
-        if (ele.IsoMap("pfNeuIso_R04") != 0) {
-            histManager->Fill2DHist(ele.Pt(), ele.IsoMap("pfNeuIso_R04")/ele.Pt(), 
+        if (ele.PfIsoNeutral() != 0) {
+            histManager->Fill2DHist(ele.Pt(), ele.PfIsoNeutral()/ele.Pt(), 
                     "h1_ElectronNeuIsoVsPt", "electron Iso vs p_{T};p_{T};Neutral Iso", 5, 0., 150., 16, 0., 2.);
-            histManager->Fill2DHist(fabs(ele.Eta()), ele.IsoMap("pfNeuIso_R04")/ele.Pt(), 
+            histManager->Fill2DHist(fabs(ele.Eta()), ele.PfIsoNeutral()/ele.Pt(), 
                     "h1_ElectronNeuIsoVsEta", "electron Iso vs #eta;#eta;Neutral Iso", 5, 0., 2.5, 16, 0., 2.);
         }
 
-        histManager->Fill2DHist(ele.IsoMap("IsoRel"), ele.HadOverEm(), 
+        histManager->Fill2DHist(ele.IdMap("IsoRel"), ele.HadOverEm(), 
                 "h1_ElectronIsoVsHOverE", "H/E vs electron Iso;Neutral Iso;H/E", 16, 0., 2., 15, 0., .15);
     }
 
@@ -833,8 +833,8 @@ bool fcncAnalyzer::Process(Long64_t entry)
         }
     } 
 
-    if (doZGamma && photons.size() == 1) { 
-        if (leptons.size() == 2) {
+    if (doZGamma && photons.size() >= 1) { 
+        if (leptons.size() == 2 && photons.size() == 1) {
             if (leptons[0].Type() == leptons[1].Type() && leptons[0].Charge() != leptons[1].Charge()) {
                 if (leptons[0].Type() == "muon") {
                     histManager->SetFileNumber(0);
@@ -857,7 +857,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
         if (leptons.size() == 1) {
             if (leptons[0].Type() == "muon") {
                 histManager->SetFileNumber(0);
-                histManager->SetDirectory("os_mumu/" + subdir);
+                histManager->SetDirectory("inclusive/" + subdir);
                 histManager->Fill1DHist((leptons[0] + photons[0]).M(),
                         "h1_MuonPhotonMass", "M_{#mu#gamma};M_{#mu#gamma};Entries / 5 GeV", 60, 0., 300.); 
                 histManager->Fill1DHist((leptons[0]).DeltaR(photons[0]),
@@ -865,7 +865,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
             }
             if (leptons[0].Type() == "electron") {
                 histManager->SetFileNumber(0);
-                histManager->SetDirectory("os_ee/" + subdir);
+                histManager->SetDirectory("inclusive/" + subdir);
                 histManager->Fill1DHist((leptons[0] + photons[0]).M(),
                         "h1_ElectronPhotonMass", "M_{e#gamma};M_{e#gamma};Entries / 5 GeV", 60, 0., 300.); 
                 histManager->Fill1DHist((leptons[0]).DeltaR(photons[0]),
@@ -1403,9 +1403,9 @@ void fcncAnalyzer::LeptonPlots(vObj leptons, vector<TCJet> jets, vector<TCJet> b
         histManager->Fill1DHist(leptons[i].Dz(&PV), 
                 "h1_Lepton" + index + "dz", "d_{z} leptons " + index + ";d_{z} (cm);Entries / bin", 100., -0.15, 0.15);
 
-        histManager->Fill1DHist(leptons[i].IsoMap("IsoRel"), 
+        histManager->Fill1DHist(leptons[i].IdMap("IsoRel"), 
                 "h1_Lepton" + index + "IsoRel", "Iso_{Rel} leptons " + index + ";Iso_{Rel} (cm);Entries / bin", 42, -0.1, 2.);
-        histManager->Fill1DHist(leptons[i].IsoMap("IsoRel")*leptons[i].Pt(), 
+        histManager->Fill1DHist(leptons[i].IdMap("IsoRel")*leptons[i].Pt(), 
                 "h1_Lepton" + index + "Iso", "Iso leptons " + index + ";Iso (cm);Entries / bin", 4, 0., 20.);
 
         if (leptons[i].Type() == "electron") {
@@ -1421,9 +1421,9 @@ void fcncAnalyzer::LeptonPlots(vObj leptons, vector<TCJet> jets, vector<TCJet> b
             histManager->Fill1DHist(leptons[i].Dz(&PV), 
                     "h1_ElectronDz", "electron d_{z};d_{z} (cm);Entries / bin", 100., -0.15, 0.15);
 
-            histManager->Fill1DHist(leptons[i].IsoMap("IsoRel"), 
+            histManager->Fill1DHist(leptons[i].IdMap("IsoRel"), 
                     "h1_ElectronIsoRel", "Iso_{Rel} electrons;Iso_{Rel} ;Entries / bin", 42, -0.1, 2.);
-            histManager->Fill1DHist(leptons[i].IsoMap("IsoRel")*leptons[i].Pt(), 
+            histManager->Fill1DHist(leptons[i].IdMap("IsoRel")*leptons[i].Pt(), 
                     "h1_ElectronIso", "Iso electrons;Iso;Entries / bin", 4, 0., 20.);
 
         } else if (leptons[i].Type() == "muon") {
@@ -1439,9 +1439,9 @@ void fcncAnalyzer::LeptonPlots(vObj leptons, vector<TCJet> jets, vector<TCJet> b
             histManager->Fill1DHist(leptons[i].Dz(&PV), 
                     "h1_MuonDz", "muon d_{z};d_{z};Entries / bin", 100., -0.15, 0.15);
 
-            histManager->Fill1DHist(leptons[i].IsoMap("IsoRel"), 
+            histManager->Fill1DHist(leptons[i].IdMap("IsoRel"), 
                     "h1_MuonIsoRel", "Iso_{Rel} muons;Iso_{Rel} (cm);Entries / bin", 42, -0.1, 2.);
-            histManager->Fill1DHist(leptons[i].IsoMap("IsoRel")*leptons[i].Pt(), 
+            histManager->Fill1DHist(leptons[i].IdMap("IsoRel")*leptons[i].Pt(), 
                     "h1_MuonIso", "Iso muons;Iso;Entries / bin", 4, 0., 20.);
         }
 
@@ -2038,30 +2038,30 @@ void fcncAnalyzer::FakePlots(vObj leptons, vector<TCJet> jets, vector<TCJet> bJe
         histManager->Fill1DHist(fakeables[0].Dz(&PV), 
                 "h1_FakeableDz", "d_{z} fakeables;d_{z} (cm);Entries / bin", 100., -0.15, 0.15);
 
-        histManager->Fill1DHist(fakeables[0].IsoMap("IsoRel"), 
+        histManager->Fill1DHist(fakeables[0].IdMap("IsoRel"), 
                 "h1_FakeableIsoRel", "Iso_{Rel} fakeabless;Iso_{Rel} (cm);Entries / bin", 42, -0.1, 4.);
-        histManager->Fill2DHist(fakeables[0].Pt(), fakeables[0].IsoMap("IsoRel"), 
+        histManager->Fill2DHist(fakeables[0].Pt(), fakeables[0].IdMap("IsoRel"), 
                 "h2_FakeableIsoRelVsPt", "Iso_{Rel} vs p_{T} fakeables;p_{T};Iso_{Rel}", 18, 10., 100., 5, 0., 3.);
-        histManager->Fill2DHist(fakeables[0].Eta(), fakeables[0].IsoMap("IsoRel"), 
+        histManager->Fill2DHist(fakeables[0].Eta(), fakeables[0].IdMap("IsoRel"), 
                 "h2_FakeableIsoRelVsEta", "Iso_{Rel} vs #eta fakeables;#eta;Iso", 25, -2.5, 2.5, 5, 0., 1.);
-        histManager->Fill2DHist(recoMET->Mod(), fakeables[0].IsoMap("IsoRel"), 
+        histManager->Fill2DHist(recoMET->Mod(), fakeables[0].IdMap("IsoRel"), 
                 "h2_FakeableIsoRelVsMET", "Iso_{Rel} vs MET fakeables;MET;Iso_{Rel}", 28, 10., 150., 5, 0., 3.);
-        histManager->Fill2DHist(dileptonMassOS, fakeables[0].IsoMap("IsoRel"),                 
+        histManager->Fill2DHist(dileptonMassOS, fakeables[0].IdMap("IsoRel"),                 
                 "h2_FakeableIsoRelVsDileptonMass", "Iso_{Rel} vs M_{ll} fakeables;M_{ll};Iso_{Rel}", 28, 10., 150., 5, 0., 3.);
-        histManager->Fill2DHist(jets.size() + bJets.size(), fakeables[0].IsoMap("IsoRel"), 
+        histManager->Fill2DHist(jets.size() + bJets.size(), fakeables[0].IdMap("IsoRel"), 
                 "h2_FakeableIsoRelVsJetMultiplicity", "Iso_{Rel} vs jet multiplicity fakeables;N_{jets};Iso_{Rel}", 10, -0.5, 9.5, 5, 0., 3.);
 
-        histManager->Fill1DHist(fakeables[0].IsoMap("IsoRel")*fakeables[0].Pt(), 
+        histManager->Fill1DHist(fakeables[0].IdMap("IsoRel")*fakeables[0].Pt(), 
                 "h1_FakeableIso", "Iso fakeabless;Iso (cm);Entries / bin", 30, 0., 150.);
-        histManager->Fill2DHist(fakeables[0].Pt(), fakeables[0].IsoMap("IsoRel")*fakeables[0].Pt(), 
+        histManager->Fill2DHist(fakeables[0].Pt(), fakeables[0].IdMap("IsoRel")*fakeables[0].Pt(), 
                 "h2_FakeableIsoVsPt", "Iso vs p_{T} fakeables;p_{T};Iso", 18, 10., 100., 5, 0., 150.);
-        histManager->Fill2DHist(fakeables[0].Eta(), fakeables[0].IsoMap("IsoRel")*fakeables[0].Pt(), 
+        histManager->Fill2DHist(fakeables[0].Eta(), fakeables[0].IdMap("IsoRel")*fakeables[0].Pt(), 
                 "h2_FakeableIsoVsEta", "Iso vs #eta fakeables;#eta;Iso", 25, -2.5, 2.5, 5, 0., 150.);
-        histManager->Fill2DHist(recoMET->Mod(), fakeables[0].IsoMap("IsoRel")*fakeables[0].Pt(), 
+        histManager->Fill2DHist(recoMET->Mod(), fakeables[0].IdMap("IsoRel")*fakeables[0].Pt(), 
                 "h2_FakeableIsoVsMET", "Iso vs MET fakeables;MET;Iso", 28, 10., 150., 5, 0., 150.);
-        histManager->Fill2DHist(dileptonMassOS, fakeables[0].IsoMap("IsoRel")*fakeables[0].Pt(),                 
+        histManager->Fill2DHist(dileptonMassOS, fakeables[0].IdMap("IsoRel")*fakeables[0].Pt(),                 
                 "h2_FakeableIsoVsDileptonMass", "Iso vs M_{ll} fakeables;M_{ll};Iso", 28, 10., 150., 5, 0., 150.);
-        histManager->Fill2DHist(jets.size() + bJets.size(), fakeables[0].IsoMap("IsoRel")*fakeables[0].Pt(), 
+        histManager->Fill2DHist(jets.size() + bJets.size(), fakeables[0].IdMap("IsoRel")*fakeables[0].Pt(), 
                 "h2_FakeableIsoVsJetMultiplicity", "Iso vs jet multiplicity fakeables;N_{jets};Iso", 10, -0.5, 9.5, 5, 0., 150.);
     }
 }
@@ -2361,8 +2361,8 @@ void fcncAnalyzer::FillLepMVA(vector<TCMuon> muons, vector<TCElectron> electrons
     for (unsigned i = 0; i < muons.size(); ++i) {
 
         sip3d       = 1.; // Update this once proper definition is known
-        chPFIso     = muons[i].IsoMap("pfChargedHadronPt_R04");
-        neuPFIso    = TMath::Max(0.0, (double)muons[i].IsoMap("pfPhotonEt_R04") + muons[i].IsoMap("pfNeutralHadronEt_R04")); // - TMath::Max(0.0, (double)rho25Factor*Selector::EffectiveArea(muons[i])));
+        chPFIso     = muons[i].PfIsoChargedHad();
+        neuPFIso    = TMath::Max(0.0, (double)muons[i].PfIsoPhoton() + muons[i].PfIsoNeutral());
 
         dz  = fabs(muons[i].Dz(&PV));
         dxy = fabs(muons[i].Dxy(&PV));
@@ -2394,8 +2394,8 @@ void fcncAnalyzer::FillLepMVA(vector<TCMuon> muons, vector<TCElectron> electrons
     for (unsigned i = 0; i < electrons.size(); ++i) {
 
         sip3d       = 1; // Update this once proper definition is known
-        chPFIso     = electrons[i].IsoMap("pfChIso_R04");
-        neuPFIso    = TMath::Max(0.0, (double)electrons[i].IsoMap("pfPhoIso_R04") + electrons[i].IsoMap("pfNeuIso_R04")); // - TMath::Max(0.0, (double)rho25Factor*Selector::EffectiveArea(electrons[i])));
+        chPFIso     = electrons[i].PfIsoCharged();
+        neuPFIso    = TMath::Max(0.0, (double)electrons[i].PfIsoPhoton() + electrons[i].PfIsoNeutral()); // - TMath::Max(0.0, (double)rho25Factor*Selector::EffectiveArea(electrons[i])));
 
         mva         = electrons[i].IdMap("mva");
         missHits    = electrons[i].NumberOfLostPixelHits();
@@ -2577,7 +2577,7 @@ void fcncAnalyzer::PrintMuonIDVars(TCMuon& muon, TVector3& PV)
 {
     cout << "pt\t:"                 << muon.Pt() << endl;
     cout << "eta\t:"                << muon.Eta() << endl;
-    cout << "ISO\t:"                << muon.IsoMap("IsoRel") << endl;
+    cout << "ISO\t:"                << muon.IdMap("IsoRel") << endl;
     cout << "Tracker\t:"            << muon.IsTRK() << endl;
     cout << "Global\t:"             << muon.IsGLB() << endl;
     cout << "PF\t:"                 << muon.IsPF() << endl;

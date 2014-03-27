@@ -1,61 +1,55 @@
 #include "../interface/TCGenParticle.h"
 #include "../interface/TCGenParticleLinkDef.h"
-#include <iostream>
 
 TCGenParticle::TCGenParticle() {
+  _mother = 0;
+  _PDGID = 0;
+  _status = 0;
+  _isParton = 0;
 }
 
 TCGenParticle::~TCGenParticle() {
 }
 
 // "get" methods -------------------------------------
-
-int TCGenParticle::Mother() {
-    return mother;
+/*
+Needs more validation. May not work in the producer code, too many references
+TCGenParticle* TCGenParticle::PrimaryAncestor(){
+  TCGenParticle *a = this;
+  while (a->Mother())
+    a = a->Mother();
+  return a;
 }
+*/
 
-int TCGenParticle::Grandmother() {
-    return grandmother;
+TCGenParticle* TCGenParticle::Mother() {
+    return _mother;
 }
 
 int TCGenParticle::GetPDGId() {
-    return PDGID;
+    return _PDGID;
 }
 
 unsigned TCGenParticle::GetStatus() {
-    return status;
+    return _status;
 }
 
 bool TCGenParticle::IsParton() {
-    return isParton_;
+  return _isParton;
 }
 
-//std::vector<int> TCGenParticle::GetDaughters() {
-//   return daughters;
-//}
-
-// "set" methods ---------------------------------------------
-
-//void TCGenParticle::AddDaughter(int d) {
-//   daughters.push_back(d);
-//}
-
-void TCGenParticle::SetMother(int m) {
-    mother = m;
+void TCGenParticle::SetMother(TCGenParticle* m) {
+    _mother = m;
 }
 
-void TCGenParticle::SetGrandmother(int g) {
-    grandmother = g;
-}
-
-void TCGenParticle::SetPDGId(int pdg_id) {
-    PDGID = pdg_id;
+void TCGenParticle::SetPDGId(int p) {
+    _PDGID = p;
 }
 
 void TCGenParticle::SetStatus(unsigned s)
 {
-    status = s;
+    _status = s;
 }
 void TCGenParticle::SetIsParton(bool a) {
-    isParton_=a;
+    _isParton = a;
 }

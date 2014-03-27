@@ -1,15 +1,20 @@
 #include "../interface/TCPhysObject.h"
 #include "../interface/TCPhysObjectLinkDef.h"
+#include <iostream>
 
-TCPhysObject::TCPhysObject() {
-    _isPF = _isReco = _isFake = false;
+TCPhysObject::TCPhysObject():
+  _vtx(-9,-9,-9),
+  _charge(0),
+  _isPF(false)
+{
 }
 
-TCPhysObject::TCPhysObject(TLorentzVector p4, int charge) {
+TCPhysObject::TCPhysObject(TLorentzVector p4, int charge):
+  _vtx(-9,-9,-9),
+  _charge(charge),
+  _isPF(false)
+{
     this->SetP4(p4);
-    this->SetCharge(charge);
-
-    _isPF = _isReco = _isFake = false;
 }
 
 TCPhysObject::TCPhysObject(TLorentzVector p4, int charge, string type) {
@@ -27,7 +32,7 @@ TCPhysObject::~TCPhysObject() {
 
 using namespace std;
 
-float TCPhysObject::IdMap(string key) { 
+float TCPhysObject::IdMap(string key) const { 
     
     //Check that key is present in the id map
     try {
@@ -38,10 +43,11 @@ float TCPhysObject::IdMap(string key) {
         cout << ex << endl;
     }
 
-    return _IdMap[key]; 
+    return _IdMap.find(key)->second; 
 }
 
-float TCPhysObject::IsoMap(string key) { 
+/*
+float TCPhysObject::IsoMap(string key) const { 
     
     //Check that key is present in the iso map
     try {
@@ -52,37 +58,38 @@ float TCPhysObject::IsoMap(string key) {
         cout << ex << endl;
     }
 
-    return _IsoMap[key]; 
+    return _IsoMap.find(key)->second; 
 }
+*/
 
 TVector2 TCPhysObject::P2() const {
     TVector2 v2(this->Px(), this->Py());
     return v2;
 }
 
-TVector3 TCPhysObject::Vtx() const { return _vtx; }
+TVector3 TCPhysObject::Vtx()  const { return _vtx; }
+int  TCPhysObject::Charge() const   { return _charge; }
 string TCPhysObject::Type() const { return _type; }
-int TCPhysObject::Charge() const { return _charge; }
-bool TCPhysObject::IsPF() const { return _isPF; }
-bool TCPhysObject::IsReco() const { return _isReco; }
-bool TCPhysObject::IsFake() const { return _isFake; }
+bool TCPhysObject::IsPF()   const   { return _isPF; }
+bool TCPhysObject::IsReco() const   { return _isReco; }
+bool TCPhysObject::IsFake() const   { return _isFake; }
 
 // "set" methods ---------------------------------------------
 
 void TCPhysObject::SetP4(TLorentzVector p4) { this->SetPxPyPzE(p4.Px(), p4.Py(), p4.Pz(), p4.E()); } 
 void TCPhysObject::SetIdMap(string s, float v){ _IdMap[s] = v; }
-void TCPhysObject::SetIsoMap(string s, float v){ _IsoMap[s] = v; }
+//void TCPhysObject::SetIsoMap(string s, float v){ _IsoMap[s] = v; }
 
 void TCPhysObject::SetVtx(float vx, float vy, float vz) {
     TVector3 v3(vx, vy, vz);
     _vtx = v3;
 }
 
-void TCPhysObject::SetCharge(int c){ _charge = c; }
+void TCPhysObject::SetCharge(int c) { _charge = c; }
 void TCPhysObject::SetType(string s){ _type = s; }
-void TCPhysObject::SetPF(bool p){ _isPF = p;}
-void TCPhysObject::SetReco(bool r){ _isReco = r;}
-void TCPhysObject::SetFake(bool f){ _isFake = f;}
+void TCPhysObject::SetPF(bool p)    { _isPF = p;}
+void TCPhysObject::SetReco(bool r)  { _isReco= r;}
+void TCPhysObject::SetFake(bool f)  { _isFake = f;}
 
 // generally useful methods -----------------------------------
 
