@@ -1,3 +1,10 @@
+/* 
+ * File:   TCJet.cc
+ * Author: Anton A.
+ * 
+ * Created on April 30, 2010, 2:49 PM
+ */
+
 #include "../interface/TCJet.h"
 #include "../interface/TCJetLinkDef.h"
 

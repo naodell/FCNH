@@ -5,7 +5,7 @@ import sys
 cfg = b.JobConfig
 
 ''' Specify parameters '''
-inputDir    = '/tthome/naodell/storage/data'
+inputDir      = '/tthome/naodell/storage/data'
 executable  = 'execBatch.sh'
 
 selection   = 'fcnc'
@@ -43,15 +43,15 @@ signal  = []
 
 if period == '2012':
     data.extend([
-        cfg('muon_2012A', inputDir+'/nuTuples_v7_4_a/DoubleMu_Run2012A', 40, 'DATA_MUON muon 2012'),
-        cfg('muon_2012B', inputDir+'/nuTuples_v7_4_a/DoubleMu_Run2012B', 40, 'DATA_MUON muon 2012'),
-        cfg('muon_2012C', inputDir+'/nuTuples_v7_4_a/DoubleMu_Run2012C', 40, 'DATA_MUON muon 2012'),
-        cfg('muon_2012D', inputDir+'/nuTuples_v7_4_a/DoubleMu_Run2012D', 45, 'DATA_MUON muon 2012'),
+        cfg('muon_2012A', inputDir+'/nuTuples_v7_4_a/Data/DoubleMu_Run2012A', 40, 'DATA_MUON muon 2012'),
+        cfg('muon_2012B', inputDir+'/nuTuples_v7_4_a/Data/DoubleMu_Run2012B', 40, 'DATA_MUON muon 2012'),
+        cfg('muon_2012C', inputDir+'/nuTuples_v7_4_a/Data/DoubleMu_Run2012C', 40, 'DATA_MUON muon 2012'),
+        cfg('muon_2012D', inputDir+'/nuTuples_v7_4_a/Data/DoubleMu_Run2012D', 45, 'DATA_MUON muon 2012'),
 
-        cfg('electron_2012A', inputDir+'/nuTuples_v7_4_a/DoubleElectron_Run2012A', 40, 'DATA_ELECTRON electron 2012'),
-        cfg('electron_2012B', inputDir+'/nuTuples_v7_4_a/DoubleElectron_Run2012B', 40, 'DATA_ELECTRON electron 2012'),
-        cfg('electron_2012C', inputDir+'/nuTuples_v7_4_a/DoubleElectron_Run2012C', 40, 'DATA_ELECTRON electron 2012'),
-        cfg('electron_2012D', inputDir+'/nuTuples_v7_4_a/DoubleElectron_Run2012D', 45, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012A', inputDir+'/nuTuples_v7_4_a/Data/DoubleElectron_Run2012A', 40, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012B', inputDir+'/nuTuples_v7_4_a/Data/DoubleElectron_Run2012B', 40, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012C', inputDir+'/nuTuples_v7_4_a/Data/DoubleElectron_Run2012C', 40, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012D', inputDir+'/nuTuples_v7_4_a/Data/DoubleElectron_Run2012D', 45, 'DATA_ELECTRON electron 2012'),
 
         #cfg('muEG_2012A', inputDir+'/nuTuples_v7_4_a/MuEG_Run2012A', 20, 'DATA_MUEG muEG 2012'),
         #cfg('muEG_2012B', inputDir+'/nuTuples_v7_4_a/MuEG_Run2012B', 20, 'DATA_MUEG muEG 2012'),
@@ -113,14 +113,13 @@ if period == '2012':
         cfg('ggHToWW2L2Nu_M-125', inputDir+'/nuTuples_v7_4/GluGluToHToWWTo2LAndTau2Nu_M-125', 5, 'ggHToWW2L2Nu_M-125 muon 2012'),
         cfg('WHToWWW3L_M-125', inputDir+'/nuTuples_v7_4/WH_HToWW_3l_M-125', 5, 'WHToWWW3L_M-125 muon 2012'),
         cfg('TTH_M-125', inputDir+'/nuTuples_v7_4/TTH_Inclusive_M-125', 5, 'TTH_M-125 muon 2012')
-
         ])
 
     signal.extend([
-        cfg('FCNC_M125_tHj', inputDir+'/nuTuples_v7_4/T_FCNH_M-125_WW_lep', 1, 'FCNC_M125_t mc 2012'),
-        cfg('FCNC_M125_tHj_semilep', inputDir+'/nuTuples_v7_4/T_FCNH_M-125_WW_semihadronic', 1, 'FCNC_M125_t_semilep mc 2012'),
-        cfg('FCNC_M125_tHj_ZZ', inputDir+'/nuTuples_v7_4/T_FCNH_M-125_ZZ', 1, 'FCNC_M125_t_ZZ mc 2012'),
-        cfg('FCNC_M125_tHj_TauTau', inputDir+'/nuTuples_v7_4/T_FCNH_M-125_TauTau', 1, 'FCNC_M125_t_TauTau mc 2012')
+        #cfg('FCNC_M125_tHj', inputDir+'/nuTuples_v7_4/TToFCNHToWWTo2l2nuPlusTop_M125', 1, 'FCNC_M125_t mc 2012'),
+        #cfg('FCNC_M125_tbarHj', inputDir+'/nuTuples_v7_4/TbarToFCNHToWWTo2l2nuPlusTop_M125/', 1, 'FCNC_M125_tbar mc 2012')
+        cfg('FCNC_M125_tHj', inputDir+'/nuTuples_v6_8TeV/FCNH_M125_t', 1, 'FCNC_M125_t mc 2012'),
+        cfg('FCNC_M125_tbarHj', inputDir+'/nuTuples_v6_8TeV/FCNH_M125_tbar', 1, 'FCNC_M125_tbar mc 2012')
         ])
 
 

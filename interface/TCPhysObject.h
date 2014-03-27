@@ -51,8 +51,8 @@ class TCPhysObject : public TLorentzVector {
         void SetVtx(float vx, float vy, float vz);
         void SetCharge(int c);  
         void SetType(string s);
-        void SetReco(bool);
         void SetPF(bool);
+        void SetReco(bool);
         void SetFake(bool);
 
         ClassDef(TCPhysObject, 1);

@@ -15,6 +15,7 @@ Selector::Selector(const float* muPtCuts, const float* elePtCuts, const float* j
     _muPtCuts   = muPtCuts;
     _elePtCuts  = elePtCuts;
     _jetPtCuts  = jetPtCuts;
+    _phoPtCuts  = phoPtCuts;
     _vtxIndex   = 0;
     _isRealData = false;
 
@@ -24,7 +25,7 @@ Selector::Selector(const float* muPtCuts, const float* elePtCuts, const float* j
     _bTagEff    = (TGraphAsymmErrors*)f_bEff->Get("g_bTagEff");
     _cTagEff    = (TGraphAsymmErrors*)f_bEff->Get("g_cTagEff");
 
-    // Initialize electron MVA tool 
+    // Initialize electron MVA tool
     std::vector<std::string> WeightsMVA;
     WeightsMVA.push_back("../data/weights/Electrons_BDTG_TrigV0_Cat1.weights.xml");
     WeightsMVA.push_back("../data/weights/Electrons_BDTG_TrigV0_Cat2.weights.xml");
@@ -153,23 +154,23 @@ float* Selector::PhotonEffectiveArea(TCPhysObject* photon)
 float Selector::LeptonEffectiveArea(TCPhysObject* lepton) 
 {
 
+    float EA = 0.;
     if (lepton->Type() == "electron") {
         float eta = fabs(lepton->Eta());
         if (eta < 1.0)          
-            return 0.674;
+            EA = 0.674;
         else if  (eta < 1.5) 
-            return 0.565;
+            EA = 0.565;
         else if  (eta < 2.0) 
-            return 0.442;
+            EA = 0.442;
         else if  (eta < 2.2) 
-            return 0.515;
+            EA = 0.515;
         else if  (eta < 2.3) 
-            return 0.821;
+            EA = 0.821;
         else if  (eta < 2.4) 
-            return 0.660;
-        else                               
-            return 0.00;
+            EA = 0.660;
     }
+    return EA;
 }
 
 
@@ -300,10 +301,7 @@ void Selector::MuonSelector(TClonesArray* muons)
                 _selMuons["tight_id"].push_back(*thisMuon);
                 if (muISO < 0.12)
                     _selMuons["tight"].push_back(*thisMuon);
-            } else if (
-                    //thisMuon->IsPF()
-                    MuonTightID(thisMuon) && muISO > 0.2 && muISO < 0.6 
-                    ) {
+            } else if (MuonTightID(thisMuon) && muISO > 0.2 && muISO < 0.6) {
                 thisMuon->SetFake(true);
                 _selMuons["fakeable"].push_back(*thisMuon);
             }
@@ -318,7 +316,6 @@ void Selector::MuonSelector(TClonesArray* muons)
 }
 
 
-
 ///////////////
 // Electrons //
 ///////////////
@@ -326,8 +323,6 @@ void Selector::MuonSelector(TClonesArray* muons)
 
 bool Selector::ElectronMVA(TCElectron* electron)
 {
-    bool pass = false;
-
     double mvaValue = electronMVA->mvaValue( electron->IdMap("fbrem"),
             electron->IdMap("kfChi2"), electron->IdMap("kfNLayers"),
             electron->IdMap("gsfChi2"), electron->IdMap("dEta"),
@@ -338,10 +333,11 @@ bool Selector::ElectronMVA(TCElectron* electron)
             electron->HadOverEm(), electron->IdMap("EoP"),
             electron->IdMap("ooemoopV1"), electron->IdMap("eopOut"),
             electron->IdMap("preShowerORaw"), electron->IdMap("d0"),
-            electron->IdMap("ip3d"), electron->SCEta(), electron->Pt(), false);                
+            electron->IdMap("ip3d"), electron->SCEta(), electron->Pt(), false);
 
     electron->SetIdMap("mva", mvaValue);
 
+    bool pass = false;
     if (fabs(electron->Eta()) < 0.8) {
         if (electron->Pt() > 20 && mvaValue > 0.94)
             pass = true;
@@ -357,8 +353,7 @@ bool Selector::ElectronMVA(TCElectron* electron)
             pass = true;
         else if (electron->Pt() < 20 && mvaValue > 0.62)
             pass = true;
-    }
-
+    } 
     return pass;
 }
 
@@ -366,23 +361,23 @@ bool Selector::ElectronTightID(TCElectron* electron)
 {
     bool pass = false;
     if (
-            ((fabs(electron->Eta()) < 1.442     
-              //&& electron->PtError()/electron->Pt()  < 0.1
-              && electron->SigmaIEtaIEta()           < 0.01  
-              && fabs(electron->DphiSuperCluster())  < 0.06  
-              && fabs(electron->DetaSuperCluster())  < 0.004 
-              && electron->HadOverEm()               < 0.12      
+            ((fabs(electron->Eta()) < 1.442
+              //&& electron->PtError()/electron->Pt() < 0.1
+              && electron->SigmaIEtaIEta() < 0.01
+              && fabs(electron->DphiSuperCluster()) < 0.06
+              && fabs(electron->DetaSuperCluster()) < 0.004
+              && electron->HadOverEm() < 0.12
              ) ||
-             (fabs(electron->Eta()) >  1.556  
-              //&& electron->PtError()/electron->Pt()  < 0.1
-              && electron->SigmaIEtaIEta()           < 0.03  
-              && fabs(electron->DphiSuperCluster())  < 0.03  
-              && fabs(electron->DetaSuperCluster())  < 0.007 
-              && electron->HadOverEm()               < 0.1
+             (fabs(electron->Eta()) > 1.556
+              //&& electron->PtError()/electron->Pt() < 0.1
+              && electron->SigmaIEtaIEta() < 0.03
+              && fabs(electron->DphiSuperCluster()) < 0.03
+              && fabs(electron->DetaSuperCluster()) < 0.007
+              && electron->HadOverEm() < 0.1
              ))
-            && electron->IdMap("fabsEPDiff")       < 0.05
+            && electron->IdMap("fabsEPDiff") < 0.05
             && fabs(electron->Dxy(_selVertices[0])) < 0.02
-            && fabs(electron->Dz(_selVertices[0]))  < 0.1
+            && fabs(electron->Dz(_selVertices[0])) < 0.1
             && electron->ConversionVeto()
        ) pass = true;
 
@@ -393,31 +388,56 @@ bool Selector::ElectronLooseID(TCElectron* electron)
 {
     bool pass = false;
     if (
-            ((fabs(electron->Eta()) < 1.442     
-              && electron->SigmaIEtaIEta()           < 0.01  
-              && fabs(electron->DphiSuperCluster())  < 0.15  
-              && fabs(electron->DetaSuperCluster())  < 0.007 
-              && electron->HadOverEm()               < 0.12      
+            ((fabs(electron->Eta()) < 1.442
+              && electron->SigmaIEtaIEta() < 0.01
+              && fabs(electron->DphiSuperCluster()) < 0.15
+              && fabs(electron->DetaSuperCluster()) < 0.007
+              && electron->HadOverEm() < 0.12
              ) ||
-             (fabs(electron->Eta()) >  1.556  
-              && electron->SigmaIEtaIEta()           < 0.03  
-              && fabs(electron->DphiSuperCluster())  < 0.1   
-              && fabs(electron->DetaSuperCluster())  < 0.009 
-              && electron->HadOverEm()               < 0.1
+             (fabs(electron->Eta()) > 1.556
+              && electron->SigmaIEtaIEta() < 0.03
+              && fabs(electron->DphiSuperCluster()) < 0.1
+              && fabs(electron->DetaSuperCluster()) < 0.009
+              && electron->HadOverEm() < 0.1
              ))
             && fabs(electron->Dxy(_selVertices[0])) < 0.2
-            && fabs(electron->Dz(_selVertices[0]))  < 0.2
+            && fabs(electron->Dz(_selVertices[0])) < 0.2
             && electron->ConversionVeto()
        ) pass = true;
 
     return pass;
 }
 
-void Selector::ElectronSelector(TClonesArray* electrons) 
-{
 
-    for (int i = 0; i <  electrons->GetSize(); ++i) {
-        TCElectron* thisElec = (TCElectron*) electrons->At(i);    
+bool Selector::ElectronMVAPreSel(TCElectron* electron)
+{
+    bool pass = false;
+    if (
+            electron->IdMap("gsf_numberOfLostHits") == 0
+            && (electron->IdMap("dr03TkSumPt")) / electron->Pt() < 0.2
+            && (electron->IdMap("dr03EcalRecHitSumEt")) /electron->Pt() < 0.2
+            && (electron->IdMap("dr03HcalTowerSumEt")) / electron->Pt() < 0.2
+       ) {
+        if ( // barrel electrons
+                fabs(electron->Eta()) < 1.479
+                && electron->SigmaIEtaIEta() < 0.014 
+                && electron->IdMap("hadronicOverEm") < 0.15) 
+            pass = true;
+        else if ( // endcap electrons
+                fabs(electron->Eta()) > 1.479
+                && electron->SigmaIEtaIEta() < 0.035 
+                && electron->IdMap("hadronicOverEm") < 0.10) 
+            pass = true;
+        }
+
+    return pass;
+}
+
+
+void Selector::ElectronSelector(TClonesArray* electrons)
+{
+    for (int i = 0; i < electrons->GetSize(); ++i) {
+        TCElectron* thisElec = (TCElectron*) electrons->At(i);
 
         thisElec->SetType("electron");
 
@@ -428,23 +448,30 @@ void Selector::ElectronSelector(TClonesArray* electrons)
                 thisElec->RegressionMomCombP4().E());
 
         bool muOverlap = false;
-        for (unsigned j = 0; j < _selMuons["tight"].size(); ++j) 
-            if (thisElec->DeltaR(_selMuons["tight"][j]) < 0.1) 
+        for (unsigned j = 0; j < _selMuons["tight"].size(); ++j)
+            if (thisElec->DeltaR(_selMuons["tight"][j]) < 0.1)
                 muOverlap = true;
 
         // electron preselection
-        if ( 
-                thisElec->Pt() < _elePtCuts[0] 
-                || fabs(thisElec->Eta()) > 2.5 
-                || !thisElec->ConversionVeto() 
-                || fabs(thisElec->Dz(_selVertices[0])) > 0.05 
+        if (
+                thisElec->Pt() < _elePtCuts[0]
+                || fabs(thisElec->Eta()) > 2.5
+                || !thisElec->ConversionVeto()
+                || fabs(thisElec->Dz(_selVertices[0])) > 0.05
                 || fabs(thisElec->Dxy(_selVertices[0])) > 0.015
            ) continue;
 
-        float eleISO = (thisElec->IsoMap("pfChIso_R04") + max(0., (double)(thisElec->IsoMap("pfPhoIso_R04") 
-                        + thisElec->IsoMap("pfNeuIso_R04") - _rho*thisElec->IsoMap("EffArea_R04"))))/thisElec->Pt(); 
+        float pfPhoIso_corr = ElectronPhoIsoHack(thisElec);
+
+        float eleISO = (thisElec->IsoMap("pfChIso_R04") + max(0., (double)(thisElec->IsoMap("pfPhoIso_R04")
+                        + thisElec->IsoMap("pfNeuIso_R04") - _rho*thisElec->IsoMap("EffArea_R04"))))/thisElec->Pt();
+
+        float eleISO_corr = (thisElec->IsoMap("pfChIso_R04") + max(0., (double)(pfPhoIso_corr
+                        + thisElec->IsoMap("pfNeuIso_R04") - _rho*thisElec->IsoMap("EffArea_R04"))))/thisElec->Pt();
 
         thisElec->SetIsoMap("IsoRel", eleISO);
+        thisElec->SetIsoMap("IsoRel_corrected", eleISO_corr);
+        thisElec->SetIsoMap("pfPhoIso_R04_corrected", pfPhoIso_corr);
 
         // analysis electrons
         if (thisElec->IdMap("preSelPassV1")) {
@@ -455,15 +482,13 @@ void Selector::ElectronSelector(TClonesArray* electrons)
             if (ElectronMVA(thisElec) && !muOverlap)
                 _selElectrons["tight_id"].push_back(*thisElec);
 
-            if (ElectronMVA(thisElec) && eleISO < 0.15 
-                    //&& electron->MissingHits() // <-- ??
-               ) { 
+            if (ElectronMVA(thisElec) && eleISO < 0.15) {
                 if (!muOverlap)
-                    _selElectrons["tight"].push_back(*thisElec);			
+                    _selElectrons["tight"].push_back(*thisElec);    
                 else
-                    _selElectrons["tight_overlap"].push_back(*thisElec);			
+                    _selElectrons["tight_overlap"].push_back(*thisElec);    
             } else if (
-                    !muOverlap 
+                    !muOverlap
                     && ElectronMVA(thisElec)
                     && eleISO < 1.
                     ) {
@@ -489,7 +514,6 @@ bool Selector::PhotonTightID(TCPhoton* photon)
     bool pass = false;
     if (
             ((fabs(photon->Eta()) < 1.442     
-              && photon->ConversionVeto()           
               && photon->SigmaIEtaIEta()            < 0.01  
               && photon->HadOverEm()                < 0.05      
              ) ||
@@ -516,25 +540,28 @@ bool Selector::PhotonIsolation(TCPhoton* photon)
     float phIsoCor = max(photon->IsoMap("phIso03") - _rho*EA[2], float(0.));
 
     float eta = photon->Eta();
-    if (
-            eta < 1.442
-            && chIsoCor < 1.5
-            && nhIsoCor < 1.0 + 0.04*photon->Pt()
-            && phIsoCor < 0.7 + 0.005*photon->Pt()
-       ) 
-        return true;
-    else
-        return false;
+    if (fabs(eta) < 1.442) {
+            if (
+                    chIsoCor < 1.5 
+                    && nhIsoCor < 1.0 + 0.04*photon->Pt() 
+                    && phIsoCor < 0.7 + 0.005*photon->Pt()
+               )
+                return true;
+            else
+                return false;
 
-    if (
-            eta > 1.566
-            && chIsoCor < 1.2
-            && nhIsoCor < 1.5 + 0.04*photon->Pt()
-            && phIsoCor < 1.0 + 0.005*photon->Pt()
-       ) 
-        return true;
-    else
+    } else if (fabs(eta) > 1.566) {
+            if (
+                    chIsoCor < 1.2 
+                    && nhIsoCor < 1.5 + 0.04*photon->Pt() 
+                    && phIsoCor < 1.0 + 0.005*photon->Pt()
+               ) 
+                return true;
+            else
+                return false;
+    } else {
         return false;
+    }
 }
 
 
@@ -551,12 +578,12 @@ void Selector::PhotonSelector(TClonesArray* photons)
         bool passIso = PhotonIsolation(thisPho);
 
         // analysis photons
-        if (PhotonTightID(thisPho)) {// && passIso) {
-            _selPhotons["tight"].push_back(*thisPho);			
-        } else {
-            _selPhotons["loose"].push_back(*thisPho);
-
-        }
+        if (PhotonTightID(thisPho)) { 
+            if (passIso) 
+                _selPhotons["tight"].push_back(*thisPho);			
+            else 
+                _selPhotons["loose"].push_back(*thisPho);
+        }     
     }
 }
 
@@ -575,13 +602,10 @@ void Selector::JetSelector(TClonesArray* jets)
         std::bitset<4> overlap;
         for (int j = 0; j < (int)_selMuons["tight"].size(); ++j) 
             if (thisJet->DeltaR(_selMuons["tight"][j]) < 0.3) overlap.set(0);
-
         for (int j = 0; j < (int)_selElectrons["tight"].size(); ++j) 
             if (thisJet->DeltaR(_selElectrons["tight"][j]) < 0.3) overlap.set(1);
-
         for (int j = 0; j < (int)_selMuons["fakeable"].size(); ++j) 
             if (thisJet->DeltaR(_selMuons["fakeable"][j]) < 0.3) overlap.set(2);
-
         for (int j = 0; j < (int)_selElectrons["fakeable"].size(); ++j) 
             if (thisJet->DeltaR(_selElectrons["fakeable"][j]) < 0.3) overlap.set(3);
 
@@ -645,18 +669,18 @@ void Selector::JetSelector(TClonesArray* jets)
                     && corJet.NeuEmFrac() < 0.99
                ) { 
                 if (overlap[0]) 
-                    _selJets["muJets"].push_back(corJet);
+                    _selJets["forward_muJets"].push_back(corJet);
                 else if (overlap[1]) 
-                    _selJets["eleJets"].push_back(corJet);
+                    _selJets["forward_eleJets"].push_back(corJet);
                 else {
                     _selJets["forward"].push_back(corJet); 
 
                     if (!overlap[2] && !overlap[3])
                         _selJets["forward_NoFakes"].push_back(corJet);
                     else if (overlap[2])
-                        _selJets["muFakes"].push_back(corJet);
+                        _selJets["forward_muFakes"].push_back(corJet);
                     else if (overlap[3])
-                        _selJets["eleFakes"].push_back(corJet);
+                        _selJets["forward_eleFakes"].push_back(corJet);
                 }
             }
         }
@@ -665,119 +689,119 @@ void Selector::JetSelector(TClonesArray* jets)
 
 TCJet Selector::JERCorrections(TCJet *inJet)
 {
-
-    float sfEta[]     = {1.052, 1.057, 1.096, 1.134, 1.288};
-    float etaBins[]   = {0., 0.5, 1.1, 1.7, 2.3, 5.0};
-
-    // Match jet to generator level jet
-    TCJet    jet = *inJet;
-    float    matchedJetPt   = 0.;
-    unsigned count          = 0;
-
-    for (unsigned i = 0; i < _selGenJets.size(); ++i) {
-        if (inJet->DeltaR(_selGenJets[i]) < 0.15) {
-            //cout << _selGenJets[i].Pt() << "\t" << inJet->Pt() << ", " << inJet->DeltaR(_selGenJets[i]) << "\t\t";
-            matchedJetPt += _selGenJets[i].Pt();
-            ++count;
-        }
-    }
-
-
-    if (count > 0) {
-        for (unsigned i = 0; i < 5; ++i) {
-            if (fabs(inJet->Eta()) > etaBins[i] && fabs(inJet->Eta()) < etaBins[i+1]) {
-
-                if ((matchedJetPt - inJet->Pt())/inJet->Pt() < 0.3*inJet->Pt()) {
-                    double corJetPt = matchedJetPt + sfEta[i]*(inJet->Pt() - matchedJetPt);
-                    jet.SetPtEtaPhiE(corJetPt, inJet->Eta(), inJet->Phi(), inJet->E());
-
-                    //cout << "\t" << count << ", " << matchedJetPt << ", " << inJet->Pt() << ", " << corJetPt << endl;
-
-                }
+    
+        float sfEta[]     = {1.052, 1.057, 1.096, 1.134, 1.288};
+        float etaBins[]   = {0., 0.5, 1.1, 1.7, 2.3, 5.0};
+        
+        // Match jet to generator level jet
+        TCJet    jet = *inJet;
+        float    matchedJetPt   = 0.;
+        unsigned count          = 0;
+        
+        for (unsigned i = 0; i < _selGenJets.size(); ++i) {
+            if (inJet->DeltaR(_selGenJets[i]) < 0.15) {
+                //cout << _selGenJets[i].Pt() << "\t" << inJet->Pt() << ", " << inJet->DeltaR(_selGenJets[i]) << "\t\t";
+                matchedJetPt += _selGenJets[i].Pt();
+                    ++count;
             }
         }
-    }  
-
-    return jet;
+    
+        
+        if (count > 0) {
+            for (unsigned i = 0; i < 5; ++i) {
+                if (fabs(inJet->Eta()) > etaBins[i] && fabs(inJet->Eta()) < etaBins[i+1]) {
+                    
+                        if ((matchedJetPt - inJet->Pt())/inJet->Pt() < 0.3*inJet->Pt()) {
+                            double corJetPt = matchedJetPt + sfEta[i]*(inJet->Pt() - matchedJetPt);
+                                jet.SetPtEtaPhiE(corJetPt, inJet->Eta(), inJet->Phi(), inJet->E());
+                                
+                                //cout << "\t" << count << ", " << matchedJetPt << ", " << inJet->Pt() << ", " << corJetPt << endl;
+                                
+                        }
+                }
+            }
+        }  
+    
+        return jet;
 }
 
 
 bool Selector::BTagModifier(TCJet jet, string bTag)
 {
     float jetPt     = jet.Pt();
-    float jetEta    = jet.Eta();
-    int   jetFlavor = jet.JetFlavor();
-    bool  isBTagged = false;
-
-    // Get b-tagging efficiencies scale factors for jet depending on it's pt 
-    float bTagSF       = 1.;
-    if (bTag == "CSVL") {
-        if (jet.BDiscriminatorMap("CSV") > 0.244) isBTagged = true;
-        bTagSF = 0.981149*((1.+(-0.000713295*jetPt))/(1.+(-0.000703264*jetPt)));
-    } else if (bTag == "CSVM") {
-        if (jet.BDiscriminatorMap("CSV") > 0.679) isBTagged = true;
-        bTagSF = 0.726981*((1.+(0.253238*jetPt))/(1.+(0.188389*jetPt)));
-    } else if (bTag == "CSVT") {
-        if (jet.BDiscriminatorMap("CSV") > 1.) isBTagged = true;
-        bTagSF = 0.869965*((1.+(0.0335062*jetPt))/(1.+(0.0304598*jetPt)));
-    }
-
-    // Get mistag scale factors dependent on jet pt and eta
-    float bMistagSF = 0.;
-    if( bTag == "CSVM") {
-        if (fabs(jetEta) < 0.8) 
-            bMistagSF = 1.07541 + 0.00231827*jetPt - 4.74249e-06*pow(jetPt,2) + 2.70862e-09*pow(jetPt, 3);
-        if (fabs(jetEta) > 0.8 && fabs(jetEta) < 1.6) 
-            bMistagSF = 1.05613 + 0.00114031*jetPt - 2.56066e-06*pow(jetPt,2) + 1.67792e-09*pow(jetPt,3);
-        if (fabs(jetEta) > 1.6 && fabs(jetEta) < 2.4) 
-            bMistagSF = 1.05625 + 0.00487231*jetPt - 2.22792e-06*pow(jetPt,2) + 1.70262e-09*pow(jetPt,3);
-    } else if( bTag == "CSVL") {
-        if (fabs(jetEta) < 0.5) 
-            bMistagSF = 1.01177 + 0.00231827*jetPt - 4.74249e-06*pow(jetPt,2) + 2.70862e-09*pow(jetPt, 3); // Need to update non-zeroth order terms
-        if (fabs(jetEta) > 0.5 && fabs(jetEta) < 1.) 
-            bMistagSF = 0.97596 + 0.00114031*jetPt - 2.56066e-06*pow(jetPt,2) + 1.67792e-09*pow(jetPt,3);
-        if (fabs(jetEta) > 1. && fabs(jetEta) < 1.5) 
-            bMistagSF = 0.93821 + 0.00114031*jetPt - 2.56066e-06*pow(jetPt,2) + 1.67792e-09*pow(jetPt,3);
-        if (fabs(jetEta) > 1.5 && fabs(jetEta) < 2.4) 
-            bMistagSF = 1.00022 + 0.00487231*jetPt - 2.22792e-06*pow(jetPt,2) + 1.70262e-09*pow(jetPt,3);
-    }
-
-    // Upgrade or downgrade jet
-    float rNumber = rnGen->Uniform(1.);
-
-    if (abs(jetFlavor) == 5 || abs(jetFlavor) == 4) {
-        float bTagEff;
-        if (abs(jetFlavor) == 4) 
-            bTagEff = _cTagEff->Eval(jetPt);
-        else if (abs(jetFlavor) == 5) 
-            bTagEff = _bTagEff->Eval(jetPt);
-
-        if(bTagSF > 1){  // use this if SF>1
-            if (!isBTagged) {
-                //upgrade to tagged
-                float mistagPercent = (1.0 - bTagSF) / (1.0 - (bTagSF/bTagEff) );
-                if(rNumber < mistagPercent ) isBTagged = true;
-            }
-        } else if (bTagSF < 1) {
-            //downgrade tagged to untagged
-            if( isBTagged && rNumber > bTagSF ) isBTagged = false;
+        float jetEta    = jet.Eta();
+        int   jetFlavor = jet.JetFlavor();
+        bool  isBTagged = false;
+        
+        // Get b-tagging efficiencies scale factors for jet depending on it's pt 
+        float bTagSF       = 1.;
+        if (bTag == "CSVL") {
+            if (jet.BDiscriminatorMap("CSV") > 0.244) isBTagged = true;
+                bTagSF = 0.981149*((1.+(-0.000713295*jetPt))/(1.+(-0.000703264*jetPt)));
+        } else if (bTag == "CSVM") {
+            if (jet.BDiscriminatorMap("CSV") > 0.679) isBTagged = true;
+                bTagSF = 0.726981*((1.+(0.253238*jetPt))/(1.+(0.188389*jetPt)));
+        } else if (bTag == "CSVT") {
+            if (jet.BDiscriminatorMap("CSV") > 1.) isBTagged = true;
+                bTagSF = 0.869965*((1.+(0.0335062*jetPt))/(1.+(0.0304598*jetPt)));
         }
-
-    } else if (abs(jetFlavor) > 0) {
-        float mistagEff = _misTagEff->Eval(jetPt);
-        if(bMistagSF > 1){  // use this if SF>1
-            if (!isBTagged) {
-                //upgrade to tagged
-                float mistagPercent = (1.0 - bMistagSF) / (1.0 - (bMistagSF/mistagEff));
-                if(rNumber < mistagPercent ) isBTagged = true;
-            }
-        } else if (bMistagSF < 1) {
-            //downgrade tagged to untagged
-            if( isBTagged && rNumber > bMistagSF ) isBTagged = false;
+    
+        // Get mistag scale factors dependent on jet pt and eta
+        float bMistagSF = 0.;
+        if( bTag == "CSVM") {
+            if (fabs(jetEta) < 0.8) 
+                bMistagSF = 1.07541 + 0.00231827*jetPt - 4.74249e-06*pow(jetPt,2) + 2.70862e-09*pow(jetPt, 3);
+                    if (fabs(jetEta) > 0.8 && fabs(jetEta) < 1.6) 
+                        bMistagSF = 1.05613 + 0.00114031*jetPt - 2.56066e-06*pow(jetPt,2) + 1.67792e-09*pow(jetPt,3);
+                            if (fabs(jetEta) > 1.6 && fabs(jetEta) < 2.4) 
+                                bMistagSF = 1.05625 + 0.00487231*jetPt - 2.22792e-06*pow(jetPt,2) + 1.70262e-09*pow(jetPt,3);
+        } else if( bTag == "CSVL") {
+            if (fabs(jetEta) < 0.5) 
+                bMistagSF = 1.01177 + 0.00231827*jetPt - 4.74249e-06*pow(jetPt,2) + 2.70862e-09*pow(jetPt, 3); // Need to update non-zeroth order terms
+            if (fabs(jetEta) > 0.5 && fabs(jetEta) < 1.) 
+                bMistagSF = 0.97596 + 0.00114031*jetPt - 2.56066e-06*pow(jetPt,2) + 1.67792e-09*pow(jetPt,3);
+                    if (fabs(jetEta) > 1. && fabs(jetEta) < 1.5) 
+                        bMistagSF = 0.93821 + 0.00114031*jetPt - 2.56066e-06*pow(jetPt,2) + 1.67792e-09*pow(jetPt,3);
+                            if (fabs(jetEta) > 1.5 && fabs(jetEta) < 2.4) 
+                                bMistagSF = 1.00022 + 0.00487231*jetPt - 2.22792e-06*pow(jetPt,2) + 1.70262e-09*pow(jetPt,3);
         }
-    }
-
-    return isBTagged;
+    
+        // Upgrade or downgrade jet
+        float rNumber = rnGen->Uniform(1.);
+        
+        if (abs(jetFlavor) == 5 || abs(jetFlavor) == 4) {
+            float bTagEff;
+                if (abs(jetFlavor) == 4) 
+                    bTagEff = _cTagEff->Eval(jetPt);
+                else if (abs(jetFlavor) == 5) 
+                    bTagEff = _bTagEff->Eval(jetPt);
+                        
+                        if(bTagSF > 1){  // use this if SF>1
+                            if (!isBTagged) {
+                                //upgrade to tagged
+                                float mistagPercent = (1.0 - bTagSF) / (1.0 - (bTagSF/bTagEff) );
+                                    if(rNumber < mistagPercent ) isBTagged = true;
+                            }
+                        } else if (bTagSF < 1) {
+                            //downgrade tagged to untagged
+                            if( isBTagged && rNumber > bTagSF ) isBTagged = false;
+                        }
+            
+        } else if (abs(jetFlavor) > 0) {
+            float mistagEff = _misTagEff->Eval(jetPt);
+                if(bMistagSF > 1){  // use this if SF>1
+                    if (!isBTagged) {
+                        //upgrade to tagged
+                        float mistagPercent = (1.0 - bMistagSF) / (1.0 - (bMistagSF/mistagEff));
+                            if(rNumber < mistagPercent ) isBTagged = true;
+                    }
+                } else if (bMistagSF < 1) {
+                    //downgrade tagged to untagged
+                    if( isBTagged && rNumber > bMistagSF ) isBTagged = false;
+                }
+        }
+    
+        return isBTagged;
 }
 
 
@@ -790,9 +814,9 @@ void Selector::GenParticleSelector(TClonesArray* gen, unsigned pdgId, unsigned s
 {
     for (int i = 0; i < gen->GetSize(); ++i) {
         TCGenParticle* iGen = (TCGenParticle*) gen->At(i);
-
-        if (fabs(iGen->GetPDGId()) == pdgId and iGen->GetStatus() == status) 
-            _selGenParticles[type].push_back(*iGen);
+            
+            if (fabs(iGen->GetPDGId()) == pdgId and iGen->GetStatus() == status) 
+                _selGenParticles[type].push_back(*iGen);
     }
 }
 
@@ -800,9 +824,26 @@ void Selector::GenJetSelector(TClonesArray* genJets)
 {
     for (int i = 0; i < genJets->GetSize(); ++i) {
         TCGenJet* iGenJet = (TCGenJet*) genJets->At(i);
-
-        // Specify some cuts based on the type here (maybe...?)
-
-        _selGenJets.push_back(*iGenJet);
+            
+            // Specify some cuts based on the type here (maybe...?)
+            
+            _selGenJets.push_back(*iGenJet);
     }
+}
+
+
+/////////////////////////////
+// Electron isolation hack //
+/////////////////////////////
+
+float Selector::ElectronPhoIsoHack(TCElectron* electron)
+{
+    float pfPhoIso = electron->IsoMap("pfPhoIso_R04");
+    for (unsigned i = 0; i < _selPhotons["tight"].size(); ++i) {
+        TCPhoton photon = _selPhotons["tight"][i];
+        if (electron->DeltaR(photon) < 0.1 && fabs(electron->Pt()/photon.Pt() - 1) < 0.25) {
+            pfPhoIso = max(0., double(pfPhoIso - photon.Pt()));
+        }
+    }
+    return pfPhoIso;
 }

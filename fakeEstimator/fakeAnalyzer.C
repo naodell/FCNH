@@ -10,7 +10,6 @@ using namespace std;
 
 const bool  doQCDDileptonCR = true;
 const bool  doZPlusJetCR    = true;
-const bool  doGenPrint      = false;
 
 const float jetPtCut[]  = {25., 15.};
 const float muPtCut[]   = {10., 3.};
@@ -160,32 +159,6 @@ bool fakeAnalyzer::Process(Long64_t entry)
         gJets = selector->GetSelectedGenJets();
     }
 
-    if (doGenPrint) {
-        // Higgs
-        for (unsigned i = 0; i < higgs.size(); ++i)
-            if (higgs[i].GetStatus() == 3) 
-                cout << higgs[i].GetStatus() << ", " << higgs[i].M() << ", " << higgs[i].Mother() << ", higgs" << endl;
-
-        // Vector bosons
-        for (unsigned i = 0; i < dubyas.size(); ++i)
-            if (dubyas[i].GetStatus() == 3) 
-                cout << "\t status = " << dubyas[i].GetStatus() <<  ", mass = " << dubyas[i].M() << ", pt = " << dubyas[i].Pt() << ", mother = " << dubyas[i].Mother() << ", dubyas" << endl;
-        for (unsigned i = 0; i < Zeds.size(); ++i)
-            if (Zeds[i].GetStatus() == 3) 
-                cout << "\t status = " << Zeds[i].GetStatus() << ", mass = " << Zeds[i].M() << ", pt = " << Zeds[i].Pt() << ", mother = " << Zeds[i].Mother() << ", Zeds" << endl;
-
-        // leptons
-        if ((gElectrons.size() + gMuons.size() + gTaus.size()) > 0) {
-            for (unsigned i = 0; i < gElectrons.size(); ++i)
-                cout << "\t\t" << gElectrons[i].GetStatus() << ", " << gElectrons[i].Pt() << ", " << gElectrons[i].Eta() << ", " << gElectrons[i].Mother() << ", " << gElectrons[i].Grandmother() << ", electrons" << endl;
-            for (unsigned i = 0; i < gMuons.size(); ++i)
-                cout << "\t\t" << gMuons[i].GetStatus() << ", " << gMuons[i].Pt() << ", " << gMuons[i].Eta() << ", " << gMuons[i].Mother() << ", " << gMuons[i].Grandmother() << ", muons" << endl;
-            for (unsigned i = 0; i < gTaus.size(); ++i)
-                cout << "\t\t" << gTaus[i].GetStatus() << ", " << gTaus[i].Pt() << ", " << gTaus[i].Eta() << ", " << gTaus[i].Mother() << ", " << gTaus[i].Grandmother() << ", taus" << endl;
-        }
-
-        cout << "\n" << endl;
-    }
 
     //////////////////////
     // object selection //
@@ -275,16 +248,15 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
     if (doQCDDileptonCR && leptons.size() < 2) {
         // For description of QCD dilepton control region, see section 7.4.1 of
-        // ttH note (AN-13-159).
-        // First thing is to find the tag lepton and the probe lepton. For this
-        // control region, the tag is a muon that is displaced from the PV and
-        // is anti-isolated.  The probe is a lepton passing loose
-        // identification requirement without any isolation requirement
+        // ttH note (AN-13-159).  First thing is to find the tag lepton and the
+        // probe lepton. For this control region, the tag is a muon that is
+        // displaced from the PV and is anti-isolated.  The probe is a lepton
+        // passing loose identification requirement without any isolation
+        // requirement
 
         UInt_t nTags = muTags.size();
 
         if (nTags == 1) { 
-
             tag = (TCPhysObject)muTags[0];
 
             // Make sure there is only one probe lepton and that it does not overlap with the tag 
@@ -432,6 +404,8 @@ bool fakeAnalyzer::Process(Long64_t entry)
         return kTRUE;
 
     if (crType == "QCD2l" && leptons.size() <= 1) {
+
+
         if (nEleProbes == 1) {
             if (recoMET->Mod() < 50) {
                 FillDenominatorHists(crType + "_inclusive", eleProbe);
@@ -465,7 +439,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
             else 
                 FillDenominatorHists(crType + "_high_jet", muProbe);
         }
-    } else if (crType == "ZPlusJet" && leptons.size() < 4 && leptons.size() >= 2) {
+    } else if (crType == "ZPlusJet" && leptons.size() <= 3) {
         if (nEleProbes == 1) {
             FillJetFlavorHists(crType, eleProbe, jets);
             FillDenominatorHists(crType + "_inclusive", eleProbe);
@@ -530,7 +504,6 @@ bool fakeAnalyzer::Process(Long64_t entry)
     if (eleMatched) {
         if (recoMET->Mod() < 50)
             FillNumeratorHists(crType + "_inclusive", elePass);
-
         if (crType == "QCD2l") {
             if (recoMET->Mod() < 20)
                 FillNumeratorHists(crType + "_low_met", elePass);
@@ -539,7 +512,6 @@ bool fakeAnalyzer::Process(Long64_t entry)
         }
     } else if (nEleProbes == 1)
         FillClosureHists(crType, eleProbe);
-
     if (muMatched) {
         if (recoMET->Mod() < 50)
             FillNumeratorHists(crType + "_inclusive", muPass);
@@ -551,6 +523,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
         }
     } else  if (nMuProbes == 1)
         FillClosureHists(crType, muProbe);
+
 
     return kTRUE;
 }
@@ -589,7 +562,7 @@ void fakeAnalyzer::DoZTag(vObj& leptons)
     for (unsigned i = 0; i < leptons.size(); ++i) {
         for (unsigned j = leptons.size()-1; j > i; --j) {
 
-            //Find lepton pair that is consisten with a Z in +- 10 GeV window
+            //Find lepton pair that is consistent with a Z in +- 10 GeV window
             if (
                     fabs((leptons[i] + leptons[j]).M() - 91.2) < 10 
                     && leptons[i].Type() == leptons[j].Type()

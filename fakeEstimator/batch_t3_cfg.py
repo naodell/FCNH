@@ -5,7 +5,7 @@ import sys
 cfg = b.JobConfig
 
 ''' Specify parameters '''
-path        = '/tthome/naodell/storage/data/nuTuples_v7_4/'
+mcDir       = '/tthome/naodell/storage/data/nuTuples_v7_4'
 executable  = 'execBatch.sh'
 
 selection   = 'fcnc'
@@ -76,7 +76,6 @@ if period == '2012':
         cfg('ZZTo2e2tau',      '{0}/ZZTo2e2tau'.format(path),       5,   'ZZ2e2tau        muon  2012'),
         cfg('ZZTo2mu2tau',     '{0}/ZZTo2mu2tau'.format(path),      5,   'ZZ2mu2tau       muon  2012')
     ])
-
 
 
 inputSamples = []

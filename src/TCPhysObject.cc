@@ -2,14 +2,14 @@
 #include "../interface/TCPhysObjectLinkDef.h"
 
 TCPhysObject::TCPhysObject() {
-    _isPF = _isReco = _isFake = false;
+    _isPF = _isReco = false;
 }
 
 TCPhysObject::TCPhysObject(TLorentzVector p4, int charge) {
     this->SetP4(p4);
     this->SetCharge(charge);
 
-    _isPF = _isReco = _isFake = false;
+    _isPF = _isReco = false;
 }
 
 TCPhysObject::TCPhysObject(TLorentzVector p4, int charge, string type) {
@@ -17,7 +17,7 @@ TCPhysObject::TCPhysObject(TLorentzVector p4, int charge, string type) {
     this->SetCharge(charge);
     this->SetType(type);
 
-    _isPF = _isReco = _isFake = false;
+    _isPF = _isReco = false;
 }
 
 TCPhysObject::~TCPhysObject() {
@@ -65,7 +65,7 @@ string TCPhysObject::Type() const { return _type; }
 int TCPhysObject::Charge() const { return _charge; }
 bool TCPhysObject::IsPF() const { return _isPF; }
 bool TCPhysObject::IsReco() const { return _isReco; }
-bool TCPhysObject::IsFake() const { return _isFake; }
+bool TCPhysObject::IsFake() const { return _isReco; }
 
 // "set" methods ---------------------------------------------
 

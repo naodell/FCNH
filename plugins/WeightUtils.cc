@@ -418,8 +418,6 @@ float WeightUtils::GetFakeWeight(TCPhysObject fakeable, string controlRegion)
     } else if (fakeable.Type() == "electron") {
 
         fakeablePt = fakeable.Pt();
-
-        fakeablePt = fakeable.Pt();
         if (fakeable.Pt() < 40) 
             fakeablePt = fakeable.Pt();
         else
