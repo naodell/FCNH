@@ -5,7 +5,7 @@ import sys
 cfg = b.JobConfig
 
 ''' Specify parameters '''
-path  = '/eos/uscms/store/user/lpchzg/nuTuples_v7.4_8TeV/Data'
+path  = '/eos/uscms/store/user/lpchzg/nuTuples_v9.6_8TeV/Data'
 executable  = 'execBatch.csh'
 
 selection   = 'fcnc'
@@ -43,15 +43,15 @@ signal  = []
 
 if period == '2012':
     data.extend([
-        cfg('muon_2012A', '{0}/DoubleMu_Run2012A'.format(path), 10, 'DATA_MUON muon 2012'),
-        cfg('muon_2012B', '{0}/DoubleMu_Run2012B'.format(path), 10, 'DATA_MUON muon 2012'),
-        cfg('muon_2012C', '{0}/DoubleMu_Run2012C'.format(path), 10, 'DATA_MUON muon 2012'),
-        cfg('muon_2012D', '{0}/DoubleMu_Run2012D'.format(path), 15, 'DATA_MUON muon 2012'),
+        #cfg('muon_2012A', '{0}/DoubleMu_Run2012A'.format(path), 10, 'DATA_MUON muon 2012'),
+        #cfg('muon_2012B', '{0}/DoubleMu_Run2012B'.format(path), 10, 'DATA_MUON muon 2012'),
+        #cfg('muon_2012C', '{0}/DoubleMu_Run2012C'.format(path), 10, 'DATA_MUON muon 2012'),
+        #cfg('muon_2012D', '{0}/DoubleMu_Run2012D'.format(path), 15, 'DATA_MUON muon 2012'),
 
-        cfg('electron_2012A', '{0}/DoubleElectron_Run2012A'.format(path), 10, 'DATA_ELECTRON electron 2012'),
-        cfg('electron_2012B', '{0}/DoubleElectron_Run2012B'.format(path), 10, 'DATA_ELECTRON electron 2012'),
-        cfg('electron_2012C', '{0}/DoubleElectron_Run2012C'.format(path), 10, 'DATA_ELECTRON electron 2012'),
-        cfg('electron_2012D', '{0}/DoubleElectron_Run2012D'.format(path), 15, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012A', '{0}/DoubleElectron_Run2012A'.format(path), 30, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012B', '{0}/DoubleElectron_Run2012B'.format(path), 30, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012C', '{0}/DoubleElectron_Run2012C'.format(path), 30, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012D', '{0}/DoubleElectron_Run2012D'.format(path), 45, 'DATA_ELECTRON electron 2012'),
 
         #cfg('muEG_2012A', '{0}/MuEG_Run2012A'.format(path), 10, 'DATA_MUEG muEG 2012'),
         #cfg('muEG_2012B', '{0}/MuEG_Run2012B'.format(path), 10, 'DATA_MUEG muEG 2012'),
