@@ -315,7 +315,6 @@ bool Selector::ElectronMVA(TCElectron* electron)
     double mvaValue = electron->MvaID_Old();
     electron->SetIdMap("mva", mvaValue);
 
-
     if (fabs(electron->Eta()) < 0.8) {
         if (electron->Pt() > 20 && mvaValue > 0.94)
             pass = true;
@@ -391,20 +390,19 @@ bool Selector::ElectronMVAPreSel(TCElectron* electron)
 {
     bool pass = false;
     if (
-            fabs(electron->Eta()) < 1.479
-            && electron->IdMap("gsf_numberOfLostHits") == 0
+            electron->IdMap("gsf_numberOfLostHits") == 0
             && (electron->IdMap("dr03TkSumPt")) / electron->Pt() < 0.2
             && (electron->IdMap("dr03EcalRecHitSumEt")) /electron->Pt() < 0.2
             && (electron->IdMap("dr03HcalTowerSumEt")) / electron->Pt() < 0.2
        ) {
-        if (electron->SigmaIEtaIEta()< 0.014 && electron->IdMap("hadronicOverEm") < 0.15) {
-            pass = true;
+
+        if (fabs(electron->Eta()) < 1.479) {
+            if (electron->SigmaIEtaIEta()< 0.014 && electron->IdMap("hadronicOverEm") < 0.15)
+                pass = true;
+        } else { //endcap
+            if (electron->SigmaIEtaIEta()< 0.035 && electron->IdMap("hadronicOverEm") < 0.10) 
+                pass = true;
         }
-    } else { //endcap
-        if (electron->SigmaIEtaIEta()< 0.035 && electron->IdMap("hadronicOverEm") < 0.10) {
-            pass = true;
-        }
-    }
 
     return pass;
 }
