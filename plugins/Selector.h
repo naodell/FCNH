@@ -65,22 +65,23 @@ class Selector : public TObject {
         bool    IsZCandidate(TCPhysObject*, TCPhysObject*, float);
         float*  PhotonEffectiveArea(TCPhysObject*); 
         float   LeptonEffectiveArea(TCPhysObject*); 
-        bool    BTagModifier(TCJet, string);
+        bool    BTagModifier(TCJet*, string);
+        float   ElectronPhoIsoHack(TCElectron*);
 
         //Get processed collections
         vector<TVector3*>       GetSelectedPVs();
-        vector<TCMuon>          GetSelectedMuons(string);
-        vector<TCElectron>      GetSelectedElectrons(string);
-        vector<TCPhoton>        GetSelectedPhotons(string);
-        vector<TCJet>           GetSelectedJets(string);
-        vector<TCGenParticle>   GetSelectedGenParticles(string);
-        vector<TCGenJet>        GetSelectedGenJets();
+        vector<TCMuon*>         GetSelectedMuons(string);
+        vector<TCElectron*>     GetSelectedElectrons(string);
+        vector<TCPhoton*>       GetSelectedPhotons(string);
+        vector<TCJet*>          GetSelectedJets(string);
+        vector<TCGenParticle*>  GetSelectedGenParticles(string);
+        vector<TCGenJet*>       GetSelectedGenJets();
 
         //Need to clear maps at the end of an event
         void    PurgeObjects();
 
         // jet efficiencies and resolution
-        TCJet JERCorrections(TCJet*);
+        TCJet* JERCorrections(TCJet*);
 
         ClassDef(Selector,1);
 
@@ -100,12 +101,12 @@ class Selector : public TObject {
         unsigned            _vtxIndex;
 
         //object maps
-        map<string, vector<TCMuon> >        _selMuons;
-        map<string, vector<TCElectron> >    _selElectrons;
-        map<string, vector<TCPhoton> >      _selPhotons;
-        map<string, vector<TCJet> >         _selJets;
-        map<string, vector<TCGenParticle> > _selGenParticles;
-        vector<TCGenJet>                    _selGenJets;
+        map<string, vector<TCMuon*> >           _selMuons;
+        map<string, vector<TCElectron*> >       _selElectrons;
+        map<string, vector<TCPhoton*> >         _selPhotons;
+        map<string, vector<TCJet*> >            _selJets;
+        map<string, vector<TCGenParticle*> >    _selGenParticles;
+        vector<TCGenJet*>                       _selGenJets;
 
         // b-tag efficiencies from MC 
         TGraphAsymmErrors*  _misTagEff;

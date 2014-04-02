@@ -224,8 +224,8 @@ if __name__ == '__main__':
         print 'A batch must specified.  Otherwise, do some hacking so this thing knows about your inputs.'
         exit()
 
-    doQFlips    = True
-    doFakes     = False
+    doQFlips    = False
+    doFakes     = True
     doMetFake   = False
 
     ### For electron charge misID efficiencies ###

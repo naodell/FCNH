@@ -44,23 +44,22 @@ class WeightUtils: public TObject {
         void    SetSampleName(string);
         void    SetSelection(string);
         void    SetPassTrigger(string); 
-        void    SetObjects(vector<TCPhysObject>, vector<TCJet>, float, string);
+        void    SetObjects(vector<TCPhysObject*>, vector<TCJet*>, float, string);
 
         float   PUWeight();
         float   RecoWeight();
-        float   ZZWeight(vector<TLorentzVector>);
         float   VBFHiggsWeight(float, int);
         float   GetTotalWeight();
-        float   GetFakeWeight(TCPhysObject, string);
+        float   GetFakeWeight(TCPhysObject*, string);
         float   GetQFlipWeight();
 
         // lepton reco efficiencies
-        float GetElectronEff(TLorentzVector) const;
-        float GetMuEff(TLorentzVector) const; 
+        float GetElectronEff(TLorentzVector*) const;
+        float GetMuEff(TLorentzVector*) const; 
 
         // lepton trigger efficiencies
-        float GetMuTriggerEff(TLorentzVector, TLorentzVector) const;
-        float GetEleTriggerEff(TLorentzVector, TLorentzVector) const;
+        float GetMuTriggerEff(TLorentzVector*, TLorentzVector*) const;
+        float GetEleTriggerEff(TLorentzVector*, TLorentzVector*) const;
 
         float GetFakeUncertainty() const;
 
@@ -74,8 +73,8 @@ class WeightUtils: public TObject {
         bool   _isRealData;
 
         // input objects
-        vector<TCPhysObject>    _leptons;
-        vector<TCJet>           _jets;
+        vector<TCPhysObject*>   _leptons;
+        vector<TCJet*>          _jets;
         string                  _passTrig;
         float                   _nPU;
 

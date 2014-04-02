@@ -596,7 +596,7 @@ void fakeAnalyzer::FillDenominatorHists(string cat, TCPhysObject& probe)
             "h1_Met", "MET;MET;Entries / 4 GeV", 25, 0., 100.);
     histManager->Fill1DHist((tag + probe).M(),
             "h1_TagProbeMass", "M_{tag,probe};M_{tag,probe};Entries / 3 GeV", 50, 0., 150.);
-    histManager->Fill2DHist(probe.Pt(), probe.IsoMap("IsoRel"),
+    histManager->Fill2DHist(probe.Pt(), probe.IdMap("IsoRel"),
             "h2_ProbeLepPtVsIso", "probe lepton p_{T} vs ISO_{rel};p_{T};ISO_{rel}", 50, 0., 150., 25, 0., 1.);
 
     // fake rate measurement plots
@@ -611,7 +611,7 @@ void fakeAnalyzer::FillDenominatorHists(string cat, TCPhysObject& probe)
                 "h1_MuProbeLepPt", "probe muon p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
         histManager->Fill1DHist(probe.Eta(),
                 "h1_MuProbeLepEta", "probe muon #eta;#eta;Entries / bin", 25, -2.5, 2.5);
-        histManager->Fill1DHist(probe.IsoMap("IsoRel"),
+        histManager->Fill1DHist(probe.IdMap("IsoRel"),
                 "h1_MuDenomIsoRel", "probe muon IsoRel;IsoRel;Entries", 40, 0., 4.);
 
         histManager->Fill1DHistUnevenBins(probe.Pt(),
@@ -629,7 +629,7 @@ void fakeAnalyzer::FillDenominatorHists(string cat, TCPhysObject& probe)
                 "h1_EleProbeLepPt", "probe electron p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
         histManager->Fill1DHist(probe.Eta(),
                 "h1_EleProbeLepEta", "probe electron #eta;#eta;Entries / bin", 25, -2.5, 2.5);
-        histManager->Fill1DHist(probe.IsoMap("IsoRel"),
+        histManager->Fill1DHist(probe.IdMap("IsoRel"),
                 "h1_EleDenomIsoRel", "probe electron IsoRel;IsoRel;Entries", 40, 0., 4.);
 
         histManager->Fill1DHistUnevenBins(probe.Pt(),
@@ -654,7 +654,7 @@ void fakeAnalyzer::FillNumeratorHists(string cat, TCPhysObject& passLep)
                 "h1_MuPassLepPt", "pass muon p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
         histManager->Fill1DHist(passLep.Eta(),
                 "h1_MuPassLepEta", "pass muon #eta;#eta;Entries / bin", 25, -2.5, 2.5);
-        histManager->Fill1DHist(passLep.IsoMap("IsoRel"),
+        histManager->Fill1DHist(passLep.IdMap("IsoRel"),
                 "h1_MuNumerIsoRel", "pass electron IsoRel;IsoRel;Entries", 40, 0., 0.20);
 
         histManager->Fill1DHistUnevenBins(passLep.Pt(),
@@ -672,7 +672,7 @@ void fakeAnalyzer::FillNumeratorHists(string cat, TCPhysObject& passLep)
                 "h1_ElePassLepPt", "pass electron p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
         histManager->Fill1DHist(passLep.Eta(),
                 "h1_ElePassLepEta", "pass electron #eta;#eta;Entries / bin", 25, -2.5, 2.5);
-        histManager->Fill1DHist(passLep.IsoMap("IsoRel"),
+        histManager->Fill1DHist(passLep.IdMap("IsoRel"),
                 "h1_EleNumerIsoRel", "pass electron IsoRel;IsoRel;Entries", 40, 0., 0.20);
 
         histManager->Fill1DHistUnevenBins(passLep.Pt(),
@@ -753,7 +753,7 @@ bool fakeAnalyzer::CheckQCD2lCR(vector<TCJet>& tagJets, TCPhysObject& probe)
 
     // Check tag/probe pair is back-to-back
     Float_t tpDeltaPhi  = tag.DeltaPhi(probe);
-    Float_t tpBalance   = probe.Pt()/(tag.Pt()*(1 + tag.IsoMap("IsoRel"))); 
+    Float_t tpBalance   = probe.Pt()/(tag.Pt()*(1 + tag.IdMap("IsoRel"))); 
 
     histManager->Fill1DHist(fabs(tpDeltaPhi),
             "h1_TagProbeDeltaPhi", "#Delta #phi (tag,probe);#Delta #phi (tag,probe);Entries / bin", 36, 0., TMath::Pi());

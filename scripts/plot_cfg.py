@@ -25,7 +25,7 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.'])#, '5_BDT'])
+cutList.extend(['2_Z_veto'])#, '3_2jet', '4_MET', '.'])#, '5_BDT'])
 #cutList.extend(['.', '.', '.', 'X_0jet', 'X_1jet'])
 
 crList      = []#'CR_WZ', 'CR_ttbar', 'CR_ZFake']
@@ -34,7 +34,7 @@ period      = '2012'
 LUMIDATA    = 19.712 
 
 doPlots     = True
-doLog       = False
+doLog       = True
 doEff       = False
 doRatio     = True
 doNorm      = True
@@ -45,7 +45,7 @@ doOS        = False
 doSS        = True
 do3l        = True
 
-doYields    = True
+doYields    = False
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive']
@@ -63,19 +63,19 @@ samples     = {'all':[], 'inclusive':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[],
                 'ss_inclusive':[], 'ss_ee':[], 'ss_emu':[], 'ss_mumu':[]}
 
 #samples['all'].append('higgs')
-samples['all'].append('Triboson')
+#samples['all'].append('Triboson')
 samples['all'].append('ttV')
 samples['all'].append('Diboson')
 samples['all'].append('top')
 samples['all'].append('ZJets')
-samples['all'].append('WG')
+#samples['all'].append('WG')
 #samples['all'].append('ZZ4l')
 #samples['all'].append('WZJets3LNu')
 #samples['all'].append('QCD')
 #samples['all'].extend(['ZbbToLL', 'WbbToLNu']) #, 'ZGstar'])
 
 #samples['inclusive'].append('higgs')
-samples['inclusive'].append('Triboson')
+#samples['inclusive'].append('Triboson')
 samples['inclusive'].append('ttV')
 samples['inclusive'].append('Diboson')
 samples['inclusive'].append('top')
@@ -83,7 +83,7 @@ samples['inclusive'].append('ZJets')
 
 ## trilepton categories
 #samples['3l_inclusive'].append('higgs')
-samples['3l_inclusive'].append('Triboson')
+#samples['3l_inclusive'].append('Triboson')
 samples['3l_inclusive'].append('ttV')
 samples['3l_inclusive'].append('ZZ4l')
 #samples['3l_inclusive'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
@@ -117,12 +117,12 @@ samples['3l_inclusive'].append('Fakes')
 
 ## same-sign categories
 #samples['ss_inclusive'].append('higgs')
-samples['ss_inclusive'].append('Triboson')
+#samples['ss_inclusive'].append('Triboson')
 samples['ss_inclusive'].append('ttV')
 samples['ss_inclusive'].append('ZZ4l')
 #samples['ss_inclusive'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
 samples['ss_inclusive'].append('WZJets3LNu')
-samples['ss_inclusive'].append('WG')
+#samples['ss_inclusive'].append('WG')
 
 ## dielectrons
 samples['ss_ee'].extend(samples['ss_inclusive'])

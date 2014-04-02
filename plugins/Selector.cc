@@ -67,32 +67,32 @@ vector<TVector3*> Selector::GetSelectedPVs()
     return _selVertices;
 }
 
-vector<TCMuon> Selector::GetSelectedMuons(string key) 
+vector<TCMuon*> Selector::GetSelectedMuons(string key) 
 {
     return _selMuons[key];
 }
 
-vector<TCElectron> Selector::GetSelectedElectrons(string key)  
+vector<TCElectron*> Selector::GetSelectedElectrons(string key)  
 {
     return _selElectrons[key];
 }
 
-vector<TCPhoton> Selector::GetSelectedPhotons(string key)  
+vector<TCPhoton*> Selector::GetSelectedPhotons(string key)  
 {
     return _selPhotons[key];
 }
 
-vector<TCJet> Selector::GetSelectedJets(string key)
+vector<TCJet*> Selector::GetSelectedJets(string key)
 {
     return _selJets[key];
 }
 
-vector<TCGenParticle> Selector::GetSelectedGenParticles(string key)
+vector<TCGenParticle*> Selector::GetSelectedGenParticles(string key)
 {
     return _selGenParticles[key];
 }
 
-vector<TCGenJet> Selector::GetSelectedGenJets()
+vector<TCGenJet*> Selector::GetSelectedGenJets()
 {
     return _selGenJets;
 }
@@ -121,7 +121,7 @@ float* Selector::PhotonEffectiveArea(TCPhysObject* photon)
         {0.020, 0.039, 0.260}, // 2.3 < eta < 2.4
         {0.012, 0.072, 0.266} // 2.5 < eta
     };
-        
+
     float eta = fabs(photon->Eta());
     if (eta < 1.)
         return EAPho[0];
@@ -202,7 +202,7 @@ bool Selector::MuonTightID(TCMuon* muon)
             //(muon->IsTRK() && muon->IsGLB() && muon->IsPF())
             //&& muon->PtError()/muon->Pt() < 0.1
             (muon->IsGLB() && muon->IsPF())
-            && muon->NormalizedChi2()  < 10
+            && muon->NormalizedChi2() < 10
             && muon->NumberOfValidMuonHits()  > 0
             && muon->NumberOfMatchedStations() > 1
             && ((
@@ -238,8 +238,6 @@ bool Selector::MuonLooseID(TCMuon* muon)
 
 void Selector::MuonSelector(TClonesArray* muons) 
 {
-    //cout << "Muons(" << muons->GetSize() << "): ";
-
     for (int i = 0; i < muons->GetSize(); ++ i) {
         TCMuon* thisMuon = (TCMuon*) muons->At(i);    
 
@@ -255,42 +253,32 @@ void Selector::MuonSelector(TClonesArray* muons)
         } else {
             muCorrector->momcor_data(tmpP4, (float)thisMuon->Charge(), 0, muPtErr);
         }
-
         thisMuon->SetPtEtaPhiM(tmpP4.Pt(), tmpP4.Eta(), tmpP4.Phi(), tmpP4.M());
 
         // isolation
-        float muISO = (thisMuon->PfIsoChargedHad() + max(0.,(double)thisMuon->PfIsoNeutral()+ thisMuon->PfIsoPhoton() - 0.5*thisMuon->PfIsoPU()));
+        float muISO = (thisMuon->PfIsoChargedHad() + max(0.,(double)thisMuon->PfIsoNeutral()+ thisMuon->PfIsoPhoton() - 0.5*thisMuon->PfIsoPU()))/thisMuon->Pt();
         thisMuon->SetIdMap("IsoRel", muISO);
 
         // pt cuts, identification, and isolation
         if (thisMuon->Pt() > _muPtCuts[0]) {
-
             // QCD dilepton control region tag and probe
             if (
                     sqrt(pow(thisMuon->Dz(_selVertices[0]), 2) + pow(thisMuon->Dxy(_selVertices[0]), 2)) > 1. // Replacement for SIP3D inverted cut -- needs to be tuned
                     && muISO > 0.2
                ) 
-                _selMuons["QCD2l_CR_tag"].push_back(*thisMuon);
-            else if (
-                    //thisMuon->IsPF()
-                    MuonTightID(thisMuon)
-                    && muISO < 0.6 
-                    && fabs(thisMuon->Dz(_selVertices[0]))  < 0.05
-                    && fabs(thisMuon->Dxy(_selVertices[0])) < 0.015
-                    )
-                _selMuons["QCD2l_CR_probe"].push_back(*thisMuon);
+                _selMuons["QCD2l_CR_tag"].push_back(thisMuon);
+            else if (MuonTightID(thisMuon) && muISO < 0.6)
+                _selMuons["QCD2l_CR_probe"].push_back(thisMuon);
 
             // analysis lepton selection
             if (MuonTightID(thisMuon)) { 
-                _selMuons["tight_id"].push_back(*thisMuon);
-                if (muISO < 0.12)
-                    _selMuons["tight"].push_back(*thisMuon);
-            } else if (
-                    //thisMuon->IsPF()
-                    MuonTightID(thisMuon) && muISO > 0.2 && muISO < 0.6 
-                    ) {
-                thisMuon->SetFake(true);
-                _selMuons["fakeable"].push_back(*thisMuon);
+                _selMuons["tight_id"].push_back(thisMuon);
+                if (muISO < 0.12) {
+                    _selMuons["tight"].push_back(thisMuon);
+                } else if (muISO > 0.2) {// && muISO < 0.6) {}
+                    thisMuon->SetFake(true);
+                    _selMuons["fakeable"].push_back(thisMuon);
+                }
             }
 
         } else if (thisMuon->Pt() > _muPtCuts[1]) 
@@ -298,7 +286,7 @@ void Selector::MuonSelector(TClonesArray* muons)
                     MuonLooseID(thisMuon)
                     && ((thisMuon->Pt() > 20 && muISO > 0.2) || (thisMuon->Pt() < 20 && muISO < 0.25))
                )
-                _selMuons["loose"].push_back(*thisMuon);
+                _selMuons["loose"].push_back(thisMuon);
     }
 }
 
@@ -403,6 +391,7 @@ bool Selector::ElectronMVAPreSel(TCElectron* electron)
             if (electron->SigmaIEtaIEta()< 0.035 && electron->IdMap("hadronicOverEm") < 0.10) 
                 pass = true;
         }
+    }
 
     return pass;
 }
@@ -423,7 +412,7 @@ void Selector::ElectronSelector(TClonesArray* electrons)
 
         bool muOverlap = false;
         for (unsigned j = 0; j < _selMuons["tight"].size(); ++j) 
-            if (thisElec->DeltaR(_selMuons["tight"][j]) < 0.1) 
+            if (thisElec->DeltaR(*_selMuons["tight"][j]) < 0.1) 
                 muOverlap = true;
 
         // electron preselection
@@ -435,40 +424,46 @@ void Selector::ElectronSelector(TClonesArray* electrons)
                 || fabs(thisElec->Dxy(_selVertices[0])) > 0.015
            ) continue;
 
+        float pfPhoIso_corr = ElectronPhoIsoHack(thisElec);
         float eleISO = (thisElec->PfIsoCharged() + max(0.,(double)thisElec->PfIsoNeutral() 
+                    + pfPhoIso_corr - _rho*thisElec->EffArea()))/thisElec->Pt();
+        float eleISO_uncorr = (thisElec->PfIsoCharged() + max(0.,(double)thisElec->PfIsoNeutral() 
                     + thisElec->PfIsoPhoton() - _rho*thisElec->EffArea()))/thisElec->Pt();
 
         thisElec->SetIdMap("IsoRel", eleISO);
+        thisElec->SetIdMap("IsoRel_uncorr", eleISO_uncorr);
+        thisElec->SetIdMap("pfPhoIso_corr", pfPhoIso_corr);
+
+        //eleISO = eleISO_uncorr;
 
         // analysis electrons
         if (ElectronMVAPreSel(thisElec)) {
+            if (ElectronMVA(thisElec)) {
+                //if ( && eleISO < 1.2)
+                _selElectrons["QCD2l_CR_probe"].push_back(thisElec);
 
-            if (!muOverlap && eleISO < 1.)
-                _selElectrons["QCD2l_CR_probe"].push_back(*thisElec);
+                if (!muOverlap) {
+                    _selElectrons["tight_id"].push_back(thisElec);
 
-            if (ElectronMVA(thisElec) && !muOverlap)
-                _selElectrons["tight_id"].push_back(*thisElec);
+                    if (eleISO < 0.15) {
+                        _selElectrons["tight"].push_back(thisElec);			
+                    } else if (eleISO > 0.2) {
+                        thisElec->SetFake(true);
+                        _selElectrons["fakeable"].push_back(thisElec);
+                    }
+                } 
 
-            if (ElectronMVA(thisElec) && eleISO < 0.15 
-                    //&& electron->MissingHits() // <-- ??
-               ) { 
-                if (!muOverlap)
-                    _selElectrons["tight"].push_back(*thisElec);			
-                else
-                    _selElectrons["tight_overlap"].push_back(*thisElec);			
-            } else if (
-                    !muOverlap 
-                    && ElectronMVA(thisElec)
-                    && eleISO < 1.
-                    ) {
-                thisElec->SetFake(true);
-                _selElectrons["fakeable"].push_back(*thisElec);
+                if (eleISO < 0.15) {
+                    _selElectrons["tight_overlap"].push_back(thisElec);			
+                }
+            } else if (!muOverlap && eleISO > 0.2) {
+                _selElectrons["fakeable"].push_back(thisElec);
             }
         } else if (
                 ElectronLooseID(thisElec)
                 && (thisElec->Pt() > 20 && eleISO > 0.20)
                 && !muOverlap
-                ) _selElectrons["loose"].push_back(*thisElec);
+                ) _selElectrons["loose"].push_back(thisElec);
     }
 }
 
@@ -503,9 +498,9 @@ bool Selector::PhotonIsolation(TCPhoton* photon)
 {
     float* EA = PhotonEffectiveArea(photon);
 
-    float chIsoCor = 0.;//photon->IsoMap("chIso03") - _rho*EA[0];
-    float nhIsoCor = 0.;//photon->IsoMap("nhIso03") - _rho*EA[1];
-    float phIsoCor = 0.;//photon->IsoMap("phIso03") - _rho*EA[2];
+    float chIsoCor = photon->PfIsoCharged() - _rho*EA[0];
+    float nhIsoCor = photon->PfIsoNeutral() - _rho*EA[1];
+    float phIsoCor = photon->PfIsoPhoton()  - _rho*EA[2];
 
     float eta = photon->Eta();
     if (
@@ -541,14 +536,14 @@ void Selector::PhotonSelector(TClonesArray* photons)
 
         bool passIso = PhotonIsolation(thisPho);
 
+        _selPhotons["noCuts"].push_back(thisPho);
+
         // analysis photons
-        if (PhotonTightID(thisPho) && passIso) {
-            _selPhotons["tight"].push_back(*thisPho);			
-
-        } else {
-            _selPhotons["loose"].push_back(*thisPho);
-
-        }
+        if (PhotonTightID(thisPho)) {
+            _selPhotons["tight_noIso"].push_back(thisPho);
+            if (passIso) 
+                _selPhotons["tight"].push_back(thisPho);			
+        } 
     }
 }
 
@@ -565,29 +560,29 @@ void Selector::JetSelector(TClonesArray* jets)
         // Prevent lepton overlap //
         std::bitset<4> overlap;
         for (int j = 0; j < (int)_selMuons["tight"].size(); ++j) 
-            if (thisJet->DeltaR(_selMuons["tight"][j]) < 0.3) overlap.set(0);
+            if (thisJet->DeltaR(*_selMuons["tight"][j]) < 0.3) overlap.set(0);
 
         for (int j = 0; j < (int)_selElectrons["tight"].size(); ++j) 
-            if (thisJet->DeltaR(_selElectrons["tight"][j]) < 0.3) overlap.set(1);
+            if (thisJet->DeltaR(*_selElectrons["tight"][j]) < 0.3) overlap.set(1);
 
         for (int j = 0; j < (int)_selMuons["fakeable"].size(); ++j) 
-            if (thisJet->DeltaR(_selMuons["fakeable"][j]) < 0.3) overlap.set(2);
+            if (thisJet->DeltaR(*_selMuons["fakeable"][j]) < 0.3) overlap.set(2);
 
         for (int j = 0; j < (int)_selElectrons["fakeable"].size(); ++j) 
-            if (thisJet->DeltaR(_selElectrons["fakeable"][j]) < 0.3) overlap.set(3);
+            if (thisJet->DeltaR(*_selElectrons["fakeable"][j]) < 0.3) overlap.set(3);
 
         // Apply JER corrections; maybe better to do in the analysis code...
-        TCJet corJet = this->JERCorrections(thisJet);
+        TCJet *corJet = this->JERCorrections(thisJet);
 
-        if (fabs(corJet.Eta()) < 2.4) {
+        if (fabs(corJet->Eta()) < 2.4) {
             if (
-                    corJet.Pt() > _jetPtCuts[0]
-                    && corJet.NumConstit()  > 1
-                    && corJet.NeuHadFrac()  < 0.99
-                    && corJet.NeuEmFrac()   < 0.99
-                    && corJet.ChHadFrac()   > 0.
-                    && corJet.NumChPart()   > 0.
-                    && corJet.ChEmFrac()    < 0.99
+                    corJet->Pt() > _jetPtCuts[0]
+                    && corJet->NumConstit()  > 1
+                    && corJet->NeuHadFrac()  < 0.99
+                    && corJet->NeuEmFrac()   < 0.99
+                    && corJet->ChHadFrac()   > 0.
+                    && corJet->NumChPart()   > 0.
+                    && corJet->ChEmFrac()    < 0.99
                ) {
 
                 if (overlap[0]) 
@@ -610,7 +605,7 @@ void Selector::JetSelector(TClonesArray* jets)
                             //&& corJet.VtxSumPtFrac() > 0. 
                             //&& ((int)corJet.VtxSumPtIndex() == 1)
                             ) {
-                            _selJets["tight"].push_back(corJet);
+                        _selJets["tight"].push_back(corJet);
 
                         if (!overlap[2] && !overlap[3])
                             _selJets["tight_NoFakes"].push_back(corJet);
@@ -620,7 +615,7 @@ void Selector::JetSelector(TClonesArray* jets)
                             _selJets["eleFakes"].push_back(corJet);
                     }
 
-                    if (corJet.BDiscriminatorMap("CSV") > 0.244 && corJet.BDiscriminatorMap("CSV") < 0.679) {
+                    if ( corJet->BDiscriminatorMap("CSV") > 0.244 && corJet->BDiscriminatorMap("CSV") < 0.679) {
                         _selJets["bJetsLoose"].push_back(corJet);
 
                         if (!overlap[2] && !overlap[3])
@@ -628,12 +623,12 @@ void Selector::JetSelector(TClonesArray* jets)
                     }
                 }
             }
-        } else if (fabs(corJet.Eta()) < 4.7) {
+        } else if (fabs(corJet->Eta()) < 4.7) {
             if (
-                    corJet.Pt() > _jetPtCuts[0]
-                    && corJet.NumConstit() > 1
-                    && corJet.NeuHadFrac() < 0.99
-                    && corJet.NeuEmFrac() < 0.99
+                    corJet->Pt() > _jetPtCuts[0]
+                    && corJet->NumConstit() > 1
+                    && corJet->NeuHadFrac() < 0.99
+                    && corJet->NeuEmFrac() < 0.99
                ) { 
                 if (overlap[0]) 
                     _selJets["muJets"].push_back(corJet);
@@ -654,21 +649,21 @@ void Selector::JetSelector(TClonesArray* jets)
     }
 }
 
-TCJet Selector::JERCorrections(TCJet *inJet)
+TCJet* Selector::JERCorrections(TCJet *inJet)
 {
 
     float sfEta[]     = {1.052, 1.057, 1.096, 1.134, 1.288};
     float etaBins[]   = {0., 0.5, 1.1, 1.7, 2.3, 5.0};
 
     // Match jet to generator level jet
-    TCJet    jet = *inJet;
+    TCJet*   jet = inJet;
     float    matchedJetPt   = 0.;
     unsigned count          = 0;
 
     for (unsigned i = 0; i < _selGenJets.size(); ++i) {
-        if (inJet->DeltaR(_selGenJets[i]) < 0.15) {
+        if (inJet->DeltaR(*_selGenJets[i]) < 0.15) {
             //cout << _selGenJets[i].Pt() << "\t" << inJet->Pt() << ", " << inJet->DeltaR(_selGenJets[i]) << "\t\t";
-            matchedJetPt += _selGenJets[i].Pt();
+            matchedJetPt += _selGenJets[i]->Pt();
             ++count;
         }
     }
@@ -680,7 +675,7 @@ TCJet Selector::JERCorrections(TCJet *inJet)
 
                 if ((matchedJetPt - inJet->Pt())/inJet->Pt() < 0.3*inJet->Pt()) {
                     double corJetPt = matchedJetPt + sfEta[i]*(inJet->Pt() - matchedJetPt);
-                    jet.SetPtEtaPhiE(corJetPt, inJet->Eta(), inJet->Phi(), inJet->E());
+                    jet->SetPtEtaPhiE(corJetPt, inJet->Eta(), inJet->Phi(), inJet->E());
 
                     //cout << "\t" << count << ", " << matchedJetPt << ", " << inJet->Pt() << ", " << corJetPt << endl;
 
@@ -693,23 +688,23 @@ TCJet Selector::JERCorrections(TCJet *inJet)
 }
 
 
-bool Selector::BTagModifier(TCJet jet, string bTag)
+bool Selector::BTagModifier(TCJet* jet, string bTag)
 {
-    float jetPt     = jet.Pt();
-    float jetEta    = jet.Eta();
-    int   jetFlavor = jet.JetFlavor();
+    float jetPt     = jet->Pt();
+    float jetEta    = jet->Eta();
+    int   jetFlavor = jet->JetFlavor();
     bool  isBTagged = false;
 
     // Get b-tagging efficiencies scale factors for jet depending on it's pt 
     float bTagSF       = 1.;
     if (bTag == "CSVL") {
-        if (jet.BDiscriminatorMap("CSV") > 0.244) isBTagged = true;
+        if (jet->BDiscriminatorMap("CSV") > 0.244) isBTagged = true;
         bTagSF = 0.981149*((1.+(-0.000713295*jetPt))/(1.+(-0.000703264*jetPt)));
     } else if (bTag == "CSVM") {
-        if (jet.BDiscriminatorMap("CSV") > 0.679) isBTagged = true;
+        if (jet->BDiscriminatorMap("CSV") > 0.679) isBTagged = true;
         bTagSF = 0.726981*((1.+(0.253238*jetPt))/(1.+(0.188389*jetPt)));
     } else if (bTag == "CSVT") {
-        if (jet.BDiscriminatorMap("CSV") > 1.) isBTagged = true;
+        if (jet->BDiscriminatorMap("CSV") > 1.) isBTagged = true;
         bTagSF = 0.869965*((1.+(0.0335062*jetPt))/(1.+(0.0304598*jetPt)));
     }
 
@@ -783,7 +778,7 @@ void Selector::GenParticleSelector(TClonesArray* gen, unsigned pdgId, unsigned s
         TCGenParticle* iGen = (TCGenParticle*) gen->At(i);
 
         if (fabs(iGen->GetPDGId()) == pdgId and iGen->GetStatus() == status) 
-            _selGenParticles[type].push_back(*iGen);
+            _selGenParticles[type].push_back(iGen);
     }
 }
 
@@ -794,6 +789,25 @@ void Selector::GenJetSelector(TClonesArray* genJets)
 
         // Specify some cuts based on the type here (maybe...?)
 
-        _selGenJets.push_back(*iGenJet);
+        _selGenJets.push_back(iGenJet);
     }
+}
+
+
+/////////////////////////////
+// Electron isolation hack //
+/////////////////////////////
+
+float Selector::ElectronPhoIsoHack(TCElectron *electron)
+{
+    float pfPhoIso = electron->PfIsoPhoton();
+    if ((pfPhoIso)/electron->Pt() > 0.6) {
+        for (unsigned i = 0; i < _selPhotons["noCuts"].size(); ++i) {
+            TCPhoton* photon = _selPhotons["noCuts"][i];
+            if (electron->DeltaR(*photon) < 0.1 && fabs(electron->Pt()/photon->Pt() - 1) < 0.35) {
+                pfPhoIso = max(0., double(pfPhoIso - photon->Pt()));
+            }
+        }
+    }
+    return pfPhoIso;
 }
