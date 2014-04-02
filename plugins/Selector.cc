@@ -453,17 +453,11 @@ void Selector::ElectronSelector(TClonesArray* electrons)
                     }
                 } 
 
-                if (eleISO < 0.15) {
+                if (eleISO < 0.15 && muOverlap) {
                     _selElectrons["tight_overlap"].push_back(thisElec);			
                 }
-            } else if (!muOverlap && eleISO > 0.2) {
-                _selElectrons["fakeable"].push_back(thisElec);
             }
-        } else if (
-                ElectronLooseID(thisElec)
-                && (thisElec->Pt() > 20 && eleISO > 0.20)
-                && !muOverlap
-                ) _selElectrons["loose"].push_back(thisElec);
+        } 
     }
 }
 

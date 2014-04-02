@@ -875,8 +875,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
                 else
                     flipLeptons[1]->SetCharge(flipLeptons[0]->Charge());
 
-                SetEventCategory(flipLeptons);
-                SetEventVariables(flipLeptons, jets, bJetsM, recoMET); 
+                SetEventCategory(flipLeptons); SetEventVariables(flipLeptons, jets, bJetsM, recoMET); 
                 AnalysisSelection(flipLeptons, jets, bJetsM, bJetsL, selectedVtx, "QFlips");
 
                 evtWeight /= qFlipWeight; // Remove charge flip weight
@@ -994,13 +993,13 @@ bool fcncAnalyzer::Process(Long64_t entry)
                     "h2_LepMultVsFakeableMult", "lepton mult vs. fakeable mult", 5, -0.5, 4.5, 5, -0.5, 4.5);
 
             if (matchedFakeables.size() == 0) {
-                //GetFakeBG(leptons, fakeables, fJets, fBJetsM, fBJetsL, selectedVtx);
+                GetFakeBG(leptons, fakeables, fJets, fBJetsM, fBJetsL, selectedVtx);
             } else if (matchedFakeables.size() == 2) {
                 evtWeight /= matchedFakeables.size();
                 for (unsigned i = 0; i < matchedFakeables.size(); ++i) {
                     vObj tmpFakeables = unmatchedFakeables;
                     tmpFakeables.push_back(matchedFakeables[i]);
-                    //GetFakeBG(leptons, tmpFakeables, fJets, fBJetsM, fBJetsL, selectedVtx);
+                    GetFakeBG(leptons, tmpFakeables, fJets, fBJetsM, fBJetsL, selectedVtx);
                 }
                 evtWeight *= matchedFakeables.size();
             }
@@ -1330,20 +1329,20 @@ void fcncAnalyzer::GetFakeBG(vObj leptons, vObj fakeables, vector<TCJet*> jets, 
                 DoFakes(leptons, fakeables, jets, bJetsM, bJetsL, PV);
                 evtWeight /= (fakeWeight1*fakeWeight2);
 
-            } //else if (leptons.size() == 1 && fakeWeight1 > 0 && fakeWeight2 >= 0) {
-              //  evtWeight *= fakeWeight1*(1 - fakeWeight2)/2.;
-              //  vObj fakeable1;
-              //  fakeable1.push_back(fakeables[0]);
-              //  DoFakes(leptons, fakeable1, jets, bJetsM, bJetsL, PV);
-              //  evtWeight /= (2*fakeWeight1*(1 - fakeWeight2));
+            } else if (leptons.size() == 1 && fakeWeight1 > 0 && fakeWeight2 >= 0) {
+                evtWeight *= fakeWeight1*(1 - fakeWeight2)/2.;
+                vObj fakeable1;
+                fakeable1.push_back(fakeables[0]);
+                DoFakes(leptons, fakeable1, jets, bJetsM, bJetsL, PV);
+                evtWeight /= (2*fakeWeight1*(1 - fakeWeight2));
 
-              //  } else if (leptons.size() == 1 && fakeWeight1 >= 0 && fakeWeight2 > 0) {
-              //  vObj fakeable2;
-              //  fakeable2.push_back(fakeables[1]);
-              //  evtWeight *= fakeWeight2*(1 - fakeWeight1);
-              //  DoFakes(leptons, fakeable2, jets, bJetsM, bJetsL, PV);
-              //  evtWeight /= (2*fakeWeight2*(1 - fakeWeight1));
-              //  }
+            } else if (leptons.size() == 1 && fakeWeight1 >= 0 && fakeWeight2 > 0) {
+                vObj fakeable2;
+                fakeable2.push_back(fakeables[1]);
+                evtWeight *= fakeWeight2*(1 - fakeWeight1);
+                DoFakes(leptons, fakeable2, jets, bJetsM, bJetsL, PV);
+                evtWeight /= (2*fakeWeight2*(1 - fakeWeight1));
+            }
         }
     }
 }
@@ -1435,8 +1434,9 @@ void fcncAnalyzer::MakePlots(vObj leptons, vector<TCJet*> jets, vector<TCJet*> b
         MetPlots(met, leptons);
         JetPlots(jets, bJets);
         DileptonPlots2D(leptons);
-        FakePlots(leptons, jets, bJets, PV);
         MiscPlots();
+        if (subdir == "eFakes" || subdir == "muFakes" || subdir == "llFakes")
+            FakePlots(leptons, jets, bJets, PV);
 
         histManager->SetWeight(1);
         histManager->Fill1DHist(primaryVtx->GetSize(),
@@ -2068,12 +2068,15 @@ void fcncAnalyzer::FakePlots(vObj leptons, vector<TCJet*> jets, vector<TCJet*> b
     // Find fakes if present
     vObj fakeables;
     for (unsigned i = 0; i < leptons.size(); ++i) {
+        cout << leptons[i]->IsFake() << ", " << leptons[i]->IdMap("IsoRel") << ", ";
         if (leptons[i]->IsFake()) {
             fakeables.push_back(leptons[i]);
         }
     }
+    cout << endl;
 
     if (fakeables.size() >= 1) {
+        //cout << subdir << endl;
         //unsigned flCategory = GetHistCategory(2) - 10;
         histManager->Fill1DHist(recoMET->DeltaPhi(fakeables[0]->P2()),
                 "h1_MetFakeableDeltaPhi", "#Delta#phi(fakeable, MET);#Delta#phi(fakeable, MET);Entries / bin", 36, 0., TMath::Pi());
@@ -2353,7 +2356,7 @@ void fcncAnalyzer::SetEventVariables(vObj leptons, vector<TCJet*> jets, vector<T
         HTs     += leptons[i]->Pt();
         sumP4   += *leptons[i];
 
-        for (unsigned j = leptons.size()-1; j > i; --j) {
+        for (unsigned j = i+1; j < leptons.size(); ++j) {
 
             // Check for opposite-sign pair //
             if (leptons[i]->Charge() != leptons[j]->Charge()) {
