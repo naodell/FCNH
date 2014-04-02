@@ -147,18 +147,6 @@ class fcncAnalyzer : public TSelector {
 
         Float_t     evtWeight;
 
-        // trees for lepton mva
-        TTree*  muTree;
-        TTree*  eleTree;
-
-        Float_t sip3d;
-        Float_t chPFIso, neuPFIso;
-        Float_t drLepJet, ptRatioLepJet, btagLepJet;
-        Float_t dxy, dz; // muon specific
-        Float_t mva; // electron specific
-        Int_t   missHits; 
-
-
         // Simple ntuples for MVA
         TTree       *tree3l, *treeSS, *treeQFlips, *treeFakes3l, *treeFakesSS;
 
@@ -166,11 +154,6 @@ class fcncAnalyzer : public TSelector {
         Float_t     dileptonMassOS;
         Float_t     trileptonMass;
         Float_t     dileptonDROS;
-
-        Float_t     lep1Pt, lep2Pt, lep3Pt;
-        Float_t     lep1Eta, lep2Eta, lep3Eta;
-        Float_t     lep1Phi, lep2Phi, lep3Phi;
-        Float_t     bJetPt, bJetEta, bJetPhi;
 
         // MVA reader and modified input variables
         vector<TMVA::Reader*> mva3lReader, mvaSSReader;
@@ -291,7 +274,6 @@ class fcncAnalyzer : public TSelector {
         virtual void    ResetGlobalVars();
         virtual void    SetEventCategory(vObj);
         virtual void    SetVarsMVA(vObj, vector<TCJet*>, vector<TCJet*>);
-        virtual void    FillLepMVA(vector<TCMuon*>, vector<TCElectron*>, vector<TCJet*>, TVector3*);
         virtual void    SetEventVariables(vObj, vector<TCJet*>, vector<TCJet*>, TCMET*);
         virtual void    SetYields(unsigned);
         virtual int     GetHistCategory(unsigned);

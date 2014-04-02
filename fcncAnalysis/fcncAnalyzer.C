@@ -16,7 +16,6 @@ const bool      doSync      = false;
 // MVA switches
 const bool      doMVACut    = true;
 const bool      doMVATree   = false;
-const bool      doLepTree   = false;
 
 // Data-driven BG estimation switches
 bool doCR       = false;
@@ -117,31 +116,6 @@ void fcncAnalyzer::Begin(TTree* tree)
                 histoFile[iCut]->GetDirectory(categoryNames[i].c_str())->mkdir(("llFakes_"+suffix).c_str(), ("llFakes_"+suffix).c_str());
             }
         }
-    }
-
-    // Initialize lepton MVA
-    if (doLepTree) {
-        histoFile[0]->cd();
-        muTree = new TTree(("muTree_" + suffix).c_str(), "Tree for lepton MVA");
-        muTree->Branch("sip3d", &sip3d, "sip3d/F");
-        muTree->Branch("chPFIso", &chPFIso, "chPFIso/F");
-        muTree->Branch("neuPFIso", &neuPFIso, "neuPFIso/F");
-        muTree->Branch("drLepJet", &drLepJet, "drLepJet/F");
-        muTree->Branch("ptRatioLepJet", &ptRatioLepJet, "ptRatioLepJet/F");
-        muTree->Branch("btagLepJet", &btagLepJet, "btagLepJet/F");
-        muTree->Branch("dxy", &dxy, "dxy/F");
-        muTree->Branch("dz", &dz, "dz/F");
-
-
-        eleTree = new TTree(("eleTree_" + suffix).c_str(), "Tree for lepton MVA");
-        eleTree->Branch("sip3d", &sip3d, "sip3d/F");
-        eleTree->Branch("chPFIso", &chPFIso, "chPFIso/F");
-        eleTree->Branch("neuPFIso", &neuPFIso, "neuPFIso/F");
-        eleTree->Branch("drLepJet", &drLepJet, "drLepJet/F");
-        eleTree->Branch("ptRatioLepJet", &ptRatioLepJet, "ptRatioLepJet/F");
-        eleTree->Branch("btagLepJet", &btagLepJet, "btagLepJet/F");
-        eleTree->Branch("mva", &mva, "mva/F");
-        eleTree->Branch("missHits", &missHits, "missHits/I");
     }
 
     // Initialize pass tree for MVA input //
@@ -524,10 +498,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
     sort(muons.begin(), muons.end(), P4SortCondition);
     sort(electrons.begin(), electrons.end(), P4SortCondition);
     sort(leptons.begin(), leptons.end(), P4SortCondition);
-
-    // Fill lepton mva tree
-    if (doLepTree)
-        FillLepMVA(selector->GetSelectedMuons("premva"), selector->GetSelectedElectrons("premva"), allJets, selectedVtx);
 
     histManager->SetFileNumber(0);
     histManager->SetDirectory("inclusive/" + subdir);
@@ -2068,12 +2038,13 @@ void fcncAnalyzer::FakePlots(vObj leptons, vector<TCJet*> jets, vector<TCJet*> b
     // Find fakes if present
     vObj fakeables;
     for (unsigned i = 0; i < leptons.size(); ++i) {
-        cout << leptons[i]->IsFake() << ", " << leptons[i]->IdMap("IsoRel") << ", ";
+        //cout << leptons[i]->IsFake() << ", " << leptons[i]->IdMap("IsoRel") << ", ";
         if (leptons[i]->IsFake()) {
             fakeables.push_back(leptons[i]);
         }
     }
-    cout << endl;
+    //cout << endl;
+    //cout << fakeables.size() << endl;
 
     if (fakeables.size() >= 1) {
         //cout << subdir << endl;
@@ -2424,69 +2395,6 @@ void fcncAnalyzer::SetEventVariables(vObj leptons, vector<TCJet*> jets, vector<T
     METLD   = 0.00397*MET + 0.00265*MHT;
 }
 
-void fcncAnalyzer::FillLepMVA(vector<TCMuon*> muons, vector<TCElectron*> electrons, vector<TCJet*> jets, TVector3* PV)
-{
-    for (unsigned i = 0; i < muons.size(); ++i) {
-
-        sip3d       = 1.; // Update this once proper definition is known
-        chPFIso     = muons[i]->PfIsoChargedHad();
-        neuPFIso    = TMath::Max(0.0, (double)muons[i]->PfIsoPhoton() + muons[i]->PfIsoNeutral());
-
-        dz  = fabs(muons[i]->Dz(PV));
-        dxy = fabs(muons[i]->Dxy(PV));
-
-        if (jets.size() > 0) {
-            TCJet* closestJet = jets[0];
-            float dRMin = 99.;
-
-            for (unsigned j = 0; j < jets.size(); ++j) {
-                if (muons[i]->DeltaR(*jets[j]) < dRMin) {
-                    closestJet = jets[j];
-                    dRMin = muons[i]->DeltaR(*jets[j]);
-                }
-            }
-
-            drLepJet        = dRMin;
-            ptRatioLepJet   = muons[i]->Pt()/closestJet->Pt();
-            btagLepJet      = closestJet->BDiscriminatorMap("CSV");
-
-        } else {
-            drLepJet        = -1.;
-            ptRatioLepJet   = -1.;
-            btagLepJet      = -999.;
-        }
-
-        muTree->Fill();
-    }
-
-    for (unsigned i = 0; i < electrons.size(); ++i) {
-
-        sip3d       = 1; // Update this once proper definition is known
-        chPFIso     = electrons[i]->PfIsoCharged();
-        neuPFIso    = TMath::Max(0.0, (double)electrons[i]->PfIsoPhoton() + electrons[i]->PfIsoNeutral()); // - TMath::Max(0.0, (double)rho25Factor*Selector::EffectiveArea(electrons[i])));
-
-        mva         = electrons[i]->IdMap("mva");
-        missHits    = electrons[i]->NumberOfLostPixelHits();
-
-        if (jets.size() > 0) {
-            TCJet closestJet;
-            float dRMin = 99.;
-
-            for (unsigned j = 0; j < jets.size(); ++j) {
-                if (electrons[i]->DeltaR(*jets[j]) < dRMin) {
-                    closestJet = *jets[j];
-                    dRMin = electrons[i]->DeltaR(*jets[j]);
-                }
-            }
-
-            drLepJet        = dRMin;
-            ptRatioLepJet   = electrons[i]->Pt()/closestJet.Pt();
-            btagLepJet      = closestJet.BDiscriminatorMap("CSV");
-        }
-        eleTree->Fill();
-    }
-}
-
 void fcncAnalyzer::SetVarsMVA(vObj leptons, vector<TCJet*> bJets, vector<TCJet*> jets)
 {
     bJetMult        = bJets.size();
@@ -2626,6 +2534,10 @@ void fcncAnalyzer::ResetGlobalVars()
     chargeCat = 999;
 
     evtWeight = 1;
+
+    dileptonMassOS  = -1.;
+    trileptonMass   = -1.;
+    dileptonDROS    = -1.;
 }
 
 void fcncAnalyzer::PrintJetIDVars(TCJet* jet)

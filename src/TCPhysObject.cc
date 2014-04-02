@@ -5,19 +5,29 @@
 TCPhysObject::TCPhysObject():
   _vtx(-9,-9,-9),
   _charge(0),
-  _isPF(false)
+  _isPF(false),
+  _isReco(false),
+  _isFake(false)
 {
 }
 
 TCPhysObject::TCPhysObject(TLorentzVector p4, int charge):
   _vtx(-9,-9,-9),
   _charge(charge),
-  _isPF(false)
+  _isPF(false),
+  _isReco(false),
+  _isFake(false)
 {
     this->SetP4(p4);
 }
 
-TCPhysObject::TCPhysObject(TLorentzVector p4, int charge, string type) {
+TCPhysObject::TCPhysObject(TLorentzVector p4, int charge, string type) :
+  _vtx(-9,-9,-9),
+  _charge(charge),
+  _isPF(false),
+  _isReco(false),
+  _isFake(false)
+{
     this->SetP4(p4);
     this->SetCharge(charge);
     this->SetType(type);
