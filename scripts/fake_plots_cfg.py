@@ -64,18 +64,20 @@ if doPlots:
     plotter.get_scale_factors(corrected = False)
 
     plotter._directoryList1D            = ['Misc', 'Lepton']
-    plotter._variableDict['Misc']       = ['bJetMult', 'JetMult', 'TagProbeDeltaPhi', 'TagProbePtBalance', 'Met', 'TagProbeMass']
+    plotter._variableDict['Misc']       = ['bJetLooseMult', 'bJetMediumMult', 'JetMult', 'TagProbeDeltaPhi', 'TagProbePtBalance', 'Met', 'TagEleProbeMass', 'TagMuProbeMass']
     plotter._variableDict['Lepton']     = ['MuPassLepPt', 'MuPassLepEta', 
                                            'MuProbeLepPt', 'MuProbeLepEta', 
                                            'MuDenomPt', 'MuDenomEta', 
                                            'MuNumerPt', 'MuNumerEta', 
                                            'MuDenomMet', 'MuNumerMet', 
+                                           'MuDenomIsoRel', 'MuNumerIsoRel',
                                            'ElePassLepPt', 'ElePassLepEta', 
                                            'EleProbeLepPt', 'EleProbeLepEta', 
                                            'EleDenomPt', 'EleDenomEta', 
                                            'EleNumerPt', 'EleNumerEta', 
                                            'EleDenomMet', 'EleNumerMet', 
-                                           'TagLepPt', 'TagLepEta' ] 
+                                           'EleDenomIsoRel', 'EleNumerIsoRel',
+                                           'TagLepPt', 'TagLepEta', 'TagIsoRel', 'TagDz', 'TagDxy'] 
 
 
      ###################   

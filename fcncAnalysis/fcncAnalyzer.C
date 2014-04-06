@@ -18,7 +18,7 @@ const bool      doMVACut    = true;
 const bool      doMVATree   = false;
 
 // Data-driven BG estimation switches
-bool doCR       = false;
+bool doCR       = true;
 bool doQFlips   = true;
 bool doFakes    = true;
 bool doFakeMC   = false;
@@ -2071,37 +2071,23 @@ void fcncAnalyzer::FakePlots(vObj leptons, vector<TCJet*> jets, vector<TCJet*> b
         histManager->Fill1DHist(fakeables[0]->Phi(),
                 "h1_FakeablePhi", "#phi fakeables;#phi^{l};Entries / bin", 36, -TMath::Pi(), TMath::Pi());
 
-
         histManager->Fill1DHist(fakeables[0]->Dxy(PV), 
                 "h1_FakeableDxy", "d_{xy} fakeables;d_{xy} (cm);Entries / bin", 100., -.02, 0.02);
         histManager->Fill1DHist(fakeables[0]->Dz(PV), 
                 "h1_FakeableDz", "d_{z} fakeables;d_{z} (cm);Entries / bin", 100., -0.15, 0.15);
 
         histManager->Fill1DHist(fakeables[0]->IdMap("IsoRel"), 
-                "h1_FakeableIsoRel", "Iso_{Rel} fakeabless;Iso_{Rel} (cm);Entries / bin", 42, -0.1, 4.);
+                "h1_FakeableIsoRel", "Iso_{Rel} fakeabless;Iso_{Rel} (cm);Entries / bin", 30, 0., 1.5);
         histManager->Fill2DHist(fakeables[0]->Pt(), fakeables[0]->IdMap("IsoRel"), 
-                "h2_FakeableIsoRelVsPt", "Iso_{Rel} vs p_{T} fakeables;p_{T};Iso_{Rel}", 18, 10., 100., 5, 0., 3.);
+                "h2_FakeableIsoRelVsPt", "Iso_{Rel} vs p_{T} fakeables;p_{T};Iso_{Rel}", 18, 10., 100., 15, 0., 1.5);
         histManager->Fill2DHist(fakeables[0]->Eta(), fakeables[0]->IdMap("IsoRel"), 
-                "h2_FakeableIsoRelVsEta", "Iso_{Rel} vs #eta fakeables;#eta;Iso", 25, -2.5, 2.5, 5, 0., 1.);
+                "h2_FakeableIsoRelVsEta", "Iso_{Rel} vs #eta fakeables;#eta;Iso", 25, -2.5, 2.5, 15, 0., 1.5);
         histManager->Fill2DHist(recoMET->Mod(), fakeables[0]->IdMap("IsoRel"), 
-                "h2_FakeableIsoRelVsMET", "Iso_{Rel} vs MET fakeables;MET;Iso_{Rel}", 28, 10., 150., 5, 0., 3.);
+                "h2_FakeableIsoRelVsMET", "Iso_{Rel} vs MET fakeables;MET;Iso_{Rel}", 28, 10., 150., 15, 0., 1.5);
         histManager->Fill2DHist(dileptonMassOS, fakeables[0]->IdMap("IsoRel"),                 
-                "h2_FakeableIsoRelVsDileptonMass", "Iso_{Rel} vs M_{ll} fakeables;M_{ll};Iso_{Rel}", 28, 10., 150., 5, 0., 3.);
+                "h2_FakeableIsoRelVsDileptonMass", "Iso_{Rel} vs M_{ll} fakeables;M_{ll};Iso_{Rel}", 28, 10., 150., 15, 0., 1.5);
         histManager->Fill2DHist(jets.size() + bJets.size(), fakeables[0]->IdMap("IsoRel"), 
-                "h2_FakeableIsoRelVsJetMultiplicity", "Iso_{Rel} vs jet multiplicity fakeables;N_{jets};Iso_{Rel}", 10, -0.5, 9.5, 5, 0., 3.);
-
-        histManager->Fill1DHist(fakeables[0]->IdMap("IsoRel")*fakeables[0]->Pt(), 
-                "h1_FakeableIso", "Iso fakeabless;Iso (cm);Entries / bin", 30, 0., 150.);
-        histManager->Fill2DHist(fakeables[0]->Pt(), fakeables[0]->IdMap("IsoRel")*fakeables[0]->Pt(), 
-                "h2_FakeableIsoVsPt", "Iso vs p_{T} fakeables;p_{T};Iso", 18, 10., 100., 5, 0., 150.);
-        histManager->Fill2DHist(fakeables[0]->Eta(), fakeables[0]->IdMap("IsoRel")*fakeables[0]->Pt(), 
-                "h2_FakeableIsoVsEta", "Iso vs #eta fakeables;#eta;Iso", 25, -2.5, 2.5, 5, 0., 150.);
-        histManager->Fill2DHist(recoMET->Mod(), fakeables[0]->IdMap("IsoRel")*fakeables[0]->Pt(), 
-                "h2_FakeableIsoVsMET", "Iso vs MET fakeables;MET;Iso", 28, 10., 150., 5, 0., 150.);
-        histManager->Fill2DHist(dileptonMassOS, fakeables[0]->IdMap("IsoRel")*fakeables[0]->Pt(),                 
-                "h2_FakeableIsoVsDileptonMass", "Iso vs M_{ll} fakeables;M_{ll};Iso", 28, 10., 150., 5, 0., 150.);
-        histManager->Fill2DHist(jets.size() + bJets.size(), fakeables[0]->IdMap("IsoRel")*fakeables[0]->Pt(), 
-                "h2_FakeableIsoVsJetMultiplicity", "Iso vs jet multiplicity fakeables;N_{jets};Iso", 10, -0.5, 9.5, 5, 0., 150.);
+                "h2_FakeableIsoRelVsJetMultiplicity", "Iso_{Rel} vs jet multiplicity fakeables;N_{jets};Iso_{Rel}", 10, -0.5, 9.5, 15, 0., 1.5);
     }
 }
 
@@ -2226,7 +2212,7 @@ string fcncAnalyzer::GetFakeCategory(vObj fakeables)
     if (fakeables.size() == 2) {
         cat = "ll";
         //if (fakeables[0]->Type() == "electron" && fakeables[0]->Type() == "electron") 
-        //    cat = "e";
+        //    cat = "ee";
         //if (fakeables[0]->Type() == "muon" && fakeables[0]->Type() == "electron") 
         //    cat = "emu";
         //if (fakeables[0]->Type() == "muon" && fakeables[0]->Type() == "muon") 

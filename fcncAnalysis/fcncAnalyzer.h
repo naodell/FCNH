@@ -95,7 +95,7 @@ const string categoryNames[] = {
 
 };
 
-const unsigned short N_CUTS = 5;
+const unsigned short N_CUTS = 10;
 typedef vector<TCPhysObject*> vObj;
 
 class fcncAnalyzer : public TSelector {

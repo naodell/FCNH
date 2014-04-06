@@ -54,7 +54,7 @@ cat3l.extend(['3l_eee', '3l_eemu', '3l_emumu', '3l_mumumu'])
 samples     = {'all':[], 'inclusive':[], '3l':[], 'ss':[]}
 
 #samples['all'].append('higgs')
-samples['all'].append('Triboson')
+#samples['all'].append('Triboson')
 samples['all'].append('ttV')
 samples['all'].append('Diboson')
 samples['all'].append('top')
@@ -217,14 +217,14 @@ if doPlots:
             ss_plotter.set_input_file(inFile)
             ss_plotter.set_save_path(outFile)
 
-            fakeType = {'ss_mumu':['muFakes'], 'ss_ee':['eFakes'], 'ss_emu':['eFakes', 'muFakes']}
+            fakeType = {'ss_mumu':['muFakes'], 'ss_ee':['eFakes']}#, 'ss_emu':['eFakes', 'muFakes']}
             for category in ['ss_mumu']:#, 'ss_ee']:
                 ss_plotter.set_category(category)
 
                 projection = 'exclusive'
-                ss_plotter.make_overlay_2D_projections('FakeableIsoRelVsPt', fakeType[category], 'Fake_tests', projection)
-                ss_plotter.make_overlay_2D_projections('FakeableIsoRelVsMET', fakeType[category], 'Fake_tests', projection)
-                ss_plotter.make_overlay_2D_projections('FakeableIsoRelVsDileptonMass', fakeType[category], 'Fake_tests', projection)
+                #ss_plotter.make_overlay_2D_projections('FakeableIsoRelVsPt', fakeType[category], 'Fake_tests', projection)
+                #ss_plotter.make_overlay_2D_projections('FakeableIsoRelVsMET', fakeType[category], 'Fake_tests', projection)
+                #ss_plotter.make_overlay_2D_projections('FakeableIsoRelVsDileptonMass', fakeType[category], 'Fake_tests', projection)
                 ss_plotter.make_overlay_2D_projections('FakeableIsoRelVsJetMultiplicity', fakeType[category], 'Fake_tests', projection)
 
                 p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(ss_plotter, category, inFile, outFile, do1D, do2D, False, doLog, doRatio, doEff)))

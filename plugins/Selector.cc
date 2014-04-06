@@ -263,11 +263,12 @@ void Selector::MuonSelector(TClonesArray* muons)
         if (thisMuon->Pt() > _muPtCuts[0]) {
             // QCD dilepton control region tag and probe
             if (
-                    sqrt(pow(thisMuon->Dz(_selVertices[0]), 2) + pow(thisMuon->Dxy(_selVertices[0]), 2)) > 1. // Replacement for SIP3D inverted cut -- needs to be tuned
+                    thisMuon->Dz(_selVertices[0]) > 0.2
+                    && thisMuon->Dxy(_selVertices[0]) > 0.2 // Replacement for SIP3D inverted cut -- needs to be tuned
                     && muISO > 0.2
-               ) 
+               ) {
                 _selMuons["QCD2l_CR_tag"].push_back(thisMuon);
-            else if (MuonTightID(thisMuon) && muISO < 0.6)
+            } else if (MuonTightID(thisMuon) && muISO < 0.55)
                 _selMuons["QCD2l_CR_probe"].push_back(thisMuon);
 
             // analysis lepton selection
@@ -275,7 +276,7 @@ void Selector::MuonSelector(TClonesArray* muons)
                 _selMuons["tight_id"].push_back(thisMuon);
                 if (muISO < 0.12) {
                     _selMuons["tight"].push_back(thisMuon);
-                } else if (muISO > 0.2) {// && muISO < 0.6) {}
+                } else if (muISO > 0.2 && muISO < 0.55) {
                     thisMuon->SetFake(true);
                     _selMuons["fakeable"].push_back(thisMuon);
                 }

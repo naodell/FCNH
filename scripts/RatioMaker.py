@@ -52,13 +52,12 @@ class RatioMaker(AnalysisTools):
         self._ratioDict2D = ratioDict
 
     def make_category_directory(self):
-
         if not self._outFile.GetDirectory(self._category):
             self._outFile.mkdir(self._category)
             self._outFile.cd(self._category)
 
                 
-    def make_1D_ratios(self, ratioSample, bgSample = '', removePass = True): 
+    def make_1D_ratios(self, ratioSample, bgSample = '', removePass = False): 
         ### make ratios for all variables specified in ratioDict1D.  Sample
         ### combinations should be specified in combineDict in parameters.py.
         ### bgSample is subtracted off of the inputs for the ratio.

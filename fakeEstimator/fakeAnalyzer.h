@@ -54,7 +54,7 @@
 
 using namespace std;
 
-typedef vector<TCPhysObject> vObj;
+typedef vector<TCPhysObject*> vObj;
 
 class fakeAnalyzer : public TSelector {
 
@@ -79,6 +79,7 @@ class fakeAnalyzer : public TSelector {
         bool    ossfTagged;
         bool    isTP;
 
+        TVector3*      selectedVtx;
         TLorentzVector ZP4;
         TCPhysObject   tag, lep1, lep2, lep3;
 
@@ -174,9 +175,9 @@ class fakeAnalyzer : public TSelector {
         virtual void    FillDenominatorHists(string, TCPhysObject&);
         virtual void    FillNumeratorHists(string, TCPhysObject&);
         virtual void    FillClosureHists(string, TCPhysObject&);
-        virtual void    FillJetFlavorHists(string, TCPhysObject&, vector<TCJet>&);
+        virtual void    FillJetFlavorHists(string, TCPhysObject&, vector<TCJet*>&);
         virtual void    DoZTag(vObj&);
-        virtual bool    CheckQCD2lCR(vector<TCJet>&, TCPhysObject&);
+        virtual bool    CheckQCD2lCR(vector<TCJet*>&, TCPhysObject&);
         virtual bool    CheckZPlusJetCR(TCPhysObject&);
 
         virtual string  str(int i) {return static_cast<ostringstream*>( &(ostringstream() << i) )->str();}

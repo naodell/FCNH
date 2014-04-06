@@ -256,7 +256,6 @@ float WeightUtils::GetMuTriggerEff(TLorentzVector* lep1, TLorentzVector* lep2) c
     if (fabs(lep2->Eta()) < 0.9) {
         etaBin = 0;
     }else if (fabs(lep2->Eta()) < 1.2){
-        etaBin = 1;
     }else{
         etaBin = 2;
     }

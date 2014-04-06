@@ -25,7 +25,7 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-cutList.extend(['2_Z_veto'])#, '3_2jet', '4_MET', '.'])#, '5_BDT'])
+#cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.'])#, '5_BDT'])
 #cutList.extend(['.', '.', '.', 'X_0jet', 'X_1jet'])
 
 crList      = []#'CR_WZ', 'CR_ttbar', 'CR_ZFake']
@@ -189,11 +189,11 @@ if doPlots:
     ### plot while giving a key value which is the 
     ### directory that they are located in as a key.
 
-    plotter._directoryList1D            = ['Misc', 'Lepton', 'Lep+Jet', 'Dilepton', 'DileptonOS', 'Trilepton', 'MET', 'Jet', 'Fakes', 'GEN', '4l']
+    #plotter._directoryList1D            = ['Misc', 'Lepton', 'Lep+Jet', 'Dilepton', 'DileptonOS', 'Trilepton', 'MET', 'Jet', 'Fakes', 'GEN', '4l']
+    plotter._directoryList1D            = ['Lepton', 'Lep+Jet', 'Dilepton', 'DileptonOS', 'Trilepton', 'MET', 'Jet', 'GEN', '4l']
     plotter._directoryList2D            = ['2D']
 
-    plotter._variableDict['Misc']       = ['PvMult', 'YieldByCut', 'YieldByCutRaw', 'EventWeight', 'TriggerStatus', 
-                                            'FakeWeightUncertainty', 'BDT']
+    plotter._variableDict['Misc']       = ['PvMult', 'YieldByCut', 'YieldByCutRaw', 'EventWeight', 'TriggerStatus', 'BDT']
 
     plotter._variableDict['Lepton']     = ['LeptonCharge', 'LeptonFlavor', 
                                            'Lepton1Pt', 'Lepton2Pt','Lepton3Pt',
@@ -251,8 +251,8 @@ if doPlots:
                                            'MetLepton1DeltaPhi', 'MetLepton2DeltaPhi', 'MetLepton3DeltaPhi'
                                            'MetLepDeltaPhiMin', 'nearLepIndex', 'ProjectedMet'] 
 
-    plotter._variableDict['Fakes']      = ['FakeablePt', 'FakeableEta', 'FakeablePhi'
-                                           'FakeableDxy', 'FakeableDz', 'FakeableIsoRel']
+    #plotter._variableDict['Fakes']      = ['FakeablePt', 'FakeableEta', 'FakeablePhi'
+    #                                       'FakeableDxy', 'FakeableDz', 'FakeableIsoRel']
 
     plotter._variableDict['GEN']        = ['GenChargeMisId', 'GenMisIdPt', 'GenMisIdEta',
                                            'GenDeltaR', 'GenBalance']

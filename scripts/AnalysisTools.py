@@ -164,7 +164,7 @@ class AnalysisTools():
             histogramName = 'h2_' + var  
 
         if not self._histFile.GetDirectory(self._category + '/' + dataName):
-            print self._category, dataName, histogramName
+            #print self._category, dataName, histogramName
             return None
 
         hist = self._histFile.GetDirectory(self._category + '/' + dataName).Get(histogramName)
