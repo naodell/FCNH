@@ -63,7 +63,8 @@ if period == '2012':
         cfg('WbbToLNu',        '{0}/WbbJetsToLNu'.format(mcDir),     20,  'WbbToLNu        muon  2012'),
         #cfg('WjetToLNu',       '{0}/WJetsToLNu'.format(mcDir),       20,  'WJetsToLNu      muon  2012'),
 
-        cfg('ttbar',           '{0}/TTJets'.format(mcDir),           30,  'ttbar           muon  2012'),
+        cfg('ttbarHad',        '{0}/TTJets'.format(mcDir),           30,  'ttbarHad        muon  2012'),
+        cfg('ttbarLep',        '{0}/TTJets'.format(mcDir),           30,  'ttbarLep        muon  2012'),
         cfg('tbarW',           '{0}/Tbar_tW'.format(mcDir),          5,   'tbarW           muon  2012'),
         cfg('tW',              '{0}/T_tW'.format(mcDir),             5,   'tW              muon  2012'),
 

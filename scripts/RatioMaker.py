@@ -86,7 +86,7 @@ class RatioMaker(AnalysisTools):
             self._outFile.GetDirectory(self._category).Add(g_Ratio)
 
 
-    def make_2D_ratios(self, ratioSample, bgSample = '', doProjections = True, removePass = False): 
+    def make_2D_ratios(self, ratioSample, bgSample = '', doProjections = True): 
         ### make ratios for all variables specified in ratioDict2D.  Sample
         ### combinations should be specified in combineDict in parameters.py.
         ### bgSample is subtracted off of the inputs for the ratio. Produces a
@@ -116,9 +116,6 @@ class RatioMaker(AnalysisTools):
                     if h2_Denom.GetBinContent(binX+1, binY+1) < 0.:
                         h2_Denom.SetBinContent(binX+1, binY+1, 0.)
 
-            if removePass:
-                h2_Denom.Add(h2_Numer, -1)
-
             if doProjections:
                 g_RatioList = make_graph_ratio_2D(key, h2_Numer, h2_Denom)
 
@@ -133,6 +130,7 @@ class RatioMaker(AnalysisTools):
                 h2_Eff.Divide(h2_Numer, h2_Denom, 1., 1., 'B')
 
                 self._hists.append(h2_Eff)
+
 
     def combine_rates(self, categories):
         ### Combines fake rates for differenct categories
@@ -289,10 +287,10 @@ if __name__ == '__main__':
             ratioMaker.make_1D_ratios('DATA', bgType)
 
             ratioMaker.set_ratio_2D(fakeDict2D)
-            ratioMaker.make_2D_ratios('DATA', bgType, doProjections = True, removePass = False)
+            ratioMaker.make_2D_ratios('DATA', bgType, doProjections = True)
 
         # Combined fakeCategory rates
-        ratioMaker.combine_rates(fakeCategories)
+        #ratioMaker.combine_rates(fakeCategories)
 
         # ttH fake rate estimation using low/high met categories
 

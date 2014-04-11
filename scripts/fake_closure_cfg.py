@@ -26,7 +26,7 @@ selection   = 'fcnh'
 
 cutList     = ['1_preselection']
 #cutList.extend(['2_Z_veto', '3_jet', '4_MET'])
-fakeType    = 'muFakes'
+fakeType    = 'eFakes'
 
 period      = '2012'
 LUMIDATA    = 19.712 
@@ -217,16 +217,17 @@ if doPlots:
             ss_plotter.set_input_file(inFile)
             ss_plotter.set_save_path(outFile)
 
-            fakeType = {'ss_mumu':['muFakes'], 'ss_ee':['eFakes']}#, 'ss_emu':['eFakes', 'muFakes']}
-            for category in ['ss_mumu']:#, 'ss_ee']:
-                ss_plotter.set_category(category)
+            #fakeType = {'ss_mumu':['muFakes'], 'ss_ee':['eFakes']}#, 'ss_emu':['eFakes', 'muFakes']}
+            #for category in ['ss_mumu']:#, 'ss_ee']:
+            #    ss_plotter.set_category(category)
 
-                projection = 'exclusive'
-                #ss_plotter.make_overlay_2D_projections('FakeableIsoRelVsPt', fakeType[category], 'Fake_tests', projection)
-                #ss_plotter.make_overlay_2D_projections('FakeableIsoRelVsMET', fakeType[category], 'Fake_tests', projection)
-                #ss_plotter.make_overlay_2D_projections('FakeableIsoRelVsDileptonMass', fakeType[category], 'Fake_tests', projection)
-                ss_plotter.make_overlay_2D_projections('FakeableIsoRelVsJetMultiplicity', fakeType[category], 'Fake_tests', projection)
+            #    projection = 'exclusive'
+            #    ss_plotter.make_overlay_2D_projections('FakeableIsoRelVsPt', fakeType[category], 'Fake_tests', projection)
+            #    ss_plotter.make_overlay_2D_projections('FakeableIsoRelVsMET', fakeType[category], 'Fake_tests', projection)
+            #    ss_plotter.make_overlay_2D_projections('FakeableIsoRelVsDileptonMass', fakeType[category], 'Fake_tests', projection)
+            #    ss_plotter.make_overlay_2D_projections('FakeableIsoRelVsJetMultiplicity', fakeType[category], 'Fake_tests', projection)
 
+            for category in catSS:
                 p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(ss_plotter, category, inFile, outFile, do1D, do2D, False, doLog, doRatio, doEff)))
 
     ### ZPlusFake control region

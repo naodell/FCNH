@@ -268,7 +268,7 @@ void Selector::MuonSelector(TClonesArray* muons)
                     && muISO > 0.2
                ) {
                 _selMuons["QCD2l_CR_tag"].push_back(thisMuon);
-            } else if (MuonTightID(thisMuon) && muISO < 0.55)
+            } else if (MuonTightID(thisMuon) && muISO < 0.6)
                 _selMuons["QCD2l_CR_probe"].push_back(thisMuon);
 
             // analysis lepton selection
@@ -276,7 +276,7 @@ void Selector::MuonSelector(TClonesArray* muons)
                 _selMuons["tight_id"].push_back(thisMuon);
                 if (muISO < 0.12) {
                     _selMuons["tight"].push_back(thisMuon);
-                } else if (muISO > 0.2 && muISO < 0.55) {
+                } else if (muISO > 0.2 && muISO < 0.6) {
                     thisMuon->SetFake(true);
                     _selMuons["fakeable"].push_back(thisMuon);
                 }
@@ -436,11 +436,12 @@ void Selector::ElectronSelector(TClonesArray* electrons)
         thisElec->SetIdMap("pfPhoIso_corr", pfPhoIso_corr);
 
         //eleISO = eleISO_uncorr;
+        if (!muOverlap && ElectronLooseID(thisElec)) _selElectrons["loose_id"].push_back(thisElec);
 
         // analysis electrons
         if (ElectronMVAPreSel(thisElec)) {
             if (ElectronMVA(thisElec)) {
-                //if ( && eleISO < 1.2)
+                if (eleISO < 0.9)
                 _selElectrons["QCD2l_CR_probe"].push_back(thisElec);
 
                 if (!muOverlap) {
@@ -448,7 +449,7 @@ void Selector::ElectronSelector(TClonesArray* electrons)
 
                     if (eleISO < 0.15) {
                         _selElectrons["tight"].push_back(thisElec);			
-                    } else if (eleISO > 0.2) {
+                    } else if (eleISO > 0.15 && eleISO < 0.9) {
                         thisElec->SetFake(true);
                         _selElectrons["fakeable"].push_back(thisElec);
                     }

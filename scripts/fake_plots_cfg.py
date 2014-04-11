@@ -32,7 +32,7 @@ doRatio     = False
 
 ### Categories to be plotted ###
 catList = [
-           'inclusive', 
+           'inclusive', '2l', '3l',
            'QCD2l_inclusive', 'ZPlusJet_inclusive' 
            #'QCD2l_low_met', 'QCD2l_high_met', 
            #'ZPlusJet_low_met', 'ZPlusJet_high_met'
@@ -40,9 +40,11 @@ catList = [
 
 ### Samples to be included in stacks ###
 samples = {}
-samples['inclusive']    = ['FAKES_2l'] # ['ZJets', 'ttbar']
+samples['inclusive']    = ['FAKES_2l', 'FAKES_3l'] # ['ZJets', 'ttbar']
 samples['ZPlusJet']     = ['FAKES_3l']
 samples['QCD2l']        = ['FAKES_2l']
+samples['2l']           = ['ZJets', 'ttbarLep', 'ttbarHad', 'Diboson']
+samples['3l']           = ['ZJets', 'ttbarLep', 'ttbarHad', 'WZJets3LNu']
 
 if doPlots:
 
@@ -64,7 +66,12 @@ if doPlots:
     plotter.get_scale_factors(corrected = False)
 
     plotter._directoryList1D            = ['Misc', 'Lepton']
-    plotter._variableDict['Misc']       = ['bJetLooseMult', 'bJetMediumMult', 'JetMult', 'TagProbeDeltaPhi', 'TagProbePtBalance', 'Met', 'TagEleProbeMass', 'TagMuProbeMass']
+    plotter._variableDict['Misc']       = ['bJetLooseMult', 'bJetMediumMult', 'JetMult', 
+                                            'TagProbeDeltaPhi', 'TagProbePtBalance', 'TagEleProbeMass', 'TagMuProbeMass',
+                                            'MuonIso_1', 'MuonIso_2', 'MuonIso_3', 'MuonIsoRel_Iso', 'MuonIsoRel_AntiIso',
+                                            'ElectronIso_1', 'ElectronIso_2', 'ElectronIso_3', 'ElectronIsoRel_Iso', 'ElectronIsoRel_AntiIso',
+                                            'Met']
+
     plotter._variableDict['Lepton']     = ['MuPassLepPt', 'MuPassLepEta', 
                                            'MuProbeLepPt', 'MuProbeLepEta', 
                                            'MuDenomPt', 'MuDenomEta', 
@@ -96,6 +103,6 @@ if doPlots:
         plotter.set_category(category)
         plotter.make_overlays_1D(logScale = doLog, doRatio = doRatio, doEff = doEff)
 
-        plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['MuNumerPt', 'MuUnevenPtClosure']), (['PASS'],['MuNumerPt'])], 'Lepton', 'MuClosurePt') 
-        plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['EleNumerPt', 'EleUnevenPtClosure']), (['PASS'],['EleNumerPt'])], 'Lepton', 'EleClosurePt') 
+        #plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['MuNumerPt', 'MuUnevenPtClosure']), (['PASS'],['MuNumerPt'])], 'Lepton', 'MuClosurePt') 
+        #plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['EleNumerPt', 'EleUnevenPtClosure']), (['PASS'],['EleNumerPt'])], 'Lepton', 'EleClosurePt') 
 

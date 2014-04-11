@@ -708,31 +708,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
         histManager->Fill1DHist(ele->PfIsoCharged()/ele->Pt(),
                 "h1_FakeElectron"  + index + "PhoIsoRelUncorr", "uncorrected Iso_{#gamma,rel};Iso_{#gamma,rel};Entries", 40, 0., 4.);
 
-
-        histManager->Fill2DHist(ele->Pt(), ele->IdMap("IsoRel"), 
-                "h2_ElectronIsoVsPt", "electron Iso vs p_{T};p_{T};Iso", 5, 0., 150., 16, 0., 2.);
-        histManager->Fill2DHist(ele->Eta(), ele->IdMap("IsoRel"), 
-                "h2_ElectronIsoVsEta", "electron Iso vs #eta;#eta;Iso", 5, -2.5, 2.5, 16, 0., 2.);
-
-        histManager->Fill2DHist(ele->Pt(), ele->PfIsoCharged()/ele->Pt(), 
-                "h2_ElectronChHadIsoVsPt", "electron Iso vs p_{T};p_{T};Charged Iso", 5, 0., 150., 16, 0., 2.);
-        histManager->Fill2DHist(fabs(ele->Eta()), ele->PfIsoCharged()/ele->Pt(), 
-                "h2_ElectronChHadIsoVsEta", "electron Iso vs #eta;#eta;Charged Iso", 5, 0., 2.5, 16, 0., 2.);
-        histManager->Fill2DHist(ele->Pt(), ele->PfIsoPhoton()/ele->Pt(), 
-                "h2_ElectronPhoIsoVsPt", "electron Iso vs p_{T};p_{T};#gamma Iso", 5, 0., 150., 16, 0., 2.);
-        histManager->Fill2DHist(fabs(ele->Eta()), ele->PfIsoPhoton()/ele->Pt(), 
-                "h2_ElectronPhoIsoVsEta", "electron Iso vs #eta;#eta;#gamma Iso", 5, 0., 2.5, 16, 0., 2.);
-        histManager->Fill2DHist(ele->Pt(), ele->IdMap("pfPhoIso_corr")/ele->Pt(), 
-                "h2_ElectronCorrPhoIsoVsPt", "electron corrected pfIso vs p_{T};p_{T};#gamma Iso", 5, 0., 150., 16, 0., 2.);
-        histManager->Fill2DHist(fabs(ele->Eta()), ele->IdMap("pfPhoIso_corr")/ele->Pt(), 
-                "h2_ElectronCorrPhoIsoVsEta", "electron corrected pfIso vs #eta;#eta;#gamma Iso", 5, 0., 2.5, 16, 0., 2.);
-        histManager->Fill2DHist(ele->Pt(), ele->PfIsoNeutral()/ele->Pt(), 
-                "h2_ElectronNeuIsoVsPt", "electron Iso vs p_{T};p_{T};Neutral Iso", 5, 0., 150., 16, 0., 2.);
-        histManager->Fill2DHist(fabs(ele->Eta()), ele->PfIsoNeutral()/ele->Pt(), 
-                "h2_ElectronNeuIsoVsEta", "electron Iso vs #eta;#eta;Neutral Iso", 5, 0., 2.5, 16, 0., 2.);
-
-        histManager->Fill2DHist(ele->IdMap("IsoRel"), ele->HadOverEm(), 
-                "h2_ElectronIsoVsHOverE", "H/E vs electron Iso;Neutral Iso;H/E", 16, 0., 2., 15, 0., .15);
     }
 
 
@@ -927,9 +902,9 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
             bool fakeMatched = false;
             for (unsigned j = 0; j < fakeables.size(); ++j) {
-                if (i == j) continue;
+                if (i == j || fakeables[i]->Type() == fakeables[j]->Type()) continue;
 
-                if (fakeables[i]->DeltaR(*fakeables[j]) < 0.1 && fakeables[i]->Type() != fakeables[j]->Type()) {
+                if (fakeables[i]->DeltaR(*fakeables[j]) < 0.1) {
                     fakeMatched = true;
                     matchedFakeables.push_back(fakeables[i]);
 
@@ -1329,6 +1304,7 @@ void fcncAnalyzer::DoFakes(vObj leptons, vObj fakeables, vector<TCJet*> jets, ve
     SetEventCategory(leptonsPlusFakes);
     SetEventVariables(leptonsPlusFakes, jets, bJetsM, recoMET); 
 
+    cout << leptonsPlusFakes.size() << endl;
     // Enforce same-sign dilepton/trilepton selection with fake leptons
     if (leptonsPlusFakes.size() == 2) { 
         if (
@@ -1847,41 +1823,41 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj electrons)
     histManager->SetFileNumber(0);
     histManager->SetDirectory("inclusive/" + subdir);
 
-    float ptBins[] = {0., 35., 75., 150.};
-    float etaBins[] = {0., 0.8, 1.479, 2.5};
+    float ptBins[]  = {0., 20., 35., 75., 150.};
+    float etaBins[] = {0., 1.479, 2.5};
 
     unsigned iEta1, iPt1, iEta2, iPt2;
 
     // Set iEta bins for leading and trailing electrons
-    if (fabs(electrons[0]->Eta()) < 0.8)
+    if (fabs(electrons[0]->Eta()) < 1.479)
         iEta1 = 0;
-    else if (fabs(electrons[0]->Eta()) > 0.8 && fabs(electrons[0]->Eta()) < 1.479)
-        iEta1 = 1;
     else //if (fabs(electrons[0]->Eta()) > 1.479)
-        iEta1 = 2;
+        iEta1 = 1;
 
     if (fabs(electrons[1]->Eta()) < 0.8)
         iEta2 = 0;
-    else if (fabs(electrons[1]->Eta()) > 0.8 && fabs(electrons[1]->Eta()) < 1.479)
-        iEta2 = 1;
     else //if (fabs(electrons[1]->Eta()) > 1.479)
-        iEta2 = 2;
+        iEta2 = 1;
 
 
     // Set iPt bins for leading and trailing electrons
-    if (electrons[0]->Pt() < 35.)
+    if (electrons[0]->Pt() < 20.)
         iPt1 = 1;
-    else if (electrons[0]->Pt() > 35 && electrons[0]->Pt() < 75)
+    else if (electrons[0]->Pt() >= 20 && electrons[0]->Pt() < 35)
         iPt1 = 2;
-    else //if (electrons[0]->Pt() > 75)
+    else if (electrons[0]->Pt() >= 35 && electrons[0]->Pt() < 75)
         iPt1 = 3;
+    else if (electrons[0]->Pt() >= 75)
+        iPt1 = 4;
 
-    if (electrons[1]->Pt() < 35.)
+    if (electrons[1]->Pt() < 20.)
         iPt2 = 1;
-    else if (electrons[1]->Pt() > 35 && electrons[1]->Pt() < 75)
+    else if (electrons[1]->Pt() >= 20 && electrons[1]->Pt() < 35)
         iPt2 = 2;
-    else //if (electrons[1]->Pt() > 75)
+    else if (electrons[1]->Pt() >= 35 && electrons[1]->Pt() < 75)
         iPt2 = 3;
+    else if (electrons[1]->Pt() >= 75)
+        iPt2 = 4;
 
     //cout << "===========================" << endl;
     //cout << iPt1 << ", " << iEta1 << "\t\t" << electrons[0]->Pt() << ", " << electrons[0]->Eta() << "\t\t" << 3*iEta1 + iPt1 << endl;
@@ -1890,22 +1866,22 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj electrons)
 
     if (electrons[0]->Charge() == electrons[1]->Charge()) {
         histManager->Fill2DHistUnevenBins(electrons[0]->Pt(), electrons[0]->Eta(),
-                "h2_LeadElecQMisIDNumer", "lead e charge misID (numerator);p_{T};#eta", 3, ptBins, 3, etaBins); 
+                "h2_LeadElecQMisIDNumer", "lead e charge misID (numerator);p_{T};#eta", 4, ptBins, 2, etaBins); 
         histManager->Fill2DHistUnevenBins(electrons[1]->Pt(), electrons[1]->Eta(),
-                "h2_TrailingElecQMisIDNumer", "trailing e charge misID (numerator);p_{T};#eta", 3, ptBins, 3, etaBins); 
+                "h2_TrailingElecQMisIDNumer", "trailing e charge misID (numerator);p_{T};#eta", 4, ptBins, 2, etaBins); 
 
-        histManager->Fill2DHist(3*iEta1 + iPt1, 3*iEta2 + iPt2,
-                "h2_DileptonQMisIDNumer", "e charge misID (numerator);e_{leading};e_{trailing}", 9, 0.5, 9.5, 9, 0.5, 9.5);
+        histManager->Fill2DHist(2*iEta1 + iPt1, 2*iEta2 + iPt2,
+                "h2_DileptonQMisIDNumer", "e charge misID (numerator);e_{leading};e_{trailing}", 8, 0.5, 8.5, 8, 0.5, 8.5);
     }
 
     if (electrons[0]->Charge() != electrons[1]->Charge()) {
         histManager->Fill2DHistUnevenBins(electrons[0]->Pt(), electrons[0]->Eta(),
-                "h2_LeadElecQMisIDDenom", "lead e charge misID (denominator);p_{T};#eta", 3, ptBins, 2, etaBins); 
+                "h2_LeadElecQMisIDDenom", "lead e charge misID (denominator);p_{T};#eta", 4, ptBins, 2, etaBins); 
         histManager->Fill2DHistUnevenBins(electrons[1]->Pt(), electrons[1]->Eta(),
-                "h2_TrailingElecQMisIDDenom", "trailing e charge misID (denominator);p_{T};#eta", 3, ptBins, 2, etaBins); 
+                "h2_TrailingElecQMisIDDenom", "trailing e charge misID (denominator);p_{T};#eta", 4, ptBins, 2, etaBins); 
 
-        histManager->Fill2DHist(3*iEta1 + iPt1, 3*iEta2 + iPt2,
-                "h2_DileptonQMisIDDenom", "e charge misID (denominator);e_{leading};e_{trailing}", 9, 0.5, 9.5, 9, 0.5, 9.5);
+        histManager->Fill2DHist(2*iEta1 + iPt1, 2*iEta2 + iPt2,
+                "h2_DileptonQMisIDDenom", "e charge misID (denominator);e_{leading};e_{trailing}", 8, 0.5, 8.5, 9, 0.5, 8.5);
     }
 }
 

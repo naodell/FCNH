@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void run(Long64_t nEntries = 5e5, string args = "TEST muon 2012") {
+void run(Long64_t nEntries = 1e5, string args = "TEST muon 2012") {
 
     //container classes
     gROOT->LoadMacro("../src/TCPhysObject.cc+");

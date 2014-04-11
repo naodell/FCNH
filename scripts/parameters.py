@@ -277,7 +277,7 @@ combineDict['QCD_EM']           = ['QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_E
 combineDict['higgs']            = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125']
 
 combineDict['Fakes']            = ['eFakes', 'muFakes', 'llFakes']
-combineDict['FAKES_2l']         = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbar', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'tbarW', 'tW', 'WbbToLNu']#, 'WJetsToLNu']#, 'ZZJets2L2Q']
+combineDict['FAKES_2l']         = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarHad', 'ttbarLep', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'tbarW', 'tW', 'WbbToLNu']#, 'WJetsToLNu']#, 'ZZJets2L2Q']
 combineDict['FAKES_3l']         = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
 combineDict['Remove_ss']        = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarLep']#, 'tW', 'tbarW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'ZZJets2L2Q']
 combineDict['Remove_3l']        = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW']#, 'WWW', 'WWZ', 'WZZ', 'ZZZ']
@@ -295,6 +295,7 @@ categoryDict = {'inclusive':'inclusive',
                 'os_inclusive':'os inclusive', 'os_mumu':'#mu^{#pm}#mu^{#mp}', 'os_ee':'e^{#pm}e^{#mp}', 'os_emu':'e^{#pm}mu^{#mp}', 
                 '3l_inclusive':'3l inclusive', '3l_OSSF':'(l^{#pm}l^{#mp})l', '3l_SSSF':'(l^{#pm}l^{#pm})l',
                 '3l_eee':'eee', '3l_eemu':'ee#mu', '3l_emumu':'e#mu#mu','3l_mumumu':'#mu#mu#mu',
+                '2l':'2 leptons', '3l':'3 leptons',
                 'QCD2l_inclusive':'QCD ll', 'QCD2l_low_met':'QCD ll (MET < 20)', 'QCD2l_high_met':'QCD ll (45 < MET < 80)',
                 'ZPlusJet_inclusive':'Z+jet', 'ZPlusJet_low_met':'Z+jet (MET < 20)', 'ZPlusJet_high_met':'Z+jet (45 < MET < 80)',
                 'low_met':'MET < 20', 'high_met':'45 < MET < 80'

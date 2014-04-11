@@ -10,7 +10,7 @@ using namespace std;
 
 const bool  doQCDDileptonCR = true;
 const bool  doZPlusJetCR    = true;
-const bool  doTripleFake    = true;
+const bool  doFakeCR        = true;
 
 const float jetPtCut[]  = {25., 15.};
 const float muPtCut[]   = {10., 3.};
@@ -76,6 +76,10 @@ void fakeAnalyzer::Begin(TTree* tree)
 
     histoFile->mkdir("inclusive", "inclusive");
     histoFile->GetDirectory("inclusive", "inclusive")->mkdir(suffix.c_str(), suffix.c_str());
+    histoFile->mkdir("2l", "2l");
+    histoFile->GetDirectory("2l", "2l")->mkdir(suffix.c_str(), suffix.c_str());
+    histoFile->mkdir("3l", "3l");
+    histoFile->GetDirectory("3l", "3l")->mkdir(suffix.c_str(), suffix.c_str());
 
     histoFile->mkdir("QCD2l_inclusive", "QCD2l_inclusive");
     histoFile->GetDirectory("QCD2l_inclusive", "QCD2l_inclusive")->mkdir(suffix.c_str(), suffix.c_str());
@@ -159,6 +163,11 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
     }
 
+    // Hack to split ttbar sample
+    if (suffix == "ttbarHad" && gLeptons.size() != 1)
+        return kTRUE;
+    else if (suffix == "ttbarLep" && gLeptons.size() != 2)
+        return kTRUE;
 
     //////////////////////
     // object selection //
@@ -354,42 +363,85 @@ bool fakeAnalyzer::Process(Long64_t entry)
         }
     }
 
-    if (doTripleFake) {
+    if (doFakeCR) {
         vector<TCMuon*>     muonsNoIso     = selector->GetSelectedMuons("tight_id");
-        vector<TCElectron*> electronsNoIso = selector->GetSelectedElectrons("tight_id");
+        vector<TCElectron*> electronsNoIso = selector->GetSelectedElectrons("loose_id");
 
         vObj leptonsNoIso;
         leptonsNoIso.insert(leptonsNoIso.end(), muonsNoIso.begin(), muonsNoIso.end());
         leptonsNoIso.insert(leptonsNoIso.end(), electronsNoIso.begin(), electronsNoIso.end());
         sort(leptonsNoIso.begin(), leptonsNoIso.end(), P4SortCondition);
 
-        if (leptonsNoIso.size() > 2) {
+        if (leptonsNoIso.size() == 2)
+            histManager->SetDirectory("2l/" + suffix);
+        else if (leptonsNoIso.size() == 3)
+            histManager->SetDirectory("3l/" + suffix);
 
-            vObj leptonsAntiIso;
+        if (leptonsNoIso.size() == 3 || leptonsNoIso.size() == 2) {
+            vObj leptonsAntiIso, testLeptonsAntiIso, leptonsIso, testLeptonsIso;
             for (unsigned i = 0; i < leptonsNoIso.size(); ++i) {
                 float leptonIso = leptonsNoIso[i]->IdMap("IsoRel");
 
                 if (leptonsNoIso[i]->Type() == "muon")
-                    histManager->Fill1DHist(leptonIso, "h1_MuonIso_" + str(i), "muon ISO_{rel};ISO_{rel,#mu};Entries", 60, 0., 3.);
+                    histManager->Fill1DHist(leptonIso, "h1_MuonIso_" + str(i+1), "muon ISO_{rel};ISO_{rel,#mu};Entries", 60, 0., 3.);
                 else if (leptonsNoIso[i]->Type() == "electron")
-                    histManager->Fill1DHist(leptonIso, "h1_ElectronIso_" + str(i), "electron ISO_{rel};ISO_{rel,#mu};Entries", 60, 0., 3.);
+                    histManager->Fill1DHist(leptonIso, "h1_ElectronIso_" + str(i+1), "electron ISO_{rel};ISO_{rel,#mu};Entries", 60, 0., 3.);
 
-                if (leptonIso > 0.2) {
-                    leptonsAntiIso.push_back(leptonsNoIso[i]);
-                    leptonsNoIso.erase(leptonsNoIso.begin() + i);
-                    --i;
+                if (leptonsNoIso.size() == 3) {
+                    if (leptonIso > 0.4 && leptonsAntiIso.size() < 2) 
+                        leptonsAntiIso.push_back(leptonsNoIso[i]);
+                    else if (leptonsAntiIso.size() == 2) 
+                        testLeptonsAntiIso.push_back(leptonsNoIso[i]);
+
+                    if (
+                            ((leptonsNoIso[i]->Type() == "muon" && leptonIso < 0.12) 
+                             || (leptonsNoIso[i]->Type() == "electron" && leptonIso < 0.15)) 
+                            && leptonsIso.size() < 2
+                       )
+                        leptonsIso.push_back(leptonsNoIso[i]);
+                     else if (leptonsIso.size() == 2) 
+                        testLeptonsIso.push_back(leptonsNoIso[i]);
+                    
                 }
-                if (leptonsAntiIso.size() > 1) break;
+
+                if (leptonsNoIso.size() == 2) {
+                    if (leptonsNoIso[0]->Charge() == leptonsNoIso[1]->Charge()) {
+                        if (leptonIso > 0.4 && leptonsAntiIso.size() < 1) 
+                            leptonsAntiIso.push_back(leptonsNoIso[i]);
+                        else if (leptonsAntiIso.size() == 1) 
+                            testLeptonsAntiIso.push_back(leptonsNoIso[i]);
+
+                        if (
+                                ((leptonsNoIso[i]->Type() == "muon" && leptonIso < 0.12) 
+                                 || (leptonsNoIso[i]->Type() == "electron" && leptonIso < 0.15)) 
+                                && leptonsIso.size() < 1
+                           ) 
+                            leptonsIso.push_back(leptonsNoIso[i]);
+                         else if (leptonsIso.size() == 1) 
+                            testLeptonsIso.push_back(leptonsNoIso[i]);
+                    }
+                }
             }
 
+            //cout << leptonsNoIso.size() << "\t" << leptonsAntiIso.size() << "\t" << testLeptons.size() << endl;
              
-            if (leptonsAntiIso.size() > 1 && leptonsNoIso.size() > 0) {
-                if (leptonsNoIso[0]->Type() == "muon") {
-                    histManager->Fill1DHist(leptonsNoIso[0]->IdMap("IsoRel"),
-                            "h1_MuonIsoRel_FR", "muon relative isolation;ISO_{rel};Entries", 60, 0., 3.);
-                } else if (leptonsNoIso[0]->Type() == "electron") {
-                    histManager->Fill1DHist(electronsNoIso[0]->IdMap("IsoRel"),
-                            "h1_ElectronIsoRel_FR", "electron relative isolation;ISO_{rel};Entries", 60, 0., 3.);
+            if (leptonsAntiIso.size() >= 1 && testLeptonsAntiIso.size() > 0) {
+                if (testLeptonsAntiIso[0]->Type() == "muon") {
+                    histManager->Fill1DHist(testLeptonsAntiIso[0]->IdMap("IsoRel"),
+                            "h1_MuonIsoRel_AntiIso", "muon relative isolation;ISO_{rel};Entries", 60, 0., 3.);
+                } else if (testLeptonsAntiIso[0]->Type() == "electron") {
+                    histManager->Fill1DHist(testLeptonsAntiIso[0]->IdMap("IsoRel"),
+                            "h1_ElectronIsoRel_AntiIso", "electron relative isolation;ISO_{rel};Entries", 60, 0., 3.);
+                }
+            }
+
+            if (leptonsIso.size() >= 1 && testLeptonsIso.size() > 0) {
+                if (testLeptonsIso[0]->Type() == "muon") {
+                    histManager->Fill1DHist(testLeptonsIso[0]->IdMap("IsoRel"),
+                            "h1_MuonIsoRel_Iso", "muon relative isolation;ISO_{rel};Entries", 60, 0., 3.);
+                } else if (testLeptonsIso[0]->Type() == "electron") {
+                    histManager->Fill1DHist(testLeptonsIso[0]->IdMap("IsoRel"),
+                            "h1_ElectronIsoRel_Iso", "electron relative isolation;ISO_{rel};Entries", 60, 0., 3.);
                 }
             }
         }

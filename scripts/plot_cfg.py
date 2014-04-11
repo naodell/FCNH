@@ -25,10 +25,10 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-#cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.'])#, '5_BDT'])
+cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.'])#, '5_BDT'])
 #cutList.extend(['.', '.', '.', 'X_0jet', 'X_1jet'])
 
-crList      = []#'CR_WZ', 'CR_ttbar', 'CR_ZFake']
+crList      = ['CR_WZ', 'CR_ttbar', 'CR_ZFake']
 
 period      = '2012'
 LUMIDATA    = 19.712 
@@ -189,8 +189,8 @@ if doPlots:
     ### plot while giving a key value which is the 
     ### directory that they are located in as a key.
 
-    #plotter._directoryList1D            = ['Misc', 'Lepton', 'Lep+Jet', 'Dilepton', 'DileptonOS', 'Trilepton', 'MET', 'Jet', 'Fakes', 'GEN', '4l']
-    plotter._directoryList1D            = ['Lepton', 'Lep+Jet', 'Dilepton', 'DileptonOS', 'Trilepton', 'MET', 'Jet', 'GEN', '4l']
+    plotter._directoryList1D            = ['Misc', 'Lepton', 'Lep+Jet', 'Dilepton', 'DileptonOS', 'Trilepton', 'MET', 'Jet', 'GEN', '4l']
+    #plotter._directoryList1D            = ['Lepton', 'Lep+Jet', 'Dilepton', 'DileptonOS', 'Trilepton', 'MET', 'Jet', 'GEN', '4l']
     plotter._directoryList2D            = ['2D']
 
     plotter._variableDict['Misc']       = ['PvMult', 'YieldByCut', 'YieldByCutRaw', 'EventWeight', 'TriggerStatus', 'BDT']
