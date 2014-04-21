@@ -23,6 +23,7 @@ class TCPhysObject : public TLorentzVector {
         bool _isPF;
         bool _isReco;
         bool _isFake;
+        bool _isTriggered;
 
     public:
         TCPhysObject();
@@ -41,6 +42,8 @@ class TCPhysObject : public TLorentzVector {
         bool IsPF() const;
         bool IsReco() const;
         bool IsFake() const;
+        bool IsTriggered() const;
+
 
         float Dxy(TVector3 *primVtx) const;
         float Dz(TVector3 *primVtx) const;
@@ -55,6 +58,7 @@ class TCPhysObject : public TLorentzVector {
         void SetReco(bool);
         void SetPF(bool);
         void SetFake(bool);
+        void SetTriggered(bool);
 
         ClassDef(TCPhysObject, 1);
 };

@@ -3,36 +3,38 @@
 #include <iostream>
 
 TCPhysObject::TCPhysObject():
-  _vtx(-9,-9,-9),
-  _charge(0),
-  _isPF(false),
-  _isReco(false),
-  _isFake(false)
+    _vtx(-9,-9,-9),
+    _charge(0),
+    _isPF(false),
+    _isReco(false),
+    _isFake(false),
+    _isTriggered(false)
 {
 }
 
 TCPhysObject::TCPhysObject(TLorentzVector p4, int charge):
-  _vtx(-9,-9,-9),
-  _charge(charge),
-  _isPF(false),
-  _isReco(false),
-  _isFake(false)
+    _vtx(-9,-9,-9),
+    _charge(charge),
+    _isPF(false),
+    _isReco(false),
+    _isFake(false),
+    _isTriggered(false)
 {
     this->SetP4(p4);
 }
 
 TCPhysObject::TCPhysObject(TLorentzVector p4, int charge, string type) :
-  _vtx(-9,-9,-9),
-  _charge(charge),
-  _isPF(false),
-  _isReco(false),
-  _isFake(false)
+    _vtx(-9,-9,-9),
+    _charge(charge),
+    _isPF(false),
+    _isReco(false),
+    _isFake(false),
+    _isTriggered(false)
 {
     this->SetP4(p4);
     this->SetCharge(charge);
     this->SetType(type);
 
-    _isPF = _isReco = _isFake = false;
 }
 
 TCPhysObject::~TCPhysObject() {
@@ -43,7 +45,7 @@ TCPhysObject::~TCPhysObject() {
 using namespace std;
 
 float TCPhysObject::IdMap(string key) const { 
-    
+
     //Check that key is present in the id map
     try {
         string exception = "Can't find " + key + " in id map"; 
@@ -57,18 +59,18 @@ float TCPhysObject::IdMap(string key) const {
 }
 
 /*
-float TCPhysObject::IsoMap(string key) const { 
-    
-    //Check that key is present in the iso map
-    try {
-        string exception = "Can't find " + key + " in isolation map"; 
-        if (_IsoMap.count(key) == 0)
-            throw exception;
-    } catch (string ex) {
-        cout << ex << endl;
-    }
+   float TCPhysObject::IsoMap(string key) const { 
 
-    return _IsoMap.find(key)->second; 
+//Check that key is present in the iso map
+try {
+string exception = "Can't find " + key + " in isolation map"; 
+if (_IsoMap.count(key) == 0)
+throw exception;
+} catch (string ex) {
+cout << ex << endl;
+}
+
+return _IsoMap.find(key)->second; 
 }
 */
 
@@ -83,6 +85,7 @@ string TCPhysObject::Type() const { return _type; }
 bool TCPhysObject::IsPF()   const   { return _isPF; }
 bool TCPhysObject::IsReco() const   { return _isReco; }
 bool TCPhysObject::IsFake() const   { return _isFake; }
+bool TCPhysObject::IsTriggered() const   { return _isTriggered; }
 
 // "set" methods ---------------------------------------------
 
@@ -100,6 +103,7 @@ void TCPhysObject::SetType(string s){ _type = s; }
 void TCPhysObject::SetPF(bool p)    { _isPF = p;}
 void TCPhysObject::SetReco(bool r)  { _isReco= r;}
 void TCPhysObject::SetFake(bool f)  { _isFake = f;}
+void TCPhysObject::SetTriggered(bool f)  { _isTriggered = f;}
 
 // generally useful methods -----------------------------------
 

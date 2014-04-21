@@ -7,9 +7,9 @@ styleDict = {}
 
 # Data
 styleDict['DATA']               = (2, r.kBlack, 0, 21, 'Observed')
-styleDict['DATA_MUON']          = (2, r.kGray, 0, 21, 'Observed (#mu#mu)')
-styleDict['DATA_ELECTRON']      = (2, r.kGray+1, 0, 21, 'Observed (ee)')
-styleDict['DATA_MUEG']          = (2, r.kGray+2, 0, 21, 'Observed (e#mu)')
+styleDict['DATA_MUON']          = (2, r.kBlack, 0, 21, 'Observed (#mu#mu)')
+styleDict['DATA_ELECTRON']      = (2, r.kBlack, 0, 21, 'Observed (ee)')
+styleDict['DATA_MUEG']          = (2, r.kBlack, 0, 21, 'Observed (e#mu)')
 styleDict['DATA_FAKES']         = (2, r.kBlack, 3001, 21, 'Data')
 
 # For fake studies
@@ -277,8 +277,8 @@ combineDict['QCD_EM']           = ['QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_E
 combineDict['higgs']            = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125']
 
 combineDict['Fakes']            = ['eFakes', 'muFakes', 'llFakes']
-combineDict['FAKES_2l']         = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarHad', 'ttbarLep', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'tbarW', 'tW', 'WbbToLNu']#, 'WJetsToLNu']#, 'ZZJets2L2Q']
-combineDict['FAKES_3l']         = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
+combineDict['FAKES_2l']         = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarHad', 'ttbarLep', 'tbarW', 'tW', 'WbbToLNu']#, 'WWJets2L2Nu', 'ZZJets2L2Nu', 'WJetsToLNu', 'ZZJets2L2Q']
+combineDict['FAKES_3l']         = ['WZJets3LNu']#, 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
 combineDict['Remove_ss']        = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarLep']#, 'tW', 'tbarW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'ZZJets2L2Q']
 combineDict['Remove_3l']        = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW']#, 'WWW', 'WWZ', 'WZZ', 'ZZZ']
 combineDict['Irreducible']      = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125', 'WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ']#, 'WWG']

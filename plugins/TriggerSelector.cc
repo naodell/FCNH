@@ -4,11 +4,12 @@ TriggerSelector::TriggerSelector() {}
 
 TriggerSelector::~TriggerSelector() {}
 
-TriggerSelector::TriggerSelector(string type, string dataPeriod, vstring triggerNames, bool triggerDefaults)
+TriggerSelector::TriggerSelector(string type, string dataPeriod, vstring triggerNames, bool triggerDefaults, bool checkOverlap)
 {
     _type           = type;
     _dataPeriod     = dataPeriod;
     _triggerNames   = triggerNames;
+    _checkOverlap   = checkOverlap;
     _isRealData     = false;
 
     cout << "\ndata type: " << _type << "\t data period: " << dataPeriod << endl;
@@ -86,7 +87,6 @@ void TriggerSelector::TriggerDefaults()
     //    _triggers.push_back("HLT_DoubleMu7_v");
     //    _triggers.push_back("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v"); 
     //}
-
 }
 
 void TriggerSelector::SetSelectedBits()
@@ -177,7 +177,7 @@ bool TriggerSelector::SelectTrigger(ULong64_t triggerStatus, UInt_t* hltPrescale
 
         if (_isRealData) { 
             //if (CheckOverlap() || CheckPrescales(trigs, hltPrescales)) _eventPass = false;
-            if (CheckOverlap()) _eventPass = false;
+            if (_checkOverlap && CheckOverlap()) _eventPass = false;
         }
     }
 

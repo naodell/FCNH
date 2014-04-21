@@ -29,7 +29,7 @@ class TriggerSelector: public TObject {
     public:
         TriggerSelector();
         virtual ~TriggerSelector();
-        TriggerSelector(string, string, vstring, bool);
+        TriggerSelector(string, string, vstring, bool, bool);
 
         bool    SelectTrigger(ULong64_t, UInt_t*);
         bool    CheckOverlap();
@@ -51,6 +51,7 @@ class TriggerSelector: public TObject {
         vstring         _triggers;
         string          _dataPeriod;
         string          _type;
+        bool            _checkOverlap;
         bool            _isRealData;
 
         // trigger info

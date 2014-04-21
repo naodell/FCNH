@@ -51,18 +51,29 @@ void fakeAnalyzer::Begin(TTree* tree)
     // Initialize utilities and selectors here //
     selector        = new Selector(muPtCut, elePtCut, jetPtCut, phoPtCut);
     weighter        = new WeightUtils(suffix, period, selection, isRealData);
-    triggerSelector = new TriggerSelector("mc", "2012", *triggerNames, true);
+    triggerSelector = new TriggerSelector(selection, "2012", *triggerNames, false, false);
 
     // Add single lepton triggers for fake rates //
     vstring triggers;
-    triggers.push_back("HLT_Mu8_v");
-    triggers.push_back("HLT_Mu17_v");
-    triggers.push_back("HLT_Ele8_CaloIdT_TrkIdVL_v");
-    triggers.push_back("HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
-    triggers.push_back("HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v");
-    triggers.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
-    triggers.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v");
-    //triggerSelector->AddTriggers(triggers);
+    if (selection == "muon") {
+        triggers.push_back("HLT_Mu17_Mu8_v");
+        triggers.push_back("HLT_Mu17_TkMu8_v");
+    } else if (selection == "electron") {
+        triggers.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+    } else if (selection == "muEG") {
+        triggers.push_back("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+        triggers.push_back("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+    }
+
+    //triggers.push_back("HLT_Mu8_v");
+    //triggers.push_back("HLT_Mu17_v");
+    //triggers.push_back("HLT_Ele8_CaloIdT_TrkIdVL_v");
+    //triggers.push_back("HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+    //triggers.push_back("HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v");
+    //triggers.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+    //triggers.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v");
+    //
+    triggerSelector->AddTriggers(triggers);
 
     // Random numbers! //
     //rnGenerator = new TRandom3();
@@ -128,7 +139,11 @@ bool fakeAnalyzer::Process(Long64_t entry)
     if (!triggerPass) return kTRUE;
 
     vstring passNames = triggerSelector->GetPassNames();
-    if (passNames.size() == 0) passNames.push_back("NULL");
+    if (passNames.size() == 0) 
+        passNames.push_back("NULL");
+    else if (false)
+        cout << passNames[0] << endl;
+
 
     selector->PVSelector(primaryVtx);
     if (selector->GetSelectedPVs().size() < 1) 
@@ -141,7 +156,6 @@ bool fakeAnalyzer::Process(Long64_t entry)
     /////////////////////////////
 
     vector<TCGenParticle*> higgs, dubyas, Zeds, gElectrons, gMuons, gTaus, gLeptons;
-
     if (!isRealData) {
         selector->GenParticleSelector(genParticles, 25, 3, "Higgs");
         selector->GenParticleSelector(genParticles, 24, 3, "Dubya");
@@ -156,18 +170,18 @@ bool fakeAnalyzer::Process(Long64_t entry)
         gElectrons  = selector->GetSelectedGenParticles("electrons");
         gMuons      = selector->GetSelectedGenParticles("muons");
         gTaus       = selector->GetSelectedGenParticles("taus");
-
+        
         gLeptons.insert(gLeptons.end(), gElectrons.begin(), gElectrons.end());
         gLeptons.insert(gLeptons.end(), gMuons.begin(), gMuons.end());
         gLeptons.insert(gLeptons.end(), gTaus.begin(), gTaus.end());
 
+        // Hack to split ttbar sample
+        if (suffix == "ttbarHad" && gLeptons.size() != 1)
+            return kTRUE;
+        else if (suffix == "ttbarLep" && gLeptons.size() != 2)
+            return kTRUE;
     }
 
-    // Hack to split ttbar sample
-    if (suffix == "ttbarHad" && gLeptons.size() != 1)
-        return kTRUE;
-    else if (suffix == "ttbarLep" && gLeptons.size() != 2)
-        return kTRUE;
 
     //////////////////////
     // object selection //
@@ -377,15 +391,19 @@ bool fakeAnalyzer::Process(Long64_t entry)
         else if (leptonsNoIso.size() == 3)
             histManager->SetDirectory("3l/" + suffix);
 
-        if (leptonsNoIso.size() == 3 || leptonsNoIso.size() == 2) {
+        if (!isRealData) GenMatcher(leptonsNoIso, gLeptons);
+
+        if (leptonsNoIso.size() == 3) {// || leptonsNoIso.size() == 2) {
             vObj leptonsAntiIso, testLeptonsAntiIso, leptonsIso, testLeptonsIso;
             for (unsigned i = 0; i < leptonsNoIso.size(); ++i) {
                 float leptonIso = leptonsNoIso[i]->IdMap("IsoRel");
 
                 if (leptonsNoIso[i]->Type() == "muon")
-                    histManager->Fill1DHist(leptonIso, "h1_MuonIso_" + str(i+1), "muon ISO_{rel};ISO_{rel,#mu};Entries", 60, 0., 3.);
-                else if (leptonsNoIso[i]->Type() == "electron")
-                    histManager->Fill1DHist(leptonIso, "h1_ElectronIso_" + str(i+1), "electron ISO_{rel};ISO_{rel,#mu};Entries", 60, 0., 3.);
+                    histManager->Fill1DHist(leptonIso, "h1_MuonIso_" + str(i+1), "muon ISO_{rel};ISO_{rel,#mu};Entries", 80, 0., 4.);
+                else if (leptonsNoIso[i]->Type() == "electron") 
+                    histManager->Fill1DHist(leptonIso, "h1_ElectronIso_" + str(i+1), "electron ISO_{rel};ISO_{rel,e};Entries", 80, 0., 4.);
+
+                //cout << leptonsNoIso[i]->Type() << ": " << leptonsNoIso[i]->IsTriggered() << "\t";
 
                 if (leptonsNoIso.size() == 3) {
                     if (leptonIso > 0.4 && leptonsAntiIso.size() < 2) 
@@ -422,26 +440,62 @@ bool fakeAnalyzer::Process(Long64_t entry)
                     }
                 }
             }
+            //cout << endl;
 
             //cout << leptonsNoIso.size() << "\t" << leptonsAntiIso.size() << "\t" << testLeptons.size() << endl;
              
             if (leptonsAntiIso.size() >= 1 && testLeptonsAntiIso.size() > 0) {
+
                 if (testLeptonsAntiIso[0]->Type() == "muon") {
                     histManager->Fill1DHist(testLeptonsAntiIso[0]->IdMap("IsoRel"),
-                            "h1_MuonIsoRel_AntiIso", "muon relative isolation;ISO_{rel};Entries", 60, 0., 3.);
+                            "h1_MuonIsoRel_AntiIso", "muon relative isolation;ISO_{rel};Entries", 80, 0., 4.);
+                    histManager->Fill1DHist(testLeptonsAntiIso[0]->Pt(),
+                            "h1_MuonPt_AntiIso", "muon p_{T};p_{T};Entries", 30, 0., 150.);
+
+                    if (testLeptonsAntiIso[0]->IdMap("IsoRel") > 0.2) {
+                        histManager->SetWeight(weighter->GetFakeWeight(testLeptonsAntiIso[0], "QCD2l"));
+                        histManager->Fill1DHist(testLeptonsAntiIso[0]->Pt(),
+                                "h1_MuonPt_QCD2l_weight", "muon p_{T};p_{T};Entries", 30, 0., 150.);
+                        histManager->SetWeight(1.);
+                    } else if (testLeptonsAntiIso[0]->IdMap("IsoRel") < 0.15) {
+                        histManager->Fill1DHist(testLeptonsAntiIso[0]->Pt(),
+                                "h1_ElectronPt_QCD2l_tight", "electron p_{T};p_{T};Entries", 30, 0., 150.);
+                    }
+
                 } else if (testLeptonsAntiIso[0]->Type() == "electron") {
                     histManager->Fill1DHist(testLeptonsAntiIso[0]->IdMap("IsoRel"),
-                            "h1_ElectronIsoRel_AntiIso", "electron relative isolation;ISO_{rel};Entries", 60, 0., 3.);
+                            "h1_ElectronIsoRel_AntiIso", "electron relative isolation;ISO_{rel};Entries", 80, 0., 4.);
+                    histManager->Fill1DHist(testLeptonsAntiIso[0]->Pt(),
+                            "h1_ElectronPt_AntiIso", "electron p_{T};p_{T};Entries", 30, 0., 150.);
+
+                    if (testLeptonsAntiIso[0]->IdMap("IsoRel") > 0.2) {
+                        histManager->SetWeight(weighter->GetFakeWeight(testLeptonsAntiIso[0], "QCD2l"));
+                        histManager->Fill1DHist(testLeptonsAntiIso[0]->Pt(),
+                                "h1_ElectronPt_QCD2l_weight", "electron p_{T};p_{T};Entries", 30, 0., 150.);
+                        histManager->SetWeight(1.);
+                    } else if (testLeptonsAntiIso[0]->IdMap("IsoRel") < 0.15) {
+                        histManager->Fill1DHist(testLeptonsAntiIso[0]->Pt(),
+                                "h1_ElectronPt_QCD2l_tight", "electron p_{T};p_{T};Entries", 30, 0., 150.);
+                    }
                 }
             }
 
             if (leptonsIso.size() >= 1 && testLeptonsIso.size() > 0) {
+                for (unsigned i = 0; i < leptonsIso.size(); ++i) {
+                    histManager->Fill1DHist(leptonsIso[i]->Pt(),
+                            "h1_LeptonPt" + str(i+1) + "_Iso", "muon p_{T};p_{T};Entries", 30, 0., 150.);
+                }
+
                 if (testLeptonsIso[0]->Type() == "muon") {
                     histManager->Fill1DHist(testLeptonsIso[0]->IdMap("IsoRel"),
-                            "h1_MuonIsoRel_Iso", "muon relative isolation;ISO_{rel};Entries", 60, 0., 3.);
+                            "h1_MuonIsoRel_Iso", "muon relative isolation;ISO_{rel};Entries", 80, 0., 4.);
+                    histManager->Fill1DHist(testLeptonsIso[0]->Pt(),
+                            "h1_MuonPt_Iso", "muon p_{T};p_{T};Entries", 30, 0., 150.);
                 } else if (testLeptonsIso[0]->Type() == "electron") {
                     histManager->Fill1DHist(testLeptonsIso[0]->IdMap("IsoRel"),
-                            "h1_ElectronIsoRel_Iso", "electron relative isolation;ISO_{rel};Entries", 60, 0., 3.);
+                            "h1_ElectronIsoRel_Iso", "electron relative isolation;ISO_{rel};Entries", 80, 0., 4.);
+                    histManager->Fill1DHist(testLeptonsIso[0]->Pt(),
+                            "h1_ElectronPt_Iso", "electron p_{T};p_{T};Entries", 30, 0., 150.);
                 }
             }
         }
@@ -466,7 +520,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
         if (!isRealData) {
             weighter->SetObjects(triggerLeps, jets, nPUVerticesTrue, passNames[0]);
-            Float_t evtWeight = 1.;//weighter->GetTotalWeight();
+            Float_t evtWeight = weighter->GetTotalWeight();
             histManager->SetWeight(evtWeight);
         } else
             histManager->SetWeight(1.);
@@ -484,7 +538,6 @@ bool fakeAnalyzer::Process(Long64_t entry)
         return kTRUE;
 
     if (crType == "QCD2l" && leptons.size() <= 1) {
-
 
         if (nEleProbes == 1) {
             if (recoMET->Mod() < 50) {
@@ -893,4 +946,35 @@ bool fakeAnalyzer::CheckZPlusJetCR(TCPhysObject& probe)
         return false;
     else
         return true;
+}
+
+void fakeAnalyzer::GenMatcher(vObj& leptons, vector<TCGenParticle*>& gLeptons)
+{
+    for (unsigned i = 0; i < leptons.size(); ++i) {
+        //TCGenParticle matchedGen;
+        bool matched = false; 
+        for (unsigned j = 0; j < gLeptons.size(); ++j) {
+            histManager->Fill1DHist(leptons[i]->DeltaR(*gLeptons[j]),
+                    "h1_DeltaRGenLepton", "#Delta R (gen, reco);#Delta R (gen, reco);Entries", 100, 0., 1.);
+            histManager->Fill1DHist((leptons[i]->Pt() - gLeptons[j]->Pt())/gLeptons[j]->Pt(),
+                    "h1_DeltaPtGenLepton", "#Delta p_{T} / p_{T,gen};#Delta p_{T} / p_{T,gen} ;Entries", 55, -1., 10.);
+            if (
+                    leptons[i]->DeltaR(*gLeptons[j]) < 0.3 || fabs(leptons[i]->Pt() - gLeptons[j]->Pt())/gLeptons[j]->Pt() < 0.1
+                    //|| (leptons[i]->Type() == "muon" && fabs(gLeptons[j]->GetPDGId()) == 13) 
+                    //|| (leptons[i]->Type() == "electron" && fabs(gLeptons[j]->GetPDGId()) == 11)
+               ) {
+                //matchedGen = *gLeptons[i];
+                matched = true;
+                break;
+            }
+        }
+
+        if (!matched) {
+            float leptonIso = leptons[i]->IdMap("IsoRel");
+            if (leptons[i]->Type() == "muon" && leptonIso > 0.)
+                histManager->Fill1DHist(leptonIso, "h1_FakeMuonIso", "fake muon ISO_{rel};ISO_{rel,#mu};Entries", 80, 0., 4.);
+            if (leptons[i]->Type() == "electron" && leptonIso > 0.)
+                histManager->Fill1DHist(leptonIso, "h1_FakeElectronIso", "fake electron ISO_{rel};ISO_{rel,#mu};Entries", 80, 0., 4.);
+        }
+    }
 }

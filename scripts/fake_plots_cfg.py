@@ -12,9 +12,11 @@ currentDate = '{0:02d}/{1:02d}/{2:02d}'.format(now.year, now.month, now.day)
 ### Get command line arguements
 
 if len(sys.argv) > 1:
-    batch = sys.argv[1]
+    batch   = sys.argv[1]
+    suffix  = sys.argv[2]
 else:
-    batch = '20131018_000148'
+    batch   = '20131018_000148'
+    suffix  = 'test'
 
 ### This is the config file for manipulating 
 ### histograms using the PlotProducer class.  
@@ -43,8 +45,8 @@ samples = {}
 samples['inclusive']    = ['FAKES_2l', 'FAKES_3l'] # ['ZJets', 'ttbar']
 samples['ZPlusJet']     = ['FAKES_3l']
 samples['QCD2l']        = ['FAKES_2l']
-samples['2l']           = ['ZJets', 'ttbarLep', 'ttbarHad', 'Diboson']
-samples['3l']           = ['ZJets', 'ttbarLep', 'ttbarHad', 'WZJets3LNu']
+samples['2l']           = ['ZJets', 'ttbarLep', 'ttbarHad', 'Diboson', 'WbbToLNu']
+samples['3l']           = ['ZJets', 'ttbarLep', 'ttbarHad', 'WZJets3LNu', 'WbbToLNu']
 
 if doPlots:
 
@@ -56,20 +58,24 @@ if doPlots:
     plotter = PlotProducer(inputFile = 'fakeEstimator/histos/{0}.root'.format(batch), savePath = '', scale = LUMIDATA, isAFS = False)
     plotter.set_period(period)
     plotter.set_output_type(plotType)
-    plotter.set_save_path('plots/{0}/{1}_{2}/log'.format(currentDate, selection, batch))
+    plotter.set_save_path('plots/{0}/{1}_{2}_{3}/log'.format(currentDate, selection, batch, suffix))
 
     ### DATASETS ###
 
     plotter.add_datasets(samples['ZPlusJet'] + samples['QCD2l'])
     plotter._overlayList.extend(['DATA_FAKES'])
+    #plotter._overlayList.extend(['DATA_MUON'])
 
     plotter.get_scale_factors(corrected = False)
 
     plotter._directoryList1D            = ['Misc', 'Lepton']
     plotter._variableDict['Misc']       = ['bJetLooseMult', 'bJetMediumMult', 'JetMult', 
                                             'TagProbeDeltaPhi', 'TagProbePtBalance', 'TagEleProbeMass', 'TagMuProbeMass',
-                                            'MuonIso_1', 'MuonIso_2', 'MuonIso_3', 'MuonIsoRel_Iso', 'MuonIsoRel_AntiIso',
-                                            'ElectronIso_1', 'ElectronIso_2', 'ElectronIso_3', 'ElectronIsoRel_Iso', 'ElectronIsoRel_AntiIso',
+                                            'MuonIso_1', 'MuonIso_2', 'MuonIso_3', 
+                                            'MuonIsoRel_Iso', 'MuonIsoRel_AntiIso',
+                                            'MuonPt_Iso', 'MuonPt_AntiIso',
+                                            'ElectronIso_1', 'ElectronIso_2', 'ElectronIso_3', 
+                                            'ElectronPt_Iso', 'ElectronPt_AntiIso',
                                             'Met']
 
     plotter._variableDict['Lepton']     = ['MuPassLepPt', 'MuPassLepEta', 
@@ -103,6 +109,6 @@ if doPlots:
         plotter.set_category(category)
         plotter.make_overlays_1D(logScale = doLog, doRatio = doRatio, doEff = doEff)
 
-        #plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['MuNumerPt', 'MuUnevenPtClosure']), (['PASS'],['MuNumerPt'])], 'Lepton', 'MuClosurePt') 
-        #plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['EleNumerPt', 'EleUnevenPtClosure']), (['PASS'],['EleNumerPt'])], 'Lepton', 'EleClosurePt') 
+        plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['MuNumerPt', 'MuUnevenPtClosure']), (['PASS'],['MuNumerPt'])], 'Lepton', 'MuClosurePt') 
+        plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['EleNumerPt', 'EleUnevenPtClosure']), (['PASS'],['EleNumerPt'])], 'Lepton', 'EleClosurePt') 
 

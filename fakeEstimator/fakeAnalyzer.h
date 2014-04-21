@@ -96,7 +96,6 @@ class fakeAnalyzer : public TSelector {
         TClonesArray    *recoTaus;
         TClonesArray    *recoPhotons;
         TCMET           *recoMET;
-        TClonesArray    *triggerObjects;
         TClonesArray    *genJets;
         TClonesArray    *genParticles;
         TClonesArray    *primaryVtx;
@@ -132,7 +131,6 @@ class fakeAnalyzer : public TSelector {
         TBranch        *b_recoTaus;   //!
         TBranch        *b_recoPhotons;   //!
         TBranch        *b_recoMET;   //!
-        TBranch        *b_triggerObjects;   //!
         TBranch        *b_genJets;   //!
         TBranch        *b_genParticles;   //!
         TBranch        *b_primaryVtx;   //!
@@ -172,6 +170,7 @@ class fakeAnalyzer : public TSelector {
         //virtual void    SlaveTerminate() {};
         virtual void    Terminate();
 
+        virtual void    GenMatcher(vObj&, vector<TCGenParticle*>&);
         virtual void    FillDenominatorHists(string, TCPhysObject&);
         virtual void    FillNumeratorHists(string, TCPhysObject&);
         virtual void    FillClosureHists(string, TCPhysObject&);
@@ -208,7 +207,6 @@ void fakeAnalyzer::Init(TTree *tree)
     recoMuons = 0;
     recoElectrons = 0;
     recoPhotons = 0;
-    triggerObjects = 0;
     // Set branch addresses and branch pointers
     if (!tree) return;
 
@@ -221,7 +219,6 @@ void fakeAnalyzer::Init(TTree *tree)
     fChain->SetBranchAddress("recoMuons", &recoMuons, &b_recoMuons);
     fChain->SetBranchAddress("recoPhotons", &recoPhotons, &b_recoPhotons);
     fChain->SetBranchAddress("recoMET", &recoMET, &b_recoMET);
-    fChain->SetBranchAddress("triggerObjects", &triggerObjects, &b_triggerObjects);
     fChain->SetBranchAddress("genJets", &genJets, &b_genJets);
     fChain->SetBranchAddress("genParticles", &genParticles, &b_genParticles);
     fChain->SetBranchAddress("primaryVtx", &primaryVtx, &b_primaryVtx);

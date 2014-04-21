@@ -773,8 +773,11 @@ void Selector::GenParticleSelector(TClonesArray* gen, unsigned pdgId, unsigned s
     for (int i = 0; i < gen->GetSize(); ++i) {
         TCGenParticle* iGen = (TCGenParticle*) gen->At(i);
 
-        if (fabs(iGen->GetPDGId()) == pdgId and iGen->GetStatus() == status) 
+        if (fabs(iGen->GetPDGId()) == pdgId && iGen->GetStatus() == status) {
+            //cout << iGen->Pt() << ", " << type << endl;
+            iGen->SetType(type);
             _selGenParticles[type].push_back(iGen);
+        }
     }
 }
 
