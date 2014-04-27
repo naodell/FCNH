@@ -69,13 +69,13 @@ class Selector : public TObject {
         float   ElectronPhoIsoHack(TCElectron*);
 
         //Get processed collections
-        vector<TVector3*>       GetSelectedPVs();
-        vector<TCMuon*>         GetSelectedMuons(string);
-        vector<TCElectron*>     GetSelectedElectrons(string);
-        vector<TCPhoton*>       GetSelectedPhotons(string);
-        vector<TCJet*>          GetSelectedJets(string);
-        vector<TCGenParticle*>  GetSelectedGenParticles(string);
-        vector<TCGenJet*>       GetSelectedGenJets();
+        vector<TVector3>       GetSelectedPVs();
+        vector<TCMuon>         GetSelectedMuons(string);
+        vector<TCElectron>     GetSelectedElectrons(string);
+        vector<TCPhoton>       GetSelectedPhotons(string);
+        vector<TCJet>          GetSelectedJets(string);
+        vector<TCGenParticle>  GetSelectedGenParticles(string);
+        vector<TCGenJet>       GetSelectedGenJets();
 
         //Need to clear maps at the end of an event
         void    PurgeObjects();

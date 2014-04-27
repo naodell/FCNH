@@ -62,37 +62,37 @@ void Selector::SetRho(float rho)
 }
 
 
-vector<TVector3*> Selector::GetSelectedPVs()
+vector<TVector3> Selector::GetSelectedPVs()
 {
     return _selVertices;
 }
 
-vector<TCMuon*> Selector::GetSelectedMuons(string key) 
+vector<TCMuon> Selector::GetSelectedMuons(string key) 
 {
     return _selMuons[key];
 }
 
-vector<TCElectron*> Selector::GetSelectedElectrons(string key)  
+vector<TCElectron> Selector::GetSelectedElectrons(string key)  
 {
     return _selElectrons[key];
 }
 
-vector<TCPhoton*> Selector::GetSelectedPhotons(string key)  
+vector<TCPhoton> Selector::GetSelectedPhotons(string key)  
 {
     return _selPhotons[key];
 }
 
-vector<TCJet*> Selector::GetSelectedJets(string key)
+vector<TCJet> Selector::GetSelectedJets(string key)
 {
     return _selJets[key];
 }
 
-vector<TCGenParticle*> Selector::GetSelectedGenParticles(string key)
+vector<TCGenParticle> Selector::GetSelectedGenParticles(string key)
 {
     return _selGenParticles[key];
 }
 
-vector<TCGenJet*> Selector::GetSelectedGenJets()
+vector<TCGenJet> Selector::GetSelectedGenJets()
 {
     return _selGenJets;
 }
