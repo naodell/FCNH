@@ -101,12 +101,12 @@ class Selector : public TObject {
         unsigned            _vtxIndex;
 
         //object maps
-        map<string, vector<TCMuon*> >           _selMuons;
-        map<string, vector<TCElectron*> >       _selElectrons;
-        map<string, vector<TCPhoton*> >         _selPhotons;
-        map<string, vector<TCJet*> >            _selJets;
-        map<string, vector<TCGenParticle*> >    _selGenParticles;
-        vector<TCGenJet*>                       _selGenJets;
+        map<string, vector<TCMuon> >           _selMuons;
+        map<string, vector<TCElectron> >       _selElectrons;
+        map<string, vector<TCPhoton> >         _selPhotons;
+        map<string, vector<TCJet> >            _selJets;
+        map<string, vector<TCGenParticle> >    _selGenParticles;
+        vector<TCGenJet>                       _selGenJets;
 
         // b-tag efficiencies from MC 
         TGraphAsymmErrors*  _misTagEff;
