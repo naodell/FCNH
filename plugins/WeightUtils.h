@@ -27,6 +27,7 @@
 
 // custom libraries
 #include "../interface/TCPhysObject.h"
+#include "../interface/TCPhoton.h"
 #include "../interface/TCJet.h"
 #include "../interface/TCGenJet.h"
 
@@ -52,6 +53,7 @@ class WeightUtils: public TObject {
         float   GetTotalWeight();
         float   GetFakeWeight(TCPhysObject*, string);
         float   GetQFlipWeight();
+        float   GetAICWeight(const TCPhoton&, const string&);
 
         // lepton reco efficiencies
         float GetElectronEff(TLorentzVector*) const;
@@ -86,6 +88,7 @@ class WeightUtils: public TObject {
         TH2D    *h2_DielectronMisQ;
 
         TGraph  *g_QFlipB, *g_QFlipE;
+        map<string, TGraph*>  g_AIC;
 
         map<string, TGraphAsymmErrors*> g_MuonFakesPtB;
         map<string, TGraphAsymmErrors*> g_MuonFakesPtE;

@@ -44,25 +44,25 @@ signal  = []
 
 if period == '2012':
     data.extend([
-        cfg('muon_2012A', '{0}/DoubleMu_Run2012A'.format(dataDir), 50, 'DATA_MUON muon 2012'),
-        cfg('muon_2012B', '{0}/DoubleMu_Run2012B'.format(dataDir), 50, 'DATA_MUON muon 2012'),
-        cfg('muon_2012C', '{0}/DoubleMu_Run2012C'.format(dataDir), 50, 'DATA_MUON muon 2012'),
-        cfg('muon_2012D', '{0}/DoubleMu_Run2012D'.format(dataDir), 55, 'DATA_MUON muon 2012'),
+        cfg('muon_2012A', '{0}/DoubleMu_Run2012A'.format(dataDir), 60, 'DATA_MUON muon 2012'),
+        cfg('muon_2012B', '{0}/DoubleMu_Run2012B'.format(dataDir), 60, 'DATA_MUON muon 2012'),
+        cfg('muon_2012C', '{0}/DoubleMu_Run2012C'.format(dataDir), 60, 'DATA_MUON muon 2012'),
+        cfg('muon_2012D', '{0}/DoubleMu_Run2012D'.format(dataDir), 65, 'DATA_MUON muon 2012'),
 
-        cfg('electron_2012A', '{0}/DoubleElectron_Run2012A'.format(dataDir), 50, 'DATA_ELECTRON electron 2012'),
-        cfg('electron_2012B', '{0}/DoubleElectron_Run2012B'.format(dataDir), 50, 'DATA_ELECTRON electron 2012'),
-        cfg('electron_2012C', '{0}/DoubleElectron_Run2012C'.format(dataDir), 50, 'DATA_ELECTRON electron 2012'),
-        cfg('electron_2012D', '{0}/DoubleElectron_Run2012D'.format(dataDir), 55, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012A', '{0}/DoubleElectron_Run2012A'.format(dataDir), 60, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012B', '{0}/DoubleElectron_Run2012B'.format(dataDir), 60, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012C', '{0}/DoubleElectron_Run2012C'.format(dataDir), 60, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012D', '{0}/DoubleElectron_Run2012D'.format(dataDir), 65, 'DATA_ELECTRON electron 2012'),
 
-        cfg('muEG_2012A', '{0}/MuEG_Run2012A'.format(dataDir), 30, 'DATA_MUEG muEG 2012'),
-        cfg('muEG_2012B', '{0}/MuEG_Run2012B'.format(dataDir), 30, 'DATA_MUEG muEG 2012'),
-        cfg('muEG_2012C', '{0}/MuEG_Run2012C'.format(dataDir), 30, 'DATA_MUEG muEG 2012'),
-        cfg('muEG_2012D', '{0}/MuEG_Run2012D'.format(dataDir), 35, 'DATA_MUEG muEG 2012')
+        cfg('muEG_2012A', '{0}/MuEG_Run2012A'.format(dataDir), 40, 'DATA_MUEG muEG 2012'),
+        cfg('muEG_2012B', '{0}/MuEG_Run2012B'.format(dataDir), 40, 'DATA_MUEG muEG 2012'),
+        cfg('muEG_2012C', '{0}/MuEG_Run2012C'.format(dataDir), 40, 'DATA_MUEG muEG 2012'),
+        cfg('muEG_2012D', '{0}/MuEG_Run2012D'.format(dataDir), 45, 'DATA_MUEG muEG 2012')
         ])
 
     bg.extend([
-        cfg('ZJets_M-50', mcDir+'/DYJetsToLL_M-50', 50, 'ZJets_M-50 muon 2012'),
-        cfg('ZJets_M-10To50', mcDir+'/DYJetsToLL_M-10To50filter', 35, 'ZJets_M-10To50 muon 2012'),
+        cfg('ZJets_M-50', mcDir+'/DYJetsToLL_M-50', 80, 'ZJets_M-50 muon 2012'),
+        cfg('ZJets_M-10To50', mcDir+'/DYJetsToLL_M-10To50filter', 45, 'ZJets_M-10To50 muon 2012'),
         #cfg('ZbbToLL', mcDir+'/ZbbToLL', 20, 'ZbbToLL muon 2012'),
         #cfg('ZG', mcDir+'/ZGToLLG', 10, 'ZG muon 2012'),
         #cfg('WJets', mcDir+'/WJetsToLNu', 20, 'WJets muon 2012'),
@@ -73,8 +73,8 @@ if period == '2012':
         #cfg('WbbToLNu', mcDir+'/WbbToLL', 20, 'WbbToLNu muon 2012'),
         #cfg('WG', mcDir+'/WGToLNuG', 10, 'WG muon 2012'),
 
-        cfg('ttbarHad', mcDir+'/TTJets', 30, 'ttbarHad muon 2012'),
-        cfg('ttbarLep', mcDir+'/TTJets', 30, 'ttbarLep muon 2012'),
+        cfg('ttbarHad', mcDir+'/TTJets', 40, 'ttbarHad muon 2012'),
+        cfg('ttbarLep', mcDir+'/TTJets', 40, 'ttbarLep muon 2012'),
         cfg('tbarW', mcDir+'/Tbar_tW', 5, 'tbarW muon 2012'),
         cfg('tW', mcDir+'/T_tW', 5, 'tW muon 2012'),
         cfg('t_t-channel', mcDir+'/T_t', 5, 't_t-channel muon 2012'),

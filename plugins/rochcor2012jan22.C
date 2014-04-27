@@ -242,7 +242,6 @@ void rochcor2012::momcor_mc( TLorentzVector& mu, float charge, int runopt, float
   }
   
   mu.SetPxPyPzE(px,py,pz,e);
-  
 }
 
 

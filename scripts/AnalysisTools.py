@@ -60,6 +60,9 @@ class AnalysisTools():
     def set_clean_fakes(self, doClean):
         self._cleanFakes = doClean
 
+    def get_category(self):
+        return self._category
+
     def get_current_time(self):
         ''' 
         Returns a string of the current time with

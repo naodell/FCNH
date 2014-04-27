@@ -251,7 +251,7 @@ void Selector::MuonSelector(TClonesArray* muons)
         if (_isRealData) {
             muCorrector->momcor_data(tmpP4, (float)thisMuon->Charge(), 0, muPtErr);
         } else {
-            muCorrector->momcor_data(tmpP4, (float)thisMuon->Charge(), 0, muPtErr);
+            muCorrector->momcor_mc(tmpP4, (float)thisMuon->Charge(), 0, muPtErr);
         }
         thisMuon->SetPtEtaPhiM(tmpP4.Pt(), tmpP4.Eta(), tmpP4.Phi(), tmpP4.M());
 
@@ -263,12 +263,13 @@ void Selector::MuonSelector(TClonesArray* muons)
         if (thisMuon->Pt() > _muPtCuts[0]) {
             // QCD dilepton control region tag and probe
             if (
-                    thisMuon->Dz(_selVertices[0]) > 0.2
+                    _selMuons["QCD2l_CR_tag"].size() == 0
+                    && thisMuon->Dz(_selVertices[0]) > 0.2
                     && thisMuon->Dxy(_selVertices[0]) > 0.2 // Replacement for SIP3D inverted cut -- needs to be tuned
                     && muISO > 0.2
                ) {
                 _selMuons["QCD2l_CR_tag"].push_back(thisMuon);
-            } else if (MuonTightID(thisMuon) && muISO < 0.6)
+            } else  if (MuonTightID(thisMuon) && muISO < 0.6)
                 _selMuons["QCD2l_CR_probe"].push_back(thisMuon);
 
             // analysis lepton selection
@@ -436,24 +437,27 @@ void Selector::ElectronSelector(TClonesArray* electrons)
         thisElec->SetIdMap("pfPhoIso_corr", pfPhoIso_corr);
 
         //eleISO = eleISO_uncorr;
-        if (!muOverlap && ElectronLooseID(thisElec)) _selElectrons["loose_id"].push_back(thisElec);
+        if (!muOverlap && ElectronLooseID(thisElec)) {
+            _selElectrons["loose_id"].push_back(thisElec);
+
+            if (eleISO < 0.9) {
+                _selElectrons["QCD2l_CR_probe"].push_back(thisElec);
+                if (eleISO > 0.15 && !ElectronMVA(thisElec)){
+                    thisElec->SetFake(true);
+                    _selElectrons["fakeable"].push_back(thisElec);
+                }
+            }
+        }
 
         // analysis electrons
         if (ElectronMVAPreSel(thisElec)) {
             if (ElectronMVA(thisElec)) {
-                if (eleISO < 0.9)
-                _selElectrons["QCD2l_CR_probe"].push_back(thisElec);
-
                 if (!muOverlap) {
                     _selElectrons["tight_id"].push_back(thisElec);
 
                     if (eleISO < 0.15) {
                         _selElectrons["tight"].push_back(thisElec);			
-                    } else if (eleISO > 0.15 && eleISO < 0.9) {
-                        thisElec->SetFake(true);
-                        _selElectrons["fakeable"].push_back(thisElec);
-                    }
-                } 
+                    }                 } 
 
                 if (eleISO < 0.15 && muOverlap) {
                     _selElectrons["tight_overlap"].push_back(thisElec);			
@@ -527,15 +531,26 @@ void Selector::PhotonSelector(TClonesArray* photons)
 
         thisPho->SetType("photon");
 
+        // check for electron overlap
+        bool elOverlap = false;
+        bool muOverlap = false;
+        for (unsigned j = 0; j < _selElectrons["tight"].size(); ++j) 
+            if (thisPho->DeltaR(*_selElectrons["tight"][j]) < 0.1) 
+                elOverlap = true;
+        for (unsigned j = 0; j < _selMuons["tight"].size(); ++j) 
+            if (thisPho->DeltaR(*_selMuons["tight"][j]) < 0.1) 
+                muOverlap = true;
+
         // photon preselection
-        if (thisPho->Pt() < _phoPtCuts[0] || fabs(thisPho->Eta()) > 2.5 ) continue;
+        if (thisPho->Pt() < _phoPtCuts[0] || fabs(thisPho->Eta()) > 2.5) continue;
 
         bool passIso = PhotonIsolation(thisPho);
+        thisPho->SetIdMap("IsoRel", 0.01);
 
         _selPhotons["noCuts"].push_back(thisPho);
 
         // analysis photons
-        if (PhotonTightID(thisPho)) {
+        if (PhotonTightID(thisPho) && !elOverlap && !muOverlap) {
             _selPhotons["tight_noIso"].push_back(thisPho);
             if (passIso) 
                 _selPhotons["tight"].push_back(thisPho);			

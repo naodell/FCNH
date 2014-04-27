@@ -57,22 +57,29 @@ class RatioMaker(AnalysisTools):
             self._outFile.cd(self._category)
 
                 
-    def make_1D_ratios(self, ratioSample, bgSample = '', removePass = False): 
+    def make_1D_ratios(self, ratioSample, bgSample = '', categories = [], removePass = False): 
         ### make ratios for all variables specified in ratioDict1D.  Sample
         ### combinations should be specified in combineDict in parameters.py.
         ### bgSample is subtracted off of the inputs for the ratio.
 
         self.make_category_directory()
 
+        if categories == []:
+            categories = [self.get_category(), self.get_category()]
+
         for key,value in self._ratioDict1D.iteritems():
+            self.set_category(categories[0])
             h1_Numer    = self.combine_samples(value[0], ratioSample) 
+            self.set_category(categories[1])
             h1_Denom    = self.combine_samples(value[1], ratioSample) 
 
             if removePass:
                 h1_Denom.Add(h1_Numer, -1)
 
             if bgSample is not '':
+                self.set_category(categories[0])
                 h1_bgNumer  = self.combine_samples(value[0], bgSample) 
+                self.set_category(categories[1])
                 h1_bgDenom  = self.combine_samples(value[1], bgSample) 
 
                 if removePass:
@@ -222,8 +229,29 @@ if __name__ == '__main__':
         exit()
 
     doQFlips    = False
-    doFakes     = True
+    doFakes     = False
+    doAIC       = True
     doMetFake   = False
+
+    ### For AIC rates ###
+    if doAIC:
+        inFile  = 'fcncAnalysis/combined_histos/fcnh_cut1_2012_{0}.root'.format(batch)
+        outFile = 'data/AIC_TEST.root'
+
+        ratioMaker = RatioMaker(inFile, outFile, scale = 19.7)
+        ratioMaker.set_category('inclusive')
+
+        ratioMaker.set_ratio_1D({'mumumu':('ThirdMuonPt_AIC', 'PhotonPt_AIC_Mu3l')})
+        ratioMaker.make_1D_ratios('DATA', bgSample = '', categories = ['3l_mumumu', 'inclusive'])
+        ratioMaker.set_ratio_1D({'emumu':('ThirdElectronPt_AIC', 'PhotonPt_AIC_Mu3l')})
+        ratioMaker.make_1D_ratios('DATA', bgSample = '', categories = ['3l_emumu', 'inclusive'])
+
+        ratioMaker.set_ratio_1D({'eemu':('ThirdMuonPt_AIC', 'PhotonPt_AIC_El3l')})
+        ratioMaker.make_1D_ratios('DATA', bgSample = '', categories = ['3l_eemu', 'inclusive'])
+        ratioMaker.set_ratio_1D({'eee':('ThirdElectronPt_AIC', 'PhotonPt_AIC_El3l')})
+        ratioMaker.make_1D_ratios('DATA', bgSample = '', categories = ['3l_eee', 'inclusive'])
+
+        ratioMaker.write_outfile()
 
     ### For electron charge misID efficiencies ###
     if doQFlips:

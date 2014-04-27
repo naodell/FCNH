@@ -41,11 +41,18 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
     g_ElectronFakesPtG["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet_inclusive/g_ElectronFake_2");
     g_ElectronFakesPtE["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet_inclusive/g_ElectronFake_3");
 
+    // Weights for charge flip background
     TFile* f_misQFile = new TFile("../data/electronQMisID.root", "OPEN");
     h2_DielectronMisQ = (TH2D*)f_misQFile->Get("inclusive/h2_DielectronMisQ");
     g_QFlipB = (TGraph*)f_misQFile->Get("inclusive/g_QFlipB");
     g_QFlipE = (TGraph*)f_misQFile->Get("inclusive/g_QFlipE");
 
+    // Weight files for AIC background
+    TFile* f_aicFile = new TFile("../data/AIC.root", "OPEN");
+    g_AIC["mumumu"] = (TGraph*)f_aicFile->Get("inclusive/g_mumumu");
+    //g_AIC["mumue"]  = (TGraph*)f_aicFile->Get("inclusive/g_mumue");
+    //g_AIC["eemu"]   = (TGraph*)f_aicFile->Get("inclusive/g_eemu");
+    //g_AIC["eee"]    = (TGraph*)f_aicFile->Get("inclusive/g_eee");
 }
 
 void WeightUtils::Initialize()
@@ -461,6 +468,21 @@ float WeightUtils::GetQFlipWeight()
 
     //cout << weight << endl;
     return weight;
+}
+
+float WeightUtils::GetAICWeight(const TCPhoton& photon, const string& type)
+{
+    float aicWeight = 1.;
+    float photonPt;
+
+    if (photon.Pt() < 50.)
+        photonPt = photon.Pt();
+    else 
+        photonPt = 50.;
+
+    aicWeight = g_AIC[type]->Eval(photonPt);
+
+    return aicWeight;
 }
 
 float WeightUtils::GetFakeUncertainty() const

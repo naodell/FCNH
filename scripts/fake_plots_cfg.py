@@ -75,6 +75,7 @@ if doPlots:
                                             'MuonIsoRel_Iso', 'MuonIsoRel_AntiIso',
                                             'MuonPt_Iso', 'MuonPt_AntiIso',
                                             'ElectronIso_1', 'ElectronIso_2', 'ElectronIso_3', 
+                                            'ElectronIsoRel_Iso', 'ElectronIsoRel_AntiIso',
                                             'ElectronPt_Iso', 'ElectronPt_AntiIso',
                                             'Met']
 
@@ -109,6 +110,11 @@ if doPlots:
         plotter.set_category(category)
         plotter.make_overlays_1D(logScale = doLog, doRatio = doRatio, doEff = doEff)
 
-        plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['MuNumerPt', 'MuUnevenPtClosure']), (['PASS'],['MuNumerPt'])], 'Lepton', 'MuClosurePt') 
-        plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['EleNumerPt', 'EleUnevenPtClosure']), (['PASS'],['EleNumerPt'])], 'Lepton', 'EleClosurePt') 
+        # Closure plots
+        if category in ['QCD2l_inclusive', 'ZPlusJet_inclusive']:
+            plotter.make_overlays_diff([(['PROMPT_2l', 'DATA_FAKES'], ['MuNumerPt', 'MuUnevenPtClosure']), (['PASS'],['MuNumerPt'])], 'Lepton', 'MuClosurePt') 
+            plotter.make_overlays_diff([(['PROMPT_2l', 'DATA_FAKES'], ['EleNumerPt', 'EleUnevenPtClosure']), (['PASS'],['EleNumerPt'])], 'Lepton', 'EleClosurePt') 
+
+        # X-check plots
+        plotter.make_overlays_diff([(['PROMPT_3l', 'DATA_MUON'], ['MuonPt_QCD2l_tight', 'MuonPt_QCD2l_weight']), (['DATA_MUON'],['MuonPt_QCD2l_tight'])], 'Lepton', 'MuonFakePt') 
 
