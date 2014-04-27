@@ -2393,7 +2393,7 @@ void fcncAnalyzer::SetEventVariables(vObj& leptons, vector<TCJet> jets, vector<T
         for (unsigned j = i+1; j < leptons.size(); ++j) {
 
             // Check for opposite-sign pair //
-            if (leptons[i]->Charge() != leptons[j]->Charge()) {
+            if (leptons[i].Charge() != leptons[j].Charge()) {
                 ossfTagged = true;
 
                 // Is the pair mass consistent with the Z mass within a 30 GeV window?
