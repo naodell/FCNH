@@ -730,9 +730,8 @@ bool fcncAnalyzer::Process(Long64_t entry)
         if (
                 leptons[0].Pt() > 10. && leptons[1].Pt() > 10.  // pt cut
                 && leptons[0].Type() == "electron" && leptons[1].Type() == "electron" // get electrons
-                && (fabs((leptons[0] + leptons[1]).M() - 91.2) < 15) // Z mass window
-           ) 
-            MakeQMisIDPlots(leptons);
+           )
+            MakeQMisIDPlots(leptons, gLeptons);
 
         //!!! Dilepton selection !!!//
         if (leptons[0].Pt() < leptonPtCut[0] || leptons[1].Pt() < leptonPtCut[1]) 
@@ -832,6 +831,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
                 SetEventCategory(flipLeptons); SetEventVariables(flipLeptons, jets, bJetsM, *recoMET); 
                 AnalysisSelection(flipLeptons, jets, bJetsM, bJetsL, selectedVtx, "QFlips");
 
+                subdir  = suffix;
                 evtWeight /= qFlipWeight; // Remove charge flip weight
             }
         }
@@ -869,6 +869,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
                     }
                 }
             }
+            subdir  = suffix;
         }
     } 
 
@@ -1110,16 +1111,16 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
     //!!!!!!!!!!!!!!!!!!!!!!//
 
 
-    if ( // Problematic region for same-sign
-            leptons.size() == 2 
-            && leptons[0].Type() == leptons[1].Type() 
-            && (bJetsM.size() + jets.size()) == 0
-            && (leptons[0] + leptons[1]).M() < 30
-            && recoMET->Mod() < 50
-            //&& leptons[0].Pt() < 50
-            //&& fabs(leptons[0].Eta() - leptons[1].Eta()) <  1.
-       ) 
-        return true;
+    //if ( // Problematic region for same-sign
+    //        leptons.size() == 2 
+    //        && leptons[0].Type() == leptons[1].Type() 
+    //        && (bJetsM.size() + jets.size()) == 0
+    //        && (leptons[0] + leptons[1]).M() < 30
+    //        && recoMET->Mod() < 50
+    //        //&& leptons[0].Pt() < 50
+    //        //&& fabs(leptons[0].Eta() - leptons[1].Eta()) <  1.
+    //   ) 
+    //    return true;
 
 
     // Preselection Plots
@@ -1139,9 +1140,8 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
        ) 
         return true;
     else if (
-            leptons.size() == 3 && zTagged
-            //&& (zTagged || (dileptonMassOS > 40 && fabs(trileptonMass - 85) < 10))
-
+            leptons.size() == 3 
+            && (zTagged || (dileptonMassOS > 40 && fabs(trileptonMass - 85) < 10))
             ) 
         return true;
 
@@ -1840,7 +1840,7 @@ void fcncAnalyzer::MiscPlots()
     }
 }
 
-void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons)
+void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElectrons)
 {
     histManager->SetFileNumber(0);
     histManager->SetDirectory("inclusive/" + subdir);
@@ -1886,24 +1886,37 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons)
     //cout << iPt2 << ", " << iEta2 << "\t\t" << electrons[1].Pt() << ", " << electrons[1].Eta() << "\t\t" << 3*iEta2 + iPt2 << endl;
     //cout << "===========================" << endl;
 
-    if (electrons[0].Charge() == electrons[1].Charge()) {
-        histManager->Fill2DHistUnevenBins(electrons[0].Pt(), electrons[0].Eta(),
-                "h2_LeadElecQMisIDNumer", "lead e charge misID (numerator);p_{T};#eta", 4, ptBins, 2, etaBins); 
-        histManager->Fill2DHistUnevenBins(electrons[1].Pt(), electrons[1].Eta(),
-                "h2_TrailingElecQMisIDNumer", "trailing e charge misID (numerator);p_{T};#eta", 4, ptBins, 2, etaBins); 
+    if (!isRealData) {
+        for (unsigned i = 0; i < gElectrons.size(); ++i) {
+            for (unsigned j = 0; j < electrons.size(); ++j) {
 
-        histManager->Fill2DHist(2*iEta1 + iPt1, 2*iEta2 + iPt2,
-                "h2_DileptonQMisIDNumer", "e charge misID (numerator);e_{leading};e_{trailing}", 8, 0.5, 8.5, 8, 0.5, 8.5);
+            if (gElectrons[i].DeltaR(electrons[j]) < 0.1)
+                histManager->Fill2DHist((electrons[0] + electrons[1]).M(), gElectrons[i].Charge()*electrons[j].Charge(), 
+                        "h2_ChargeMisIDVsDielectronMass", ";M_{ee} (GeV);Entries / 10 GeV", 20, 0., 200., 2, -1., 1.);
+            }
+        }
     }
 
-    if (electrons[0].Charge() != electrons[1].Charge()) {
-        histManager->Fill2DHistUnevenBins(electrons[0].Pt(), electrons[0].Eta(),
-                "h2_LeadElecQMisIDDenom", "lead e charge misID (denominator);p_{T};#eta", 4, ptBins, 2, etaBins); 
-        histManager->Fill2DHistUnevenBins(electrons[1].Pt(), electrons[1].Eta(),
-                "h2_TrailingElecQMisIDDenom", "trailing e charge misID (denominator);p_{T};#eta", 4, ptBins, 2, etaBins); 
+    if (fabs((electrons[0] + electrons[1]).M() - 91.2) < 15) {// Z mass window
+        if (electrons[0].Charge() == electrons[1].Charge()) {
+            histManager->Fill2DHistUnevenBins(electrons[0].Pt(), electrons[0].Eta(),
+                    "h2_LeadElecQMisIDNumer", "lead e charge misID (numerator);p_{T};#eta", 4, ptBins, 2, etaBins); 
+            histManager->Fill2DHistUnevenBins(electrons[1].Pt(), electrons[1].Eta(),
+                    "h2_TrailingElecQMisIDNumer", "trailing e charge misID (numerator);p_{T};#eta", 4, ptBins, 2, etaBins); 
 
-        histManager->Fill2DHist(2*iEta1 + iPt1, 2*iEta2 + iPt2,
-                "h2_DileptonQMisIDDenom", "e charge misID (denominator);e_{leading};e_{trailing}", 8, 0.5, 8.5, 9, 0.5, 8.5);
+            histManager->Fill2DHist(2*iEta1 + iPt1, 2*iEta2 + iPt2,
+                    "h2_DileptonQMisIDNumer", "e charge misID (numerator);e_{leading};e_{trailing}", 8, 0.5, 8.5, 8, 0.5, 8.5);
+        }
+
+        if (electrons[0].Charge() != electrons[1].Charge()) {
+            histManager->Fill2DHistUnevenBins(electrons[0].Pt(), electrons[0].Eta(),
+                    "h2_LeadElecQMisIDDenom", "lead e charge misID (denominator);p_{T};#eta", 4, ptBins, 2, etaBins); 
+            histManager->Fill2DHistUnevenBins(electrons[1].Pt(), electrons[1].Eta(),
+                    "h2_TrailingElecQMisIDDenom", "trailing e charge misID (denominator);p_{T};#eta", 4, ptBins, 2, etaBins); 
+
+            histManager->Fill2DHist(2*iEta1 + iPt1, 2*iEta2 + iPt2,
+                    "h2_DileptonQMisIDDenom", "e charge misID (denominator);e_{leading};e_{trailing}", 8, 0.5, 8.5, 9, 0.5, 8.5);
+        }
     }
 }
 
@@ -2033,10 +2046,7 @@ void fcncAnalyzer::GenPlots(vector<TCGenParticle>& gen, vObj& leptons)
 void fcncAnalyzer::ConversionPlots(vObj& leptons, TCPhoton& photon)
 {
     if (leptons.size() == 2) {
-        cout << leptons[0].Type() << " " << leptons[1].Type() << ":"
-                << leptons[0].Charge() << " " << leptons[1].Charge() << ":"
-                << (leptons[0] + leptons[1]).M() 
-                << endl;
+
         if (
                 leptons[0].Type() == leptons[1].Type() 
                 && leptons[0].Charge() != leptons[1].Charge()
@@ -2066,6 +2076,11 @@ void fcncAnalyzer::ConversionPlots(vObj& leptons, TCPhoton& photon)
             }
 
             if (leptons[0].Type() == "electron") {
+                //cout << leptons[0].Type() << " " << leptons[1].Type() << ":"
+                //    << leptons[0].Charge() << " " << leptons[1].Charge() << ":"
+                //    << (leptons[0] + leptons[1]).M() 
+                //    << endl;
+
                 histManager->Fill1DHist((leptons[0] + leptons[1] + photon).M(),
                         "h1_DielectronPhotonMass", "M_{ee#gamma};M_{ee#gamma};Entries / 5 GeV", 60, 0., 300.); 
                 histManager->Fill1DHist((leptons[0] + leptons[1]).DeltaR(photon),
