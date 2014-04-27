@@ -458,13 +458,13 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
     // Get loose leptons
     vObj extraLeptons;
-    vector<TCElectron*>  looseElectrons  = selector->GetSelectedElectrons("loose");
+    vector<TCElectron>  looseElectrons  = selector->GetSelectedElectrons("loose");
     vector<TCMuon>      looseMuons      = selector->GetSelectedMuons("loose");
     extraLeptons.insert(extraLeptons.end(), looseElectrons.begin(), looseElectrons.end());
     extraLeptons.insert(extraLeptons.end(), looseMuons.begin(), looseMuons.end());
 
     // Get overlap electrons
-    vector<TCElectron*> olElectrons = selector->GetSelectedElectrons("tight_overlap");
+    vector<TCElectron> olElectrons = selector->GetSelectedElectrons("tight_overlap");
 
     // Get fakeable leptons
     vObj fakeables;
@@ -557,9 +557,9 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
             for (int i = 0; i < recoJets->GetSize(); ++i) {
                 TCJet* thisJet = (TCJet*) recoJets->At(i);    
-                PrintJetIDVars(thisJet);
+                PrintJetIDVars(*thisJet);
                 for (int j = 0; j < recoMuons->GetSize(); ++j) {
-                    TCMuon thisMuon = (TCMuon) recoMuons->At(j);    
+                    TCMuon* thisMuon = (TCMuon*) recoMuons->At(j);    
                     cout << thisMuon->DeltaR(*thisJet) << "\t";
                 }
                 cout << endl;
@@ -568,7 +568,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
             for (int i = 0; i < recoMuons->GetSize(); ++i) {
                 TCMuon* thisMuon = (TCMuon*) recoMuons->At(i);    
-                PrintMuonIDVars(*thisMuon, *selectedVtx);
+                PrintMuonIDVars(*thisMuon, selectedVtx);
                 cout << endl;
             }
             cout << endl;
@@ -589,10 +589,10 @@ bool fcncAnalyzer::Process(Long64_t entry)
                         cout << "\t" << recoMuons->GetSize() << "\t" << recoJets->GetSize() << endl;
 
                         for (int i = 0; i < recoJets->GetSize(); ++i) {
-                            TCJet thisJet = (TCJet) recoJets->At(i);    
-                            PrintJetIDVars(thisJet);
+                            TCJet* thisJet = (TCJet*) recoJets->At(i);    
+                            PrintJetIDVars(*thisJet);
                             for (int j = 0; j < recoMuons->GetSize(); ++j) {
-                                TCMuon thisMuon = (TCMuon) recoMuons->At(j);    
+                                TCMuon* thisMuon = (TCMuon*) recoMuons->At(j);    
                                 cout << thisMuon->DeltaR(*thisJet) << "\t";
                             }
                             cout << endl;
@@ -623,11 +623,11 @@ bool fcncAnalyzer::Process(Long64_t entry)
                         PrintJetIDVars(jets[0]);
 
                         for (int i = 0; i < recoJets->GetSize(); ++i) {
-                            TCJet thisJet = (TCJet) recoJets->At(i);    
-                            PrintJetIDVars(thisJet);
+                            TCJet* thisJet = (TCJet*) recoJets->At(i);    
+                            PrintJetIDVars(*thisJet);
                             for (int j = 0; j < recoMuons->GetSize(); ++j) {
-                                TCMuon thisMuon = (TCMuon) recoMuons->At(j);    
-                                cout << thisMuon.DeltaR(*thisJet) << "\t";
+                                TCMuon* thisMuon = (TCMuon*) recoMuons->At(j);    
+                                cout << thisMuon->DeltaR(*thisJet) << "\t";
                             }
                             cout << endl;
                         }
@@ -661,9 +661,9 @@ bool fcncAnalyzer::Process(Long64_t entry)
                     "h1_MuonIsoVsEta", "muon Iso vs #eta;#eta;Iso", 5, -2.5, 2.5, 16, 0., 2.);
         }
 
-        vector<TCElectron*> electronsNoIso = selector->GetSelectedElectrons("tight_id");
+        vector<TCElectron> electronsNoIso = selector->GetSelectedElectrons("tight_id");
         for (unsigned i = 0; i < electronsNoIso.size(); ++i) {
-            TCElectron* ele = electronsNoIso[i];
+            TCElectron ele = electronsNoIso[i];
             string index = str(i+1);
 
             histManager->Fill1DHist(ele.IdMap("IsoRel"),
@@ -792,7 +792,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
         histManager->SetWeight(evtWeight);
 
         SetEventCategory(leptons);
-        SetEventVariables(leptons, jets, bJetsM, recoMET); 
+        SetEventVariables(leptons, jets, bJetsM, *recoMET); 
 
         // Pre-selection mc-truth plots
         if (!isRealData) {
@@ -829,7 +829,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
                 else
                     flipLeptons[1].SetCharge(flipLeptons[0].Charge());
 
-                SetEventCategory(flipLeptons); SetEventVariables(flipLeptons, jets, bJetsM, recoMET); 
+                SetEventCategory(flipLeptons); SetEventVariables(flipLeptons, jets, bJetsM, *recoMET); 
                 AnalysisSelection(flipLeptons, jets, bJetsM, bJetsL, selectedVtx, "QFlips");
 
                 evtWeight /= qFlipWeight; // Remove charge flip weight
@@ -842,7 +842,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
                 && (leptons.size() == 1 || leptons.size() == 2)
            ) { 
 
-            ConversionPlots(leptons, *photons[0]);
+            ConversionPlots(leptons, photons[0]);
 
             if (leptons.size() == 2) {
                 // Require ossf pair below the Z peak (M_{ll} < 80 GeV)
@@ -859,9 +859,9 @@ bool fcncAnalyzer::Process(Long64_t entry)
                     if (leptons[0].Type() == "muon") {
                         lepPlusPhoton[2].SetType("muon");
                         SetEventCategory(lepPlusPhoton);
-                        SetEventVariables(lepPlusPhoton, jets, bJetsM, recoMET); 
+                        SetEventVariables(lepPlusPhoton, jets, bJetsM, *recoMET); 
 
-                        Float_t phoWeight = weighter->GetAICWeight(*photons[0], "mumumu");
+                        Float_t phoWeight = weighter->GetAICWeight(photons[0], "mumumu");
                         evtWeight *= phoWeight;
                         histManager->SetWeight(evtWeight);
                         AnalysisSelection(lepPlusPhoton, jets, bJetsM, bJetsL, selectedVtx, "mumumuAIC");
@@ -890,7 +890,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
                     break;
                 }
 
-                if ((*fakeables[i] + leptons[j]).M() < 10.) {
+                if ((fakeables[i] + leptons[j]).M() < 10.) {
                     lowMassResonance = true;
                     break;
                 }
@@ -902,11 +902,11 @@ bool fcncAnalyzer::Process(Long64_t entry)
             for (unsigned j = 0; j < fakeables.size(); ++j) {
                 if (i == j || fakeables[i].Type() == fakeables[j].Type()) continue;
 
-                if (fakeables[i].DeltaR(*fakeables[j]) < 0.1) {
+                if (fakeables[i].DeltaR(fakeables[j]) < 0.1) {
                     fakeMatched = true;
                     matchedFakeables.push_back(fakeables[i]);
 
-                } else if ((*fakeables[i] + *fakeables[j]).M() < 10.) {
+                } else if ((fakeables[i] + fakeables[j]).M() < 10.) {
                     lowMassResonance = true;
                     break;
                 }
@@ -1011,7 +1011,7 @@ void fcncAnalyzer::Terminate()
     }
 }
 
-bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<TCJet>& bJetsM, vector<TCJet>& bJetsL, TVector3& PV, string histDir)
+bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<TCJet>& bJetsM, vector<TCJet>& bJetsL, TVector3* PV, string histDir)
 {
     subdir = histDir;
     //cout << subdir << endl;
@@ -1023,7 +1023,7 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
     // ZZ control region //
     if (leptons.size() == 4) {
         if ( bJetsM.size() == 0) {
-            Make4lPlots(leptons, recoMET);
+            Make4lPlots(leptons, *recoMET);
             SetYields(13);
         }
         return kTRUE; 
@@ -1043,7 +1043,7 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
                 && jets.size() > 1
                 && METLD > 0.3
            ) {
-            MakePlots(leptons, jets, bJetsM, recoMET, PV, 5);
+            MakePlots(leptons, jets, bJetsM, *recoMET, PV, 5);
             SetYields(10);
         }
 
@@ -1055,7 +1055,7 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
                 && leptons[0].Charge() != leptons[1].Charge()
                 && MET > 30
            ) {
-            MakePlots(leptons, jets, bJetsM, recoMET, PV, 6);
+            MakePlots(leptons, jets, bJetsM, *recoMET, PV, 6);
             SetYields(11);
         }
 
@@ -1066,7 +1066,7 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
                 && leptons.size() == 3 
                 && MET < 30
            ) {
-            MakePlots(leptons, jets, bJetsM, recoMET, PV, 7);
+            MakePlots(leptons, jets, bJetsM, *recoMET, PV, 7);
             SetYields(12);
         }
     }
@@ -1115,7 +1115,7 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
             && leptons[0].Type() == leptons[1].Type() 
             && (bJetsM.size() + jets.size()) == 0
             && (leptons[0] + leptons[1]).M() < 30
-            && recoMET.Mod() < 50
+            && recoMET->Mod() < 50
             //&& leptons[0].Pt() < 50
             //&& fabs(leptons[0].Eta() - leptons[1].Eta()) <  1.
        ) 
@@ -1123,10 +1123,10 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
 
 
     // Preselection Plots
-    MakePlots(leptons, jets, bJetsM, recoMET, PV, 0);
+    MakePlots(leptons, jets, bJetsM, *recoMET, PV, 0);
     SetYields(5);
 
-    //    MakePlots(leptons, jets, bJetsM, recoMET, PV, 1);
+    //    MakePlots(leptons, jets, bJetsM, *recoMET, PV, 1);
     //    SetYields(6);
 
     //!! Z-veto !!//
@@ -1145,20 +1145,20 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
             ) 
         return true;
 
-    MakePlots(leptons, jets, bJetsM, recoMET, PV, 1);
+    MakePlots(leptons, jets, bJetsM, *recoMET, PV, 1);
     SetYields(6);
 
     if (doCR) {
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
         // 0-jet CR //
         if (jets.size() + bJetsM.size() == 0) {
-            MakePlots(leptons, jets, bJetsM, recoMET, PV, 8);
+            MakePlots(leptons, jets, bJetsM, *recoMET, PV, 8);
             SetYields(14);
         }
 
         // 1-jet CR //
         if (jets.size() + bJetsM.size() == 1) {
-            MakePlots(leptons, jets, bJetsM, recoMET, PV, 9);
+            MakePlots(leptons, jets, bJetsM, *recoMET, PV, 9);
             SetYields(15);
         }
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
@@ -1166,7 +1166,7 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
 
     //!! Require at least two jets !!//
     if (bJetsM.size() + jets.size() <= 1) return true;
-    MakePlots(leptons, jets, bJetsM, recoMET, PV, 2);
+    MakePlots(leptons, jets, bJetsM, *recoMET, PV, 2);
     SetYields(7);
 
 
@@ -1217,7 +1217,7 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
         }
 
         if (mvaValue > mvaCut) {
-            MakePlots(leptons, jets, bJetsM, recoMET, PV, 4);
+            MakePlots(leptons, jets, bJetsM, *recoMET, PV, 4);
             SetYields(9);
         }
     }
@@ -1231,13 +1231,13 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
         if (recoMET->Mod() < metCut[1]) 
             return true;
     }
-    MakePlots(leptons, jets, bJetsM, recoMET, PV, 3);
+    MakePlots(leptons, jets, bJetsM, *recoMET, PV, 3);
     SetYields(8);
 
     return true;
 }
 
-void fcncAnalyzer::GetFakeBG(vObj& leptons, vObj& fakeables, vector<TCJet>& jets, vector<TCJet>& bJetsM, vector<TCJet>& bJetsL, TVector3& PV)
+void fcncAnalyzer::GetFakeBG(vObj& leptons, vObj& fakeables, vector<TCJet>& jets, vector<TCJet>& bJetsM, vector<TCJet>& bJetsL, TVector3* PV)
 {
     // Do application of fake rates here.  This is done for the case of
     // ppf, pff, pf and ff events.  
@@ -1290,7 +1290,7 @@ void fcncAnalyzer::GetFakeBG(vObj& leptons, vObj& fakeables, vector<TCJet>& jets
     }
 }
 
-void fcncAnalyzer::DoFakes(vObj& leptons, vObj& fakeables, vector<TCJet>& jets, vector<TCJet>& bJetsM, vector<TCJet>& bJetsL, TVector3& PV)
+void fcncAnalyzer::DoFakes(vObj& leptons, vObj& fakeables, vector<TCJet>& jets, vector<TCJet>& bJetsM, vector<TCJet>& bJetsL, TVector3* PV)
 {
     string fakeCat = GetFakeCategory(fakeables);
     //cout << fakeCat << endl;
@@ -1300,7 +1300,7 @@ void fcncAnalyzer::DoFakes(vObj& leptons, vObj& fakeables, vector<TCJet>& jets, 
     sort(leptonsPlusFakes.begin(), leptonsPlusFakes.end(), P4SortCondition);
 
     SetEventCategory(leptonsPlusFakes);
-    SetEventVariables(leptonsPlusFakes, jets, bJetsM, recoMET); 
+    SetEventVariables(leptonsPlusFakes, jets, bJetsM, *recoMET); 
 
     //cout << leptonsPlusFakes.size() << endl;
     // Enforce same-sign dilepton/trilepton selection with fake leptons
@@ -1330,7 +1330,7 @@ void fcncAnalyzer::DoFakes(vObj& leptons, vObj& fakeables, vector<TCJet>& jets, 
     }
 }
 
-void fcncAnalyzer::MakePlots(vObj& leptons, vector<TCJet> jets, vector<TCJet> bJets, TCMET* met, TVector3* PV, unsigned cutLevel)
+void fcncAnalyzer::MakePlots(vObj& leptons, vector<TCJet>& jets, vector<TCJet>& bJets, TCMET& met, TVector3* PV, unsigned cutLevel)
 {
 
     // Fill histograms that correspond to event category
@@ -1390,7 +1390,7 @@ void fcncAnalyzer::MakePlots(vObj& leptons, vector<TCJet> jets, vector<TCJet> bJ
     }
 }
 
-void fcncAnalyzer::LeptonPlots(vObj& leptons, vector<TCJet>& jets, vector<TCJet>& bJets, TVector3& PV)
+void fcncAnalyzer::LeptonPlots(vObj& leptons, vector<TCJet>& jets, vector<TCJet>& bJets, TVector3* PV)
 {
 
     unsigned centralCount = 0;
@@ -1413,10 +1413,10 @@ void fcncAnalyzer::LeptonPlots(vObj& leptons, vector<TCJet>& jets, vector<TCJet>
 
         histManager->Fill1DHist(leptons[i].IdMap("IsoRel"), 
                 "h1_Lepton" + index + "IsoRel", "Iso_{Rel} leptons " + index + ";Iso_{Rel} (cm);Entries / bin", 42, -0.1, 2.);
-        histManager->Fill1DHist(leptons[i].IdMap("IsoRel")leptons[i].Pt(), 
+        histManager->Fill1DHist(leptons[i].IdMap("IsoRel")*leptons[i].Pt(), 
                 "h1_Lepton" + index + "Iso", "Iso leptons " + index + ";Iso (cm);Entries / bin", 30, 0., 150.);
 
-        if (leptons[i]->Type() == "electron") {
+        if (leptons[i].Type() == "electron") {
             histManager->Fill1DHist(leptons[i].Pt(),
                     "h1_ElectronPt", "p_{T} Electron;p_{T,e} (GeV);Entries / 5 GeV", 70, 0., 350.);
             histManager->Fill1DHist(leptons[i].Eta(),
@@ -1431,10 +1431,10 @@ void fcncAnalyzer::LeptonPlots(vObj& leptons, vector<TCJet>& jets, vector<TCJet>
 
             histManager->Fill1DHist(leptons[i].IdMap("IsoRel"), 
                     "h1_ElectronIsoRel", "Iso_{Rel} electrons;Iso_{Rel} ;Entries / bin", 42, -0.1, 2.);
-            histManager->Fill1DHist(leptons[i].IdMap("IsoRel")leptons[i].Pt(), 
+            histManager->Fill1DHist(leptons[i].IdMap("IsoRel")*leptons[i].Pt(), 
                     "h1_ElectronIso", "Iso electrons;Iso;Entries / bin", 30, 0., 150.);
 
-        } else if (leptons[i]->Type() == "muon") {
+        } else if (leptons[i].Type() == "muon") {
             histManager->Fill1DHist(leptons[i].Pt(),
                     "h1_MuonPt", "p_{T} muon;p_{T,#mu} (GeV);Entries / 5 GeV", 70, 0., 350.);
             histManager->Fill1DHist(leptons[i].Eta(),
@@ -1449,11 +1449,11 @@ void fcncAnalyzer::LeptonPlots(vObj& leptons, vector<TCJet>& jets, vector<TCJet>
 
             histManager->Fill1DHist(leptons[i].IdMap("IsoRel"), 
                     "h1_MuonIsoRel", "Iso_{Rel} muons;Iso_{Rel} (cm);Entries / bin", 42, -0.1, 2.);
-            histManager->Fill1DHist(leptons[i].IdMap("IsoRel")leptons[i].Pt(), 
+            histManager->Fill1DHist(leptons[i].IdMap("IsoRel")*leptons[i].Pt(), 
                     "h1_MuonIso", "Iso muons;Iso;Entries / bin", 30, 0., 150.);
         }
 
-        if (fabs(leptons[i]->Eta()) < 1.) 
+        if (fabs(leptons[i].Eta()) < 1.) 
             ++centralCount;
 
         if (bJets.size() > 0) {
@@ -1523,22 +1523,22 @@ void fcncAnalyzer::LeptonPlots(vObj& leptons, vector<TCJet>& jets, vector<TCJet>
                 "h1_DileptonOSBalance", "dilepton #Delta p_{T, OS}/#Sigma p_{T, OS};#Delta p_{T, OS}/#Sigma p_{T, OS};Entries / bin", 50, 0., 1.);
 
         if (bJets.size() > 0) {
-            histManager->Fill1DHist(fabs(dileptonP4.DeltaPhi(*bJets[0])),
+            histManager->Fill1DHist(fabs(dileptonP4.DeltaPhi(bJets[0])),
                     "h1_DileptonBJetDeltaPhi", "#Delta #phi;#Delta #phi_{ll,b};Entries / bin", 36, 0., TMath::Pi());
             histManager->Fill1DHist(fabs(dileptonP4.Eta() - bJets[0].Eta()),
                     "h1_DileptonBJetDeltaEta", "#Delta #eta; #eta_{ll,b};Entries / bin", 60, 0., 6.);
-            histManager->Fill1DHist(fabs(dileptonP4.DeltaR(*bJets[0])),
+            histManager->Fill1DHist(fabs(dileptonP4.DeltaR(bJets[0])),
                     "h1_DileptonBJetDeltaR", "#Delta R;#Delta R_{ll,b};Entries / bin", 70, 0., 7.);
             histManager->Fill1DHist(fabs(dileptonP4.Pt() - bJets[0].Pt())/(dileptonP4.Pt() + bJets[0].Pt()),
                     "h1_DileptonBJetDeltaPt", "#Delta p_{T,llb}/#Sigma p_{T,llb};#Delta p_{T,llb}/#Sigma p_{T,llb};Entries / bin", 50, 0., 1.);
         }
 
         if (jets.size() > 0) {
-            histManager->Fill1DHist(fabs(dileptonP4.DeltaPhi(*jets[0])),
+            histManager->Fill1DHist(fabs(dileptonP4.DeltaPhi(jets[0])),
                     "h1_DileptonJetDeltaPhi", "#Delta #phi;#Delta #phi_{ll,b};Entries / bin", 36, 0., TMath::Pi());
             histManager->Fill1DHist(fabs(dileptonP4.Eta() - jets[0].Eta()),
                     "h1_DileptonJetDeltaEta", "#Delta #eta; #eta_{ll,b};Entries / bin", 60, 0., 6.);
-            histManager->Fill1DHist(fabs(dileptonP4.DeltaR(*jets[0])),
+            histManager->Fill1DHist(fabs(dileptonP4.DeltaR(jets[0])),
                     "h1_DileptonJetDeltaR", "#Delta R;#Delta R_{ll,b};Entries / bin", 70, 0., 7.);
             histManager->Fill1DHist(fabs(dileptonP4.Pt() - jets[0].Pt())/(dileptonP4.Pt() + jets[0].Pt()),
                     "h1_DileptonJetDeltaPt", "#Delta p_{T,llb}/#Sigma p_{T,llb};#Delta p_{T,llb}/#Sigma p_{T,llb};Entries / bin", 100, 0., 1.);
@@ -1705,7 +1705,7 @@ void fcncAnalyzer::JetPlots(vector<TCJet>& jets, vector<TCJet>& bJets)
         if (abs(jets[i].JetFlavor()) == 5) { // b-jets that are not correctly tagged
             histManager->Fill1DHistUnevenBins(jets[i].Pt(),
                     "h1_BTruthDenomPt", "b flavor jet p_{T};p_{T}", 10, ptBins);
-        } else if (abs(jets[i]->JetFlavor()) == 4) {
+        } else if (abs(jets[i].JetFlavor()) == 4) {
             histManager->Fill1DHistUnevenBins(jets[i].Pt(),
                     "h1_CTruthNumerPt", "c flavor jet p_{T};p_{T}", 10, ptBins);
             histManager->Fill1DHistUnevenBins(jets[i].Pt(),
@@ -1976,7 +1976,7 @@ void fcncAnalyzer::GenPlots(vector<TCGenParticle>& gen, vObj& leptons)
             if (
                     fabs(gen[i].GetPDGId()) == 11 
                     && leptons[j].Type() == "electron"
-                    && leptons[j].DeltaR(*gen[i]) < 0.01
+                    && leptons[j].DeltaR(gen[i]) < 0.01
                ) {
 
                 short qxq = gen[i].Charge()*leptons[j].Charge(); 
@@ -2004,9 +2004,9 @@ void fcncAnalyzer::GenPlots(vector<TCGenParticle>& gen, vObj& leptons)
             // Match muons
             if (fabs(gen[i].GetPDGId()) == 13 
                     && leptons[j].Type() == "muon"
-                    && leptons[j].DeltaR(*gen[i]) < 0.01) {
+                    && leptons[j].DeltaR(gen[i]) < 0.01) {
 
-                short qxq = gen[i].Charge()leptons[j].Charge(); 
+                short qxq = gen[i].Charge()*leptons[j].Charge(); 
                 muMatched = true;
 
                 histManager->Fill1DHist(qxq,
@@ -2045,7 +2045,7 @@ void fcncAnalyzer::ConversionPlots(vObj& leptons, TCPhoton& photon)
 
             histManager->SetFileNumber(0);
             histManager->SetDirectory("inclusive/" + subdir);
-            if (leptons[0]->Type() == "muon") {
+            if (leptons[0].Type() == "muon") {
                 histManager->Fill1DHist((leptons[0] + leptons[1] + photon).M(),
                         "h1_DimuonPhotonMass", "M_{#mu#mu#gamma};M_{#mu#mu#gamma};Entries / 5 GeV", 60, 0., 300.); 
                 histManager->Fill1DHist((leptons[0] + leptons[1]).DeltaR(photon),
@@ -2157,7 +2157,7 @@ void fcncAnalyzer::FakePlots(vObj& leptons, vector<TCJet>& jets, vector<TCJet>& 
                 "h2_FakeableIsoRelVsPt", "Iso_{Rel} vs p_{T} fakeables;p_{T};Iso_{Rel}", 18, 10., 100., 15, 0., 1.5);
         histManager->Fill2DHist(fakeables[0].Eta(), fakeables[0].IdMap("IsoRel"), 
                 "h2_FakeableIsoRelVsEta", "Iso_{Rel} vs #eta fakeables;#eta;Iso", 25, -2.5, 2.5, 15, 0., 1.5);
-        histManager->Fill2DHist(recoMET.Mod(), fakeables[0].IdMap("IsoRel"), 
+        histManager->Fill2DHist(recoMET->Mod(), fakeables[0].IdMap("IsoRel"), 
                 "h2_FakeableIsoRelVsMET", "Iso_{Rel} vs MET fakeables;MET;Iso_{Rel}", 28, 10., 150., 15, 0., 1.5);
         histManager->Fill2DHist(dileptonMassOS, fakeables[0].IdMap("IsoRel"),                 
                 "h2_FakeableIsoRelVsDileptonMass", "Iso_{Rel} vs M_{ll} fakeables;M_{ll};Iso_{Rel}", 28, 10., 150., 15, 0., 1.5);
@@ -2354,14 +2354,14 @@ void fcncAnalyzer::SetEventVariables(vObj& leptons, vector<TCJet>& jets, vector<
         HT      += bJets[i].Pt();
         HTs     += bJets[i].Pt();
 
-        sumP4   += *bJets[i];
+        sumP4   += bJets[i];
     }
 
     for (unsigned i = 0; i < jets.size(); ++i) {
         HT      += jets[i].Pt();
         HTs     += jets[i].Pt();
 
-        sumP4   += *jets[i];
+        sumP4   += jets[i];
     }
 
     if (evtCategory.test(3)) {
@@ -2450,8 +2450,8 @@ void fcncAnalyzer::SetEventVariables(vObj& leptons, vector<TCJet>& jets, vector<
     }
 
     MHT     = sumP4.Pt();
-    MET     = met->Mod();
-    metPhi  = met->Phi();
+    MET     = met.Mod();
+    metPhi  = met.Phi();
 
     METLD   = 0.00397*MET + 0.00265*MHT;
 }
@@ -2543,7 +2543,7 @@ float fcncAnalyzer::CalculateFourLeptonMass(vObj& leptons) {
         return (Z1 + Z2).M();
 }
 
-bool fcncAnalyzer::CosmicMuonFilter(TCPhysObject muon1, TCPhysObject muon2)
+bool fcncAnalyzer::CosmicMuonFilter(TCPhysObject& muon1, TCPhysObject& muon2)
 {
     float dimuonAngle = muon1.Angle(muon2.Vect());
     if (TMath::Pi() - dimuonAngle  < 0.05)
@@ -2614,7 +2614,7 @@ void fcncAnalyzer::PrintJetIDVars(TCJet& jet)
     cout << "CSV b-jet discriminator\t:" << jet.BDiscriminatorMap("CSV") << endl; 
 }
 
-void fcncAnalyzer::PrintMuonIDVars(TCMuon& muon, TVector3& PV)
+void fcncAnalyzer::PrintMuonIDVars(TCMuon& muon, TVector3* PV)
 {
     cout << "pt\t:"                 << muon.Pt() << endl;
     cout << "eta\t:"                << muon.Eta() << endl;

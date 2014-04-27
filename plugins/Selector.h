@@ -62,14 +62,14 @@ class Selector : public TObject {
         void    SetDataBit(bool);
 
         // Useful tools
-        bool    IsZCandidate(TCPhysObject*, TCPhysObject*, float);
+        bool    IsZCandidate(TCPhysObject&, TCPhysObject&, float);
         float*  PhotonEffectiveArea(TCPhysObject*); 
         float   LeptonEffectiveArea(TCPhysObject*); 
         bool    BTagModifier(TCJet*, string);
         float   ElectronPhoIsoHack(TCElectron*);
 
         //Get processed collections
-        vector<TVector3>       GetSelectedPVs();
+        vector<TVector3*>      GetSelectedPVs();
         vector<TCMuon>         GetSelectedMuons(string);
         vector<TCElectron>     GetSelectedElectrons(string);
         vector<TCPhoton>       GetSelectedPhotons(string);
