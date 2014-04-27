@@ -96,7 +96,7 @@ const string categoryNames[] = {
 };
 
 const unsigned short N_CUTS = 10;
-typedef vector<TCPhysObject*> vObj;
+typedef vector<TCPhysObject> vObj;
 
 class fcncAnalyzer : public TSelector {
 
@@ -251,20 +251,20 @@ class fcncAnalyzer : public TSelector {
         //virtual void    SlaveTerminate() {};
         virtual void    Terminate();
 
-        virtual bool    AnalysisSelection(vObj&, vector<TCJet*>, vector<TCJet*>, vector<TCJet*>, TVector3*, string);
-        virtual void    GetFakeBG(vObj&, vObj, vector<TCJet*>, vector<TCJet*>, vector<TCJet*>, TVector3*);
-        virtual void    DoFakes(vObj&, vObj, vector<TCJet*>, vector<TCJet*>, vector<TCJet*>, TVector3*);
+        virtual bool    AnalysisSelection(vObj&, vector<TCJet>&, vector<TCJet>&, vector<TCJet>&, TVector3&, string);
+        virtual void    GetFakeBG(vObj&, vObj, vector<TCJet>&, vector<TCJet>&, vector<TCJet>&, TVector3&);
+        virtual void    DoFakes(vObj&, vObj, vector<TCJet>&, vector<TCJet>&, vector<TCJet>&, TVector3&);
 
         //// Plot methods
-        virtual void    MakePlots(vObj&, vector<TCJet*>, vector<TCJet*>, TCMET*, TVector3*, unsigned);
+        virtual void    MakePlots(vObj&, vector<TCJet>&, vector<TCJet>&, TCMET&, TVector3&, unsigned);
         virtual void    MakeQMisIDPlots(vObj&);
-        virtual void    Make4lPlots(vObj&, TCMET*); //, vector<TCJet*>, vector<TCJet*>);
-        virtual void    LeptonPlots(vObj&, vector<TCJet*>, vector<TCJet*>, TVector3*);
-        virtual void    JetPlots(vector<TCJet*>, vector<TCJet*>);
-        virtual void    MetPlots(TCMET*, vObj);
+        virtual void    Make4lPlots(vObj&, TCMET&); //, vector<TCJet>, vector<TCJet>);
+        virtual void    LeptonPlots(vObj&, vector<TCJet>&, vector<TCJet>&, TVector3&);
+        virtual void    JetPlots(vector<TCJet>, vector<TCJet>);
+        virtual void    MetPlots(TCMET&, vObj);
         virtual void    DileptonPlots2D(vObj&);
-        virtual void    GenPlots(vector<TCGenParticle*>, vObj);
-        virtual void    FakePlots(vObj&, vector<TCJet*>, vector<TCJet*>, TVector3*);
+        virtual void    GenPlots(vector<TCGenParticle&>, vObj);
+        virtual void    FakePlots(vObj&, vector<TCJet>, vector<TCJet>, TVector3&);
         virtual void    ConversionPlots(vObj&, TCPhoton&);
         virtual void    MiscPlots();
         virtual void    FillYieldHists(string, float, unsigned);
@@ -272,20 +272,20 @@ class fcncAnalyzer : public TSelector {
         //// Set/Get methods
         virtual void    ResetGlobalVars();
         virtual void    SetEventCategory(vObj&);
-        virtual void    SetVarsMVA(vObj&, vector<TCJet*>, vector<TCJet*>);
-        virtual void    SetEventVariables(vObj&, vector<TCJet*>, vector<TCJet*>, TCMET*);
+        virtual void    SetVarsMVA(vObj&, vector<TCJet>, vector<TCJet>);
+        virtual void    SetEventVariables(vObj&, vector<TCJet>, vector<TCJet>, TCMET&);
         virtual void    SetYields(unsigned);
         virtual int     GetHistCategory(unsigned);
         virtual string  GetFakeCategory(vObj&);
 
         //// helper functions
         virtual string  str(int i) {return static_cast<ostringstream*>( &(ostringstream() << i) )->str();}
-        virtual TLorentzVector  CalculateNuP4(TLorentzVector*, TCMET*);
-        virtual float           CalculateTransMass(TCPhysObject*, TCMET*);
-        virtual bool            CosmicMuonFilter(TCPhysObject*, TCPhysObject*);
+        virtual TLorentzVector  CalculateNuP4(TLorentzVector&, TCMET&);
+        virtual float           CalculateTransMass(TCPhysObject&, TCMET&);
+        virtual bool            CosmicMuonFilter(TCPhysObject&, TCPhysObject&);
         virtual float           CalculateFourLeptonMass(vObj&);
-        virtual void            PrintJetIDVars(TCJet*);
-        virtual void            PrintMuonIDVars(TCMuon*, TVector3*);
+        virtual void            PrintJetIDVars(TCJet);
+        virtual void            PrintMuonIDVars(TCMuon&, TVector3&);
         //virtual float           CalculateChi2Mass(vObj, vObj, vObj, TCMET);
 
         ClassDef(fcncAnalyzer,0);

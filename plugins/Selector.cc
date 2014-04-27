@@ -282,7 +282,6 @@ void Selector::MuonSelector(TClonesArray* muons)
                     _selMuons["fakeable"].push_back(thisMuon);
                 }
             }
-
         } else if (thisMuon->Pt() > _muPtCuts[1]) 
             if (
                     MuonLooseID(thisMuon)
@@ -550,7 +549,11 @@ void Selector::PhotonSelector(TClonesArray* photons)
         _selPhotons["noCuts"].push_back(thisPho);
 
         // analysis photons
-        if (PhotonTightID(thisPho) && !elOverlap && !muOverlap) {
+        if (
+                PhotonTightID(thisPho) 
+                && !elOverlap 
+                && !muOverlap
+           ) {
             _selPhotons["tight_noIso"].push_back(thisPho);
             if (passIso) 
                 _selPhotons["tight"].push_back(thisPho);			
