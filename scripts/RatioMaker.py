@@ -76,7 +76,7 @@ class RatioMaker(AnalysisTools):
             if removePass:
                 h1_Denom.Add(h1_Numer, -1)
 
-            if bgSample is not '':
+            if bgSample != '':
                 self.set_category(categories[0])
                 h1_bgNumer  = self.combine_samples(value[0], bgSample) 
                 self.set_category(categories[1])
@@ -199,12 +199,13 @@ class RatioMaker(AnalysisTools):
 
                 for binX in range(nBinsX):
                     #print probs[binX], probs[0][binX]/nBinsX
-                    prob0[0][binX] = probs[0][binX]/probs[1][binX]
-                    prob0[1][binX] = 1./sqrt(probs[1][binX])
+                    if probs[1][binX] != 0:
+                        prob0[0][binX] = probs[0][binX]/probs[1][binX]
+                        prob0[1][binX] = 1./sqrt(probs[1][binX])
 
 
             #ptBins = [15., 25., 37.5, 57.5, 85., 125.]
-            ptBins = [20., 55., 110., 150.]
+            ptBins = [15., 27.5, 55., 115.]
             g_ProbB = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][:nBinsX/2]), array('f', [0.1 for bin in ptBins]), array('f', prob0[1][:nBinsX/2]))
             g_ProbB.SetName('g_QFlipB')
             g_ProbB.SetTitle('barrel electron charge flips;iPt;#varepsilon')
@@ -240,16 +241,17 @@ if __name__ == '__main__':
 
         ratioMaker = RatioMaker(inFile, outFile, scale = 19.7)
         ratioMaker.set_category('inclusive')
+        ratioMaker.get_scale_factors(['ZZ4l'], corrected = False)
 
         ratioMaker.set_ratio_1D({'mumumu':('ThirdMuonPt_AIC', 'PhotonPt_AIC_Mu3l')})
-        ratioMaker.make_1D_ratios('DATA', bgSample = '', categories = ['3l_mumumu', 'inclusive'])
+        ratioMaker.make_1D_ratios('DATA', bgSample = 'ZZ4l', categories = ['3l_mumumu', 'inclusive'])
         ratioMaker.set_ratio_1D({'emumu':('ThirdElectronPt_AIC', 'PhotonPt_AIC_Mu3l')})
-        ratioMaker.make_1D_ratios('DATA', bgSample = '', categories = ['3l_emumu', 'inclusive'])
+        ratioMaker.make_1D_ratios('DATA', bgSample = 'ZZ4l', categories = ['3l_emumu', 'inclusive'])
 
         ratioMaker.set_ratio_1D({'eemu':('ThirdMuonPt_AIC', 'PhotonPt_AIC_El3l')})
-        ratioMaker.make_1D_ratios('DATA', bgSample = '', categories = ['3l_eemu', 'inclusive'])
+        ratioMaker.make_1D_ratios('DATA', bgSample = 'ZZ4l', categories = ['3l_eemu', 'inclusive'])
         ratioMaker.set_ratio_1D({'eee':('ThirdElectronPt_AIC', 'PhotonPt_AIC_El3l')})
-        ratioMaker.make_1D_ratios('DATA', bgSample = '', categories = ['3l_eee', 'inclusive'])
+        ratioMaker.make_1D_ratios('DATA', bgSample = 'ZZ4l', categories = ['3l_eee', 'inclusive'])
 
         ratioMaker.write_outfile()
 

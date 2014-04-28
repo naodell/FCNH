@@ -861,15 +861,47 @@ bool fcncAnalyzer::Process(Long64_t entry)
                         SetEventCategory(lepPlusPhoton);
                         SetEventVariables(lepPlusPhoton, jets, bJetsM, *recoMET); 
 
-                        Float_t phoWeight = weighter->GetAICWeight(photons[0], "mumumu");
-                        evtWeight *= phoWeight;
+                        Float_t muWeight = weighter->GetAICWeight(photons[0], "mumumu");
+                        evtWeight *= muWeight;
                         histManager->SetWeight(evtWeight);
                         AnalysisSelection(lepPlusPhoton, jets, bJetsM, bJetsL, selectedVtx, "mumumuAIC");
-                        evtWeight /= phoWeight;
+                        evtWeight /= muWeight;
+
+                        lepPlusPhoton[2].SetType("electron");
+                        SetEventCategory(lepPlusPhoton);
+                        SetEventVariables(lepPlusPhoton, jets, bJetsM, *recoMET); 
+
+                        Float_t elWeight = weighter->GetAICWeight(photons[0], "emumu");
+                        evtWeight *= elWeight;
+                        histManager->SetWeight(evtWeight);
+                        AnalysisSelection(lepPlusPhoton, jets, bJetsM, bJetsL, selectedVtx, "emumuAIC");
+                        evtWeight /= elWeight;
+                    }
+                    if (leptons[0].Type() == "electron") {
+                        lepPlusPhoton[2].SetType("muon");
+                        SetEventCategory(lepPlusPhoton);
+                        SetEventVariables(lepPlusPhoton, jets, bJetsM, *recoMET); 
+
+                        Float_t muWeight = weighter->GetAICWeight(photons[0], "eemu");
+                        evtWeight *= muWeight;
+                        histManager->SetWeight(evtWeight);
+                        AnalysisSelection(lepPlusPhoton, jets, bJetsM, bJetsL, selectedVtx, "eemuAIC");
+                        evtWeight /= muWeight;
+
+                        lepPlusPhoton[2].SetType("electron");
+                        SetEventCategory(lepPlusPhoton);
+                        SetEventVariables(lepPlusPhoton, jets, bJetsM, *recoMET); 
+
+                        Float_t elWeight = weighter->GetAICWeight(photons[0], "eee");
+                        evtWeight *= elWeight;
+                        histManager->SetWeight(evtWeight);
+                        AnalysisSelection(lepPlusPhoton, jets, bJetsM, bJetsL, selectedVtx, "eeeAIC");
+                        evtWeight /= elWeight;
                     }
                 }
             }
             subdir  = suffix;
+            histManager->SetWeight(evtWeight);
         }
     } 
 
@@ -1111,16 +1143,16 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
     //!!!!!!!!!!!!!!!!!!!!!!//
 
 
-    //if ( // Problematic region for same-sign
-    //        leptons.size() == 2 
-    //        && leptons[0].Type() == leptons[1].Type() 
-    //        && (bJetsM.size() + jets.size()) == 0
-    //        && (leptons[0] + leptons[1]).M() < 30
-    //        && recoMET->Mod() < 50
-    //        //&& leptons[0].Pt() < 50
-    //        //&& fabs(leptons[0].Eta() - leptons[1].Eta()) <  1.
-    //   ) 
-    //    return true;
+    if ( // Problematic region for same-sign
+            leptons.size() == 2 
+            && leptons[0].Type() == leptons[1].Type() 
+            && (bJetsM.size() + jets.size()) == 0
+            && (leptons[0] + leptons[1]).M() < 30
+            && recoMET->Mod() < 50
+            //&& leptons[0].Pt() < 50
+            //&& fabs(leptons[0].Eta() - leptons[1].Eta()) <  1.
+       ) 
+        return true;
 
 
     // Preselection Plots
@@ -1556,7 +1588,7 @@ void fcncAnalyzer::LeptonPlots(vObj& leptons, vector<TCJet>& jets, vector<TCJet>
 
         if (fabs(trileptonP4.M() - 85.) < 15 && ossfTagged) {
             histManager->Fill1DHist(trileptonP4.M(),
-                    "h1_TrileptonMass_AIC", "M_{lll};M_{lll};Entries / 5 GeV", 60, 0., 300.);
+                    "h1_TrileptonMass_AIC", "M_{lll};M_{lll};Entries / 5 GeV", 10, 70., 110.);
             histManager->Fill1DHist(trileptonP4.Pt(),
                     "h1_TrileptonPt_AIC", "p_{T,3l};p_{T,3l};Entries / 5 GeV", 40, 0., 400.);
             if (lep3.Type() == "muon") {
@@ -2053,8 +2085,10 @@ void fcncAnalyzer::ConversionPlots(vObj& leptons, TCPhoton& photon)
                 && (leptons[0] + leptons[1]).M() < 75.
            ) {
 
+
             histManager->SetFileNumber(0);
             histManager->SetDirectory("inclusive/" + subdir);
+            histManager->SetWeight(evtWeight);
             if (leptons[0].Type() == "muon") {
                 histManager->Fill1DHist((leptons[0] + leptons[1] + photon).M(),
                         "h1_DimuonPhotonMass", "M_{#mu#mu#gamma};M_{#mu#mu#gamma};Entries / 5 GeV", 60, 0., 300.); 

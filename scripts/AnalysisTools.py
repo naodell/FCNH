@@ -137,15 +137,15 @@ class AnalysisTools():
 
                     yieldHist = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCut')
                     nInit       = yieldHist.GetBinContent(1)
+
                     if corrected:
                         nRaw        = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCutRaw').GetBinContent(6)
                         nWeighted   = yieldHist.GetBinContent(6)
 
                         nInit = nInit - (nRaw - nWeighted)
 
-                    self._scaleDict[self._period][data] = 1e3*self._scaleDict[self._period][data]/nInit 
 
-                    #print self._scaleDict[self._period][dataName],nInit
+                    self._scaleDict[self._period][dataName] = 1e3*self._scaleDict[self._period][dataName]/nInit 
 
                 else:
                     print '{0} not found in scale dictionary; setting to 0'.format(dataName)

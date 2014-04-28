@@ -50,9 +50,9 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
     // Weight files for AIC background
     TFile* f_aicFile = new TFile("../data/AIC.root", "OPEN");
     g_AIC["mumumu"] = (TGraph*)f_aicFile->Get("inclusive/g_mumumu");
-    //g_AIC["mumue"]  = (TGraph*)f_aicFile->Get("inclusive/g_mumue");
-    //g_AIC["eemu"]   = (TGraph*)f_aicFile->Get("inclusive/g_eemu");
-    //g_AIC["eee"]    = (TGraph*)f_aicFile->Get("inclusive/g_eee");
+    g_AIC["mumue"]  = (TGraph*)f_aicFile->Get("inclusive/g_mumue");
+    g_AIC["eemu"]   = (TGraph*)f_aicFile->Get("inclusive/g_eemu");
+    g_AIC["eee"]    = (TGraph*)f_aicFile->Get("inclusive/g_eee");
 }
 
 void WeightUtils::Initialize()

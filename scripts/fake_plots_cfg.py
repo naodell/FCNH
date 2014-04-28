@@ -45,8 +45,8 @@ samples = {}
 samples['inclusive']    = ['FAKES_2l', 'FAKES_3l'] # ['ZJets', 'ttbar']
 samples['ZPlusJet']     = ['FAKES_3l']
 samples['QCD2l']        = ['FAKES_2l']
-samples['2l']           = ['ZJets', 'ttbarLep', 'ttbarHad', 'Diboson', 'WbbToLNu']
-samples['3l']           = ['ZJets', 'ttbarLep', 'ttbarHad', 'WZJets3LNu', 'WbbToLNu']
+samples['2l']           = ['ZJets', 'ttbarLep', 'ttbarHad', 'Diboson', 'WJetsToLNu']
+samples['3l']           = ['ZJets', 'ttbarLep', 'ttbarHad', 'WZJets3LNu', 'WJetsToLNu']
 
 if doPlots:
 
@@ -66,7 +66,8 @@ if doPlots:
     plotter._overlayList.extend(['DATA_FAKES'])
     #plotter._overlayList.extend(['DATA_MUON'])
 
-    plotter.get_scale_factors(corrected = False)
+    plotter.get_scale_factors(addData = ['WJetsToLNu'], corrected = False)
+    print plotter._scaleDict[period]['WJetsToLNu'], plotter._scaleDict[period]['ZJets_M-50'] 
 
     plotter._directoryList1D            = ['Misc', 'Lepton']
     plotter._variableDict['Misc']       = ['bJetLooseMult', 'bJetMediumMult', 'JetMult', 
@@ -116,5 +117,5 @@ if doPlots:
             plotter.make_overlays_diff([(['PROMPT_2l', 'DATA_FAKES'], ['EleNumerPt', 'EleUnevenPtClosure']), (['PASS'],['EleNumerPt'])], 'Lepton', 'EleClosurePt') 
 
         # X-check plots
-        plotter.make_overlays_diff([(['PROMPT_3l', 'DATA_MUON'], ['MuonPt_QCD2l_tight', 'MuonPt_QCD2l_weight']), (['DATA_MUON'],['MuonPt_QCD2l_tight'])], 'Lepton', 'MuonFakePt') 
+        plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['MuonPt_QCD2l_tight', 'MuonPt_QCD2l_weight']), (['DATA'],['MuonPt_QCD2l_tight'])], 'Lepton', 'MuonFakePt') 
 

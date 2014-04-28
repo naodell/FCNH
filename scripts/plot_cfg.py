@@ -45,7 +45,7 @@ doOS        = False
 doSS        = True
 do3l        = True
 
-doYields    = False
+doYields    = True
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive']

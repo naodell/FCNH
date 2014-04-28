@@ -26,7 +26,7 @@ styleDict['ZJets_M-50']         = (0, r.kRed+1, 1, 1, 'Z+jets (M_{Z/#gamma*} > 5
 styleDict['ZJets_M-10To50']     = (0, r.kRed+2, 1, 1, 'Z+jets (M_{Z/#gamma*} < 50)')
 styleDict['ZbbToLL']            = (2, r.kRed-8, 1, 1, 'Z+bb')
 styleDict['ZG']                 = (0, r.kRed-9, 1, 1, 'Z#gamma')
-styleDict['WJets']              = (2, r.kAzure-3, 1, 1, 'W+jets')
+styleDict['WJetsToLNu']         = (2, r.kAzure-3, 1, 1, 'W+jets')
 styleDict['WbbToLNu']           = (2, r.kAzure-2, 1, 1, 'W+bb')
 styleDict['WG']                 = (0, r.kAzure-1, 1, 1, 'WG*')
 styleDict['WGStarLNu2E']        = (0, r.kAzure, 1, 1, 'WG*#ell#nu2e')
@@ -151,7 +151,7 @@ scaleDict['2011']['ZZ']                 = 0.214
 scaleDict['2011']['WZ']                 = 0.596
 scaleDict['2011']['WW']                 = 4.51
 scaleDict['2011']['GluGluWW']           = 0.1505
-scaleDict['2011']['WJets']              = 31314
+scaleDict['2011']['WJetsToLNu']         = 31314
 scaleDict['2011']['ZGToNuNu']           = 3.462
 
 scaleDict['2011']['FCNC_M125_t']        = 0.004#*20
@@ -164,7 +164,7 @@ scaleDict['2011']['Fakes']              = 1.
 scaleDict['2011']['QFlips']             = 1.
 
 ### 2012 x-sections
-scaleDict['2012']['WJets']              = 36257.2
+scaleDict['2012']['WJetsToLNu']         = 36257.2
 scaleDict['2012']['WbbToLNu']           = 39.9 
 scaleDict['2012']['WG']                 = 1000.0
 scaleDict['2012']['WGStarLNu2E']        = 5.873
@@ -220,7 +220,6 @@ scaleDict['2012']['ZZ']                 = 7.7
 scaleDict['2012']['WZ']                 = 32.3
 scaleDict['2012']['WW']                 = 54.8
 scaleDict['2012']['GluGluWW']           = 0.1505
-scaleDict['2012']['WJets']              = 31314
 scaleDict['2012']['ZGToNuNu']           = 3.462
 scaleDict['2012']['ZGstar']             = 0.5
 
@@ -259,7 +258,7 @@ combineDict = {}
 combineDict['FCNH']             = ['FCNC_M125_t', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau']
 combineDict['DATA']             = ['DATA_MUON', 'DATA_ELECTRON', 'DATA_MUEG']
 
-combineDict['VJets']            = ['ZJets_M-50', 'ZJets_M-10To50', 'WJets']
+combineDict['VJets']            = ['ZJets_M-50', 'ZJets_M-10To50', 'WJetsToLNu']
 combineDict['ZJets']            = ['ZJets_M-50', 'ZJets_M-10To50']
 combineDict['WG']               = ['WGStarLNu2Mu', 'WGStarLNu2Tau']#, 'WGStarLNu2E']
 combineDict['ttbar']            = ['ttbarHad', 'ttbarLep']
@@ -277,7 +276,7 @@ combineDict['QCD_EM']           = ['QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_E
 combineDict['higgs']            = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125']
 
 combineDict['Fakes']            = ['eFakes', 'muFakes', 'llFakes']
-combineDict['FAKES_2l']         = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarHad', 'ttbarLep', 'tbarW', 'tW', 'WbbToLNu', 'WWJets2L2Nu', 'ZZJets2L2Nu'] #, 'WJetsToLNu', 'ZZJets2L2Q']
+combineDict['FAKES_2l']         = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarHad', 'ttbarLep', 'tbarW', 'tW', 'WbbToLNu', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'WJetsToLNu'] #, 'ZZJets2L2Q']
 combineDict['FAKES_3l']         = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
 combineDict['Remove_ss']        = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarLep']#, 'tW', 'tbarW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'ZZJets2L2Q']
 combineDict['Remove_3l']        = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW']#, 'WWW', 'WWZ', 'WZZ', 'ZZZ']
