@@ -240,13 +240,13 @@ void Selector::MuonSelector(TClonesArray* muons)
 {
     for (int i = 0; i < muons->GetSize(); ++ i) {
         TCMuon* thisMuon = (TCMuon*) muons->At(i);    
+        thisMuon->SetType("muon");
 
         if (fabs(thisMuon->Eta()) > 2.4) continue;	
 
-        thisMuon->SetType("muon");
-
         // momentum scale corrections (Rochestor corrections)
         TLorentzVector tmpP4 = *thisMuon;
+
         float muPtErr = 1.;
         if (_isRealData) {
             muCorrector->momcor_data(tmpP4, (float)thisMuon->Charge(), 0, muPtErr);
@@ -436,12 +436,12 @@ void Selector::ElectronSelector(TClonesArray* electrons)
         thisElec->SetIdMap("pfPhoIso_corr", pfPhoIso_corr);
 
         //eleISO = eleISO_uncorr;
-        if (!muOverlap && ElectronLooseID(thisElec)) {
+        if (ElectronLooseID(thisElec)) {
             _selElectrons["loose_id"].push_back(*thisElec);
 
-            if (eleISO < 0.9) {
+            if (eleISO < 2.0) {
                 _selElectrons["QCD2l_CR_probe"].push_back(*thisElec);
-                if (eleISO > 0.15 && !ElectronMVA(thisElec)){
+                if (eleISO > 0.2 && !ElectronMVA(thisElec)){
                     thisElec->SetFake(true);
                     _selElectrons["fakeable"].push_back(*thisElec);
                 }
@@ -542,7 +542,7 @@ void Selector::PhotonSelector(TClonesArray* photons)
                 muOverlap = true;
 
         // photon preselection
-        if (thisPho->Pt() < _phoPtCuts[0] || fabs(thisPho->Eta()) > 2.5) continue;
+        if (thisPho->Pt() < _phoPtCuts[0] || fabs(thisPho->Eta()) > 2.4) continue;
 
         bool passIso = PhotonIsolation(thisPho);
         thisPho->SetIdMap("IsoRel", 0.01);

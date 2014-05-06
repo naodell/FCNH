@@ -50,7 +50,7 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
     // Weight files for AIC background
     TFile* f_aicFile = new TFile("../data/AIC.root", "OPEN");
     g_AIC["mumumu"] = (TGraph*)f_aicFile->Get("inclusive/g_mumumu");
-    g_AIC["mumue"]  = (TGraph*)f_aicFile->Get("inclusive/g_mumue");
+    g_AIC["emumu"]  = (TGraph*)f_aicFile->Get("inclusive/g_emumu");
     g_AIC["eemu"]   = (TGraph*)f_aicFile->Get("inclusive/g_eemu");
     g_AIC["eee"]    = (TGraph*)f_aicFile->Get("inclusive/g_eee");
 }
@@ -384,23 +384,10 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
 {
     float fakeWeight    = 1.;
     float fakeRate      = 0.;
-    float fakeError     = 0.;
-    float ptBins[]      = {10., 20., 30., 45., 60, 100.}; 
 
-    //cout << fakeable.Type() << "\t" << fakeable.Pt() << "\t";
-    unsigned iPt = 0;
-    for (unsigned j = 0; j < 6; ++j) {
-        if (fakeable.Pt() > ptBins[j] && fakeable.Pt() < ptBins[j + 1]) {
-            iPt = j+1;
-            break;
-        }
-    }
-
-    //cout << fakeable.Type() << "\t" << fakeable.Pt() << "\t";
-    float fakeablePt;  
     if (fakeable.Type() == "muon") {
         
-        fakeablePt = fakeable.Pt();
+        float fakeablePt = fakeable.Pt();
         if (fakeable.Pt() < 35) 
             fakeablePt = fakeable.Pt();
         else
@@ -408,14 +395,12 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
 
         if (fabs(fakeable.Eta()) < 1.5) {
             fakeRate  = g_MuonFakesPtB[controlRegion]->Eval(fakeablePt);
-            fakeError = g_MuonFakesPtB[controlRegion]->GetErrorY(iPt);
         } else if (fabs(fakeable.Eta()) >= 1.5) {
             fakeRate  = g_MuonFakesPtE[controlRegion]->Eval(fakeablePt);
-            fakeError = g_MuonFakesPtE[controlRegion]->GetErrorY(iPt);
         }
     } else if (fakeable.Type() == "electron") {
 
-        fakeablePt = fakeable.Pt();
+        float fakeablePt = fakeable.Pt();
         if (fakeable.Pt() < 50) 
             fakeablePt = fakeable.Pt();
         else
@@ -424,24 +409,14 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
 
         if (fabs(fakeable.Eta()) < 0.8) {
             fakeRate  = g_ElectronFakesPtB[controlRegion]->Eval(fakeablePt);
-            fakeError = g_ElectronFakesPtB[controlRegion]->GetErrorY(iPt);
         } else if (fabs(fakeable.Eta()) >= 0.8 && fabs(fakeable.Eta()) < 1.479) {
             fakeRate  = g_ElectronFakesPtG[controlRegion]->Eval(fakeablePt);
-            fakeError = g_ElectronFakesPtG[controlRegion]->GetErrorY(iPt);
         } else if (fabs(fakeable.Eta()) >= 1.479) {
             fakeRate  = g_ElectronFakesPtE[controlRegion]->Eval(fakeablePt);
-            fakeError = g_ElectronFakesPtE[controlRegion]->GetErrorY(iPt);
         }
     }
     fakeWeight = fakeRate / (1 - fakeRate);
     //cout << fakeable.Type() << ", " << fakeRate << ", " << fakeWeight << endl;
-
-    if (fakeError >= 0.) 
-        _fakeWeightErr = fakeError*(sqrt(1 - 2*fakeRate + 2*pow(fakeRate, 2))/pow(1 - fakeRate, 2));
-    else 
-        _fakeWeightErr = 0.;
-
-    //cout << "\n\t" << fakeWeight << endl;
 
     return fakeWeight;
 }
@@ -475,12 +450,14 @@ float WeightUtils::GetAICWeight(const TCPhoton& photon, const string& type)
     float aicWeight = 1.;
     float photonPt;
 
-    if (photon.Pt() < 50.)
+    if (photon.Pt() < 45.)
         photonPt = photon.Pt();
     else 
-        photonPt = 50.;
+        photonPt = 45.;
 
     aicWeight = g_AIC[type]->Eval(photonPt);
+
+    //cout << type << ": " << photonPt << ", " << aicWeight << endl;
 
     return aicWeight;
 }

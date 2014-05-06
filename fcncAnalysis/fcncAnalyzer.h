@@ -126,6 +126,7 @@ class fcncAnalyzer : public TSelector {
         bool ossfTagged;
         string subdir;
 
+        TVector3*       selectedVtx;
         TLorentzVector  dileptonP4;
         TCPhysObject    lep1, lep2, lep3; // If event is zTagged, lep1 and lep2 are associated to the z
 
@@ -251,20 +252,21 @@ class fcncAnalyzer : public TSelector {
         //virtual void    SlaveTerminate() {};
         virtual void    Terminate();
 
-        virtual bool    AnalysisSelection(vObj&, vector<TCJet>&, vector<TCJet>&, vector<TCJet>&, TVector3*, string);
-        virtual void    GetFakeBG(vObj&, vObj&, vector<TCJet>&, vector<TCJet>&, vector<TCJet>&, TVector3*);
-        virtual void    DoFakes(vObj&, vObj&, vector<TCJet>&, vector<TCJet>&, vector<TCJet>&, TVector3*);
+        virtual bool    AnalysisSelection(vObj&, vector<TCJet>&, vector<TCJet>&, vector<TCJet>&, string);
+        virtual void    GetFakeBG(vObj&, vObj&, vector<TCJet>&, vector<TCJet>&, vector<TCJet>&);
+        virtual void    DoFakes(vObj&, vObj&, vector<TCJet>&, vector<TCJet>&, vector<TCJet>&);
+        virtual void    DoAICBG(vObj&, TCPhoton&, vector<TCJet>&, vector<TCJet>&, vector<TCJet>&, const string);
 
         //// Plot methods
-        virtual void    MakePlots(vObj&, vector<TCJet>&, vector<TCJet>&, TCMET&, TVector3*, unsigned);
+        virtual void    MakePlots(vObj&, vector<TCJet>&, vector<TCJet>&, TCMET&, unsigned);
         virtual void    MakeQMisIDPlots(vObj&, vector<TCGenParticle>&);
         virtual void    Make4lPlots(vObj&, TCMET&); //, vector<TCJet>, vector<TCJet>);
-        virtual void    LeptonPlots(vObj&, vector<TCJet>&, vector<TCJet>&, TVector3*);
+        virtual void    LeptonPlots(vObj&, vector<TCJet>&, vector<TCJet>&);
         virtual void    JetPlots(vector<TCJet>&, vector<TCJet>&);
         virtual void    MetPlots(TCMET&, vObj&);
         virtual void    DileptonPlots2D(vObj&);
         virtual void    GenPlots(vector<TCGenParticle>&, vObj&);
-        virtual void    FakePlots(vObj&, vector<TCJet>&, vector<TCJet>&, TVector3*);
+        virtual void    FakePlots(vObj&, vector<TCJet>&, vector<TCJet>&);
         virtual void    ConversionPlots(vObj&, TCPhoton&);
         virtual void    MiscPlots();
         virtual void    FillYieldHists(string, float, unsigned);
@@ -285,7 +287,7 @@ class fcncAnalyzer : public TSelector {
         virtual bool            CosmicMuonFilter(TCPhysObject&, TCPhysObject&);
         virtual float           CalculateFourLeptonMass(vObj&);
         virtual void            PrintJetIDVars(TCJet&);
-        virtual void            PrintMuonIDVars(TCMuon&, TVector3*);
+        virtual void            PrintMuonIDVars(TCMuon&);
         //virtual float           CalculateChi2Mass(vObj, vObj, vObj, TCMET);
 
         ClassDef(fcncAnalyzer,0);

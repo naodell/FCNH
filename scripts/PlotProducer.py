@@ -192,6 +192,27 @@ class PlotProducer(AnalysisTools):
         return hStack
 
 
+    def get_difference(self, hist1, hist2):
+        '''
+        Makes a difference of two histograms.
+        '''
+
+        nBins = hist1.GetNbinsX()
+        xAxisName = hist1.GetXaxis().GetTitle()
+        hDiff = r.TH1D('hDiff', ';{0};Data/BG'.format(xAxisName), nBins, hist1.GetBinLowEdge(1), hist1.GetBinLowEdge(nBins + 1))
+        hDiff.Add(hist1, hist2, -1.)
+
+        set_hist_style(hDiff, 'RATIO', self._styleDict)
+        prep_hist(hDiff, (0, 2.499))
+
+        ### a fudge to get labels for category hists
+        if hist1.GetName() in ['h1_LeptonFlavor', 'h1_LeptonCharge']:
+            hDiff.GetXaxis().SetLabelSize(0.15);
+            for i in range(nBins):
+                hDiff.GetXaxis().SetBinLabel(i+1, hist1.GetXaxis().GetBinLabel(i+1))
+        ###
+        
+        return hDiff
 
     def get_ratio(self, hist1, hist2):
         '''
@@ -486,7 +507,7 @@ class PlotProducer(AnalysisTools):
 
                 canvas.SaveAs(self._savePath + '/' + self._category + '/' + directory + '/' + var + self._plotType)
 
-    def make_overlays_1D(self, logScale = False, doRatio = True, doEff = False):
+    def make_overlays_1D(self, logScale = False, doRatio = True, doEff = False, doDiff = False):
         '''
         Process to produce overlays and stacks from 1D histograms.
         '''
@@ -495,7 +516,7 @@ class PlotProducer(AnalysisTools):
         ### if doing complimentary plotting
         canvas = r.TCanvas('canvas', 'canvas', 650, 700)
 
-        if (doRatio or doEff):
+        if (doRatio or doEff or doDiff):
             pad1 = r.TPad('pad1', '', 0.02, 0.35, 0.89, 0.98, 0)
             pad2 = r.TPad('pad2', '', 0.02, 0.02, 0.89, 0.35, 0)
 
@@ -590,7 +611,14 @@ class PlotProducer(AnalysisTools):
 
                 textBox.Draw('same')
 
-                delEffHists = False
+                if doDiff:
+                    doRatio = False
+                    doEff   = False
+                    pad2.cd()
+                    hDiff = hists[var][0][0].Clone()
+                    hDiff.Add(sums[var], -1.)
+                    hDiff.Draw("E2")
+
                 if doRatio and not doEff:
                     pad2.cd()
                     hRatio = self.get_ratio(hists[var][0][0], sums[var])
@@ -652,6 +680,8 @@ class PlotProducer(AnalysisTools):
 
                 canvas.SaveAs(self._savePath + '/' + self._category + '/' + directory + '/' + var + self._plotType)
 
+                if doDiff:
+                    hDiff.Delete()
                 if doRatio:
                     hRatio.Delete()
 

@@ -74,14 +74,13 @@ class fakeAnalyzer : public TSelector {
         string  selection;
         string  period;
 
-        string  crType;
         bool    zTagged;
         bool    ossfTagged;
-        bool    isTP;
 
-        TVector3*      selectedVtx;
-        TLorentzVector ZP4;
-        TCPhysObject   tag, lep1, lep2, lep3;
+        TVector3*       selectedVtx;
+        TLorentzVector  ZP4;
+        TCPhysObject    tag, lep1, lep2, lep3;
+        vector<TCJet>   jets;
 
         Float_t dileptonMass;
 
@@ -174,10 +173,11 @@ class fakeAnalyzer : public TSelector {
         virtual void    FillDenominatorHists(string, TCPhysObject&);
         virtual void    FillNumeratorHists(string, TCPhysObject&);
         virtual void    FillClosureHists(string, TCPhysObject&);
-        virtual void    FillJetFlavorHists(string, TCPhysObject&, vector<TCJet>&);
+        virtual void    FillJetFlavorHists(string, TCPhysObject&);
         virtual void    DoZTag(vObj&);
         virtual bool    CheckQCD2lCR(vector<TCJet>&, TCPhysObject&);
         virtual bool    CheckZPlusJetCR(TCPhysObject&);
+        virtual void    FakeCR(vector<TCMuon>&, vector<TCElectron>&, vector<TCGenParticle>&);
 
         virtual string  str(int i) {return static_cast<ostringstream*>( &(ostringstream() << i) )->str();}
 

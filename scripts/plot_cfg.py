@@ -28,13 +28,13 @@ cutList     = ['1_preselection']
 cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.'])#, '5_BDT'])
 #cutList.extend(['.', '.', '.', 'X_0jet', 'X_1jet'])
 
-crList      = ['CR_WZ', 'CR_ttbar', 'CR_ZFake']
+crList      = []#'CR_WZ', 'CR_ttbar', 'CR_ZFake']
 
 period      = '2012'
 LUMIDATA    = 19.712 
 
 doPlots     = True
-doLog       = True
+doLog       = False
 doEff       = False
 doRatio     = True
 doNorm      = True
@@ -45,7 +45,7 @@ doOS        = False
 doSS        = True
 do3l        = True
 
-doYields    = True
+doYields    = False
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive']
@@ -88,25 +88,32 @@ samples['3l_inclusive'].append('ttV')
 samples['3l_inclusive'].append('ZZ4l')
 #samples['3l_inclusive'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
 samples['3l_inclusive'].append('WZJets3LNu')
+samples['3l_inclusive'].append('Fakes')
+samples['3l_inclusive'].append('AIC')
 
-## eee
+### eee
 samples['3l_eee'].extend(samples['3l_inclusive'])
-samples['3l_eee'].extend(['eFakes', 'llFakes'])
-
-## eemu
+#samples['3l_eee'].extend(['eFakes', 'llFakes'])
+#samples['3l_eee'].append('eeeAIC')
+#
+### eemu
 samples['3l_eemu'].extend(samples['3l_inclusive'])
-samples['3l_eemu'].extend(['eFakes', 'muFakes', 'llFakes'])
-
-## emumu
+#samples['3l_eemu'].extend(['eFakes', 'muFakes', 'llFakes'])
+#samples['3l_eemu'].append('eemuAIC')
+#
+### emumu
 samples['3l_emumu'].extend(samples['3l_inclusive'])
-samples['3l_emumu'].extend(['eFakes', 'muFakes', 'llFakes'])
-
-## mumumu
+#samples['3l_emumu'].extend(['eFakes', 'muFakes', 'llFakes'])
+#samples['3l_emumu'].append('emumuAIC')
+#
+### mumumu
 samples['3l_mumumu'].extend(samples['3l_inclusive'])
-samples['3l_mumumu'].extend(['muFakes', 'llFakes'])
+#samples['3l_mumumu'].extend(['muFakes', 'llFakes'])
+#samples['3l_mumumu'].append('mumumuAIC')
 
 ## inclusive
-samples['3l_inclusive'].append('Fakes')
+#samples['3l_inclusive'].append('Fakes')
+#samples['3l_inclusive'].append('AIC')
 
 #samples['3l'].append('top')
 #samples['3l'].append('ZJets')
@@ -122,24 +129,24 @@ samples['ss_inclusive'].append('ttV')
 samples['ss_inclusive'].append('ZZ4l')
 #samples['ss_inclusive'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
 samples['ss_inclusive'].append('WZJets3LNu')
-#samples['ss_inclusive'].append('WG')
+samples['ss_inclusive'].append('Fakes')
 
 ## dielectrons
 samples['ss_ee'].extend(samples['ss_inclusive'])
 samples['ss_ee'].append('QFlips')
-samples['ss_ee'].extend(['eFakes', 'llFakes'])
+#samples['ss_ee'].extend(['eFakes', 'llFakes'])
 
 ## electron+muon
 samples['ss_emu'].extend(samples['ss_inclusive'])
 samples['ss_emu'].append('QFlips')
-samples['ss_emu'].extend(['eFakes', 'muFakes', 'llFakes'])
+#samples['ss_emu'].extend(['eFakes', 'muFakes', 'llFakes'])
 
 ## dimuons
 samples['ss_mumu'].extend(samples['ss_inclusive'])
-samples['ss_mumu'].extend(['muFakes', 'llFakes'])
+#samples['ss_mumu'].extend(['muFakes', 'llFakes'])
 
 ## inclusive
-samples['ss_inclusive'].append('Fakes')
+#samples['ss_inclusive'].append('Fakes')
 samples['ss_inclusive'].append('QFlips')
 
 ## geometric categories

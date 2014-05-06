@@ -5,7 +5,7 @@ import subprocess
 import ROOT as r
 
 def make_graph_ratio_1D(outName, h1_Numer, h1_Denom):
-    ### Mostly useful for 1D efficiencies 
+    ### Mostly useful for 1D efficiencies ###
 
     g_Eff = r.TGraphAsymmErrors()
     g_Eff.Divide(h1_Numer, h1_Denom)
@@ -20,8 +20,20 @@ def make_graph_ratio_2D(outName, h2_Numer, h2_Denom):
 
     gList = []
     for i in range(h2_Numer.GetYaxis().GetNbins()):
+        h1_Numer = h2_Numer.ProjectionX('h_Numer_{0}_{1}'.format(outName, i+1), i, i+1)
+        h1_Denom = h2_Denom.ProjectionX('h_Denom_{0}_{1}'.format(outName, i+1), i, i+1)
+
+        for j in range(h1_Numer.GetNbinsX()):
+            numerContent = h1_Numer.GetBinContent(j+1)
+            if numerContent < 0:
+                h1_Numer.SetBinContent(i+1, 0.)
+
+            denomContent = h1_Denom.GetBinContent(j+1)
+            if denomContent < 0:
+                h1_Denom.SetBinContent(i+1, 0.)
+
         gList.append(r.TGraphAsymmErrors())
-        gList[i].Divide(h2_Numer.ProjectionX('h_Numer_{0}_{1}'.format(outName, i+1), i, i+1), h2_Denom.ProjectionX('h_Denom_{0}_{1}'.format(outName, i+1), i, i+1))
+        gList[i].Divide(h1_Numer, h1_Denom)
         gList[i].SetName('g_{0}_{1}'.format(outName, i+1))
         gList[i].SetTitle('{0}_{1};{2};#varepsilon'.format(outName, i+1, h2_Numer.GetXaxis().GetTitle()))
 
@@ -57,7 +69,7 @@ class RatioMaker(AnalysisTools):
             self._outFile.cd(self._category)
 
                 
-    def make_1D_ratios(self, ratioSample, bgSample = '', categories = [], removePass = False): 
+    def make_1D_ratios(self, ratioSample, bgSample = '', categories = []):
         ### make ratios for all variables specified in ratioDict1D.  Sample
         ### combinations should be specified in combineDict in parameters.py.
         ### bgSample is subtracted off of the inputs for the ratio.
@@ -73,8 +85,10 @@ class RatioMaker(AnalysisTools):
             self.set_category(categories[1])
             h1_Denom    = self.combine_samples(value[1], ratioSample) 
 
-            if removePass:
-                h1_Denom.Add(h1_Numer, -1)
+            #h1_Numer.SetName('h1_Numer_{0}'.format(categories[0]))
+            #self._outFile.GetDirectory(self._category).Add(h1_Numer)
+            #h1_Denom.SetName('h1_Denom_{0}'.format(categories[0]))
+            #self._outFile.GetDirectory(self._category).Add(h1_Denom)
 
             if bgSample != '':
                 self.set_category(categories[0])
@@ -82,15 +96,22 @@ class RatioMaker(AnalysisTools):
                 self.set_category(categories[1])
                 h1_bgDenom  = self.combine_samples(value[1], bgSample) 
 
-                if removePass:
-                    h1_bgDenom.Add(h1_bgNumer, -1)
+                #h1_bgNumer.SetName('h1_bgNumer_{0}'.format(categories[0]))
+                #self._outFile.GetDirectory(self._category).Add(h1_bgNumer)
+                #h1_bgDenom.SetName('h1_bgDenom_{0}'.format(categories[0]))
+                #self._outFile.GetDirectory(self._category).Add(h1_bgDenom)
 
-                h1_Numer.Add(h1_bgNumer, -1)
-                h1_Denom.Add(h1_bgDenom, -1)
+                h1_Numer.Add(h1_bgNumer, -1.)
+                h1_Denom.Add(h1_bgDenom, -1.)
 
-            g_Ratio = make_graph_ratio_1D(key, h1_Numer, h1_Denom)
+            # Make sure there are no negative weighted histogram bins
+            for i in range(h1_Numer.GetNbinsX()):
+                binContent = h1_Numer.GetBinContent(i+1),
+                if binContent[0] < 0.:
+                    h1_Numer.SetBinContent(i+1,0.)
 
-            self._outFile.GetDirectory(self._category).Add(g_Ratio)
+        g_Ratio = make_graph_ratio_1D(key, h1_Numer, h1_Denom)
+        self._outFile.GetDirectory(self._category).Add(g_Ratio)
 
 
     def make_2D_ratios(self, ratioSample, bgSample = '', doProjections = True): 
@@ -224,39 +245,45 @@ if __name__ == '__main__':
     r.gStyle.SetOptStat(0)
 
     if len(sys.argv) > 1:
-        batch = sys.argv[1]
+        type    = sys.argv[1]
+        batch   = sys.argv[2]
     else:
-        print 'A batch must specified.  Otherwise, do some hacking so this thing knows about your inputs.'
+        print 'A batch and ratio type must be specified.  Otherwise, do some hacking so this thing knows about your inputs.'
         exit()
 
-    doQFlips    = False
-    doFakes     = False
-    doAIC       = True
-    doMetFake   = False
-
     ### For AIC rates ###
-    if doAIC:
+    if type == 'AIC':
         inFile  = 'fcncAnalysis/combined_histos/fcnh_cut1_2012_{0}.root'.format(batch)
         outFile = 'data/AIC_TEST.root'
 
         ratioMaker = RatioMaker(inFile, outFile, scale = 19.7)
         ratioMaker.set_category('inclusive')
-        ratioMaker.get_scale_factors(['ZZ4l'], corrected = False)
+        ratioMaker.get_scale_factors(['AIC_BG'], corrected = False)
 
         ratioMaker.set_ratio_1D({'mumumu':('ThirdMuonPt_AIC', 'PhotonPt_AIC_Mu3l')})
-        ratioMaker.make_1D_ratios('DATA', bgSample = 'ZZ4l', categories = ['3l_mumumu', 'inclusive'])
+        ratioMaker.make_1D_ratios('DATA', bgSample = 'AIC_BG', categories = ['3l_mumumu', 'inclusive'])
         ratioMaker.set_ratio_1D({'emumu':('ThirdElectronPt_AIC', 'PhotonPt_AIC_Mu3l')})
-        ratioMaker.make_1D_ratios('DATA', bgSample = 'ZZ4l', categories = ['3l_emumu', 'inclusive'])
+        ratioMaker.make_1D_ratios('DATA', bgSample = 'AIC_BG', categories = ['3l_emumu', 'inclusive'])
 
         ratioMaker.set_ratio_1D({'eemu':('ThirdMuonPt_AIC', 'PhotonPt_AIC_El3l')})
-        ratioMaker.make_1D_ratios('DATA', bgSample = 'ZZ4l', categories = ['3l_eemu', 'inclusive'])
+        ratioMaker.make_1D_ratios('DATA', bgSample = 'AIC_BG', categories = ['3l_eemu', 'inclusive'])
         ratioMaker.set_ratio_1D({'eee':('ThirdElectronPt_AIC', 'PhotonPt_AIC_El3l')})
-        ratioMaker.make_1D_ratios('DATA', bgSample = 'ZZ4l', categories = ['3l_eee', 'inclusive'])
+        ratioMaker.make_1D_ratios('DATA', bgSample = 'AIC_BG', categories = ['3l_eee', 'inclusive'])
+
+        #ratioMaker.set_ratio_1D({'mumumu':('TrileptonMass_AIC', 'DimuonPhotonMass_AIC')})
+        #ratioMaker.make_1D_ratios('DATA', bgSample = 'AIC_BG', categories = ['3l_mumumu', 'inclusive'])
+        #ratioMaker.set_ratio_1D({'emumu':('TrileptonMass_AIC', 'DimuonPhotonMass_AIC')})
+        #ratioMaker.make_1D_ratios('DATA', bgSample = 'AIC_BG', categories = ['3l_emumu', 'inclusive'])
+
+        #ratioMaker.set_ratio_1D({'eemu':('TrileptonMass_AIC', 'DimuonPhotonMass_AIC')})
+        #ratioMaker.make_1D_ratios('DATA', bgSample = 'AIC_BG', categories = ['3l_eemu', 'inclusive'])
+        #ratioMaker.set_ratio_1D({'eee':('TrileptonMass_AIC', 'DimuonPhotonMass_AIC')})
+        #ratioMaker.make_1D_ratios('DATA', bgSample = 'AIC_BG', categories = ['3l_eee', 'inclusive'])
 
         ratioMaker.write_outfile()
 
     ### For electron charge misID efficiencies ###
-    if doQFlips:
+    if type == 'QFlips':
         inFile  = 'fcncAnalysis/combined_histos/fcnh_cut1_2012_{0}.root'.format(batch)
         outFile = 'data/eleQMisID_TEST.root'
 
@@ -277,7 +304,7 @@ if __name__ == '__main__':
 
     ### For lepton fake rate measurement ###
 
-    if doFakes:
+    if type == 'Fakes':
         inFile  = 'fakeEstimator/histos/{0}.root'.format(batch)
         outFile = 'data/fakeRates_TEST.root'
 
@@ -324,7 +351,7 @@ if __name__ == '__main__':
 
         # ttH fake rate estimation using low/high met categories
 
-        if doMetFake:
+        if type == 'MetFake':
             ratioMaker.set_category('TEST')
             ratioMaker.make_category_directory()
 

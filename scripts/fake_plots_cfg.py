@@ -45,8 +45,8 @@ samples = {}
 samples['inclusive']    = ['FAKES_2l', 'FAKES_3l'] # ['ZJets', 'ttbar']
 samples['ZPlusJet']     = ['FAKES_3l']
 samples['QCD2l']        = ['FAKES_2l']
-samples['2l']           = ['ZJets', 'ttbarLep', 'ttbarHad', 'Diboson', 'WJetsToLNu']
-samples['3l']           = ['ZJets', 'ttbarLep', 'ttbarHad', 'WZJets3LNu', 'WJetsToLNu']
+samples['2l']           = ['ZJets', 'ttbarLep', 'ttbarHad', 'Diboson', 'WbbToLNu'] #'WJetsToLNu']
+samples['3l']           = ['ZJets', 'ttbarLep', 'ttbarHad', 'WZJets3LNu', 'WbbToLNu'] #'WJetsToLNu']
 
 if doPlots:
 
@@ -66,8 +66,7 @@ if doPlots:
     plotter._overlayList.extend(['DATA_FAKES'])
     #plotter._overlayList.extend(['DATA_MUON'])
 
-    plotter.get_scale_factors(addData = ['WJetsToLNu'], corrected = False)
-    print plotter._scaleDict[period]['WJetsToLNu'], plotter._scaleDict[period]['ZJets_M-50'] 
+    plotter.get_scale_factors(addData = [], corrected = False)
 
     plotter._directoryList1D            = ['Misc', 'Lepton']
     plotter._variableDict['Misc']       = ['bJetLooseMult', 'bJetMediumMult', 'JetMult', 
@@ -118,4 +117,12 @@ if doPlots:
 
         # X-check plots
         plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['MuonPt_QCD2l_tight', 'MuonPt_QCD2l_weight']), (['DATA'],['MuonPt_QCD2l_tight'])], 'Lepton', 'MuonFakePt') 
+        plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['MuonEta_QCD2l_tight', 'MuonEta_QCD2l_weight']), (['DATA'],['MuonEta_QCD2l_tight'])], 'Lepton', 'MuonFakeEta') 
+        plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['MuonMet_QCD2l_tight', 'MuonMet_QCD2l_weight']), (['DATA'],['MuonMet_QCD2l_tight'])], 'Lepton', 'MuonFakeMet') 
+        plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['MuonJetMult_QCD2l_tight', 'MuonJetMult_QCD2l_weight']), (['DATA'],['MuonJetMult_QCD2l_tight'])], 'Lepton', 'MuonFakeJetMult') 
+
+        plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['ElectronPt_QCD2l_tight', 'ElectronPt_QCD2l_weight']), (['DATA'],['ElectronPt_QCD2l_tight'])], 'Lepton', 'ElectronFakePt') 
+        plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['ElectronEta_QCD2l_tight', 'ElectronEta_QCD2l_weight']), (['DATA'],['ElectronEta_QCD2l_tight'])], 'Lepton', 'ElectronFakeEta') 
+        plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['ElectronMet_QCD2l_tight', 'ElectronMet_QCD2l_weight']), (['DATA'],['ElectronMet_QCD2l_tight'])], 'Lepton', 'ElectronFakeMet') 
+        plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['ElectronJetMult_QCD2l_tight', 'ElectronJetMult_QCD2l_weight']), (['DATA'],['ElectronJetMult_QCD2l_tight'])], 'Lepton', 'ElectronFakeJetMul') 
 
