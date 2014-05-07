@@ -391,11 +391,18 @@ class PlotProducer(AnalysisTools):
         tmpHists = {}
         legend = build_legend(tmpHists, list(set(dataNames)), self._styleDict)
 
+        # Get maximum
+        max = 0.
+        for (hist, opt) in histList:
+            histMax = hist.GetMaximum()
+            if histMax > max:
+                max = histMax
+
         pad1.cd()
         isBlank = True
         for (hist, opt) in histList:
             if isBlank:
-                hist.SetMaximum(hist.GetMaximum()*1.2)
+                hist.SetMaximum(max*1.25)
                 hist.Draw(opt)
 
                 if hist.GetYaxis():

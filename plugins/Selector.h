@@ -66,7 +66,7 @@ class Selector : public TObject {
         float*  PhotonEffectiveArea(TCPhysObject*); 
         float   LeptonEffectiveArea(TCPhysObject*); 
         bool    BTagModifier(TCJet*, string);
-        float   ElectronPhoIsoHack(TCElectron*);
+        float   ElectronPhoIsoHack(TCElectron&);
 
         //Get processed collections
         vector<TVector3*>      GetSelectedPVs();

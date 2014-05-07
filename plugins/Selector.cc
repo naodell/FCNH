@@ -269,7 +269,7 @@ void Selector::MuonSelector(TClonesArray* muons)
                     && muISO > 0.2
                ) {
                 _selMuons["QCD2l_CR_tag"].push_back(*thisMuon);
-            } else  if (MuonTightID(thisMuon) && muISO < 0.6)
+            } else if (MuonTightID(thisMuon) && muISO < 0.6 && !(muISO > 0.12 && muISO < 0.2))
                 _selMuons["QCD2l_CR_probe"].push_back(*thisMuon);
 
             // analysis lepton selection
@@ -425,7 +425,7 @@ void Selector::ElectronSelector(TClonesArray* electrons)
                 || fabs(thisElec->Dxy(_selVertices[0])) > 0.015
            ) continue;
 
-        float pfPhoIso_corr = ElectronPhoIsoHack(thisElec);
+        float pfPhoIso_corr = ElectronPhoIsoHack(*thisElec);
         float eleISO = (thisElec->PfIsoCharged() + max(0.,(double)thisElec->PfIsoNeutral() 
                     + pfPhoIso_corr - _rho*thisElec->EffArea()))/thisElec->Pt();
         float eleISO_uncorr = (thisElec->PfIsoCharged() + max(0.,(double)thisElec->PfIsoNeutral() 
@@ -439,7 +439,7 @@ void Selector::ElectronSelector(TClonesArray* electrons)
         if (ElectronLooseID(thisElec)) {
             _selElectrons["loose_id"].push_back(*thisElec);
 
-            if (eleISO < 2.0) {
+            if (eleISO < 0.9 && !(eleISO > 0.15 && eleISO < 0.2)) {
                 _selElectrons["QCD2l_CR_probe"].push_back(*thisElec);
                 if (eleISO > 0.2 && !ElectronMVA(thisElec)){
                     thisElec->SetFake(true);
@@ -816,13 +816,13 @@ void Selector::GenJetSelector(TClonesArray* genJets)
 // Electron isolation hack //
 /////////////////////////////
 
-float Selector::ElectronPhoIsoHack(TCElectron *electron)
+float Selector::ElectronPhoIsoHack(TCElectron& electron)
 {
-    float pfPhoIso = electron->PfIsoPhoton();
-    if ((pfPhoIso)/electron->Pt() > 0.6) {
+    float pfPhoIso = electron.PfIsoPhoton();
+    if (fabs(pfPhoIso - electron.Pt())/electron.Pt() < 0.2) {
         for (unsigned i = 0; i < _selPhotons["noCuts"].size(); ++i) {
             TCPhoton* photon = &_selPhotons["noCuts"][i];
-            if (electron->DeltaR(*photon) < 0.1 && fabs(electron->Pt()/photon->Pt() - 1) < 0.35) {
+            if (electron.DeltaR(*photon) < 0.15 && fabs(electron.Pt()/photon->Pt() - 1) < 0.3) {
                 pfPhoIso = max(0., double(pfPhoIso - photon->Pt()));
             }
         }

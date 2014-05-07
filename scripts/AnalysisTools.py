@@ -170,10 +170,14 @@ class AnalysisTools():
             #print self._category, dataName, histogramName
             return None
 
-        hist = self._histFile.GetDirectory(self._category + '/' + dataName).Get(histogramName)
+        # Get clone of histogram stored in root file
+        inHist = self._histFile.GetDirectory(self._category + '/' + dataName).Get(histogramName)
 
-        if not hist:
+        if not inHist:
             return None
+        else:
+            hist = inHist.Clone()
+
 
         if self._category in systematics:
             if dataName == 'QFlips':

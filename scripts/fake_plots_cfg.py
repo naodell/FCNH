@@ -33,12 +33,7 @@ doEff       = False
 doRatio     = False
 
 ### Categories to be plotted ###
-catList = [
-           'inclusive', '2l', '3l',
-           'QCD2l_inclusive', 'ZPlusJet_inclusive' 
-           #'QCD2l_low_met', 'QCD2l_high_met', 
-           #'ZPlusJet_low_met', 'ZPlusJet_high_met'
-           ]
+catList = ['inclusive', '2l', '3l', 'QCD2l_inclusive', 'ZPlusJet_inclusive']
 
 ### Samples to be included in stacks ###
 samples = {}
@@ -68,16 +63,16 @@ if doPlots:
 
     plotter.get_scale_factors(addData = [], corrected = False)
 
-    plotter._directoryList1D            = ['Misc', 'Lepton']
-    plotter._variableDict['Misc']       = ['bJetLooseMult', 'bJetMediumMult', 'JetMult', 
-                                            'TagProbeDeltaPhi', 'TagProbePtBalance', 'TagEleProbeMass', 'TagMuProbeMass',
-                                            'MuonIso_1', 'MuonIso_2', 'MuonIso_3', 
-                                            'MuonIsoRel_Iso', 'MuonIsoRel_AntiIso',
-                                            'MuonPt_Iso', 'MuonPt_AntiIso',
-                                            'ElectronIso_1', 'ElectronIso_2', 'ElectronIso_3', 
-                                            'ElectronIsoRel_Iso', 'ElectronIsoRel_AntiIso',
-                                            'ElectronPt_Iso', 'ElectronPt_AntiIso',
-                                            'Met']
+    plotter._directoryList1D            = ['Misc', 'Lepton']#, 'CR']
+    plotter._variableDict['Misc']       = ['bJetLooseMult', 'bJetMediumMult', 'JetMult', 'Met',
+                                           'TagProbeDeltaPhi', 'TagProbePtBalance', 
+                                           'MuonIso_1', 'MuonIso_2', 'MuonIso_3',
+                                           'MuonIsoRel_Iso', 'MuonIsoRel_AntiIso'
+                                           'MuonPt_Iso', 'MuonPt_AntiIso',
+                                           'ElectronIso_1', 'ElectronIso_2', 'ElectronIso_3',
+                                           'ElectronIsoRel_Iso', 'ElectronIsoRel_AntiIso',
+                                           'ElectronPt_Iso', 'ElectronPt_AntiIso'
+                                           'TagEleProbeMass', 'TagMuProbeMass']
 
     plotter._variableDict['Lepton']     = ['MuPassLepPt', 'MuPassLepEta', 
                                            'MuProbeLepPt', 'MuProbeLepEta', 
@@ -92,6 +87,13 @@ if doPlots:
                                            'EleDenomMet', 'EleNumerMet', 
                                            'EleDenomIsoRel', 'EleNumerIsoRel',
                                            'TagLepPt', 'TagLepEta', 'TagIsoRel', 'TagDz', 'TagDxy'] 
+
+    #plotter._variableDict['CR']         = ['MuonIso_1', 'MuonIso_2', 'MuonIso_3', 
+    #                                       'MuonIsoRel_Iso', 'MuonIsoRel_AntiIso',
+    #                                       'MuonPt_Iso', 'MuonPt_AntiIso',
+    #                                       'ElectronIso_1', 'ElectronIso_2', 'ElectronIso_3', 
+    #                                       'ElectronIsoRel_Iso', 'ElectronIsoRel_AntiIso',
+    #                                       'ElectronPt_Iso', 'ElectronPt_AntiIso']
 
 
      ###################   
@@ -111,18 +113,22 @@ if doPlots:
         plotter.make_overlays_1D(logScale = doLog, doRatio = doRatio, doEff = doEff)
 
         # Closure plots
-        if category in ['QCD2l_inclusive', 'ZPlusJet_inclusive']:
-            plotter.make_overlays_diff([(['PROMPT_2l', 'DATA_FAKES'], ['MuNumerPt', 'MuUnevenPtClosure']), (['PASS'],['MuNumerPt'])], 'Lepton', 'MuClosurePt') 
-            plotter.make_overlays_diff([(['PROMPT_2l', 'DATA_FAKES'], ['EleNumerPt', 'EleUnevenPtClosure']), (['PASS'],['EleNumerPt'])], 'Lepton', 'EleClosurePt') 
+        if category is 'QCD2l_inclusive':
+            plotter.make_overlays_diff([(['FAKES_2l', 'DATA_FAKES'], ['MuNumerPt', 'MuUnevenPtClosure']), (['DATA'],['MuNumerPt'])], 'Lepton', 'MuClosurePt') 
+            plotter.make_overlays_diff([(['FAKES_2l', 'DATA_FAKES'], ['EleNumerPt', 'EleUnevenPtClosure']), (['DATA'],['EleNumerPt'])], 'Lepton', 'EleClosurePt') 
+        if category is 'ZPlusJet_inclusive':
+            plotter.make_overlays_diff([(['PROMPT_3l', 'DATA_FAKES'], ['MuNumerPt', 'MuUnevenPtClosure']), (['PASS'],['MuNumerPt'])], 'Lepton', 'MuClosurePt') 
+            plotter.make_overlays_diff([(['PROMPT_3l', 'DATA_FAKES'], ['EleNumerPt', 'EleUnevenPtClosure']), (['PASS'],['EleNumerPt'])], 'Lepton', 'EleClosurePt') 
 
         # X-check plots
-        plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['MuonPt_QCD2l_tight', 'MuonPt_QCD2l_weight']), (['DATA'],['MuonPt_QCD2l_tight'])], 'Lepton', 'MuonFakePt') 
-        plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['MuonEta_QCD2l_tight', 'MuonEta_QCD2l_weight']), (['DATA'],['MuonEta_QCD2l_tight'])], 'Lepton', 'MuonFakeEta') 
-        plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['MuonMet_QCD2l_tight', 'MuonMet_QCD2l_weight']), (['DATA'],['MuonMet_QCD2l_tight'])], 'Lepton', 'MuonFakeMet') 
-        plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['MuonJetMult_QCD2l_tight', 'MuonJetMult_QCD2l_weight']), (['DATA'],['MuonJetMult_QCD2l_tight'])], 'Lepton', 'MuonFakeJetMult') 
+        if category in ['2l', '3l']:
+            plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['MuonPt_QCD2l_tight', 'MuonPt_QCD2l_weight']), (['DATA'],['MuonPt_QCD2l_tight'])], 'Lepton', 'MuonFakePt') 
+            plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['MuonEta_QCD2l_tight', 'MuonEta_QCD2l_weight']), (['DATA'],['MuonEta_QCD2l_tight'])], 'Lepton', 'MuonFakeEta') 
+            plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['MuonMet_QCD2l_tight', 'MuonMet_QCD2l_weight']), (['DATA'],['MuonMet_QCD2l_tight'])], 'Lepton', 'MuonFakeMet') 
+            plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['MuonJetMult_QCD2l_tight', 'MuonJetMult_QCD2l_weight']), (['DATA'],['MuonJetMult_QCD2l_tight'])], 'Lepton', 'MuonFakeJetMult') 
 
-        plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['ElectronPt_QCD2l_tight', 'ElectronPt_QCD2l_weight']), (['DATA'],['ElectronPt_QCD2l_tight'])], 'Lepton', 'ElectronFakePt') 
-        plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['ElectronEta_QCD2l_tight', 'ElectronEta_QCD2l_weight']), (['DATA'],['ElectronEta_QCD2l_tight'])], 'Lepton', 'ElectronFakeEta') 
-        plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['ElectronMet_QCD2l_tight', 'ElectronMet_QCD2l_weight']), (['DATA'],['ElectronMet_QCD2l_tight'])], 'Lepton', 'ElectronFakeMet') 
-        plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['ElectronJetMult_QCD2l_tight', 'ElectronJetMult_QCD2l_weight']), (['DATA'],['ElectronJetMult_QCD2l_tight'])], 'Lepton', 'ElectronFakeJetMul') 
+            plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['ElectronPt_QCD2l_tight', 'ElectronPt_QCD2l_weight']), (['DATA'],['ElectronPt_QCD2l_tight'])], 'Lepton', 'ElectronFakePt') 
+            plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['ElectronEta_QCD2l_tight', 'ElectronEta_QCD2l_weight']), (['DATA'],['ElectronEta_QCD2l_tight'])], 'Lepton', 'ElectronFakeEta') 
+            plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['ElectronMet_QCD2l_tight', 'ElectronMet_QCD2l_weight']), (['DATA'],['ElectronMet_QCD2l_tight'])], 'Lepton', 'ElectronFakeMet') 
+            plotter.make_overlays_diff([(['PROMPT_2l', 'FAKEABLE'], ['ElectronJetMult_QCD2l_tight', 'ElectronJetMult_QCD2l_weight']), (['DATA'],['ElectronJetMult_QCD2l_tight'])], 'Lepton', 'ElectronFakeJetMul') 
 

@@ -106,7 +106,6 @@ float WeightUtils::GetTotalWeight()
         weight *= PUWeight();
         weight *= RecoWeight();
     } 
-    //cout << _nPU << ", " << weight << endl;
 
     return weight;
 }
@@ -144,8 +143,6 @@ float WeightUtils::RecoWeight()
     } else {
         _triggerWeight = 1.;
     }
-
-    //cout << endl;
 
     return _triggerWeight*_recoWeight;
 }
@@ -373,7 +370,6 @@ float WeightUtils::GetMuEff(TLorentzVector& lep) const
 
     if (lep.Pt() < 500.)
         weight = _muSF2012[etaBin]->Eval(lep.Pt());
-    //cout << etaBin << "\t" << lep.Pt() << "\t" << weight << endl;
     else
         weight = 1;
 
@@ -406,7 +402,6 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
         else
             fakeablePt = 50;
 
-
         if (fabs(fakeable.Eta()) < 0.8) {
             fakeRate  = g_ElectronFakesPtB[controlRegion]->Eval(fakeablePt);
         } else if (fabs(fakeable.Eta()) >= 0.8 && fabs(fakeable.Eta()) < 1.479) {
@@ -416,7 +411,6 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
         }
     }
     fakeWeight = fakeRate / (1 - fakeRate);
-    //cout << fakeable.Type() << ", " << fakeRate << ", " << fakeWeight << endl;
 
     return fakeWeight;
 }
