@@ -306,9 +306,7 @@ categoryDict = {'inclusive':'inclusive',
                 'os_inclusive':'os inclusive', 'os_mumu':'#mu^{#pm}#mu^{#mp}', 'os_ee':'e^{#pm}e^{#mp}', 'os_emu':'e^{#pm}mu^{#mp}', 
                 '3l_inclusive':'3l inclusive', '3l_OSSF':'(l^{#pm}l^{#mp})l', '3l_SSSF':'(l^{#pm}l^{#pm})l',
                 '3l_eee':'eee', '3l_eemu':'ee#mu', '3l_emumu':'e#mu#mu','3l_mumumu':'#mu#mu#mu',
-                '2l':'2 leptons', '3l':'3 leptons',
-                'QCD2l_inclusive':'QCD ll', 'QCD2l_low_met':'QCD ll (MET < 20)', 'QCD2l_high_met':'QCD ll (45 < MET < 80)',
-                'ZPlusJet_inclusive':'Z+jet', 'ZPlusJet_low_met':'Z+jet (MET < 20)', 'ZPlusJet_high_met':'Z+jet (45 < MET < 80)',
+                'AntiIso3l':'Anit-Iso CR', 'QCD2l':'QCD ll', 'ZPlusJet':'Z+jet',
                 'low_met':'MET < 20', 'high_met':'45 < MET < 80'
                 }
 
