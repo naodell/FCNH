@@ -14,8 +14,7 @@ styleDict['DATA_FAKES']         = (2, r.kBlue+4, 3001, 21, 'Fail')
 
 # For fake studies
 styleDict['PASS']               = (2, r.kBlack, 0, 23, 'Pass')
-styleDict['PROMPT_2l']          = (2, r.kRed, 3001, 21, 'Prompt')
-styleDict['PROMPT_3l']          = (2, r.kRed, 3001, 21, 'Prompt')
+styleDict['PROMPT']             = (2, r.kRed, 3001, 21, 'Prompt')
 styleDict['FAKEABLE']           = (2, r.kBlue, 0, 21, 'Fakeable')
 styleDict['Irreducible']        = (2, r.kBlue, 0, 21, 'Irreducible')
 
@@ -125,8 +124,6 @@ styleDict['eFakesmu']           = (2, r.kViolet-5, 3001, 1, 'Fakes e#mu')
 styleDict['muFakesmu']          = (2, r.kMagenta+4, 3001, 1, 'Fakes #mu#mu')
 styleDict['llFakes']            = (2, r.kViolet+9, 3001, 1, 'Fakes ll')
 styleDict['QFlips']             = (2, r.kBlue+2, 3001, 1, 'QFlips')
-styleDict['FAKES_2l']           = (2, r.kRed, 3001, 1, 'Prompt')
-styleDict['FAKES_3l']           = (2, r.kBlue, 3001, 1, 'Prompt')
 
 ### Set scales
 scaleDict = {'2011':{}, '2012':{}}
@@ -288,8 +285,7 @@ combineDict['higgs']            = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToW
 combineDict['AIC']              = ['eeeAIC', 'eemuAIC', 'emumuAIC', 'mumumuAIC']
 combineDict['AIC_BG']           = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'muFakes', 'eFakes', 'llFakes']
 combineDict['Fakes']            = ['eFakes', 'muFakes', 'llFakes']
-combineDict['FAKES_2l']         = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarHad', 'ttbarLep', 'tbarW', 'tW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'WbbToLNu']#'WJetsToLNu'] #, 'ZZJets2L2Q']
-combineDict['FAKES_3l']         = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
+combineDict['PROMPT']           = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarHad', 'ttbarLep', 'tbarW', 'tW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'WbbToLNu', 'WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
 combineDict['Remove_ss']        = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarLep']#, 'tW', 'tbarW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'ZZJets2L2Q']
 combineDict['Remove_3l']        = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW']#, 'WWW', 'WWZ', 'WZZ', 'ZZZ']
 combineDict['Irreducible']      = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125', 'WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ']#, 'WWG']
@@ -297,8 +293,10 @@ combineDict['Irreducible']      = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToW
 combineDict['DATA_FAKES']       = combineDict['DATA']
 combineDict['PASS']             = combineDict['DATA']
 combineDict['FAKEABLE']         = combineDict['DATA']
-combineDict['PROMPT_2l']        = combineDict['FAKES_2l']
-combineDict['PROMPT_3l']        = combineDict['FAKES_3l']
+
+cleanDict = {}
+cleanDict['AIC']                = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'muFakes', 'eFakes', 'llFakes']
+cleanDict['DATA_FAKES']         = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarHad', 'ttbarLep', 'tbarW', 'tW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'WbbToLNu', 'WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
 
 categoryDict = {'inclusive':'inclusive',
                 'ss_inclusive':'ss inclusive', 'ss_mumu':'#mu^{#pm}#mu^{#pm}', 'ss_ee':'e^{#pm}e^{#pm}', 'ss_emu':'e^{#pm}#mu^{#pm}',
@@ -378,6 +376,7 @@ paramFile = open('scripts/fcncParams.pkl', 'wb')
 pickle.dump(scaleDict, paramFile)
 pickle.dump(styleDict, paramFile)
 pickle.dump(combineDict, paramFile)
+pickle.dump(cleanDict, paramFile)
 pickle.dump(categoryDict, paramFile)
 pickle.dump(systDict, paramFile)
 paramFile.close()

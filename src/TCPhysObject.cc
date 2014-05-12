@@ -8,7 +8,8 @@ TCPhysObject::TCPhysObject():
     _isPF(false),
     _isReco(false),
     _isFake(false),
-    _isTriggered(false)
+    _isTriggered(false),
+    _isGenMatched(false)
 {
 }
 
@@ -18,7 +19,8 @@ TCPhysObject::TCPhysObject(TLorentzVector p4, int charge):
     _isPF(false),
     _isReco(false),
     _isFake(false),
-    _isTriggered(false)
+    _isTriggered(false),
+    _isGenMatched(false)
 {
     this->SetP4(p4);
 }
@@ -29,7 +31,8 @@ TCPhysObject::TCPhysObject(TLorentzVector p4, int charge, string type) :
     _isPF(false),
     _isReco(false),
     _isFake(false),
-    _isTriggered(false)
+    _isTriggered(false),
+    _isGenMatched(false)
 {
     this->SetP4(p4);
     this->SetCharge(charge);
@@ -86,6 +89,7 @@ bool TCPhysObject::IsPF()   const   { return _isPF; }
 bool TCPhysObject::IsReco() const   { return _isReco; }
 bool TCPhysObject::IsFake() const   { return _isFake; }
 bool TCPhysObject::IsTriggered() const   { return _isTriggered; }
+bool TCPhysObject::IsGenMatched() const   { return _isGenMatched; }
 
 // "set" methods ---------------------------------------------
 
@@ -104,6 +108,7 @@ void TCPhysObject::SetPF(bool p)    { _isPF = p;}
 void TCPhysObject::SetReco(bool r)  { _isReco= r;}
 void TCPhysObject::SetFake(bool f)  { _isFake = f;}
 void TCPhysObject::SetTriggered(bool f)  { _isTriggered = f;}
+void TCPhysObject::SetGenMatched(bool g)  { _isGenMatched = g;}
 
 // generally useful methods -----------------------------------
 

@@ -29,17 +29,23 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
 
     // weights for fake background
     TFile* f_fakeFile = new TFile("../data/fakeRates.root", "OPEN");
-    g_MuonFakesPtB["QCD2l"]         = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l_inclusive/g_MuonFake_1");
-    g_MuonFakesPtE["QCD2l"]         = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l_inclusive/g_MuonFake_2");
-    g_ElectronFakesPtB["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l_inclusive/g_ElectronFake_1");
-    g_ElectronFakesPtG["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l_inclusive/g_ElectronFake_2");
-    g_ElectronFakesPtE["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l_inclusive/g_ElectronFake_3");
+    g_MuonFakesPtB["QCD2l"]         = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_MuonFake_1");
+    g_MuonFakesPtE["QCD2l"]         = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_MuonFake_2");
+    g_ElectronFakesPtB["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_ElectronFake_1");
+    g_ElectronFakesPtG["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_ElectronFake_2");
+    g_ElectronFakesPtE["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_ElectronFake_3");
 
-    g_MuonFakesPtB["ZPlusJet"]      = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet_inclusive/g_MuonFake_1");
-    g_MuonFakesPtE["ZPlusJet"]      = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet_inclusive/g_MuonFake_2");
-    g_ElectronFakesPtB["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet_inclusive/g_ElectronFake_1");
-    g_ElectronFakesPtG["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet_inclusive/g_ElectronFake_2");
-    g_ElectronFakesPtE["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet_inclusive/g_ElectronFake_3");
+    g_MuonFakesPtB["ZPlusJet"]      = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet/g_MuonFake_1");
+    g_MuonFakesPtE["ZPlusJet"]      = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet/g_MuonFake_2");
+    g_ElectronFakesPtB["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet/g_ElectronFake_1");
+    g_ElectronFakesPtG["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet/g_ElectronFake_2");
+    g_ElectronFakesPtE["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet/g_ElectronFake_3");
+
+    g_MuonFakesPtB["AntiIso3l"]      = (TGraphAsymmErrors*)f_fakeFile->Get("AntiIso3l/g_MuonFake_1");
+    g_MuonFakesPtE["AntiIso3l"]      = (TGraphAsymmErrors*)f_fakeFile->Get("AntiIso3l/g_MuonFake_2");
+    g_ElectronFakesPtB["AntiIso3l"]  = (TGraphAsymmErrors*)f_fakeFile->Get("AntiIso3l/g_ElectronFake_1");
+    g_ElectronFakesPtG["AntiIso3l"]  = (TGraphAsymmErrors*)f_fakeFile->Get("AntiIso3l/g_ElectronFake_2");
+    g_ElectronFakesPtE["AntiIso3l"]  = (TGraphAsymmErrors*)f_fakeFile->Get("AntiIso3l/g_ElectronFake_3");
 
     // Weights for charge flip background
     TFile* f_misQFile = new TFile("../data/electronQMisID.root", "OPEN");
@@ -397,10 +403,10 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
     } else if (fakeable.Type() == "electron") {
 
         float fakeablePt = fakeable.Pt();
-        if (fakeable.Pt() < 50) 
+        if (fakeable.Pt() < 35) 
             fakeablePt = fakeable.Pt();
         else
-            fakeablePt = 50;
+            fakeablePt = 35;
 
         if (fabs(fakeable.Eta()) < 0.8) {
             fakeRate  = g_ElectronFakesPtB[controlRegion]->Eval(fakeablePt);
@@ -410,9 +416,77 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
             fakeRate  = g_ElectronFakesPtE[controlRegion]->Eval(fakeablePt);
         }
     }
-    fakeWeight = fakeRate / (1 - fakeRate);
+    //cout << fakeRate << endl;
+    if (fakeRate < 0.)
+        return 0.;
+    else 
+        return fakeRate / (1 - fakeRate);
+}
 
-    return fakeWeight;
+
+float WeightUtils::GetFakeUncertainty(TCPhysObject& fakeable, string controlRegion) 
+{
+    float fakeError   = 0.;
+    unsigned iPt = 0;
+    unsigned  nPtBins = 8;
+    float     ptBins[] = {10., 15., 20., 25., 30., 35., 40., 45., 50.}; 
+    for (unsigned j = 0; j < nPtBins; ++j) {
+        if (fakeable.Pt() > ptBins[j] && fakeable.Pt() < ptBins[j + 1]) {
+            iPt = j+1;
+            break;
+        }
+    }
+    float fakeablePt;
+    if (fakeable.Type() == "muon") {
+        
+        fakeablePt = fakeable.Pt();
+        if (fakeable.Pt() < 35)
+            fakeablePt = fakeable.Pt();
+        else
+            fakeablePt = 35;
+
+        if (fabs(fakeable.Eta()) < 1.5) {
+            fakeError = g_MuonFakesPtB[controlRegion]->GetErrorY(iPt);
+        } else if (fabs(fakeable.Eta()) >= 1.5) {
+            fakeError = g_MuonFakesPtE[controlRegion]->GetErrorY(iPt);
+        }
+    } else if (fakeable.Type() == "electron") {
+
+        fakeablePt = fakeable.Pt();
+        if (fakeable.Pt() < 35)
+            fakeablePt = fakeable.Pt();
+        else
+            fakeablePt = 35;
+
+
+        if (fabs(fakeable.Eta()) < 0.8) {
+            fakeError = g_ElectronFakesPtB[controlRegion]->GetErrorY(iPt);
+        } else if (fabs(fakeable.Eta()) >= 0.8 && fabs(fakeable.Eta()) < 1.479) {
+            fakeError = g_ElectronFakesPtG[controlRegion]->GetErrorY(iPt);
+        } else if (fabs(fakeable.Eta()) >= 1.479) {
+            fakeError = g_ElectronFakesPtE[controlRegion]->GetErrorY(iPt);
+        }
+    }
+
+    return fakeError;
+}
+
+float WeightUtils::GetCombinedFakeWeight(TCPhysObject& fakeable)
+{
+    string categories[3] = {"QCD2l", "ZPlusJet", "AntiIso3l"};
+    float avgFakeRate       = 0.;
+    float avgFakeVariance   = 0.;
+
+    for (unsigned i = 0; i < 3; ++i) {
+        float fakeWeight    = GetFakeWeight(fakeable, categories[i]);
+        float fakeError     = GetFakeWeight(fakeable, categories[i]);
+        float fakeRate      = fakeWeight/(1 + fakeWeight);
+        
+        avgFakeRate += fakeRate/(fakeError*fakeError);
+        avgFakeVariance += 1./(fakeError*fakeError);
+    }
+
+    return avgFakeRate/avgFakeVariance;
 }
 
 float WeightUtils::GetQFlipWeight()
@@ -454,9 +528,4 @@ float WeightUtils::GetAICWeight(const TCPhoton& photon, const string& type)
     //cout << type << ": " << photonPt << ", " << aicWeight << endl;
 
     return aicWeight;
-}
-
-float WeightUtils::GetFakeUncertainty() const
-{
-    return _fakeWeightErr;
 }

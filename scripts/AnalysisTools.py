@@ -6,6 +6,7 @@ paramFile   = open('scripts/fcncParams.pkl', 'rb')
 scales      = pickle.load(paramFile)
 styles      = pickle.load(paramFile)
 combos      = pickle.load(paramFile)
+removes     = pickle.load(paramFile)
 categories  = pickle.load(paramFile)
 systematics = pickle.load(paramFile)
 
@@ -41,6 +42,7 @@ class AnalysisTools():
         self._scaleDict     = scales
         self._styleDict     = styles
         self._combineDict   = combos
+        self._cleanDict     = removes
         self._cleanFakes    = True
         self._category      = ''
         self._datasets      = []
@@ -261,6 +263,15 @@ class AnalysisTools():
                         outHist = hist
                     elif hist is not None:
                         outHist.Add(hist, 1)
+
+            if dataName in self._cleanDict:
+                for data in self._cleanDict[dataName]:
+                    hist = self.get_hist(var, data, histType)
+
+                    if outHist is None and hist is not None:
+                        outHist = hist
+                    elif hist is not None:
+                        outHist.Add(hist, -1.)
 
         return outHist
 

@@ -558,7 +558,6 @@ class PlotProducer(AnalysisTools):
             self.make_save_path('{0}/{1}/{2}'.format(self._savePath, self._category, directory))
 
             for var in self._variableDict[directory]:
-
                 if var not in hists.keys() or var not in stacks.keys(): continue
 
                 pad1.cd()

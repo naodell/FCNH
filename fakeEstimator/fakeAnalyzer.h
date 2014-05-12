@@ -177,6 +177,7 @@ class fakeAnalyzer : public TSelector {
         virtual void    DoZTag(vObj&);
         virtual bool    CheckQCD2lCR(vector<TCJet>&, TCPhysObject&);
         virtual bool    CheckZPlusJetCR(TCPhysObject&);
+        virtual vector<TCJet> CleanJetOverlap(vObj&);
 
         virtual string  str(int i) {return static_cast<ostringstream*>( &(ostringstream() << i) )->str();}
 

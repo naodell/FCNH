@@ -52,6 +52,8 @@ class WeightUtils: public TObject {
         float   VBFHiggsWeight(float, int);
         float   GetTotalWeight();
         float   GetFakeWeight(TCPhysObject&, string);
+        float   GetFakeUncertainty(TCPhysObject&, string);
+        float   GetCombinedFakeWeight(TCPhysObject&);
         float   GetQFlipWeight();
         float   GetAICWeight(const TCPhoton&, const string&);
 
@@ -62,8 +64,6 @@ class WeightUtils: public TObject {
         // lepton trigger efficiencies
         float GetMuTriggerEff(TLorentzVector&, TLorentzVector&) const;
         float GetEleTriggerEff(TLorentzVector&, TLorentzVector&) const;
-
-        float GetFakeUncertainty() const;
 
         ClassDef(WeightUtils, 0);
 

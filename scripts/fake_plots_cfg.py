@@ -34,13 +34,15 @@ doRatio     = False
 
 ### Categories to be plotted ###
 catList = ['inclusive', 'AntiIso3l', 'QCD2l', 'ZPlusJet']
+#catList = ['ZPlusJet']
 
 ### Samples to be included in stacks ###
 samples = {}
-samples['inclusive']    = ['FAKES_2l', 'FAKES_3l'] # ['ZJets', 'ttbar']
-samples['ZPlusJet']     = ['FAKES_3l']
-samples['QCD2l']        = ['FAKES_2l']
-samples['AntiIso3l']    = ['ZJets', 'ttbarLep', 'ttbarHad', 'WZJets3LNu', 'WbbToLNu'] #'WJetsToLNu']
+samples['inclusive']    = ['PROMPT'] 
+samples['ZPlusJet']     = ['PROMPT']
+samples['QCD2l']        = ['PROMPT']
+samples['AntiIso3l']    = ['PROMPT']
+#samples['AntiIso3l']    = ['ZJets', 'ttbarLep', 'ttbarHad', 'WZJets3LNu', 'WbbToLNu'] #'WJetsToLNu']
 
 if doPlots:
 
@@ -53,12 +55,12 @@ if doPlots:
     plotter.set_period(period)
     plotter.set_output_type(plotType)
     plotter.set_save_path('plots/{0}/{1}_{2}_{3}/log'.format(currentDate, selection, batch, suffix))
+    plotter.set_clean_fakes(True)
 
     ### DATASETS ###
 
-    plotter.add_datasets(samples['ZPlusJet'] + samples['QCD2l'])
-    plotter._overlayList.extend(['DATA_FAKES'])
-    #plotter._overlayList.extend(['DATA_MUON'])
+    plotter.add_datasets(samples['inclusive'])
+    plotter._overlayList.extend(['DATA'])
 
     plotter.get_scale_factors(addData = [], corrected = False)
 
@@ -112,13 +114,11 @@ if doPlots:
         plotter.make_overlays_1D(logScale = doLog, doRatio = doRatio, doEff = doEff)
 
         # Closure plots
-        if category is 'QCD2l':
-            plotter.make_overlays_diff([(['FAKES_2l', 'DATA_FAKES'], ['MuNumerPt', 'MuUnevenPtClosure_{0}'.format(category)]), (['DATA'],['MuNumerPt'])], 'Lepton', 'MuClosurePt') 
-            plotter.make_overlays_diff([(['FAKES_2l', 'DATA_FAKES'], ['EleNumerPt', 'EleUnevenPtClosure_{0}'.format(category)]), (['DATA'],['EleNumerPt'])], 'Lepton', 'EleClosurePt') 
-        if category is 'ZPlusJet':
-            plotter.make_overlays_diff([(['PROMPT_3l', 'DATA_FAKES'], ['MuNumerPt', 'MuUnevenPtClosure_{0}'.format(category)]), (['PASS'],['MuNumerPt'])], 'Lepton', 'MuClosurePt') 
-            plotter.make_overlays_diff([(['PROMPT_3l', 'DATA_FAKES'], ['EleNumerPt', 'EleUnevenPtClosure_{0}'.format(category)]), (['PASS'],['EleNumerPt'])], 'Lepton', 'EleClosurePt') 
-        if category is 'AntiIso3l':
-            plotter.make_overlays_diff([(['PROMPT_3l', 'DATA_FAKES'], ['MuNumerPt', 'MuUnevenPtClosure_{0}'.format(category)]), (['PASS'],['MuNumerPt'])], 'Lepton', 'MuClosurePt') 
-            plotter.make_overlays_diff([(['PROMPT_3l', 'DATA_FAKES'], ['EleNumerPt', 'EleUnevenPtClosure_{0}'.format(category)]), (['PASS'],['EleNumerPt'])], 'Lepton', 'EleClosurePt') 
+        for CR in catList:
+            if CR == 'inclusive':
+                continue
 
+            plotter.make_overlays_diff([(['PROMPT', 'DATA_FAKES'], ['MuNumerPt', 'MuUnevenPtClosure_{0}'.format(CR)]), 
+                                        (['DATA'],['MuNumerPt'])], 'Lepton', 'MuClosurePt_{0}'.format(CR)) 
+            plotter.make_overlays_diff([(['PROMPT', 'DATA_FAKES'], ['EleNumerPt', 'EleUnevenPtClosure_{0}'.format(CR)]), 
+                                        (['DATA'],['EleNumerPt'])], 'Lepton', 'EleClosurePt_{0}'.format(CR)) 

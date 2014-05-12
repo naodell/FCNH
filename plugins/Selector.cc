@@ -269,8 +269,12 @@ void Selector::MuonSelector(TClonesArray* muons)
                     && muISO > 0.2
                ) {
                 _selMuons["QCD2l_CR_tag"].push_back(*thisMuon);
-            } else if (MuonTightID(thisMuon) && muISO < 0.6 && !(muISO > 0.12 && muISO < 0.2))
-                _selMuons["QCD2l_CR_probe"].push_back(*thisMuon);
+            } else if (
+                    MuonTightID(thisMuon) 
+                    //&& muISO < 0.6 
+                    //&& !(muISO > 0.12 && muISO < 0.2)
+                    )
+                _selMuons["probe"].push_back(*thisMuon);
 
             // analysis lepton selection
             if (MuonTightID(thisMuon)) { 
@@ -439,8 +443,8 @@ void Selector::ElectronSelector(TClonesArray* electrons)
         if (ElectronLooseID(thisElec)) {
             _selElectrons["loose_id"].push_back(*thisElec);
 
-            if (eleISO < 0.9 && !(eleISO > 0.15 && eleISO < 0.2)) {
-                _selElectrons["QCD2l_CR_probe"].push_back(*thisElec);
+            if (true || (eleISO < 0.9 && !(eleISO > 0.15 && eleISO < 0.2))) {
+                _selElectrons["probe"].push_back(*thisElec);
                 if (eleISO > 0.2 && !ElectronMVA(thisElec)){
                     thisElec->SetFake(true);
                     _selElectrons["fakeable"].push_back(*thisElec);
