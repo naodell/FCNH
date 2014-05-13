@@ -735,9 +735,9 @@ void fakeAnalyzer::FillDenominatorHists(string cat, TCPhysObject& probe)
 
         histManager->Fill1DHistUnevenBins(probe.Pt(),
                 "h1_MuDenomPt", "probe muon p_{T};p_{T};Entries / bin", nPtBins, ptBins);
-        histManager->Fill1DHistUnevenBins(probe.Eta(),
+        histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
                 "h1_MuDenomEta", "probe muon #eta;#eta;Entries / bin", 2, etaBinsMu);
-        histManager->Fill2DHistUnevenBins(probe.Pt(), probe.Eta(),
+        histManager->Fill2DHistUnevenBins(probe.Pt(), fabs(probe.Eta()),
                 "h2_MuDenom", "probe muon p_{T};p_{T};#eta", nPtBins, ptBins, 2, etaBinsMu);
 
         histManager->Fill1DHistUnevenBins(recoMET->Mod(),
@@ -768,9 +768,9 @@ void fakeAnalyzer::FillDenominatorHists(string cat, TCPhysObject& probe)
 
         histManager->Fill1DHistUnevenBins(probe.Pt(),
                 "h1_EleDenomPt", "probe electron p_{T};p_{T};Entries / bin", nPtBins, ptBins);
-        histManager->Fill1DHistUnevenBins(probe.Eta(),
+        histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
                 "h1_EleDenomEta", "probe electron #eta;#eta;Entries / bin", 3, etaBinsEle);
-        histManager->Fill2DHistUnevenBins(probe.Pt(), probe.Eta(),
+        histManager->Fill2DHistUnevenBins(probe.Pt(), fabs(probe.Eta()),
                 "h2_EleDenom", "probe electron p_{T};p_{T};#eta", nPtBins, ptBins, 3, etaBinsEle);
 
         histManager->Fill1DHistUnevenBins(recoMET->Mod(),
@@ -797,9 +797,9 @@ void fakeAnalyzer::FillNumeratorHists(string cat, TCPhysObject& probeLep)
 
         histManager->Fill1DHistUnevenBins(probeLep.Pt(),
                 "h1_MuNumerPt", "pass muon p_{T};p_{T};Entries", nPtBins, ptBins);
-        histManager->Fill1DHistUnevenBins(probeLep.Eta(),
+        histManager->Fill1DHistUnevenBins(fabs(probeLep.Eta()),
                 "h1_MuNumerEta", "pass muon #eta;#eta;Entries", 2, etaBinsMu);
-        histManager->Fill2DHistUnevenBins(probeLep.Pt(), probeLep.Eta(),
+        histManager->Fill2DHistUnevenBins(probeLep.Pt(), fabs(probeLep.Eta()),
                 "h2_MuNumer", "pass muon p_{T};p_{T};#eta", nPtBins, ptBins, 2, etaBinsMu);
 
         histManager->Fill1DHistUnevenBins(recoMET->Mod(),
@@ -814,9 +814,9 @@ void fakeAnalyzer::FillNumeratorHists(string cat, TCPhysObject& probeLep)
 
         histManager->Fill1DHistUnevenBins(probeLep.Pt(),
                 "h1_EleNumerPt", "pass electron p_{T};p_{T};Entries / 3 GeV", nPtBins, ptBins);
-        histManager->Fill1DHistUnevenBins(probeLep.Eta(),
+        histManager->Fill1DHistUnevenBins(fabs(probeLep.Eta()),
                 "h1_EleNumerEta", "pass electron #eta;#eta;Entries / 3 GeV", 3, etaBinsEle);
-        histManager->Fill2DHistUnevenBins(probeLep.Pt(), probeLep.Eta(),
+        histManager->Fill2DHistUnevenBins(probeLep.Pt(), fabs(probeLep.Eta()),
                 "h2_EleNumer", "pass electron p_{T};p_{T};#eta", nPtBins, ptBins, 3, etaBinsEle);
 
         histManager->Fill1DHistUnevenBins(recoMET->Mod(),

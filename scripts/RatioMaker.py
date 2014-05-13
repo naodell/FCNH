@@ -138,10 +138,6 @@ class RatioMaker(AnalysisTools):
                 h2_Numer.Add(h2_bgNumer, -1.)
                 h2_Denom.Add(h2_bgDenom, -1.)
 
-            #h2_Numer.Print("range")
-            #print ''
-            #h2_Denom.Print("range")
-
             ### Set negative entries to 0
             for binX in range(h2_Numer.GetNbinsX()):
                 for binY in range(h2_Numer.GetNbinsY()):
@@ -156,21 +152,12 @@ class RatioMaker(AnalysisTools):
                              h2_Numer.GetNbinsX(), h2_Numer.GetXaxis().GetXmin(), h2_Numer.GetXaxis().GetXmax(),
                              h2_Numer.GetNbinsY(), h2_Numer.GetYaxis().GetXmin(), h2_Numer.GetYaxis().GetXmax())
             h2_Eff.Divide(h2_Numer, h2_Denom, 1., 1., 'B')
-            #h2_Eff.Print("range")
             self._hists.append(h2_Eff)
 
             ### Save ratios to 1D graphs (TGraphAsymmErrors)
             g_RatioList = make_graph_ratio_2D(key, h2_Numer, h2_Denom)
             for g_Ratio in g_RatioList:
-                #g_Ratio.Print()
                 self._outFile.GetDirectory(self._category).Add(g_Ratio)
-
-
-    def combine_rates(self, categories):
-        ### Combines fake rates for differenct categories
-
-        for category in categories:
-            sourceDir = self._outFile.GetDirectory(categories[0])
 
 
     def charge_flip_fitter(self, ratioSample, nToys = 10):
