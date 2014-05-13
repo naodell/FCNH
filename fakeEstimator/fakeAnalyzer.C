@@ -245,7 +245,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
     UInt_t nEleProbes   = eleProbes.size();
 
     // Veto events with excessive MET
-    if (recoMET->Mod() > 50.) return kTRUE;
+    //if (recoMET->Mod() > 50.) return kTRUE;
 
     if (
             doQCDDileptonCR 
@@ -606,24 +606,25 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
     // Do denominator and numerator histograms
     if (crType != "None") {
-        if (nEleProbes == 1) {
+        if (false) { //nEleProbes == 1) {}
             FillDenominatorHists(crType, eleProbe);
-            FillJetFlavorHists(crType, eleProbe);
 
             if (elPass)
                 FillNumeratorHists(crType, eleProbe);
             else if (elFake)
                 FillClosureHists(crType, eleProbe);
+
+            FillJetFlavorHists(crType, eleProbe);
         }
         if (nMuProbes == 1) {
-            FillJetFlavorHists(crType, muProbe);
             FillDenominatorHists(crType, muProbe);
-            FillClosureHists(crType, muProbe);
 
             if (muPass)
                 FillNumeratorHists(crType, muProbe);
-            //else if (muFake)
-            //    FillClosureHists(crType, muProbe);
+            else //if (muFake)
+                FillClosureHists(crType, muProbe);
+            
+            FillJetFlavorHists(crType, muProbe);
         }
     } 
 
@@ -663,9 +664,9 @@ void fakeAnalyzer::DoZTag(vObj& leptons)
     for (unsigned i = 0; i < leptons.size(); ++i) {
         for (unsigned j = leptons.size()-1; j > i; --j) {
 
-            //Find lepton pair that is consistent with a Z in +- 10 GeV window
+            //Find lepton pair that is consistent with a Z in +- 15 GeV window
             if (
-                    fabs((leptons[i] + leptons[j]).M() - 91.2) < 10 
+                    fabs((leptons[i] + leptons[j]).M() - 91.2) < 15 
                     && leptons[i].Type() == leptons[j].Type()
                     && leptons[i].Charge() != leptons[j].Charge()
                ) {
@@ -910,7 +911,7 @@ bool fakeAnalyzer::CheckQCD2lCR(vector<TCJet>& tagJets, TCPhysObject& probe)
     histManager->Fill1DHist(fabs(tpBalance),
             "h1_TagProbePtBalance", "balance (tag,probe);balance (tag,probe);Entries / bin", 40, 0., 4.);
 
-    if (fabs(tpDeltaPhi) < 2.5 || tpBalance > 1 || !jetMatched) 
+    if (fabs(tpDeltaPhi) < 2. || tpBalance > 1 || !jetMatched) 
         return false;
     else
         return true;
@@ -927,10 +928,10 @@ bool fakeAnalyzer::CheckZPlusJetCR(TCPhysObject& probe)
     histManager->Fill1DHist(fabs(tpBalance),
             "h1_TagProbePtBalance", "balance (tag,probe);balance (tag,probe);Entries / bin", 40, 0., 4.);
 
-    if (fabs(tpDeltaPhi) < 2.5 || tpBalance > 1 || recoMET->Mod() > 50)
-        return false;
-    else
-        return true;
+    //if (fabs(tpDeltaPhi) < 2.5 || tpBalance > 1 || recoMET->Mod() > 50)
+    //    return false;
+    //else
+    return true;
 }
 
 void fakeAnalyzer::GenMatcher(vObj& leptons, vector<TCGenParticle>& gLeptons)

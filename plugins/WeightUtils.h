@@ -99,6 +99,9 @@ class WeightUtils: public TObject {
         map<string, TH2D*> h2_MuonFakes;
         map<string, TH2D*> h2_ElectronFakes;
 
+        map<string, TH1D*> h1_MuonFakes;
+        map<string, TH1D*> h1_ElectronFakes;
+
         //weights
         float _puWeight;
         float _zzWeight;

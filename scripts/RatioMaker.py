@@ -105,6 +105,13 @@ class RatioMaker(AnalysisTools):
                 if binContent[0] < 0.:
                     h1_Denom.SetBinContent(i+1,0.)
 
+            ### Save ratios to 2D histograms
+            h1_Eff = r.TH1D('h1_{0}'.format(key), '{0};;'.format(key), h1_Numer.GetNbinsX(), h1_Numer.GetXaxis().GetXmin(), h1_Numer.GetXaxis().GetXmax())
+            h1_Eff.Divide(h1_Numer, h1_Denom, 1., 1., 'B')
+            #h2_Eff.Print("range")
+            self._hists.append(h1_Eff)
+
+
             g_Ratio = make_graph_ratio_1D(key, h1_Numer, h1_Denom)
             self._outFile.GetDirectory(self._category).Add(g_Ratio)
 

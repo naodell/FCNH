@@ -54,6 +54,12 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
     h2_ElectronFakes["ZPlusJet"]    = (TH2D*)f_fakeFile->Get("ZPlusJet/h2_ElectronFake");
     h2_ElectronFakes["AntiIso3l"]   = (TH2D*)f_fakeFile->Get("AntiIso3l/h2_ElectronFake");
 
+    h1_MuonFakes["QCD2l"]           = (TH1D*)f_fakeFile->Get("QCD2l/h1_MuonFakePt");
+    h1_MuonFakes["ZPlusJet"]        = (TH1D*)f_fakeFile->Get("ZPlusJet/h1_MuonFakePt");
+    h1_MuonFakes["AntiIso3l"]       = (TH1D*)f_fakeFile->Get("AntiIso3l/h1_MuonFakePt");
+    h1_ElectronFakes["QCD2l"]       = (TH1D*)f_fakeFile->Get("QCD2l/h1_ElectronFakePt");
+    h1_ElectronFakes["ZPlusJet"]    = (TH1D*)f_fakeFile->Get("ZPlusJet/h1_ElectronFakePt");
+    h1_ElectronFakes["AntiIso3l"]   = (TH1D*)f_fakeFile->Get("AntiIso3l/h1_ElectronFakePt");
 
     // Weights for charge flip background
     TFile* f_misQFile = new TFile("../data/electronQMisID.root", "OPEN");
@@ -413,13 +419,14 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
         else
             fakeablePt = 35;
 
-        if (fabs(fakeable.Eta()) < 1.5) {
-            //fakeRate  = g_MuonFakesPtB[controlRegion]->Eval(fakeablePt);
-            fakeRate  = h2_MuonFakes[controlRegion]->GetBinContent(iPt, 1);
-        } else if (fabs(fakeable.Eta()) >= 1.5) {
-            //fakeRate  = g_MuonFakesPtE[controlRegion]->Eval(fakeablePt);
-            fakeRate  = h2_MuonFakes[controlRegion]->GetBinContent(iPt, 2);
-        }
+        fakeRate = h1_MuonFakes[controlRegion]->GetBinContent(iPt);
+        //if (fabs(fakeable.Eta()) < 1.5) {
+        //    //fakeRate  = g_MuonFakesPtB[controlRegion]->Eval(fakeablePt);
+        //    fakeRate  = h2_MuonFakes[controlRegion]->GetBinContent(iPt, 1);
+        //} else if (fabs(fakeable.Eta()) >= 1.5) {
+        //    //fakeRate  = g_MuonFakesPtE[controlRegion]->Eval(fakeablePt);
+        //    fakeRate  = h2_MuonFakes[controlRegion]->GetBinContent(iPt, 2);
+        //}
     } else if (fakeable.Type() == "electron") {
 
         float fakeablePt = fakeable.Pt();
