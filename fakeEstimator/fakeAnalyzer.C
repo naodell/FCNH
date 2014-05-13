@@ -9,8 +9,8 @@ using namespace std;
 /////////////////
 
 const bool  doQCDDileptonCR = true;
-const bool  doZPlusJetCR    = true;
-const bool  doAntiIso3l     = true;
+const bool  doZPlusJetCR    = false;
+const bool  doAntiIso3l     = false;
 
 const float jetPtCut[]  = {25., 15.};
 const float muPtCut[]   = {10., 3.};
@@ -308,14 +308,14 @@ bool fakeAnalyzer::Process(Long64_t entry)
             if (isQCD2l.test(1)) {
                 if (selector->ElectronMVA(&eleProbe) && eleProbe.IdMap("IsoRel") < 0.15)
                     elPass = true;
-                else if (!selector->ElectronMVA(&eleProbe) || eleProbe.IdMap("IsoRel") > 0.2)
+                else if (!selector->ElectronMVA(&eleProbe) || eleProbe.IdMap("IsoRel") > 0.15)
                     elFake = true;
             }
 
             if (isQCD2l.test(0)) {
                 if (muProbe.IdMap("IsoRel") < 0.12)
                     muPass = true;
-                else if (muProbe.IdMap("IsoRel") > 0.2)
+                else if (muProbe.IdMap("IsoRel") > 0.12)
                     muFake = true;
             }
         }
@@ -378,7 +378,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
                     }                 
                     if (selector->ElectronMVA(&eleProbe) && eleProbe.IdMap("IsoRel") < 0.15)
                         elPass = true;
-                    else if (!selector->ElectronMVA(&eleProbe) || eleProbe.IdMap("IsoRel") > 0.2)
+                    else if (!selector->ElectronMVA(&eleProbe) || eleProbe.IdMap("IsoRel") > 0.15)
                         elFake = true;
                 } 
 
@@ -389,7 +389,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
                     } 
                     if (muProbe.IdMap("IsoRel") < 0.12)
                         muPass = true;
-                    else if (muProbe.IdMap("IsoRel") > 0.2)
+                    else if (muProbe.IdMap("IsoRel") > 0.12)
                         muFake = true;
                 } 
             }
@@ -399,6 +399,47 @@ bool fakeAnalyzer::Process(Long64_t entry)
     if (doAntiIso3l && crType == "None") {
         vector<TCMuon>     muonsNoIso     = selector->GetSelectedMuons("tight_id");
         vector<TCElectron> electronsNoIso = selector->GetSelectedElectrons("loose_id");
+
+        /// TEST //
+        vObj testLeptons;
+        testLeptons.insert(testLeptons.end(), muonsNoIso.begin(), muonsNoIso.end());
+        testLeptons.insert(testLeptons.end(), electronsNoIso.begin(), electronsNoIso.end());
+        sort(testLeptons.begin(), testLeptons.end(), P4SortCondition);
+
+        if (testLeptons.size() == 3) {
+
+            vObj leptonsAI, testLeptonsAI;
+            for (unsigned i = 0; i < testLeptons.size(); ++i) {
+                float leptonIso = testLeptons[i].IdMap("IsoRel");
+
+                if (leptonIso > 0.4 && leptonsAI.size() < 2) {
+                    leptonsAI.push_back(testLeptons[i]);
+                } else if (leptonsAI.size() == 2)
+                    testLeptonsAI.push_back(testLeptons[i]);
+            }
+
+            if (leptonsAI.size() == 2 && testLeptonsAI.size() == 1) {
+
+                if (testLeptonsAI[0].Type() == "muon") {
+                    histManager->Fill1DHist(testLeptonsAI[0].IdMap("IsoRel"),
+                            "h1_MuonIsoRel_AntiIso", "muon relative isolation;ISO_{rel};Entries", 80, 0., 4.);
+                    histManager->Fill1DHist(testLeptonsAI[0].Pt(),
+                            "h1_MuonPt_AntiIso", "muon p_{T};p_{T};Entries", 30, 0., 150.);
+
+                    //if (testLeptonsAI[0].IdMap("IsoRel") > 0.2 && testLeptonsAI[0].IdMap("IsoRel") < 0.6) {}
+                    if (testLeptonsAI[0].IdMap("IsoRel") > 0.12) {
+                        histManager->SetWeight(weighter->GetFakeWeight(testLeptonsAI[0], "QCD2l"));
+                        histManager->Fill1DHist(testLeptonsAI[0].Pt(),
+                                "h1_MuonPt_QCD2l_weight", "muon p_{T};p_{T};Entries", 50, 0., 150.);
+                        histManager->SetWeight(1.);
+                    } else if (testLeptonsAI[0].IdMap("IsoRel") < 0.12) {
+                        histManager->Fill1DHist(testLeptonsAI[0].Pt(),
+                                "h1_MuonPt_QCD2l_tight", "muon p_{T};p_{T};Entries", 50, 0., 150.);
+                    }
+                }
+            }
+        }
+        // End of test
 
         // Find 2 anti-isolated muons and remove them from the muonsNoIso collection
         vObj leptonsAntiIso;
@@ -411,7 +452,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
             }
         }
 
-       if (leptonsAntiIso.size() == 2 && (muonsNoIso.size() == 1 || electronsNoIso.size() >= 1)) {
+        if (leptonsAntiIso.size() == 2 && (muonsNoIso.size() == 1 || electronsNoIso.size() >= 1)) {
 
             // A tag for this CR exists if the leading two leptons are
             // anti-isolated the probe is then the trailing (third in pt) lepton
@@ -422,8 +463,8 @@ bool fakeAnalyzer::Process(Long64_t entry)
             nMuProbes = 0;
             if (muonsNoIso.size() == 1) {
                 if (
-                        (leptonsAntiIso[0] + muonsNoIso[0]).M() > 20 
-                        && (leptonsAntiIso[1] + muonsNoIso[0]).M() > 20
+                        (leptonsAntiIso[0] + muonsNoIso[0]).M() > 12 
+                        //(leptonsAntiIso[1] + muonsNoIso[0]).M() > 12 
                         //&& muISO < 0.6 && !(muISO > 0.12 && muISO < 0.2)
                    ) {
                     float muISO = muonsNoIso[0].IdMap("IsoRel");
@@ -435,10 +476,9 @@ bool fakeAnalyzer::Process(Long64_t entry)
             nEleProbes = 0;
             for (unsigned i = 0; i < electronsNoIso.size(); ++i) {
                 if (
-                        electronsNoIso[i].DeltaR(leptonsAntiIso[0]) > 0.1 
+                        electronsNoIso[i].DeltaR(leptonsAntiIso[0]) > 0.1
                         && electronsNoIso[i].DeltaR(leptonsAntiIso[1]) > 0.1
-                        && (leptonsAntiIso[0] + electronsNoIso[0]).M() > 20. 
-                        && (leptonsAntiIso[1] + electronsNoIso[0]).M() > 20. 
+                        //&& (leptonsAntiIso[0] + electronsNoIso[0]).M() > 20. 
                         //&& eleISO < 0.9 && !(eleISO > 0.15 && eleISO < 0.2)
                    ) {
                     float eleISO = electronsNoIso[i].IdMap("IsoRel");
@@ -446,14 +486,14 @@ bool fakeAnalyzer::Process(Long64_t entry)
                     ++nEleProbes;
                 }
             }
-       
+
 
             bool singleProbe = true;
             if (nEleProbes == 1 && nMuProbes == 1) {
                 if (eleProbe.DeltaR(muProbe) > 0.1)
                     singleProbe = false;
             }
-            
+
             if ((nEleProbes == 1 || nMuProbes == 1) && singleProbe) {
                 // Probe object is found and event is consistent with QCD 2l
                 // control region requirements. Now fill histograms for
@@ -466,14 +506,14 @@ bool fakeAnalyzer::Process(Long64_t entry)
                 if (nEleProbes == 1) {
                     if (selector->ElectronMVA(&eleProbe) && eleProbe.IdMap("IsoRel") < 0.15)
                         elPass = true;
-                    else if (!selector->ElectronMVA(&eleProbe) || eleProbe.IdMap("IsoRel") > 0.2)
+                    else if (!selector->ElectronMVA(&eleProbe) || eleProbe.IdMap("IsoRel") > 0.15)
                         elFake = true;
                 } 
 
                 if (nMuProbes == 1) {
                     if (muProbe.IdMap("IsoRel") < 0.12)
                         muPass = true;
-                    else if (muProbe.IdMap("IsoRel") > 0.2)
+                    else if (muProbe.IdMap("IsoRel") > 0.12)
                         muFake = true;
                 }
             } 
@@ -576,13 +616,14 @@ bool fakeAnalyzer::Process(Long64_t entry)
                 FillClosureHists(crType, eleProbe);
         }
         if (nMuProbes == 1) {
-            FillDenominatorHists(crType, muProbe);
             FillJetFlavorHists(crType, muProbe);
+            FillDenominatorHists(crType, muProbe);
+            FillClosureHists(crType, muProbe);
 
             if (muPass)
                 FillNumeratorHists(crType, muProbe);
-            else if (muFake)
-                FillClosureHists(crType, muProbe);
+            //else if (muFake)
+            //    FillClosureHists(crType, muProbe);
         }
     } 
 
@@ -656,14 +697,18 @@ void fakeAnalyzer::FillDenominatorHists(string cat, TCPhysObject& probe)
     if (probe.Type() == "electron") {
         histManager->Fill1DHist((tag + probe).M(),
                 "h1_TagEleProbeMass", "M_{tag,probe};M_{tag,probe};Entries / 3 GeV", 50, 0., 150.);
-        histManager->Fill2DHist(probe.Pt(), probe.IdMap("IsoRel"),
-                "h2_EleProbePtVsIso", "probe lepton p_{T} vs ISO_{rel};p_{T};ISO_{rel}", 50, 0., 150., 25, 0., 1.);
+        histManager->Fill1DHist((tag + probe).M(),
+                "h1_TagEleProbeDeltaR", "#Delta R(tag,probe);#Delta R(tag,probe);Entries / 3 GeV", 50, 0., 5.);
+        histManager->Fill2DHist(probe.IdMap("IsoRel"), probe.Pt(), 
+                "h2_EleProbePtVsIso", "probe lepton p_{T} vs ISO_{rel};ISO_{rel};p_{T}", 10, 0., 1., 4, 10., 50.);
     }
     if (probe.Type() == "muon") {
         histManager->Fill1DHist((tag + probe).M(),
                 "h1_TagMuProbeMass", "M_{tag,probe};M_{tag,probe};Entries / 3 GeV", 50, 0., 150.);
-        histManager->Fill2DHist(probe.Pt(), probe.IdMap("IsoRel"),
-                "h2_MuProbePtVsIso", "probe lepton p_{T} vs ISO_{rel};p_{T};ISO_{rel}", 50, 0., 150., 25, 0., 1.);
+        histManager->Fill1DHist((tag + probe).M(),
+                "h1_TagMuProbeDeltaR", "#Delta R(tag,probe);#Delta R(tag,probe);Entries / 3 GeV", 50, 0., 5.);
+        histManager->Fill2DHist(probe.IdMap("IsoRel"), probe.Pt(), 
+                "h2_MuProbePtVsIso", "probe lepton p_{T} vs ISO_{rel};ISO_{rel};p_{T}", 10, 0., 1., 4, 10., 50.);
     }
 
     string lepType = probe.Type();
@@ -783,7 +828,7 @@ void fakeAnalyzer::FillClosureHists(string category, TCPhysObject& probe)
     histManager->SetDirectory(category + "/" + suffix);
 
     string categories[3] = {"QCD2l", "ZPlusJet", "AntiIso3l"};
-    for (unsigned i = 0; i < 3; ++i) {
+    for (unsigned i = 0; i < 1; ++i) {
         string cat = categories[i];
         float fakeWeight = weighter->GetFakeWeight(probe, cat);
         histManager->SetWeight(fakeWeight);

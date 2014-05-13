@@ -41,11 +41,19 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
     g_ElectronFakesPtG["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet/g_ElectronFake_2");
     g_ElectronFakesPtE["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet/g_ElectronFake_3");
 
-    g_MuonFakesPtB["AntiIso3l"]      = (TGraphAsymmErrors*)f_fakeFile->Get("AntiIso3l/g_MuonFake_1");
-    g_MuonFakesPtE["AntiIso3l"]      = (TGraphAsymmErrors*)f_fakeFile->Get("AntiIso3l/g_MuonFake_2");
-    g_ElectronFakesPtB["AntiIso3l"]  = (TGraphAsymmErrors*)f_fakeFile->Get("AntiIso3l/g_ElectronFake_1");
-    g_ElectronFakesPtG["AntiIso3l"]  = (TGraphAsymmErrors*)f_fakeFile->Get("AntiIso3l/g_ElectronFake_2");
-    g_ElectronFakesPtE["AntiIso3l"]  = (TGraphAsymmErrors*)f_fakeFile->Get("AntiIso3l/g_ElectronFake_3");
+    g_MuonFakesPtB["AntiIso3l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("AntiIso3l/g_MuonFake_1");
+    g_MuonFakesPtE["AntiIso3l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("AntiIso3l/g_MuonFake_2");
+    g_ElectronFakesPtB["AntiIso3l"] = (TGraphAsymmErrors*)f_fakeFile->Get("AntiIso3l/g_ElectronFake_1");
+    g_ElectronFakesPtG["AntiIso3l"] = (TGraphAsymmErrors*)f_fakeFile->Get("AntiIso3l/g_ElectronFake_2");
+    g_ElectronFakesPtE["AntiIso3l"] = (TGraphAsymmErrors*)f_fakeFile->Get("AntiIso3l/g_ElectronFake_3");
+
+    h2_MuonFakes["QCD2l"]           = (TH2D*)f_fakeFile->Get("QCD2l/h2_MuonFake");
+    h2_MuonFakes["ZPlusJet"]        = (TH2D*)f_fakeFile->Get("ZPlusJet/h2_MuonFake");
+    h2_MuonFakes["AntiIso3l"]       = (TH2D*)f_fakeFile->Get("AntiIso3l/h2_MuonFake");
+    h2_ElectronFakes["QCD2l"]       = (TH2D*)f_fakeFile->Get("QCD2l/h2_ElectronFake");
+    h2_ElectronFakes["ZPlusJet"]    = (TH2D*)f_fakeFile->Get("ZPlusJet/h2_ElectronFake");
+    h2_ElectronFakes["AntiIso3l"]   = (TH2D*)f_fakeFile->Get("AntiIso3l/h2_ElectronFake");
+
 
     // Weights for charge flip background
     TFile* f_misQFile = new TFile("../data/electronQMisID.root", "OPEN");
@@ -387,6 +395,16 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
     float fakeWeight    = 1.;
     float fakeRate      = 0.;
 
+    unsigned iPt = 0;
+    unsigned  nPtBins = 8;
+    float     ptBins[] = {10., 15., 20., 25., 30., 35., 40., 45., 50.}; 
+    for (unsigned j = 0; j < nPtBins; ++j) {
+        if (fakeable.Pt() > ptBins[j] && fakeable.Pt() < ptBins[j + 1]) {
+            iPt = j+1;
+            break;
+        }
+    }
+
     if (fakeable.Type() == "muon") {
         
         float fakeablePt = fakeable.Pt();
@@ -396,9 +414,11 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
             fakeablePt = 35;
 
         if (fabs(fakeable.Eta()) < 1.5) {
-            fakeRate  = g_MuonFakesPtB[controlRegion]->Eval(fakeablePt);
+            //fakeRate  = g_MuonFakesPtB[controlRegion]->Eval(fakeablePt);
+            fakeRate  = h2_MuonFakes[controlRegion]->GetBinContent(iPt, 1);
         } else if (fabs(fakeable.Eta()) >= 1.5) {
-            fakeRate  = g_MuonFakesPtE[controlRegion]->Eval(fakeablePt);
+            //fakeRate  = g_MuonFakesPtE[controlRegion]->Eval(fakeablePt);
+            fakeRate  = h2_MuonFakes[controlRegion]->GetBinContent(iPt, 2);
         }
     } else if (fakeable.Type() == "electron") {
 
@@ -409,11 +429,14 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
             fakeablePt = 35;
 
         if (fabs(fakeable.Eta()) < 0.8) {
-            fakeRate  = g_ElectronFakesPtB[controlRegion]->Eval(fakeablePt);
+            //fakeRate  = g_ElectronFakesPtB[controlRegion]->Eval(fakeablePt);
+            fakeRate  = h2_ElectronFakes[controlRegion]->GetBinContent(iPt, 1);
         } else if (fabs(fakeable.Eta()) >= 0.8 && fabs(fakeable.Eta()) < 1.479) {
-            fakeRate  = g_ElectronFakesPtG[controlRegion]->Eval(fakeablePt);
+            //fakeRate  = g_ElectronFakesPtG[controlRegion]->Eval(fakeablePt);
+            fakeRate  = h2_ElectronFakes[controlRegion]->GetBinContent(iPt, 1);
         } else if (fabs(fakeable.Eta()) >= 1.479) {
-            fakeRate  = g_ElectronFakesPtE[controlRegion]->Eval(fakeablePt);
+            //fakeRate  = g_ElectronFakesPtE[controlRegion]->Eval(fakeablePt);
+            fakeRate  = h2_ElectronFakes[controlRegion]->GetBinContent(iPt, 1);
         }
     }
     //cout << fakeRate << endl;

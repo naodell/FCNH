@@ -10,7 +10,7 @@ styleDict['DATA']               = (2, r.kBlack, 0, 21, 'Observed')
 styleDict['DATA_MUON']          = (2, r.kBlack, 0, 21, 'Observed (#mu#mu)')
 styleDict['DATA_ELECTRON']      = (2, r.kBlack, 0, 21, 'Observed (ee)')
 styleDict['DATA_MUEG']          = (2, r.kBlack, 0, 21, 'Observed (e#mu)')
-styleDict['DATA_FAKES']         = (2, r.kBlue+4, 3001, 21, 'Fail')
+styleDict['DATA_FAKES']         = (2, r.kBlue+4, 3001, 22, 'Fail')
 
 # For fake studies
 styleDict['PASS']               = (2, r.kBlack, 0, 23, 'Pass')

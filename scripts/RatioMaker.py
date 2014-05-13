@@ -85,21 +85,11 @@ class RatioMaker(AnalysisTools):
             self.set_category(categories[1])
             h1_Denom    = self.combine_samples(value[1], ratioSample) 
 
-            #h1_Numer.SetName('h1_Numer_{0}'.format(categories[0]))
-            #self._outFile.GetDirectory(self._category).Add(h1_Numer)
-            #h1_Denom.SetName('h1_Denom_{0}'.format(categories[0]))
-            #self._outFile.GetDirectory(self._category).Add(h1_Denom)
-
             if bgSample != '':
                 self.set_category(categories[0])
                 h1_bgNumer  = self.combine_samples(value[0], bgSample) 
                 self.set_category(categories[1])
                 h1_bgDenom  = self.combine_samples(value[1], bgSample) 
-
-                #h1_bgNumer.SetName('h1_bgNumer_{0}'.format(categories[0]))
-                #self._outFile.GetDirectory(self._category).Add(h1_bgNumer)
-                #h1_bgDenom.SetName('h1_bgDenom_{0}'.format(categories[0]))
-                #self._outFile.GetDirectory(self._category).Add(h1_bgDenom)
 
                 h1_Numer.Add(h1_bgNumer, -1.)
                 h1_Denom.Add(h1_bgDenom, -1.)
@@ -110,8 +100,14 @@ class RatioMaker(AnalysisTools):
                 if binContent[0] < 0.:
                     h1_Numer.SetBinContent(i+1,0.)
 
-        g_Ratio = make_graph_ratio_1D(key, h1_Numer, h1_Denom)
-        self._outFile.GetDirectory(self._category).Add(g_Ratio)
+            for i in range(h1_Denom.GetNbinsX()):
+                binContent = h1_Denom.GetBinContent(i+1),
+                if binContent[0] < 0.:
+                    h1_Denom.SetBinContent(i+1,0.)
+
+            g_Ratio = make_graph_ratio_1D(key, h1_Numer, h1_Denom)
+            self._outFile.GetDirectory(self._category).Add(g_Ratio)
+
 
 
     def make_2D_ratios(self, ratioSample, bgSample = '', doProjections = True): 
@@ -135,6 +131,10 @@ class RatioMaker(AnalysisTools):
                 h2_Numer.Add(h2_bgNumer, -1.)
                 h2_Denom.Add(h2_bgDenom, -1.)
 
+            #h2_Numer.Print("range")
+            #print ''
+            #h2_Denom.Print("range")
+
             ### Set negative entries to 0
             for binX in range(h2_Numer.GetNbinsX()):
                 for binY in range(h2_Numer.GetNbinsY()):
@@ -144,20 +144,19 @@ class RatioMaker(AnalysisTools):
                     if h2_Denom.GetBinContent(binX+1, binY+1) < 0.:
                         h2_Denom.SetBinContent(binX+1, binY+1, 0.)
 
-            if doProjections:
-                g_RatioList = make_graph_ratio_2D(key, h2_Numer, h2_Denom)
+            ### Save ratios to 2D histograms
+            h2_Eff = r.TH2D('h2_{0}'.format(key), '{0};;'.format(key),
+                             h2_Numer.GetNbinsX(), h2_Numer.GetXaxis().GetXmin(), h2_Numer.GetXaxis().GetXmax(),
+                             h2_Numer.GetNbinsY(), h2_Numer.GetYaxis().GetXmin(), h2_Numer.GetYaxis().GetXmax())
+            h2_Eff.Divide(h2_Numer, h2_Denom, 1., 1., 'B')
+            #h2_Eff.Print("range")
+            self._hists.append(h2_Eff)
 
-                for g_Ratio in g_RatioList:
-                    self._outFile.GetDirectory(self._category).Add(g_Ratio)
-
-            else:
-                h2_Eff = r.TH2D('h2_{0}'.format(key), '{0};;'.format(key),
-                                 h2_Numer.GetNbinsX(), h2_Numer.GetXaxis().GetXmin(), h2_Numer.GetXaxis().GetXmax(),
-                                 h2_Numer.GetNbinsY(), h2_Numer.GetYaxis().GetXmin(), h2_Numer.GetYaxis().GetXmax())
-
-                h2_Eff.Divide(h2_Numer, h2_Denom, 1., 1., 'B')
-
-                self._hists.append(h2_Eff)
+            ### Save ratios to 1D graphs (TGraphAsymmErrors)
+            g_RatioList = make_graph_ratio_2D(key, h2_Numer, h2_Denom)
+            for g_Ratio in g_RatioList:
+                #g_Ratio.Print()
+                self._outFile.GetDirectory(self._category).Add(g_Ratio)
 
 
     def combine_rates(self, categories):
@@ -165,9 +164,6 @@ class RatioMaker(AnalysisTools):
 
         for category in categories:
             sourceDir = self._outFile.GetDirectory(categories[0])
-
-            #for 
-
 
 
     def charge_flip_fitter(self, ratioSample, nToys = 10):
@@ -260,16 +256,6 @@ if __name__ == '__main__':
         ratioMaker.set_category('inclusive')
         ratioMaker.get_scale_factors(['AIC_BG'], corrected = False)
 
-        #ratioMaker.set_ratio_1D({'mumumu':('ThirdMuonPt_AIC', 'PhotonPt_AIC_Mu3l')})
-        #ratioMaker.make_1D_ratios('DATA', bgSample = 'AIC_BG', categories = ['3l_mumumu', 'inclusive'])
-        #ratioMaker.set_ratio_1D({'emumu':('ThirdElectronPt_AIC', 'PhotonPt_AIC_Mu3l')})
-        #ratioMaker.make_1D_ratios('DATA', bgSample = 'AIC_BG', categories = ['3l_emumu', 'inclusive'])
-
-        #ratioMaker.set_ratio_1D({'eemu':('ThirdMuonPt_AIC', 'PhotonPt_AIC_El3l')})
-        #ratioMaker.make_1D_ratios('DATA', bgSample = 'AIC_BG', categories = ['3l_eemu', 'inclusive'])
-        #ratioMaker.set_ratio_1D({'eee':('ThirdElectronPt_AIC', 'PhotonPt_AIC_El3l')})
-        #ratioMaker.make_1D_ratios('DATA', bgSample = 'AIC_BG', categories = ['3l_eee', 'inclusive'])
-
         ratioMaker.set_ratio_1D({'mumumu':('TrileptonMass_AIC', 'DimuonPhotonMass_AIC')})
         ratioMaker.make_1D_ratios('DATA', bgSample = '', categories = ['3l_mumumu', 'inclusive'])
         ratioMaker.set_ratio_1D({'emumu':('TrileptonMass_AIC', 'DimuonPhotonMass_AIC')})
@@ -280,15 +266,6 @@ if __name__ == '__main__':
         ratioMaker.set_ratio_1D({'eee':('TrileptonMass_AIC', 'DimuonPhotonMass_AIC')})
         ratioMaker.make_1D_ratios('DATA', bgSample = '', categories = ['3l_eee', 'inclusive'])
 
-        #ratioMaker.set_ratio_1D({'mumumu':('TrileptonMass_AIC', 'DimuonPhotonMass_AIC')})
-        #ratioMaker.make_1D_ratios('DATA', bgSample = 'AIC_BG', categories = ['3l_mumumu', 'inclusive'])
-        #ratioMaker.set_ratio_1D({'emumu':('TrileptonMass_AIC', 'DimuonPhotonMass_AIC')})
-        #ratioMaker.make_1D_ratios('DATA', bgSample = 'AIC_BG', categories = ['3l_emumu', 'inclusive'])
-
-        #ratioMaker.set_ratio_1D({'eemu':('TrileptonMass_AIC', 'DimuonPhotonMass_AIC')})
-        #ratioMaker.make_1D_ratios('DATA', bgSample = 'AIC_BG', categories = ['3l_eemu', 'inclusive'])
-        #ratioMaker.set_ratio_1D({'eee':('TrileptonMass_AIC', 'DimuonPhotonMass_AIC')})
-        #ratioMaker.make_1D_ratios('DATA', bgSample = 'AIC_BG', categories = ['3l_eee', 'inclusive'])
         ratioMaker.write_outfile()
 
     ### For electron charge misID efficiencies ###
@@ -318,32 +295,29 @@ if __name__ == '__main__':
         outFile = 'data/fakeRates_TEST.root'
 
         ratioMaker = RatioMaker(inFile, outFile, scale = 19.7)
-        ratioMaker.get_scale_factors(['PROMPT'], corrected = False)
+        #ratioMaker.get_scale_factors(['PROMPT'], corrected = False)
 
         fakeDict1D = {
-            #'MuonFakePt_Even':('MuPassLepPt', 'MuProbeLepPt'),
-            #'MuonFakeEta_Even':('MuPassLepEta', 'MuProbeLepEta'),
             'MuonFakeMet':('MuNumerMet', 'MuDenomMet'),
             'MuonFakePt':('MuNumerPt', 'MuDenomPt'),
             'MuonFakeEta':('MuNumerEta', 'MuDenomEta'),
-            'ElectronFakeMet':('EleNumerMet', 'EleDenomMet'),
-            'ElectronFakePt':('EleNumerPt', 'EleDenomPt'),
-            'ElectronFakeEta':('EleNumerEta', 'EleDenomEta')
+            #'ElectronFakeMet':('EleNumerMet', 'EleDenomMet'),
+            #'ElectronFakePt':('EleNumerPt', 'EleDenomPt'),
+            #'ElectronFakeEta':('EleNumerEta', 'EleDenomEta')
         }
 
         fakeDict2D = {
-            #'MuonFakePt_Even':('MuPassLepPt', 'MuProbeLepPt'),
-            #'MuonFakeEta_Even':('MuPassLepEta', 'MuProbeLepEta'),
             'MuonFake':('MuNumer', 'MuDenom'),
-            'ElectronFake':('EleNumer', 'EleDenom')
+            #'ElectronFake':('EleNumer', 'EleDenom')
         }
 
-        fakeCategories = ['QCD2l', 'ZPlusJet', 'AntiIso3l']
+        fakeCategories = ['QCD2l']#, 'ZPlusJet', 'AntiIso3l']
 
         for category in fakeCategories:
             ratioMaker.set_category(category)
 
-            bgType ='PROMPT'
+            #bgType ='PROMPT'
+            bgType =''
 
             ratioMaker.set_ratio_1D(fakeDict1D)
             ratioMaker.make_1D_ratios('DATA', bgType)
