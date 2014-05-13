@@ -404,10 +404,15 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
     unsigned iPt = 0;
     unsigned  nPtBins = 8;
     float     ptBins[] = {10., 15., 20., 25., 30., 35., 40., 45., 50.}; 
-    for (unsigned j = 0; j < nPtBins; ++j) {
-        if (fakeable.Pt() > ptBins[j] && fakeable.Pt() < ptBins[j + 1]) {
-            iPt = j+1;
-            break;
+
+    if (fakeable.Pt() > 50.) {
+        iPt = 7;
+    } else {
+        for (unsigned j = 0; j < nPtBins; ++j) {
+            if (fakeable.Pt() > ptBins[j] && fakeable.Pt() < ptBins[j + 1]) {
+                iPt = j+1;
+                break;
+            }
         }
     }
 
@@ -419,14 +424,14 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
         else
             fakeablePt = 35;
 
-        fakeRate = h1_MuonFakes[controlRegion]->GetBinContent(iPt);
-        //if (fabs(fakeable.Eta()) < 1.5) {
-        //    //fakeRate  = g_MuonFakesPtB[controlRegion]->Eval(fakeablePt);
-        //    fakeRate  = h2_MuonFakes[controlRegion]->GetBinContent(iPt, 1);
-        //} else if (fabs(fakeable.Eta()) >= 1.5) {
-        //    //fakeRate  = g_MuonFakesPtE[controlRegion]->Eval(fakeablePt);
-        //    fakeRate  = h2_MuonFakes[controlRegion]->GetBinContent(iPt, 2);
-        //}
+        //fakeRate = h1_MuonFakes[controlRegion]->GetBinContent(iPt);
+        if (fabs(fakeable.Eta()) < 1.5) {
+            //fakeRate  = g_MuonFakesPtB[controlRegion]->Eval(fakeablePt);
+            fakeRate  = h2_MuonFakes[controlRegion]->GetBinContent(iPt, 1);
+        } else if (fabs(fakeable.Eta()) >= 1.5) {
+            //fakeRate  = g_MuonFakesPtE[controlRegion]->Eval(fakeablePt);
+            fakeRate  = h2_MuonFakes[controlRegion]->GetBinContent(iPt, 2);
+        }
     } else if (fakeable.Type() == "electron") {
 
         float fakeablePt = fakeable.Pt();

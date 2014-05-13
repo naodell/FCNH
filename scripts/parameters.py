@@ -295,7 +295,7 @@ combineDict['PASS']             = combineDict['DATA']
 combineDict['FAKEABLE']         = combineDict['DATA']
 
 cleanDict = {}
-cleanDict['AIC']                = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'muFakes', 'eFakes', 'llFakes']
+#cleanDict['AIC']                = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
 cleanDict['DATA_FAKES']         = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarHad', 'ttbarLep', 'tbarW', 'tW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'WbbToLNu', 'WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
 
 categoryDict = {'inclusive':'inclusive',

@@ -9,8 +9,8 @@ using namespace std;
 /////////////////
 
 const bool  doQCDDileptonCR = true;
-const bool  doZPlusJetCR    = false;
-const bool  doAntiIso3l     = false;
+const bool  doZPlusJetCR    = true;
+const bool  doAntiIso3l     = true;
 
 const float jetPtCut[]  = {25., 15.};
 const float muPtCut[]   = {10., 3.};
@@ -611,7 +611,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
             if (elPass)
                 FillNumeratorHists(crType, eleProbe);
-            else if (elFake)
+            else //if (elFake)
                 FillClosureHists(crType, eleProbe);
 
             FillJetFlavorHists(crType, eleProbe);
