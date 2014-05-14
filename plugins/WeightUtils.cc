@@ -445,10 +445,10 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
             fakeRate  = h2_ElectronFakes[controlRegion]->GetBinContent(iPt, 1);
         } else if (fabs(fakeable.Eta()) >= 0.8 && fabs(fakeable.Eta()) < 1.479) {
             //fakeRate  = g_ElectronFakesPtG[controlRegion]->Eval(fakeablePt);
-            fakeRate  = h2_ElectronFakes[controlRegion]->GetBinContent(iPt, 1);
+            fakeRate  = h2_ElectronFakes[controlRegion]->GetBinContent(iPt, 2);
         } else if (fabs(fakeable.Eta()) >= 1.479) {
             //fakeRate  = g_ElectronFakesPtE[controlRegion]->Eval(fakeablePt);
-            fakeRate  = h2_ElectronFakes[controlRegion]->GetBinContent(iPt, 1);
+            fakeRate  = h2_ElectronFakes[controlRegion]->GetBinContent(iPt, 3);
         }
     }
     //cout << fakeRate << endl;

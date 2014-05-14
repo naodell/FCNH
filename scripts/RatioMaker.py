@@ -305,7 +305,7 @@ if __name__ == '__main__':
             #'ElectronFake':('EleNumer', 'EleDenom')
         }
 
-        fakeCategories = ['QCD2l']#, 'ZPlusJet', 'AntiIso3l']
+        fakeCategories = ['QCD2l', 'ZPlusJet', 'AntiIso3l']
 
         for category in fakeCategories:
             ratioMaker.set_category(category)

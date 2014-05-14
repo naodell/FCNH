@@ -606,12 +606,12 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
     // Do denominator and numerator histograms
     if (crType != "None") {
-        if (false) { //nEleProbes == 1) {}
+        if (nEleProbes == 1) {
             FillDenominatorHists(crType, eleProbe);
 
             if (elPass)
                 FillNumeratorHists(crType, eleProbe);
-            else //if (elFake)
+            else if (false)//if (elFake)
                 FillClosureHists(crType, eleProbe);
 
             FillJetFlavorHists(crType, eleProbe);
@@ -829,7 +829,7 @@ void fakeAnalyzer::FillClosureHists(string category, TCPhysObject& probe)
     histManager->SetDirectory(category + "/" + suffix);
 
     string categories[3] = {"QCD2l", "ZPlusJet", "AntiIso3l"};
-    for (unsigned i = 0; i < 1; ++i) {
+    for (unsigned i = 0; i < 3; ++i) {
         string cat = categories[i];
         float fakeWeight = weighter->GetFakeWeight(probe, cat);
         histManager->SetWeight(fakeWeight);
