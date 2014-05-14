@@ -289,29 +289,30 @@ if __name__ == '__main__':
         outFile = 'data/fakeRates_TEST.root'
 
         ratioMaker = RatioMaker(inFile, outFile, scale = 19.7)
-        #ratioMaker.get_scale_factors(['PROMPT'], corrected = False)
+        ratioMaker.get_scale_factors(['PROMPT'], corrected = False)
 
         fakeDict1D = {
             'MuonFakeMet':('MuNumerMet', 'MuDenomMet'),
             'MuonFakePt':('MuNumerPt', 'MuDenomPt'),
             'MuonFakeEta':('MuNumerEta', 'MuDenomEta'),
-            #'ElectronFakeMet':('EleNumerMet', 'EleDenomMet'),
-            #'ElectronFakePt':('EleNumerPt', 'EleDenomPt'),
-            #'ElectronFakeEta':('EleNumerEta', 'EleDenomEta')
+            'ElectronFakeMet':('EleNumerMet', 'EleDenomMet'),
+            'ElectronFakePt':('EleNumerPt', 'EleDenomPt'),
+            'ElectronFakeEta':('EleNumerEta', 'EleDenomEta')
         }
 
         fakeDict2D = {
             'MuonFake':('MuNumer', 'MuDenom'),
-            #'ElectronFake':('EleNumer', 'EleDenom')
+            'ElectronFake':('EleNumer', 'EleDenom')
         }
 
         fakeCategories = ['QCD2l', 'ZPlusJet', 'AntiIso3l']
 
         for category in fakeCategories:
+            print category
             ratioMaker.set_category(category)
 
-            #bgType ='PROMPT'
-            bgType =''
+            bgType ='PROMPT'
+            #bgType =''
 
             ratioMaker.set_ratio_1D(fakeDict1D)
             ratioMaker.make_1D_ratios('DATA', bgType)

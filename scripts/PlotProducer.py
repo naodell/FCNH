@@ -406,7 +406,10 @@ class PlotProducer(AnalysisTools):
                 hist.Draw(opt)
 
                 if hist.GetYaxis():
-                    hist.GetYaxis().SetTitleOffset(2.0);
+                    hist.GetYaxis().SetTitleOffset(1.3);
+                    hist.GetYaxis().SetTitleSize(0.04);
+                    hist.GetXaxis().SetTitleOffset(0.9);
+                    hist.GetXaxis().SetTitleSize(0.04);
 
                 isBlank = False
             else:
@@ -414,11 +417,12 @@ class PlotProducer(AnalysisTools):
 
         ## Draw info box ##
         r.gStyle.SetOptTitle(0)
-        textBox = r.TPaveText(0.09, 0.91, 0.79, 0.96, 'NDC')
+        textBox = r.TPaveText(0.09, 0.91, 0.91, 0.98, 'NDC')
         textBox.SetFillColor(0)
         textBox.SetFillStyle(0)
         textBox.SetLineWidth(0)
         textBox.SetLineColor(0)
+        textBox.SetTextSize(0.03)
 
         if self._period is '2011':
             textBox.AddText('#scale[1.2]{CMS preliminary, #sqrt{s} = 7 TeV, #it{L}_{int}' + ' = {0:.1f}'.format(self._scale) + ' fb^{-1}       #bf{#color[2]{' + categories[self._category] + '}}}')
