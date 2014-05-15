@@ -38,10 +38,10 @@ catList = ['inclusive', 'QCD2l', 'AntiIso3l', 'ZPlusJet']
 
 ### Samples to be included in stacks ###
 samples = {}
-samples['inclusive']    = ['PROMPT'] 
-samples['ZPlusJet']     = ['PROMPT']
-samples['QCD2l']        = ['PROMPT']
-samples['AntiIso3l']    = ['PROMPT']
+samples['inclusive']    = ['ZJets', 'ttbar', 'WW/ZZ', 'WbbToLNu', 'WZJets3LNu']
+samples['ZPlusJet']     = samples['inclusive']#['PROMPT']
+samples['QCD2l']        = samples['inclusive']#['PROMPT']
+samples['AntiIso3l']    = samples['inclusive']#['PROMPT']
 #samples['AntiIso3l']    = ['ZJets', 'ttbarLep', 'ttbarHad', 'WZJets3LNu', 'WbbToLNu'] #'WJetsToLNu']
 
 if doPlots:
@@ -59,7 +59,7 @@ if doPlots:
 
     ### DATASETS ###
 
-    plotter.add_datasets(samples['inclusive'])
+    plotter.add_datasets(['PROMPT'])
     plotter._overlayList.extend(['DATA'])
 
     plotter.get_scale_factors(addData = [], corrected = False)
@@ -114,6 +114,11 @@ if doPlots:
         for CR in catList:
             if CR == 'inclusive':
                 continue
+
+            plotter.make_overlays_diff([(['PROMPT', 'DATA_FAKES'], ['MuNumerEta', 'MuUnevenEtaClosure_{0}'.format(CR)]), 
+                                        (['DATA'],['MuNumerEta'])], 'Muon', 'MuClosureEta_{0}'.format(CR)) 
+            plotter.make_overlays_diff([(['PROMPT', 'DATA_FAKES'], ['EleNumerEta', 'EleUnevenEtaClosure_{0}'.format(CR)]), 
+                                        (['DATA'],['EleNumerEta'])], 'Electron', 'EleClosureEta_{0}'.format(CR)) 
 
             plotter.make_overlays_diff([(['PROMPT', 'DATA_FAKES'], ['MuNumerPt', 'MuUnevenPtClosure_{0}'.format(CR)]), 
                                         (['DATA'],['MuNumerPt'])], 'Muon', 'MuClosurePt_{0}'.format(CR)) 
