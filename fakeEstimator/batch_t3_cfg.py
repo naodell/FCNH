@@ -61,8 +61,8 @@ if period == '2012':
     bg.extend([
         cfg('ZJets_M-50',      '{0}/DYJetsToLL_M-50'.format(mcDir),            30,  'ZJets_M-50      {0}  2012'.format(mcTrigger)),
         cfg('ZJets_M-10To50',  '{0}/DYJetsToLL_M-10To50filter'.format(mcDir),  20,  'ZJets_M-10To50  {0}  2012'.format(mcTrigger)),
-        #cfg('WbbToLNu',        '{0}/WbbJetsToLNu'.format(mcDir),     20,  'WbbToLNu        {0}  2012'.format(mcTrigger)),
-        cfg('WjetToLNu',       '{0}/WJetsToLNu'.format(mcDir),       40,  'WJetsToLNu      {0}  2012'.format(mcTrigger)),
+        cfg('WbbToLNu',        '{0}/WbbJetsToLNu'.format(mcDir),     20,  'WbbToLNu        {0}  2012'.format(mcTrigger)),
+        #cfg('WjetToLNu',       '{0}/WJetsToLNu'.format(mcDir),       50,  'WJetsToLNu      {0}  2012'.format(mcTrigger)),
 
         cfg('ttbarHad',        '{0}/TTJets'.format(mcDir),           30,  'ttbarHad        {0}  2012'.format(mcTrigger)),
         cfg('ttbarLep',        '{0}/TTJets'.format(mcDir),           30,  'ttbarLep        {0}  2012'.format(mcTrigger)),

@@ -161,7 +161,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
         gLeptons.insert(gLeptons.end(), gTaus.begin(), gTaus.end());
 
         // Hack to split ttbar sample
-        if (suffix == "ttbarHad" && gLeptons.size() != 1)
+        if (suffix == "ttbarHad" && gLeptons.size() > 1)
             return kTRUE;
         else if (suffix == "ttbarLep" && gLeptons.size() != 2)
             return kTRUE;
@@ -577,12 +577,6 @@ bool fakeAnalyzer::Process(Long64_t entry)
     histManager->SetDirectory(crType + "/" + suffix);
     histManager->Fill1DHist(leptons.size(),
             "h1_leptonMult", "lepton multiplicity; N_{leptons}; Entries / bin", 6, -0.5, 5.5);
-    histManager->Fill1DHist(jets.size(),
-            "h1_jetMult", "jet multiplicity; N_{jets}; Entries / bin", 10, -0.5, 9.5);
-    histManager->Fill1DHist(bJetsM.size(),
-            "h1_bJetMediumMult", "b-jet multiplicity (medium wp); N_{b-jet}; Entries / bin", 10, -0.5, 9.5);
-    histManager->Fill1DHist(bJetsL.size(),
-            "h1_bJetLooseMult", "b-jet multiplicity (loose wp); N_{b-jet}; Entries / bin", 10, -0.5, 9.5);
 
 
     // Do denominator and numerator histograms
@@ -784,7 +778,7 @@ void fakeAnalyzer::FillNumeratorHists(string cat, TCPhysObject& probe)
             histManager->Fill1DHist(probe.IdMap("IsoRel"),
                     "h1_MuNumerIsoRel", "pass electron IsoRel;IsoRel;Entries", 40, 0., 0.20);
             histManager->Fill1DHistUnevenBins(recoMET->Mod(),
-                "h1_MuNumerMet", "pass muon Met;Met;Entries", nMetBins, metBins);
+                    "h1_MuNumerMet", "pass muon Met;Met;Entries", nMetBins, metBins);
         }
     } else if (lepType == "electron") {
         histManager->Fill1DHist(probe.Pt(),
@@ -857,6 +851,13 @@ void fakeAnalyzer::FillJetFlavorHists(string cat, TCPhysObject& lepton)
 {
     histManager->SetDirectory(cat + "/" + suffix);
 
+    histManager->Fill1DHist(jets.size(),
+            "h1_jetMult", "jet multiplicity; N_{jets}; Entries / bin", 10, -0.5, 9.5);
+    //histManager->Fill1DHist(bJetsM.size(),
+    //        "h1_bJetMediumMult", "b-jet multiplicity (medium wp); N_{b-jet}; Entries / bin", 10, -0.5, 9.5);
+    //histManager->Fill1DHist(bJetsL.size(),
+    //        "h1_bJetLooseMult", "b-jet multiplicity (loose wp); N_{b-jet}; Entries / bin", 10, -0.5, 9.5);
+
     unsigned jetIndex;
     bool jetMatched = false;
     for (unsigned i = 0; i < jets.size(); ++i) {
@@ -876,6 +877,7 @@ void fakeAnalyzer::FillJetFlavorHists(string cat, TCPhysObject& lepton)
             histManager->Fill1DHist(jets[jetIndex].BDiscriminatorMap("CSV"),
                     "h1_MatchedEleJetBDiscr", "matched e-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
     }
+
 }
 
 bool fakeAnalyzer::CheckQCD2lCR(vector<TCJet>& tagJets, TCPhysObject& probe) 
@@ -896,10 +898,17 @@ bool fakeAnalyzer::CheckQCD2lCR(vector<TCJet>& tagJets, TCPhysObject& probe)
     Float_t tpDeltaPhi  = tag.DeltaPhi(probe);
     Float_t tpBalance   = probe.Pt()/(tag.Pt()*(1 + tag.IdMap("IsoRel"))); 
 
-    histManager->Fill1DHist(fabs(tpDeltaPhi),
-            "h1_TagProbeDeltaPhi", "#Delta #phi (tag,probe);#Delta #phi (tag,probe);Entries / bin", 36, 0., TMath::Pi());
-    histManager->Fill1DHist(fabs(tpBalance),
-            "h1_TagProbePtBalance", "balance (tag,probe);balance (tag,probe);Entries / bin", 40, 0., 4.);
+    if (probe.Type() == "muon") {
+        histManager->Fill1DHist(fabs(tpDeltaPhi),
+                "h1_TagMuProbeDeltaPhi", "#Delta #phi (tag,probe);#Delta #phi (tag,probe);Entries / bin", 36, 0., TMath::Pi());
+        histManager->Fill1DHist(fabs(tpBalance),
+                "h1_TagMuProbePtBalance", "balance (tag,probe);balance (tag,probe);Entries / bin", 40, 0., 4.);
+    } else if (probe.Type() == "electron") {
+        histManager->Fill1DHist(fabs(tpDeltaPhi),
+                "h1_TagEleProbeDeltaPhi", "#Delta #phi (tag,probe);#Delta #phi (tag,probe);Entries / bin", 36, 0., TMath::Pi());
+        histManager->Fill1DHist(fabs(tpBalance),
+                "h1_TagEleProbePtBalance", "balance (tag,probe);balance (tag,probe);Entries / bin", 40, 0., 4.);
+    }
 
     if (fabs(tpDeltaPhi) < 2. || tpBalance > 1 || !jetMatched) 
         return false;
@@ -913,15 +922,22 @@ bool fakeAnalyzer::CheckZPlusJetCR(TCPhysObject& probe)
     Float_t tpDeltaPhi  = tag.DeltaPhi(probe);
     Float_t tpBalance   = probe.Pt()/tag.Pt(); 
 
-    histManager->Fill1DHist(fabs(tpDeltaPhi),
-            "h1_TagProbeDeltaPhi", "#Delta #phi (tag,probe);#Delta #phi (tag,probe);Entries / bin", 36, 0., TMath::Pi());
-    histManager->Fill1DHist(fabs(tpBalance),
-            "h1_TagProbePtBalance", "balance (tag,probe);balance (tag,probe);Entries / bin", 40, 0., 4.);
+    if (probe.Type() == "muon") {
+        histManager->Fill1DHist(fabs(tpDeltaPhi),
+                "h1_TagMuProbeDeltaPhi", "#Delta #phi (tag,probe);#Delta #phi (tag,probe);Entries / bin", 36, 0., TMath::Pi());
+        histManager->Fill1DHist(fabs(tpBalance),
+                "h1_TagMuProbePtBalance", "balance (tag,probe);balance (tag,probe);Entries / bin", 40, 0., 4.);
+    } else if (probe.Type() == "electron") {
+        histManager->Fill1DHist(fabs(tpDeltaPhi),
+                "h1_TagEleProbeDeltaPhi", "#Delta #phi (tag,probe);#Delta #phi (tag,probe);Entries / bin", 36, 0., TMath::Pi());
+        histManager->Fill1DHist(fabs(tpBalance),
+                "h1_TagEleProbePtBalance", "balance (tag,probe);balance (tag,probe);Entries / bin", 40, 0., 4.);
+    }
 
-    //if (fabs(tpDeltaPhi) < 2.5 || tpBalance > 1 || recoMET->Mod() > 50)
-    //    return false;
-    //else
-    return true;
+    if (recoMET->Mod() > 50)
+        return false;
+    else
+        return true;
 }
 
 void fakeAnalyzer::GenMatcher(vObj& leptons, vector<TCGenParticle>& gLeptons)

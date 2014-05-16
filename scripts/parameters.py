@@ -40,7 +40,7 @@ styleDict['VV2l']               = (0, r.kGray+2, 1, 1, 'VV#rightarrow2l2x')
 styleDict['ZZJets2L2Nu']        = (2, r.kGreen+3, 1, 1, 'ZZ#rightarrow2l2#nu')
 styleDict['ZZJets2L2Q']         = (2, r.kBlue-7, 1, 1, 'ZZ#rightarrow2l2q')
 styleDict['ZZJets4L']           = (2, r.kBlue+2, 1, 1, 'ZZ#rightarrow4l')
-styleDict['WWJets2L2Nu']        = (0, r.kGray+1, 1, 1, 'WW#rightarrow2l2#nu')
+styleDict['WWJets2L2Nu']        = (0, r.kGreen+2, 1, 1, 'WW#rightarrow2l2#nu')
 styleDict['WZJets3LNu']         = (3, r.kMagenta+1, 1, 1, 'WZ#rightarrow3l#nu')
 styleDict['WZJets2L2Q']         = (3, r.kBlue-3, 0, 1, 'WZ#rightarrow2l2q')
 
@@ -304,7 +304,7 @@ categoryDict = {'inclusive':'inclusive',
                 'os_inclusive':'os inclusive', 'os_mumu':'#mu^{#pm}#mu^{#mp}', 'os_ee':'e^{#pm}e^{#mp}', 'os_emu':'e^{#pm}mu^{#mp}', 
                 '3l_inclusive':'3l inclusive', '3l_OSSF':'(l^{#pm}l^{#mp})l', '3l_SSSF':'(l^{#pm}l^{#pm})l',
                 '3l_eee':'eee', '3l_eemu':'ee#mu', '3l_emumu':'e#mu#mu','3l_mumumu':'#mu#mu#mu',
-                'AntiIso3l':'Anit-Iso CR', 'QCD2l':'QCD ll', 'ZPlusJet':'Z+jet',
+                'AntiIso3l':'Anti-Iso CR', 'QCD2l':'QCD ll', 'ZPlusJet':'Z+jet',
                 'low_met':'MET < 20', 'high_met':'45 < MET < 80'
                 }
 

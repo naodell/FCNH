@@ -38,10 +38,10 @@ catList = ['inclusive', 'QCD2l', 'AntiIso3l', 'ZPlusJet']
 
 ### Samples to be included in stacks ###
 samples = {}
-samples['inclusive']    = ['ZJets', 'ttbar', 'WW/ZZ', 'WbbToLNu', 'WZJets3LNu']
-samples['ZPlusJet']     = samples['inclusive']#['PROMPT']
-samples['QCD2l']        = samples['inclusive']#['PROMPT']
-samples['AntiIso3l']    = samples['inclusive']#['PROMPT']
+samples['inclusive']    = ['ZJets', 'ttbar', 'WWJets2L2Nu', 'ZZ4l', 'WbbToLNu', 'WZJets3LNu']
+samples['ZPlusJet']     = samples['WZJets3LNu', 'ZZ4l']#['PROMPT']
+samples['QCD2l']        = samples['ZJets', 'ttbar']#['PROMPT']
+samples['AntiIso3l']    = samples['ZJets', 'ttbar']#['PROMPT']
 #samples['AntiIso3l']    = ['ZJets', 'ttbarLep', 'ttbarHad', 'WZJets3LNu', 'WbbToLNu'] #'WJetsToLNu']
 
 if doPlots:
@@ -66,7 +66,8 @@ if doPlots:
 
     plotter._directoryList1D            = ['Misc', 'Muon', 'Electron']
     plotter._variableDict['Misc']       = ['bJetLooseMult', 'bJetMediumMult', 'JetMult', 'Met',
-                                           'TagProbeDeltaPhi', 'TagProbePtBalance', 
+                                           'TagMuProbeDeltaPhi', 'TagMuProbePtBalance', 
+                                           'TagEleProbeDeltaPhi', 'TagEleProbePtBalance', 
                                            'TagLepPt', 'TagLepEta', 'TagIsoRel', 'TagDz', 'TagDxy'] 
 
     plotter._variableDict['Muon']       = ['MuPassLepPt', 'MuPassLepEta', 

@@ -20,8 +20,8 @@ def make_graph_ratio_2D(outName, h2_Numer, h2_Denom):
 
     gList = []
     for i in range(h2_Numer.GetYaxis().GetNbins()):
-        h1_Numer = h2_Numer.ProjectionX('h_Numer_{0}_{1}'.format(outName, i+1), i, i+1)
-        h1_Denom = h2_Denom.ProjectionX('h_Denom_{0}_{1}'.format(outName, i+1), i, i+1)
+        h1_Numer = h2_Numer.ProjectionX('h_Numer_{0}_{1}'.format(outName, i+1), i+1, i+1)
+        h1_Denom = h2_Denom.ProjectionX('h_Denom_{0}_{1}'.format(outName, i+1), i+1, i+1)
 
         for j in range(h1_Numer.GetNbinsX()):
             numerContent = h1_Numer.GetBinContent(j+1)
@@ -105,11 +105,13 @@ class RatioMaker(AnalysisTools):
                 if binContent[0] < 0.:
                     h1_Denom.SetBinContent(i+1,0.)
 
-            ### Save ratios to 2D histograms
+            ### Save ratios to histograms
             h1_Eff = r.TH1D('h1_{0}'.format(key), '{0};;'.format(key), h1_Numer.GetNbinsX(), h1_Numer.GetXaxis().GetXmin(), h1_Numer.GetXaxis().GetXmax())
             h1_Eff.Divide(h1_Numer, h1_Denom, 1., 1., 'B')
-            #h2_Eff.Print("range")
             self._hists.append(h1_Eff)
+
+            self._hists.append(h1_Numer)
+            self._hists.append(h1_Denom)
 
 
             g_Ratio = make_graph_ratio_1D(key, h1_Numer, h1_Denom)
@@ -137,6 +139,9 @@ class RatioMaker(AnalysisTools):
 
                 h2_Numer.Add(h2_bgNumer, -1.)
                 h2_Denom.Add(h2_bgDenom, -1.)
+
+            self._hists.append(h2_Numer)
+            self._hists.append(h2_Denom)
 
             ### Set negative entries to 0
             for binX in range(h2_Numer.GetNbinsX()):
