@@ -1849,10 +1849,6 @@ void fcncAnalyzer::MiscPlots()
     //histManager->Fill1DHist(primaryVtx[0]->Z(),
     //        "h1_PvZ", "z_{PV};z_{PV};Entries / bin" 50, 0.5, 50.5);
 
-    // Histograms for systematic errors
-    histManager->Fill1DHist(weighter->GetFakeUncertainty(),
-            "h1_FakeWeightUncertainty", "fake rate error;#sigma_{fake};Entries / bin", 40, 0., 0.1);
-
     // Check 3l fakes
     if (flavorCat > 4) {
         unsigned lepIndex = 1;

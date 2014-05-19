@@ -80,6 +80,7 @@ class fakeAnalyzer : public TSelector {
         TVector3*       selectedVtx;
         TLorentzVector  ZP4;
         TCPhysObject    tag, lep1, lep2, lep3;
+        TCJet           probeJet;
         vector<TCJet>   jets;
 
         Float_t dileptonMass;
@@ -178,6 +179,7 @@ class fakeAnalyzer : public TSelector {
         virtual bool    CheckQCD2lCR(vector<TCJet>&, TCPhysObject&);
         virtual bool    CheckZPlusJetCR(TCPhysObject&);
         virtual vector<TCJet> CleanJetOverlap(vObj&);
+        virtual float   CalculateTransMass(TCPhysObject&, TCMET&);
 
         virtual string  str(int i) {return static_cast<ostringstream*>( &(ostringstream() << i) )->str();}
 

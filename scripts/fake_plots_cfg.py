@@ -38,10 +38,10 @@ catList = ['inclusive', 'QCD2l', 'AntiIso3l', 'ZPlusJet']
 
 ### Samples to be included in stacks ###
 samples = {}
-samples['inclusive']    = ['ZJets', 'ttbar', 'WWJets2L2Nu', 'ZZ4l', 'WbbToLNu', 'WZJets3LNu']
-samples['ZPlusJet']     = samples['WZJets3LNu', 'ZZ4l']#['PROMPT']
-samples['QCD2l']        = samples['ZJets', 'ttbar']#['PROMPT']
-samples['AntiIso3l']    = samples['ZJets', 'ttbar']#['PROMPT']
+samples['inclusive']    = ['ZJets', 'ttbar', 'ZZ4l', 'WbbToLNu', 'WZJets3LNu']
+samples['ZPlusJet']     = ['WZJets3LNu', 'ZZ4l']#['PROMPT']
+samples['QCD2l']        = ['ZJets', 'ttbar', 'WbbToLNu']#['PROMPT']
+samples['AntiIso3l']    = ['ZJets', 'ttbar', 'WbbToLNu']#['PROMPT']
 #samples['AntiIso3l']    = ['ZJets', 'ttbarLep', 'ttbarHad', 'WZJets3LNu', 'WbbToLNu'] #'WJetsToLNu']
 
 if doPlots:
@@ -71,7 +71,7 @@ if doPlots:
                                            'TagLepPt', 'TagLepEta', 'TagIsoRel', 'TagDz', 'TagDxy'] 
 
     plotter._variableDict['Muon']       = ['MuPassLepPt', 'MuPassLepEta', 
-                                           'MuProbeLepPt', 'MuProbeLepEta', 
+                                           'MuProbeLepPt', 'MuProbeLepEta', 'MuProbeTransverseMass',
                                            'MuDenomPt', 'MuDenomEta', 
                                            'MuNumerPt', 'MuNumerEta', 
                                            'MuDenomMet', 'MuNumerMet', 
@@ -81,7 +81,7 @@ if doPlots:
                                            'MuonPt_Iso', 'MuonPt_AntiIso', 'TagMuProbeMass']
 
     plotter._variableDict['Electron']   = ['ElePassLepPt', 'ElePassLepEta', 
-                                           'EleProbeLepPt', 'EleProbeLepEta', 
+                                           'EleProbeLepPt', 'EleProbeLepEta', 'EleProbeTransverseMass',
                                            'EleDenomPt', 'EleDenomEta', 
                                            'EleNumerPt', 'EleNumerEta', 
                                            'EleDenomMet', 'EleNumerMet', 
