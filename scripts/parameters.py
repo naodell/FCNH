@@ -305,6 +305,7 @@ categoryDict = {'inclusive':'inclusive',
                 '3l_inclusive':'3l inclusive', '3l_OSSF':'(l^{#pm}l^{#mp})l', '3l_SSSF':'(l^{#pm}l^{#pm})l',
                 '3l_eee':'eee', '3l_eemu':'ee#mu', '3l_emumu':'e#mu#mu','3l_mumumu':'#mu#mu#mu',
                 'AntiIso3l':'Anti-Iso CR', 'QCD2l':'QCD ll', 'ZPlusJet':'Z+jet',
+                'PureLep':'Pure Muon',
                 'low_met':'MET < 20', 'high_met':'45 < MET < 80'
                 }
 

@@ -269,7 +269,9 @@ void Selector::MuonSelector(TClonesArray* muons)
                     && muISO > 0.2
                ) {
                 _selMuons["QCD2l_CR_tag"].push_back(*thisMuon);
-            } else if (
+            } 
+            
+            if (
                     MuonTightID(thisMuon) 
                     && muISO < 1. 
                     && !(muISO > 0.12 && muISO < 0.2)

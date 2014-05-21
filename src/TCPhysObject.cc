@@ -6,10 +6,9 @@ TCPhysObject::TCPhysObject():
     _vtx(-9,-9,-9),
     _charge(0),
     _isPF(false),
-    _isReco(false),
-    _isFake(false),
     _isTriggered(false),
-    _isGenMatched(false)
+    _isFake(false),
+    _type("none")
 {
 }
 
@@ -17,31 +16,26 @@ TCPhysObject::TCPhysObject(TLorentzVector p4, int charge):
     _vtx(-9,-9,-9),
     _charge(charge),
     _isPF(false),
-    _isReco(false),
-    _isFake(false),
     _isTriggered(false),
-    _isGenMatched(false)
+    _isFake(false),
+    _type("none")
 {
     this->SetP4(p4);
 }
 
-TCPhysObject::TCPhysObject(TLorentzVector p4, int charge, string type) :
+TCPhysObject::TCPhysObject(TLorentzVector p4, int charge, string type):
     _vtx(-9,-9,-9),
     _charge(charge),
     _isPF(false),
-    _isReco(false),
-    _isFake(false),
     _isTriggered(false),
-    _isGenMatched(false)
+    _isFake(false),
+    _type(type)
 {
     this->SetP4(p4);
-    this->SetCharge(charge);
-    this->SetType(type);
-
 }
 
-TCPhysObject::~TCPhysObject() {
-}
+
+TCPhysObject::~TCPhysObject() {}
 
 // "get" methods -------------------------------------
 
@@ -61,21 +55,6 @@ float TCPhysObject::IdMap(string key) const {
     return _IdMap.find(key)->second; 
 }
 
-/*
-   float TCPhysObject::IsoMap(string key) const { 
-
-//Check that key is present in the iso map
-try {
-string exception = "Can't find " + key + " in isolation map"; 
-if (_IsoMap.count(key) == 0)
-throw exception;
-} catch (string ex) {
-cout << ex << endl;
-}
-
-return _IsoMap.find(key)->second; 
-}
-*/
 
 TVector2 TCPhysObject::P2() const {
     TVector2 v2(this->Px(), this->Py());
@@ -84,18 +63,15 @@ TVector2 TCPhysObject::P2() const {
 
 TVector3 TCPhysObject::Vtx()  const { return _vtx; }
 int  TCPhysObject::Charge() const   { return _charge; }
-string TCPhysObject::Type() const { return _type; }
+string TCPhysObject::Type() const   { return _type;}
 bool TCPhysObject::IsPF()   const   { return _isPF; }
-bool TCPhysObject::IsReco() const   { return _isReco; }
-bool TCPhysObject::IsFake() const   { return _isFake; }
-bool TCPhysObject::IsTriggered() const   { return _isTriggered; }
-bool TCPhysObject::IsGenMatched() const   { return _isGenMatched; }
+bool TCPhysObject::IsTriggered() const {return _isTriggered;}
+bool TCPhysObject::IsFake()   const   { return _isFake; }
 
 // "set" methods ---------------------------------------------
 
 void TCPhysObject::SetP4(TLorentzVector p4) { this->SetPxPyPzE(p4.Px(), p4.Py(), p4.Pz(), p4.E()); } 
 void TCPhysObject::SetIdMap(string s, float v){ _IdMap[s] = v; }
-//void TCPhysObject::SetIsoMap(string s, float v){ _IsoMap[s] = v; }
 
 void TCPhysObject::SetVtx(float vx, float vy, float vz) {
     TVector3 v3(vx, vy, vz);
@@ -103,12 +79,10 @@ void TCPhysObject::SetVtx(float vx, float vy, float vz) {
 }
 
 void TCPhysObject::SetCharge(int c) { _charge = c; }
-void TCPhysObject::SetType(string s){ _type = s; }
+void TCPhysObject::SetType(string t) { _type = t; }
 void TCPhysObject::SetPF(bool p)    { _isPF = p;}
-void TCPhysObject::SetReco(bool r)  { _isReco= r;}
-void TCPhysObject::SetFake(bool f)  { _isFake = f;}
-void TCPhysObject::SetTriggered(bool f)  { _isTriggered = f;}
-void TCPhysObject::SetGenMatched(bool g)  { _isGenMatched = g;}
+void TCPhysObject::SetFake(bool f)    { _isFake = f;}
+void TCPhysObject::SetTriggered(bool t)    { _isTriggered = t;}
 
 // generally useful methods -----------------------------------
 
@@ -131,3 +105,9 @@ float TCPhysObject::Dz(TVector3 *primVtx) const {
     float ret =  (vz-pvz)-((vx-pvx)*px +(vy-pvy)*py)/pt*(pz/pt);
     return ret;
 }
+
+ostream& TCPhysObject::TCprint(ostream& os) const {
+    return os << "pt: "<< this->Pt() << " eta: " << this->Eta() << " phi: "<< this->Phi() <<" e: " << this->E() << " charge: "<<this->Charge();
+}
+
+

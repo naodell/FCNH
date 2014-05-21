@@ -152,7 +152,7 @@ class fakeAnalyzer : public TSelector {
         TBranch        *b_NoiseFilters;   //!
 
         //For counting events
-        unsigned          eventCount[2];
+        unsigned          eventCount[16];
 
         fakeAnalyzer(TTree * /*tree*/ =0) { }
         virtual ~fakeAnalyzer() { }

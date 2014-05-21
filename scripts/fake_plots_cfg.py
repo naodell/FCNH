@@ -32,16 +32,13 @@ doLog       = False
 doEff       = False
 doRatio     = False
 
-### Categories to be plotted ###
-catList = ['inclusive', 'QCD2l', 'AntiIso3l', 'ZPlusJet']
-#catList = ['ZPlusJet']
-
 ### Samples to be included in stacks ###
 samples = {}
 samples['inclusive']    = ['ZJets', 'ttbar', 'ZZ4l', 'WbbToLNu', 'WZJets3LNu']
 samples['ZPlusJet']     = ['WZJets3LNu', 'ZZ4l']#['PROMPT']
 samples['QCD2l']        = ['ZJets', 'ttbar', 'WbbToLNu']#['PROMPT']
 samples['AntiIso3l']    = ['ZJets', 'ttbar', 'WbbToLNu']#['PROMPT']
+samples['PureLep']      = ['ZJets']#, 'ttbar', 'WZJets3LNu']#['PROMPT']
 #samples['AntiIso3l']    = ['ZJets', 'ttbarLep', 'ttbarHad', 'WZJets3LNu', 'WbbToLNu'] #'WJetsToLNu']
 
 if doPlots:
@@ -59,12 +56,13 @@ if doPlots:
 
     ### DATASETS ###
 
-    plotter.add_datasets(['PROMPT'])
+    plotter.add_datasets(['ZJets'])
+    #plotter.add_datasets(['PROMPT'])
     plotter._overlayList.extend(['DATA'])
 
     plotter.get_scale_factors(addData = [], corrected = False)
 
-    plotter._directoryList1D            = ['Misc', 'Muon', 'Electron']
+    plotter._directoryList1D            = ['Muon', 'Electron']
     plotter._variableDict['Misc']       = ['bJetLooseMult', 'bJetMediumMult', 'JetMult', 'Met',
                                            'TagMuProbeDeltaPhi', 'TagMuProbePtBalance', 
                                            'TagEleProbeDeltaPhi', 'TagEleProbePtBalance', 
@@ -76,6 +74,7 @@ if doPlots:
                                            'MuNumerPt', 'MuNumerEta', 
                                            'MuDenomMet', 'MuNumerMet', 
                                            'MuDenomIsoRel', 'MuNumerIsoRel',
+                                           'MuDenomIsoRelBin1', 'MuDenomIsoRelBin2',
                                            'MuonIso_1', 'MuonIso_2', 'MuonIso_3',
                                            'MuonIsoRel_Iso', 'MuonIsoRel_AntiIso'
                                            'MuonPt_Iso', 'MuonPt_AntiIso', 'TagMuProbeMass']
@@ -86,9 +85,10 @@ if doPlots:
                                            'EleNumerPt', 'EleNumerEta', 
                                            'EleDenomMet', 'EleNumerMet', 
                                            'EleDenomIsoRel', 'EleNumerIsoRel',
+                                           'EleDenomIsoRelBin1', 'EleDenomIsoRelBin2',
                                            'ElectronIso_1', 'ElectronIso_2', 'ElectronIso_3',
                                            'ElectronIsoRel_Iso', 'ElectronIsoRel_AntiIso',
-                                           'ElectronPt_Iso', 'ElectronPt_AntiIso' 'TagEleProbeMass']
+                                           'ElectronPt_Iso', 'ElectronPt_AntiIso', 'TagEleProbeMass']
 
 
 
@@ -103,6 +103,10 @@ if doPlots:
 
     plotter.add_datasets(samples, Clear=True)
 
+    ### Categories to be plotted ###
+    #catList = ['QCD2l', 'AntiIso3l', 'ZPlusJet']
+    catList = ['PureLep']
+
     for category in catList:
         plotter.add_datasets(samples[category], Clear=True)
         plotter.set_category(category)
@@ -113,7 +117,7 @@ if doPlots:
 
         # Closure plots
         for CR in catList:
-            if CR == 'inclusive':
+            if CR == 'inclusive' or category == 'inclusive':
                 continue
 
             plotter.make_overlays_diff([(['PROMPT', 'DATA_FAKES'], ['MuNumerEta', 'MuUnevenEtaClosure_{0}'.format(CR)]), 

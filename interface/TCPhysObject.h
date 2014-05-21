@@ -17,14 +17,11 @@ class TCPhysObject : public TLorentzVector {
     private:
         TVector3 _vtx;
         map<string, float> _IdMap;
-        //map<string, float> _IsoMap;
         int  _charge;
-        string _type;
         bool _isPF;
-        bool _isReco;
-        bool _isFake;
         bool _isTriggered;
-        bool _isGenMatched;
+        bool _isFake;
+        string _type;
 
     public:
         TCPhysObject();
@@ -35,16 +32,13 @@ class TCPhysObject : public TLorentzVector {
         // "get" methods -----------
 
         float IdMap(string key) const;
-        //float IsoMap(string key) const;
         TVector2 P2() const;
         TVector3 Vtx() const;
         int Charge() const;  
         string Type() const;
         bool IsPF() const;
-        bool IsReco() const;
         bool IsFake() const;
         bool IsTriggered() const;
-        bool IsGenMatched() const;
 
         float Dxy(TVector3 *primVtx) const;
         float Dz(TVector3 *primVtx) const;
@@ -55,14 +49,19 @@ class TCPhysObject : public TLorentzVector {
         //void SetIsoMap(string s, float v);
         void SetVtx(float vx, float vy, float vz);
         void SetCharge(int c);  
-        void SetType(string s);
-        void SetReco(bool);
+        void SetType(string);
         void SetPF(bool);
-        void SetFake(bool);
         void SetTriggered(bool);
-        void SetGenMatched(bool);
+        void SetFake(bool);
 
-        ClassDef(TCPhysObject, 1);
+        // print method
+        virtual ostream& TCprint(ostream& out) const;
+
+        ClassDef(TCPhysObject, 2);
 };
+
+inline ostream& operator<<(ostream& os, const TCPhysObject& ph){ 
+  return ph.TCprint(os);
+}
 
 #endif	/* _TCPHYSOBJECT_H */

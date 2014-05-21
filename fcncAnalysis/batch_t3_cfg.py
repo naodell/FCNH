@@ -5,7 +5,7 @@ import sys
 cfg = b.JobConfig
 
 ''' Specify parameters '''
-dataDir     = '/tthome/bpollack/storage/nuTuples_v9.6_8TeV/Data'
+dataDir     = '/tthome/bpollack/storage/nuTuples_v9.8_8TeV/Data'
 mcDir       = '/tthome/naodell/storage/data/nuTuples_v9.6_8TeV/MC'
 executable  = 'execBatch.sh'
 
