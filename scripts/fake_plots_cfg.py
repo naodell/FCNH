@@ -35,10 +35,10 @@ doRatio     = False
 ### Samples to be included in stacks ###
 samples = {}
 samples['inclusive']    = ['ZJets', 'ttbar', 'ZZ4l', 'WbbToLNu', 'WZJets3LNu']
-samples['ZPlusJet']     = ['WZJets3LNu', 'ZZ4l']#['PROMPT']
-samples['QCD2l']        = ['ZJets', 'ttbar', 'WbbToLNu']#['PROMPT']
-samples['AntiIso3l']    = ['ZJets', 'ttbar', 'WbbToLNu']#['PROMPT']
-samples['PureLep']      = ['ZJets']#, 'ttbar', 'WZJets3LNu']#['PROMPT']
+samples['ZPlusJet']     = ['WZJets3LNu', 'ZZ4l']#, 'ZJets', 'ttbar']
+samples['QCD2l']        = ['ZJets', 'ttbar', 'WbbToLNu']
+samples['AntiIso3l']    = ['ZJets', 'ttbar', 'WbbToLNu']
+samples['PureLep']      = ['ZJets']#, 'ttbar', 'WZJets3LNu']
 #samples['AntiIso3l']    = ['ZJets', 'ttbarLep', 'ttbarHad', 'WZJets3LNu', 'WbbToLNu'] #'WJetsToLNu']
 
 if doPlots:
@@ -56,8 +56,7 @@ if doPlots:
 
     ### DATASETS ###
 
-    plotter.add_datasets(['ZJets'])
-    #plotter.add_datasets(['PROMPT'])
+    #plotter.add_datasets(['WZJets3LNu', 'ZZ4l', 'ZJets', 'ttbar', 'WbbToLNu'])
     plotter._overlayList.extend(['DATA'])
 
     plotter.get_scale_factors(addData = [], corrected = False)
@@ -105,27 +104,27 @@ if doPlots:
 
     ### Categories to be plotted ###
     #catList = ['QCD2l', 'AntiIso3l', 'ZPlusJet']
-    catList = ['PureLep']
+    catList = ['QCD2l']
 
     for category in catList:
         plotter.add_datasets(samples[category], Clear=True)
         plotter.set_category(category)
-        plotter.make_overlays_1D(logScale = doLog, doRatio = doRatio, doEff = doEff)
+        #plotter.make_overlays_1D(logScale = doLog, doRatio = doRatio, doEff = doEff)
 
-        #plotter.make_overlays_diff([(['PROMPT', 'DATA_FAKES'], ['MuNumerPt', 'MuUnevenPtClosure_{0}'.format(category)]), (['DATA'],['MuNumerPt'])], 'Muon', 'MuClosurePt') 
-        #plotter.make_overlays_diff([(['DATA_FAKES'], ['EleUnevenPtClosure_{0}'.format(category)]), (['DATA'],['EleNumerPt'])], 'Lepton', 'EleClosurePt') 
+        plotter.make_overlays_diff([(['DATA_FAKES'], ['MuUnevenPtClosure_{0}'.format(category)]), (['DATA'],['MuNumerPt'])], 'Muon', 'MuClosurePt') 
+        plotter.make_overlays_diff([(['DATA_FAKES'], ['EleUnevenPtClosure_{0}'.format(category)]), (['DATA'],['EleNumerPt'])], 'Lepton', 'EleClosurePt') 
 
         # Closure plots
-        for CR in catList:
-            if CR == 'inclusive' or category == 'inclusive':
-                continue
+        #for CR in catList:
+        #    if CR == 'inclusive' or category == 'inclusive':
+        #        continue
 
-            plotter.make_overlays_diff([(['PROMPT', 'DATA_FAKES'], ['MuNumerEta', 'MuUnevenEtaClosure_{0}'.format(CR)]), 
-                                        (['DATA'],['MuNumerEta'])], 'Muon', 'MuClosureEta_{0}'.format(CR)) 
-            plotter.make_overlays_diff([(['PROMPT', 'DATA_FAKES'], ['EleNumerEta', 'EleUnevenEtaClosure_{0}'.format(CR)]), 
-                                        (['DATA'],['EleNumerEta'])], 'Electron', 'EleClosureEta_{0}'.format(CR)) 
+        #    plotter.make_overlays_diff([(['PROMPT', 'DATA_FAKES'], ['MuNumerEta', 'MuUnevenEtaClosure_{0}'.format(CR)]), 
+        #                                (['DATA'],['MuNumerEta'])], 'Muon', 'MuClosureEta_{0}'.format(CR)) 
+        #    plotter.make_overlays_diff([(['PROMPT', 'DATA_FAKES'], ['EleNumerEta', 'EleUnevenEtaClosure_{0}'.format(CR)]), 
+        #                                (['DATA'],['EleNumerEta'])], 'Electron', 'EleClosureEta_{0}'.format(CR)) 
 
-            plotter.make_overlays_diff([(['PROMPT', 'DATA_FAKES'], ['MuNumerPt', 'MuUnevenPtClosure_{0}'.format(CR)]), 
-                                        (['DATA'],['MuNumerPt'])], 'Muon', 'MuClosurePt_{0}'.format(CR)) 
-            plotter.make_overlays_diff([(['PROMPT', 'DATA_FAKES'], ['EleNumerPt', 'EleUnevenPtClosure_{0}'.format(CR)]), 
-                                        (['DATA'],['EleNumerPt'])], 'Electron', 'EleClosurePt_{0}'.format(CR)) 
+        #    plotter.make_overlays_diff([(['PROMPT', 'DATA_FAKES'], ['MuNumerPt', 'MuUnevenPtClosure_{0}'.format(CR)]), 
+        #                                (['DATA'],['MuNumerPt'])], 'Muon', 'MuClosurePt_{0}'.format(CR)) 
+        #    plotter.make_overlays_diff([(['PROMPT', 'DATA_FAKES'], ['EleNumerPt', 'EleUnevenPtClosure_{0}'.format(CR)]), 
+        #                                (['DATA'],['EleNumerPt'])], 'Electron', 'EleClosurePt_{0}'.format(CR)) 

@@ -29,23 +29,23 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
 
     // weights for fake background
     TFile* f_fakeFile = new TFile("../data/fakeRates.root", "OPEN");
-    g_MuonFakesPtB["QCD2l"]         = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_MuonFake_1");
-    g_MuonFakesPtE["QCD2l"]         = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_MuonFake_2");
-    g_ElectronFakesPtB["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_ElectronFake_1");
-    g_ElectronFakesPtG["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_ElectronFake_2");
-    g_ElectronFakesPtE["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_ElectronFake_3");
+    //g_MuonFakesPtB["QCD2l"]         = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_MuonFake_1");
+    //g_MuonFakesPtE["QCD2l"]         = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_MuonFake_2");
+    //g_ElectronFakesPtB["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_ElectronFake_1");
+    //g_ElectronFakesPtG["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_ElectronFake_2");
+    //g_ElectronFakesPtE["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_ElectronFake_3");
 
-    g_MuonFakesPtB["ZPlusJet"]      = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet/g_MuonFake_1");
-    g_MuonFakesPtE["ZPlusJet"]      = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet/g_MuonFake_2");
-    g_ElectronFakesPtB["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet/g_ElectronFake_1");
-    g_ElectronFakesPtG["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet/g_ElectronFake_2");
-    g_ElectronFakesPtE["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet/g_ElectronFake_3");
+    //g_MuonFakesPtB["ZPlusJet"]      = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet/g_MuonFake_1");
+    //g_MuonFakesPtE["ZPlusJet"]      = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet/g_MuonFake_2");
+    //g_ElectronFakesPtB["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet/g_ElectronFake_1");
+    //g_ElectronFakesPtG["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet/g_ElectronFake_2");
+    //g_ElectronFakesPtE["ZPlusJet"]  = (TGraphAsymmErrors*)f_fakeFile->Get("ZPlusJet/g_ElectronFake_3");
 
-    g_MuonFakesPtB["AntiIso3l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("AntiIso3l/g_MuonFake_1");
-    g_MuonFakesPtE["AntiIso3l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("AntiIso3l/g_MuonFake_2");
-    g_ElectronFakesPtB["AntiIso3l"] = (TGraphAsymmErrors*)f_fakeFile->Get("AntiIso3l/g_ElectronFake_1");
-    g_ElectronFakesPtG["AntiIso3l"] = (TGraphAsymmErrors*)f_fakeFile->Get("AntiIso3l/g_ElectronFake_2");
-    g_ElectronFakesPtE["AntiIso3l"] = (TGraphAsymmErrors*)f_fakeFile->Get("AntiIso3l/g_ElectronFake_3");
+    //g_MuonFakesPtB["AntiIso3l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("AntiIso3l/g_MuonFake_1");
+    //g_MuonFakesPtE["AntiIso3l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("AntiIso3l/g_MuonFake_2");
+    //g_ElectronFakesPtB["AntiIso3l"] = (TGraphAsymmErrors*)f_fakeFile->Get("AntiIso3l/g_ElectronFake_1");
+    //g_ElectronFakesPtG["AntiIso3l"] = (TGraphAsymmErrors*)f_fakeFile->Get("AntiIso3l/g_ElectronFake_2");
+    //g_ElectronFakesPtE["AntiIso3l"] = (TGraphAsymmErrors*)f_fakeFile->Get("AntiIso3l/g_ElectronFake_3");
 
     h2_MuonFakes["QCD2l"]           = (TH2D*)f_fakeFile->Get("QCD2l/h2_MuonFake");
     h2_MuonFakes["ZPlusJet"]        = (TH2D*)f_fakeFile->Get("ZPlusJet/h2_MuonFake");
