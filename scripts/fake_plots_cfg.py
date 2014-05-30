@@ -34,11 +34,12 @@ doRatio     = False
 
 ### Samples to be included in stacks ###
 samples = {}
-samples['inclusive']    = ['ZJets', 'ttbar', 'ZZ4l', 'WbbToLNu', 'WZJets3LNu']
-samples['ZPlusJet']     = ['WZJets3LNu', 'ZZ4l']#, 'ZJets', 'ttbar']
-samples['QCD2l']        = ['ZJets', 'ttbar', 'WbbToLNu']
-samples['AntiIso3l']    = ['ZJets', 'ttbar', 'WbbToLNu']
-samples['PureLep']      = ['ZJets']#, 'ttbar', 'WZJets3LNu']
+samples['inclusive']    = ['ZJets', 'ttbar', 'ZZ4l', 'WJetsToLNu', 'WZJets3LNu']
+samples['ZPlusJet']     = ['ZZ4l', 'WZJets3LNu', 'ttbar', 'ZJets']
+samples['QCD2l']        = ['ttbar', 'ZJets', 'WJetsToLNu']#, 'QCD']
+samples['AntiIso3l']    = ['ttbar', 'ZJets', 'WJetsToLNu']#, 'QCD']
+samples['PureLep']      = ['ttbar', 'ZJets', 'WZJets3LNu']
+samples['SameSign']     = ['WZJets3LNu', 'ttbar', 'ZJets', 'WJetsToLNu']#, 'QCD']
 #samples['AntiIso3l']    = ['ZJets', 'ttbarLep', 'ttbarHad', 'WZJets3LNu', 'WbbToLNu'] #'WJetsToLNu']
 
 if doPlots:
@@ -56,16 +57,16 @@ if doPlots:
 
     ### DATASETS ###
 
-    #plotter.add_datasets(['WZJets3LNu', 'ZZ4l', 'ZJets', 'ttbar', 'WbbToLNu'])
+    plotter.add_datasets(['WZJets3LNu', 'ZZ4l', 'ZJets', 'ttbar', 'WJetsToLNu'])#, 'QCD'])
     plotter._overlayList.extend(['DATA'])
 
     plotter.get_scale_factors(addData = [], corrected = False)
 
-    plotter._directoryList1D            = ['Muon', 'Electron']
+    plotter._directoryList1D            = ['Muon', 'Electron', 'Misc']
     plotter._variableDict['Misc']       = ['bJetLooseMult', 'bJetMediumMult', 'JetMult', 'Met',
                                            'TagMuProbeDeltaPhi', 'TagMuProbePtBalance', 
                                            'TagEleProbeDeltaPhi', 'TagEleProbePtBalance', 
-                                           'TagLepPt', 'TagLepEta', 'TagIsoRel', 'TagDz', 'TagDxy'] 
+                                           ] 
 
     plotter._variableDict['Muon']       = ['MuPassLepPt', 'MuPassLepEta', 
                                            'MuProbeLepPt', 'MuProbeLepEta', 'MuProbeTransverseMass',
@@ -76,7 +77,11 @@ if doPlots:
                                            'MuDenomIsoRelBin1', 'MuDenomIsoRelBin2',
                                            'MuonIso_1', 'MuonIso_2', 'MuonIso_3',
                                            'MuonIsoRel_Iso', 'MuonIsoRel_AntiIso'
-                                           'MuonPt_Iso', 'MuonPt_AntiIso', 'TagMuProbeMass']
+                                           'MuonPt_Iso', 'MuonPt_AntiIso', 
+                                           'MuTagLepPt', 'MuTagLepEta', 'MuTagIsoRel', 'MuTagDz', 'MuTagDxy', 
+                                           'TagMuPassMass', 'TagMuPassDeltaR',
+                                           'TagMuProbeMass', 'TagMuProbeDeltaR',
+                                           'MuJetMult']
 
     plotter._variableDict['Electron']   = ['ElePassLepPt', 'ElePassLepEta', 
                                            'EleProbeLepPt', 'EleProbeLepEta', 'EleProbeTransverseMass',
@@ -87,8 +92,13 @@ if doPlots:
                                            'EleDenomIsoRelBin1', 'EleDenomIsoRelBin2',
                                            'ElectronIso_1', 'ElectronIso_2', 'ElectronIso_3',
                                            'ElectronIsoRel_Iso', 'ElectronIsoRel_AntiIso',
-                                           'ElectronPt_Iso', 'ElectronPt_AntiIso', 'TagEleProbeMass']
+                                           'ElectronPt_Iso', 'ElectronPt_AntiIso', 'TagEleProbeMass',
+                                           'EleTagLepPt', 'EleTagLepEta', 'EleTagIsoRel', 'EleTagDz', 'EleTagDxy'
+                                           ]
 
+    plotter._variableDict['GenStudies'] = ['MatchedMuJetFlavor', 'MatchedMuJetBDiscr',
+                                            'LightMatchedMuIsoRel', 'LightMatchedMuPt', 'LightMatchedMuEta', 'LightMatchedMuMet', 'LightMatchedMuMT',
+                                            'HeavyMatchedMuIsoRel', 'HeavyMatchedMuPt', 'HeavyMatchedMuEta', 'HeavyMatchedMuMet', 'HeavyMatchedMuMT']
 
 
      ###################   
@@ -103,16 +113,20 @@ if doPlots:
     plotter.add_datasets(samples, Clear=True)
 
     ### Categories to be plotted ###
-    #catList = ['QCD2l', 'AntiIso3l', 'ZPlusJet']
-    catList = ['QCD2l']
+    catList = ['QCD2l', 'AntiIso3l', 'ZPlusJet', 'SameSign']
+    #catList = ['SameSign']
 
     for category in catList:
+        plotter._directoryList1D = ['Muon', 'Electron', 'Misc']
         plotter.add_datasets(samples[category], Clear=True)
         plotter.set_category(category)
-        #plotter.make_overlays_1D(logScale = doLog, doRatio = doRatio, doEff = doEff)
+        plotter.make_overlays_1D(logScale = doLog, doRatio = doRatio, doEff = doEff)
 
-        plotter.make_overlays_diff([(['DATA_FAKES'], ['MuUnevenPtClosure_{0}'.format(category)]), (['DATA'],['MuNumerPt'])], 'Muon', 'MuClosurePt') 
-        plotter.make_overlays_diff([(['DATA_FAKES'], ['EleUnevenPtClosure_{0}'.format(category)]), (['DATA'],['EleNumerPt'])], 'Lepton', 'EleClosurePt') 
+        plotter._directoryList1D = ['GenStudies']
+        plotter.make_stacks_by_category(logScale = doLog)
+
+        #plotter.make_overlays_diff([(['DATA_FAKES'], ['MuUnevenPtClosure_{0}'.format(category)]), (['DATA'],['MuNumerPt'])], 'Muon', 'MuClosurePt') 
+        #plotter.make_overlays_diff([(['DATA_FAKES'], ['EleUnevenPtClosure_{0}'.format(category)]), (['DATA'],['EleNumerPt'])], 'Lepton', 'EleClosurePt') 
 
         # Closure plots
         #for CR in catList:

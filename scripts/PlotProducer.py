@@ -291,35 +291,68 @@ class PlotProducer(AnalysisTools):
 
         return hEff
 
-    def make_stacks_by_category(self, categoryList = '', logScale = False):
+    def make_stacks_by_category(self, logScale = False):
         '''
         Builds and plots a stack of variables by category
         '''
-        canvas = r.TCanvas('canvas', 'canvas', 800, 600)
-        canvas.SetGridx()
-        canvas.SetGridy()
+        canvas = r.TCanvas('canvas', 'canvas', 650, 700)
+        #canvas.SetGridx()
+        #canvas.SetGridy()
+        canvas.SetRightMargin(0.18)
+        canvas.SetLeftMargin(0.15)
 
         if logScale:
             canvas.SetLogy()
 
         ### Build the legend from the list of samples
         tmpHists = {}
-        legend = build_legend(tmpHists, self._overlayList+self._datasets, self._styleDict)
+        legend = build_legend(tmpHists, self._datasets, self._styleDict)
+        legend.SetX1(0.83)
+        legend.SetX2(0.99)
+        legend.SetY1(0.45)
+        legend.SetY2(0.89)
+        legend.SetTextSize(0.03)
 
         for directory in self._directoryList1D:
             stacks, sums = self.get_stack_dict(directory)
 
+            if directory is self._directoryList1D[0]: 
+                legend.AddEntry(sums.values()[0], 'BG uncertainty')
+
             self.make_save_path(self._savePath + '/' + self._category + '/' + directory)
 
             for var in self._variableDict[directory]:
+                if var not in stacks.keys(): continue
+
                 if logScale:
                     stacks[var].SetMaximum(stacks[var].GetMaximum()*10)
+                    stacks[var].SetMinimum(0.09)
                 else:
-                    stacks[var].SetMaximum(stacks[var].GetMaximum()*1.5)
-                stacks[var].SetMinimum(0.09)
+                    stacks[var].SetMaximum(stacks[var].GetMaximum()*1.3)
+
+                #stacks[var].GetYaxis().SetTitleOffset(1.3);
+                #stacks[var].GetYaxis().SetTitleSize(0.04);
+
                 stacks[var].Draw('HIST')
+                sums[var].Draw('E2 SAME')
 
                 legend.Draw()
+
+                ## Draw info box ##
+                r.gStyle.SetOptTitle(0)
+                textBox = r.TPaveText(0.09, 0.91, 0.81, 0.98, 'NDC')
+                textBox.SetFillColor(0)
+                textBox.SetFillStyle(0)
+                textBox.SetLineWidth(0)
+                textBox.SetLineColor(0)
+                textBox.SetTextSize(0.025)
+
+                if self._period is '2011':
+                    textBox.AddText('#scale[1.2]{CMS preliminary, #sqrt{s} = 7 TeV, #it{L}_{int}' + ' = {0:.1f}'.format(self._scale) + ' fb^{-1}       #bf{#color[2]{' + categories[self._category] + '}}}')
+                elif self._period is '2012':
+                    textBox.AddText('#scale[1.2]{CMS preliminary, #sqrt{s} = 8 TeV, #it{L}_{int}' + ' = {0:.1f}'.format(self._scale) + ' fb^{-1}       #bf{#color[2]{' + categories[self._category] + '}}}')
+
+                textBox.Draw('same')
 
                 canvas.SaveAs('{0}/{1}/{2}/{3}{4}'.format(self._savePath, self._category, directory, var, self._plotType))
 

@@ -312,20 +312,20 @@ if __name__ == '__main__':
             'ElectronFake':('EleNumer', 'EleDenom')
         }
 
-        fakeCategories = ['QCD2l']#, 'ZPlusJet', 'AntiIso3l']
+        fakeCategories = ['QCD2l', 'ZPlusJet', 'AntiIso3l']
 
         for category in fakeCategories:
             print category
             ratioMaker.set_category(category)
 
-            #bgType ='PROMPT'
-            bgType =''
+            bgType ='PROMPT'
+            #bgType =''
 
             ratioMaker.set_ratio_1D(fakeDict1D)
             ratioMaker.make_1D_ratios('DATA', bgType)
 
             ratioMaker.set_ratio_2D(fakeDict2D)
-            #ratioMaker.make_2D_ratios('DATA', bgType, doProjections = True)
+            ratioMaker.make_2D_ratios('DATA', bgType, doProjections = True)
 
         ratioMaker.write_outfile()
 

@@ -447,10 +447,11 @@ void Selector::ElectronSelector(TClonesArray* electrons)
 
             if ((eleISO < 1. && !(eleISO > 0.15 && eleISO < 0.2))) {
                 _selElectrons["probe"].push_back(*thisElec);
-                if (eleISO > 0.2 && !ElectronMVA(thisElec)){
-                    thisElec->SetFake(true);
-                    _selElectrons["fakeable"].push_back(*thisElec);
-                }
+            }
+
+            if (!ElectronMVA(thisElec) || eleISO > 0.20) {
+                thisElec->SetFake(true);
+                _selElectrons["fakeable"].push_back(*thisElec);
             }
         }
 
@@ -605,7 +606,6 @@ void Selector::JetSelector(TClonesArray* jets)
                     && corJet->NumChPart()   > 0.
                     && corJet->ChEmFrac()    < 0.99
                ) {
-
                 if (overlap[0]) 
                     _selJets["muJets"].push_back(*corJet);
                 else if (overlap[1]) 
@@ -613,7 +613,6 @@ void Selector::JetSelector(TClonesArray* jets)
                 else {
                     if (BTagModifier(corJet, "CSVM")) {
                         _selJets["bJetsMedium"].push_back(*corJet);
-
                         if (!overlap[2] && !overlap[3])
                             _selJets["bJetsMedium_NoFakes"].push_back(*corJet);
                         else if (overlap[2])

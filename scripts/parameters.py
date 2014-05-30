@@ -201,7 +201,7 @@ scaleDict['2012']['WZZ']                = 0.0192
 scaleDict['2012']['ZZZ']                = 0.0046
 scaleDict['2012']['WWG']                = 0.528
 
-scaleDict['2012']['QCD_20_MU']          = 84679.
+scaleDict['2012']['QCD_20_MU']          = 134680.
 scaleDict['2012']['QCD_20-30_EM']       = 2920632.
 scaleDict['2012']['QCD_30-80_EM']       = 4615893.
 scaleDict['2012']['QCD_80-170_EM']      = 183722
@@ -286,7 +286,7 @@ combineDict['AIC']              = ['eeeAIC', 'eemuAIC', 'emumuAIC', 'mumumuAIC']
 combineDict['AIC_BG']           = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'muFakes', 'eFakes', 'llFakes']
 combineDict['Fakes']            = ['eFakes', 'muFakes', 'llFakes']
 #combineDict['PROMPT']           = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarHad', 'ttbarLep', 'tbarW', 'tW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'WbbToLNu', 'WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
-combineDict['PROMPT']           = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarHad', 'ttbarLep', 'WbbToLNu', 'WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
+combineDict['PROMPT']           = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarHad', 'ttbarLep', 'WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
 combineDict['Remove_ss']        = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarLep']#, 'tW', 'tbarW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'ZZJets2L2Q']
 combineDict['Remove_3l']        = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW']#, 'WWW', 'WWZ', 'WZZ', 'ZZZ']
 combineDict['Irreducible']      = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125', 'WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ']#, 'WWG']
@@ -297,7 +297,7 @@ combineDict['FAKEABLE']         = combineDict['DATA']
 
 cleanDict = {}
 #cleanDict['AIC']                = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
-cleanDict['DATA_FAKES']         = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarHad', 'ttbarLep', 'tbarW', 'tW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'WbbToLNu', 'WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
+cleanDict['DATA_FAKES']         = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarHad', 'ttbarLep', 'tbarW', 'tW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
 
 categoryDict = {'inclusive':'inclusive',
                 'ss_inclusive':'ss inclusive', 'ss_mumu':'#mu^{#pm}#mu^{#pm}', 'ss_ee':'e^{#pm}e^{#pm}', 'ss_emu':'e^{#pm}#mu^{#pm}',
@@ -306,7 +306,7 @@ categoryDict = {'inclusive':'inclusive',
                 '3l_inclusive':'3l inclusive', '3l_OSSF':'(l^{#pm}l^{#mp})l', '3l_SSSF':'(l^{#pm}l^{#pm})l',
                 '3l_eee':'eee', '3l_eemu':'ee#mu', '3l_emumu':'e#mu#mu','3l_mumumu':'#mu#mu#mu',
                 'AntiIso3l':'Anti-Iso CR', 'QCD2l':'QCD ll', 'ZPlusJet':'Z+jet',
-                'PureLep':'Pure Muon',
+                'PureLep':'Pure Muon', 'SameSign':'l^{#pm}l^{#pm}',
                 'low_met':'MET < 20', 'high_met':'45 < MET < 80'
                 }
 

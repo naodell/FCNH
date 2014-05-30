@@ -8,13 +8,13 @@ using namespace std;
 //Analysis cuts//
 /////////////////
 
-const bool  doQCDDileptonCR = true;
-const bool  doZPlusJetCR    = false;
+const bool  doQCDDileptonCR = false;
+const bool  doZPlusJetCR    = true;
 const bool  doAntiIso3l     = false;
 const bool  doPureLep       = false;
-const bool  doSameSign      = true;
+const bool  doSameSign      = false;
 
-const bool  doGenMatching   = false;
+const bool  doGenMatching   = true;
 
 const float jetPtCut[]  = {25., 15.};
 const float muPtCut[]   = {10., 3.};
@@ -334,25 +334,33 @@ bool fakeAnalyzer::Process(Long64_t entry)
                     if (!GenProbeMatcher(eleProbe, gLeptons))
                         isQCD2l.reset(1);
             }
-            
-            if (isQCD2l.test(0)) {
-                FillJetHists(muProbe, cleanJets);
-                FillDenominatorHists(muProbe);
 
-                if (muProbe.IdMap("IsoRel") < 0.12)
-                    FillNumeratorHists(muProbe);
-                else if (muProbe.IdMap("IsoRel") > 0.20)
-                    FillClosureHists(muProbe);
-            }
+
 
             if (isQCD2l.test(1)) {
-                FillJetHists(eleProbe, cleanJets);
+                FillJetHists(eleProbe, cleanJets, "inclusive");
                 FillDenominatorHists(eleProbe);
 
-                if (selector->ElectronMVA(&eleProbe) && eleProbe.IdMap("IsoRel") < 0.15)
+                if (selector->ElectronMVA(&eleProbe) && eleProbe.IdMap("IsoRel") < 0.15) {
+                    FillJetHists(eleProbe, cleanJets, "tight");
                     FillNumeratorHists(eleProbe);
-                else //if (!selector->ElectronMVA(&eleProbe) || eleProbe.IdMap("IsoRel") > 0.15)
+                } else if (!selector->ElectronMVA(&eleProbe) || eleProbe.IdMap("IsoRel") > 0.20) {
+                    FillJetHists(eleProbe, cleanJets, "fail");
                     FillClosureHists(eleProbe);
+                }
+            }
+            
+            if (isQCD2l.test(0)) {
+                FillJetHists(muProbe, cleanJets, "inclusive");
+                FillDenominatorHists(muProbe);
+
+                if (muProbe.IdMap("IsoRel") < 0.12) {
+                    FillJetHists(muProbe, cleanJets, "tight");
+                    FillNumeratorHists(muProbe);
+                } else if (muProbe.IdMap("IsoRel") > 0.20) {
+                    FillJetHists(muProbe, cleanJets, "fail");
+                    FillClosureHists(muProbe);
+                }
             }
         }
     } 
@@ -432,25 +440,31 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
                 if (nEleProbes == 1) {
                     if (CheckZPlusJetCR(eleProbe)) {
-                        FillJetHists(eleProbe, cleanJets);
+                        FillJetHists(eleProbe, cleanJets, "inclusive");
                         FillDenominatorHists(eleProbe);
 
-                        if (selector->ElectronMVA(&eleProbe) && eleProbe.IdMap("IsoRel") < 0.15)
+                        if (selector->ElectronMVA(&eleProbe) && eleProbe.IdMap("IsoRel") < 0.15) {
+                            FillJetHists(eleProbe, cleanJets, "tight");
                             FillNumeratorHists(eleProbe);
-                        else //if (!selector->ElectronMVA(&eleProbe) || eleProbe.IdMap("IsoRel") > 0.15)
+                        } else if (!selector->ElectronMVA(&eleProbe) || eleProbe.IdMap("IsoRel") > 0.20) {
+                            FillJetHists(eleProbe, cleanJets, "fail");
                             FillClosureHists(eleProbe);
+                        }
                     }                 
                 } 
 
                 if (nMuProbes == 1) {
                     if (CheckZPlusJetCR(muProbe)) {
-                        FillJetHists(muProbe, cleanJets);
+                        FillJetHists(muProbe, cleanJets, "inclusive");
                         FillDenominatorHists(muProbe);
 
-                        if (muProbe.IdMap("IsoRel") < 0.12)
+                        if (muProbe.IdMap("IsoRel") < 0.12) {
+                            FillJetHists(muProbe, cleanJets, "tight");
                             FillNumeratorHists(muProbe);
-                        else if (muProbe.IdMap("IsoRel") > 0.20)
+                        } else if (muProbe.IdMap("IsoRel") > 0.20) {
+                            FillJetHists(muProbe, cleanJets, "fail");
                             FillClosureHists(muProbe);
+                        }
                     } 
                 } 
             }
@@ -541,13 +555,16 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
 
                 if (nEleProbes == 1) {
-                    FillJetHists(eleProbe, cleanJets);
+                    FillJetHists(eleProbe, cleanJets, "inclusive");
                     FillDenominatorHists(eleProbe);
 
-                    if (selector->ElectronMVA(&eleProbe) && eleProbe.IdMap("IsoRel") < 0.15)
+                    if (selector->ElectronMVA(&eleProbe) && eleProbe.IdMap("IsoRel") < 0.15) {
+                        FillJetHists(muProbe, cleanJets, "tight");
                         FillNumeratorHists(eleProbe);
-                    else //if (!selector->ElectronMVA(&eleProbe) || eleProbe.IdMap("IsoRel") > 0.15)
+                    } else if (!selector->ElectronMVA(&eleProbe) || eleProbe.IdMap("IsoRel") > 0.20) {
+                        FillJetHists(muProbe, cleanJets, "fail");
                         FillClosureHists(eleProbe);
+                    }
                 } 
 
                 if (nMuProbes == 1) {
@@ -564,13 +581,16 @@ bool fakeAnalyzer::Process(Long64_t entry)
                     histManager->Fill2DHist(leptonsAntiIso[1].DeltaR(muProbe), leptonsAntiIso[1].Eta(), 
                             "h2_MuProbeTag2DeltaRVsEta", "#Delta R(tag2, probe) vs. #eta;#Delta R(tag2, probe);#eta", 50, 0., 5., 4, -2.5, 2.5);
 
-                    FillJetHists(muProbe, cleanJets);
+                    FillJetHists(muProbe, cleanJets, "inclusive");
                     FillDenominatorHists(muProbe);
 
-                    if (muProbe.IdMap("IsoRel") < 0.12)
+                    if (muProbe.IdMap("IsoRel") < 0.12) {
+                        FillJetHists(muProbe, cleanJets, "tight");
                         FillNumeratorHists(muProbe);
-                    else if (muProbe.IdMap("IsoRel") > 0.20)
+                    } else if (muProbe.IdMap("IsoRel") > 0.20) {
+                        FillJetHists(muProbe, cleanJets, "fail");
                         FillClosureHists(muProbe);
+                    }
                 }
             } 
         }
@@ -598,10 +618,12 @@ bool fakeAnalyzer::Process(Long64_t entry)
                     }
                 }
 
-                FillJetHists(muProbe, cleanJets);
+                FillJetHists(muProbe, cleanJets, "inclusive");
                 FillDenominatorHists(muProbe);
-                if (muProbe.IdMap("IsoRel") < 0.12)
+                if (muProbe.IdMap("IsoRel") < 0.12) {
+                    FillJetHists(muProbe, cleanJets, "tight");
                     FillNumeratorHists(muProbe);
+                }
             }
         }     
     }
@@ -617,6 +639,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
                ) {
 
                 TCMuon muProbe = muonsNoIso[1];
+                unsigned nMuProbes = 1;
                 tag = muonsNoIso[0];
 
                 // Make jet collection which does not include tag
@@ -627,33 +650,28 @@ bool fakeAnalyzer::Process(Long64_t entry)
                     }
                 }
 
-                FillJetHists(muProbe, cleanJets);
+                if (!isRealData && doGenMatching) { 
+                    if (nMuProbes == 1)
+                        if (!GenProbeMatcher(muProbe, gLeptons))
+                            nMuProbes = 0;
+                    //if (nEleProbes == 1)
+                    //    if (!GenProbeMatcher(eleProbe, gLeptons))
+                    //        nEleProbes = 0;
+                }
+
+                FillJetHists(muProbe, cleanJets, "inclusive");
                 FillDenominatorHists(muProbe);
-                if (muProbe.IdMap("IsoRel") < 0.12)
+                if (muProbe.IdMap("IsoRel") < 0.12) {
+                    FillJetHists(muProbe, cleanJets, "tight");
                     FillNumeratorHists(muProbe);
+                } else if (muProbe.IdMap("IsoRel") > 0.2) {
+                    FillJetHists(muProbe, cleanJets, "fail");
+                    FillClosureHists(muProbe);
+                }
             }
         }     
     }
 
-    /*
-       vObj triggerLeps;
-       if (crType == "ZPlusJet") {
-       triggerLeps = leptons;
-       } else if (crType == "QCD2l") {
-       triggerLeps.push_back(tag);
-       if (nMuProbes == 1)
-       triggerLeps.push_back(muProbe);
-       else if (nEleProbes == 1)
-       triggerLeps.push_back(eleProbe);
-       } 
-
-       if (!isRealData) {
-       weighter->SetObjects(triggerLeps, jets, nPUVerticesTrue, passNames[0]);
-       Float_t evtWeight = weighter->GetTotalWeight();
-       histManager->SetWeight(evtWeight);
-       } else
-       histManager->SetWeight(1.);
-       */
 
     return kTRUE;
 }
@@ -831,6 +849,33 @@ void fakeAnalyzer::FillClosureHists(TCPhysObject& probe)
     else if (probe.Type() == "electron")
         lepType = "Ele";
 
+    // Fakeable plots
+    histManager->Fill1DHist(tag.Pt(),
+            "h1_Fail" + lepType + "TagLepPt", "tag lepton p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
+    histManager->Fill1DHist(tag.Eta(),
+            "h1_Fail" + lepType + "TagLepEta", "tag lepton #eta;#eta;Entries / bin", 25, -2.5, 2.5);
+    histManager->Fill1DHist(tag.IdMap("IsoRel"),
+            "h1_Fail" + lepType + "TagIsoRel", "tag lepton ISO_{rel};ISO_{rel};Entries", 80, 0., 4.);
+    histManager->Fill1DHist(fabs(tag.Dz(selectedVtx)),
+            "h1_Fail" + lepType + "TagDz", "tag  d_{z};d_{z};Entries", 50, 0., 2.);
+    histManager->Fill1DHist(fabs(tag.Dxy(selectedVtx)),
+            "h1_Fail" + lepType + "TagDxy", "tag  d_{xy};d_{xy};Entries", 50, 0., 2.);
+
+    histManager->Fill1DHist((tag + probe).M(),
+            "h1_Tag" + lepType + "FailMass", "M_{tag,probe};M_{tag,probe};Entries / 4 GeV", 50, 0., 200.);
+    histManager->Fill1DHist((tag + probe).M(),
+            "h1_Tag" + lepType + "FailMassHiggs", "M_{tag,probe};M_{tag,probe};Entries / 2 GeV", 25, 100., 150.);
+    histManager->Fill1DHist(tag.DeltaR(probe),
+            "h1_Tag" + lepType + "FailDeltaR", "#Delta R(tag,probe);#Delta R(tag,probe);Entries / 3 GeV", 50, 0., 5.);
+
+    histManager->Fill1DHist(probe.Pt(),
+            "h1_" + lepType + "FailLepPt", "probe muon p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
+    histManager->Fill1DHist(probe.Eta(),
+            "h1_" + lepType + "FailLepEta", "probe muon #eta;#eta;Entries / bin", 25, -2.5, 2.5);
+    histManager->Fill1DHist(CalculateTransMass(probe, *recoMET),
+            "h1_" + lepType + "FailTransverseMass", "MT muon probe;MT;Entries / bin", 75, 0., 150.);
+
+
     string categories[3] = {"QCD2l", "ZPlusJet", "AntiIso3l"};
     for (unsigned i = 0; i < 1; ++i) {
         string cat = categories[i];
@@ -864,7 +909,7 @@ void fakeAnalyzer::FillClosureHists(TCPhysObject& probe)
     histManager->SetWeight(1.);
 }
 
-void fakeAnalyzer::FillJetHists(TCPhysObject& probe, vector<TCJet>& jets) 
+void fakeAnalyzer::FillJetHists(TCPhysObject& probe, vector<TCJet>& jets, string suffix) 
 {
     string lepType = "";
     if (probe.Type() == "muon")
@@ -886,31 +931,43 @@ void fakeAnalyzer::FillJetHists(TCPhysObject& probe, vector<TCJet>& jets)
 
     //cout << jets[jetIndex].BDiscriminatorMap("CSV") << endl;
     histManager->Fill1DHist(jets.size(),
-            "h1_" + lepType + "JetMult", "jet multiplicity; N_{jets}; Entries / bin", 10, -0.5, 9.5);
+            "h1_" + lepType + "JetMult_" + suffix, "jet multiplicity; N_{jets}; Entries / bin", 10, -0.5, 9.5);
     histManager->Fill2DHist(jets.size(), probe.IdMap("IsoRel"),
-            "h2_" + lepType + "DenomIsoRelVsJetMult", "ISO_{rel} vs. jet multiplicity;N_{jets};ISO_{rel}", 6, -0.5, 5.5, 5, 0.15, 1.15);
+            "h2_" + lepType + "DenomIsoRelVsJetMult" + suffix, "ISO_{rel} vs. jet multiplicity;N_{jets};ISO_{rel}", 6, -0.5, 5.5, 5, 0.15, 1.15);
 
     if (!isRealData && jetMatched) {
         unsigned jetFlavor = probeJet.JetFlavor();
         histManager->Fill1DHist(probeJet.BDiscriminatorMap("CSV"),
-                "h1_Matched" + lepType + "JetBDiscr", "matched #mu-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
+                "h1_Matched" + lepType + "JetBDiscr" + suffix, "matched #mu-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
         histManager->Fill1DHist(jetFlavor,
-                "h1_Matched" + lepType + "JetFlavor", "matched #mu-jet Flavor;Flavor;Entries / bin", 25, 0., 25);
+                "h1_Matched" + lepType + "JetFlavor" + suffix, "matched #mu-jet Flavor;Flavor;Entries / bin", 25, 0., 25);
 
         if (jetFlavor == 1 || jetFlavor == 2 || jetFlavor == 3 || jetFlavor == 21) {
             histManager->Fill1DHist(probe.IdMap("IsoRel"),
-                    "h1_LightMatched" + lepType + "IsoRel", "matched lepton IsoRel;IsoRel;Entries / bin", 20, 0., 1.);
+                    "h1_LightMatched" + lepType + "IsoRel" + suffix, "matched lepton IsoRel;IsoRel;Entries / bin", 20, 0., 1.);
             histManager->Fill1DHist(probe.Pt(),
-                    "h1_LightMatched" + lepType + "IsoRel", "matched lepton IsoRel;IsoRel;Entries / 5 GeV", 40, 10., 50.);
+                    "h1_LightMatched" + lepType + "Pt" + suffix, "matched lepton p_{T};p_{T};Entries / 5 GeV", 40, 10., 50.);
             histManager->Fill1DHist(fabs(probe.Eta()),
-                    "h1_LightMatched" + lepType + "IsoRel", "matched lepton IsoRel;IsoRel;Entries / bin", 2, 0., 2.5);
+                    "h1_LightMatched" + lepType + "Eta" + suffix, "matched lepton #eta;#eta;Entries / bin", 2, 0., 2.5);
+            histManager->Fill1DHist(recoMET->Mod(),
+                    "h1_LightMatched" + lepType + "Met" + suffix, "matched lepton Met;MET;Entries / 5 GeV", 20, 0., 100.);
+            histManager->Fill1DHist(CalculateTransMass(probe, *recoMET),
+                    "h1_LightMatched" + lepType + "MT" + suffix, "matched lepton MT;MT;Entries / 5 GeV", 40, 0., 200.);
+            histManager->Fill1DHist(probeJet.BDiscriminatorMap("CSV"),
+                    "h1_LightMatched" + lepType + "JetBDiscr" + suffix, "matched #mu-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
         } else if (jetFlavor == 4 || jetFlavor == 5) {
             histManager->Fill1DHist(probe.IdMap("IsoRel"),
-                    "h1_HeavyMatched" + lepType + "IsoRel", "matched lepton IsoRel;IsoRel;Entries / bin", 20, 0., 1.);
+                    "h1_HeavyMatched" + lepType + "IsoRel" + suffix, "matched lepton IsoRel;IsoRel;Entries / bin", 20, 0., 1.);
             histManager->Fill1DHist(probe.Pt(),
-                    "h1_HeavyMatched" + lepType + "IsoRel", "matched lepton IsoRel;IsoRel;Entries / 5 GeV", 40, 10., 50.);
+                    "h1_HeavyMatched" + lepType + "Pt" + suffix, "matched lepton p_{T};p_{T};Entries / 5 GeV", 40, 10., 50.);
             histManager->Fill1DHist(fabs(probe.Eta()),
-                    "h1_HeavyMatched" + lepType + "IsoRel", "matched lepton IsoRel;IsoRel;Entries / bin", 2, 0., 2.5);
+                    "h1_HeavyMatched" + lepType + "Eta" + suffix, "matched lepton #eta;#eta;Entries / bin", 2, 0., 2.5);
+            histManager->Fill1DHist(recoMET->Mod(),
+                    "h1_HeavyMatched" + lepType + "Met" + suffix, "matched lepton Met;MET;Entries / 5 GeV", 20, 0., 100.);
+            histManager->Fill1DHist(CalculateTransMass(probe, *recoMET),
+                    "h1_HeavyMatched" + lepType + "MT" + suffix, "matched lepton MT;MT;Entries / 5 GeV", 40, 0., 200.);
+            histManager->Fill1DHist(probeJet.BDiscriminatorMap("CSV"),
+                    "h1_HeavyMatched" + lepType + "JetBDiscr" + suffix, "matched #mu-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
         }
     }
 }
@@ -997,7 +1054,7 @@ bool fakeAnalyzer::GenProbeMatcher(TCPhysObject& probe, vector<TCGenParticle>& g
                     "h1_GenLepEleProbePtBalance", "(p_{T,#ele} - p_{T,gen})/p_{T,gen};(p_{T,#ele} - p_{T,gen})/p_{T,gen};Entries", 150, -0.5, 1.);
         }
 
-        if (gLeptons[i].DeltaR(probe) < 0.1) 
+        if (gLeptons[i].DeltaR(probe) < 0.3) 
             genMatched = true;
     }
 
@@ -1013,6 +1070,16 @@ bool fakeAnalyzer::GenProbeMatcher(TCPhysObject& probe, vector<TCGenParticle>& g
 
         return false;
     }
+}
+
+void fakeAnalyzer::SetEffWeights(vObj& leptons, vector<TCJet>& jets, string passTrigger)
+{
+    if (!isRealData) {
+        weighter->SetObjects(leptons, jets, nPUVerticesTrue, passTrigger);
+        Float_t evtWeight = weighter->GetTotalWeight();
+        histManager->SetWeight(evtWeight);
+    } else
+        histManager->SetWeight(1.);
 }
 
 float fakeAnalyzer::CalculateTransMass(TCPhysObject& lep, TCMET& met)

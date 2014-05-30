@@ -173,12 +173,13 @@ class fakeAnalyzer : public TSelector {
         virtual void    FillDenominatorHists(TCPhysObject&);
         virtual void    FillNumeratorHists(TCPhysObject&);
         virtual void    FillClosureHists(TCPhysObject&);
-        virtual void    FillJetHists(TCPhysObject&, vector<TCJet>&);
+        virtual void    FillJetHists(TCPhysObject&, vector<TCJet>&, string);
         virtual bool    GenProbeMatcher(TCPhysObject&, vector<TCGenParticle>&);
         virtual void    DoZTag(vObj&, float);
         virtual bool    CheckQCD2lCR(vector<TCJet>&, TCPhysObject&);
         virtual bool    CheckZPlusJetCR(TCPhysObject&);
         virtual float   CalculateTransMass(TCPhysObject&, TCMET&);
+        virtual void    SetEffWeights(vObj&, vector<TCJet>&, string);
 
         virtual string  str(int i) {return static_cast<ostringstream*>( &(ostringstream() << i) )->str();}
 
