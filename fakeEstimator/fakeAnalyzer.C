@@ -8,11 +8,11 @@ using namespace std;
 //Analysis cuts//
 /////////////////
 
-const bool  doQCDDileptonCR = false;
+const bool  doQCDDileptonCR = true;
 const bool  doZPlusJetCR    = true;
-const bool  doAntiIso3l     = false;
-const bool  doPureLep       = false;
-const bool  doSameSign      = false;
+const bool  doAntiIso3l     = true;
+const bool  doPureLep       = true;
+const bool  doSameSign      = true;
 
 const bool  doGenMatching   = true;
 
@@ -559,10 +559,10 @@ bool fakeAnalyzer::Process(Long64_t entry)
                     FillDenominatorHists(eleProbe);
 
                     if (selector->ElectronMVA(&eleProbe) && eleProbe.IdMap("IsoRel") < 0.15) {
-                        FillJetHists(muProbe, cleanJets, "tight");
+                        FillJetHists(eleProbe, cleanJets, "tight");
                         FillNumeratorHists(eleProbe);
                     } else if (!selector->ElectronMVA(&eleProbe) || eleProbe.IdMap("IsoRel") > 0.20) {
-                        FillJetHists(muProbe, cleanJets, "fail");
+                        FillJetHists(eleProbe, cleanJets, "fail");
                         FillClosureHists(eleProbe);
                     }
                 } 
@@ -817,28 +817,26 @@ void fakeAnalyzer::FillNumeratorHists(TCPhysObject& probe)
     histManager->Fill1DHist(probe.Eta(),
             "h1_" + lepType + "PassLepEta", "pass lepton #eta;#eta;Entries / bin", 25, -2.5, 2.5);
 
-    if (probe.Type() == "muon") {
-        if (probe.Pt() < 50.) {
+    if (probe.Pt() < 50.) {
+        if (probe.Type() == "muon") {
             histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
                     "h1_" + lepType + "NumerEta", "pass muon #eta;#eta;Entries", 2, etaBinsMu);
-        }
-        histManager->Fill2DHistUnevenBins(probe.Pt(), fabs(probe.Eta()),
-                "h2_" + lepType + "Numer", "pass muon p_{T};p_{T};#eta", nPtBins, ptBins, 2, etaBinsMu);
-    } else if (probe.Type() == "electron") {
-        if (probe.Pt() < 50.) {
+            histManager->Fill2DHistUnevenBins(probe.Pt(), fabs(probe.Eta()),
+                    "h2_" + lepType + "Numer", "pass muon p_{T};p_{T};#eta", nPtBins, ptBins, 2, etaBinsMu);
+        } else if (probe.Type() == "electron") {
             histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
                     "h1_" + lepType + "NumerEta", "pass electron #eta;#eta;Entries", 3, etaBinsEle);
-        }
-        histManager->Fill2DHistUnevenBins(probe.Pt(), fabs(probe.Eta()),
-                "h2_" + lepType + "Numer", "pass electron p_{T};p_{T};#eta", nPtBins, ptBins, 3, etaBinsEle);
-    }
+            histManager->Fill2DHistUnevenBins(probe.Pt(), fabs(probe.Eta()),
+                    "h2_" + lepType + "Numer", "pass electron p_{T};p_{T};#eta", nPtBins, ptBins, 3, etaBinsEle);
 
-    histManager->Fill1DHistUnevenBins(probe.Pt(),
-            "h1_" + lepType + "NumerPt", "pass lepton p_{T};p_{T};Entries", nPtBins, ptBins);
-    histManager->Fill1DHist(probe.IdMap("IsoRel"),
-            "h1_" + lepType + "NumerIsoRel", "pass lepton IsoRel;IsoRel;Entries", 40, 0., 0.20);
-    histManager->Fill1DHistUnevenBins(recoMET->Mod(),
-            "h1_" + lepType + "NumerMet", "pass lepton Met;Met;Entries", nMetBins, metBins);
+            histManager->Fill1DHistUnevenBins(probe.Pt(),
+                    "h1_" + lepType + "NumerPt", "pass lepton p_{T};p_{T};Entries", nPtBins, ptBins);
+            histManager->Fill1DHist(probe.IdMap("IsoRel"),
+                    "h1_" + lepType + "NumerIsoRel", "pass lepton IsoRel;IsoRel;Entries", 40, 0., 0.20);
+            histManager->Fill1DHistUnevenBins(recoMET->Mod(),
+                    "h1_" + lepType + "NumerMet", "pass lepton Met;Met;Entries", nMetBins, metBins);
+        }
+    }
 }
 
 void fakeAnalyzer::FillClosureHists(TCPhysObject& probe)
@@ -897,14 +895,14 @@ void fakeAnalyzer::FillClosureHists(TCPhysObject& probe)
                 histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
                         "h1_" + lepType + "UnevenEtaClosure_" + cat, "electron #eta (closure);#eta;Entries / bin", 3, etaBinsEle);
             }
-        }
 
-        histManager->Fill1DHistUnevenBins(probe.Pt(),
-                "h1_" + lepType + "UnevenPtClosure_" + cat, "p_{T} (closure);p_{T};Entries / Bin", nPtBins, ptBins);
-        histManager->Fill1DHist(probe.IdMap("IsoRel"),
-                "h1_" + lepType + "IsoRelClosure_" + cat, "pass lepton IsoRel;IsoRel;Entries", 20, 0., 1.0);
-        histManager->Fill1DHistUnevenBins(recoMET->Mod(),
-                "h1_" + lepType + "MetClosure_" + cat, "pass lepton IsoRel;IsoRel;Entries", nMetBins, metBins);
+            histManager->Fill1DHistUnevenBins(probe.Pt(),
+                    "h1_" + lepType + "UnevenPtClosure_" + cat, "p_{T} (closure);p_{T};Entries / Bin", nPtBins, ptBins);
+            histManager->Fill1DHist(probe.IdMap("IsoRel"),
+                    "h1_" + lepType + "IsoRelClosure_" + cat, "pass lepton IsoRel;IsoRel;Entries", 20, 0., 1.0);
+            histManager->Fill1DHistUnevenBins(recoMET->Mod(),
+                    "h1_" + lepType + "MetClosure_" + cat, "pass lepton IsoRel;IsoRel;Entries", nMetBins, metBins);
+        }
     }
     histManager->SetWeight(1.);
 }

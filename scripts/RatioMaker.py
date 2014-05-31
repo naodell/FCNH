@@ -6,8 +6,8 @@ import ROOT as r
 
 def make_graph_ratio_1D(outName, h1_Numer, h1_Denom):
     ### Mostly useful for 1D efficiencies ###
-    h1_Numer.Print("range")
-    h1_Denom.Print("range")
+    #h1_Numer.Print("range")
+    #h1_Denom.Print("range")
 
     g_Eff = r.TGraphAsymmErrors()
     g_Eff.Divide(h1_Numer, h1_Denom)
@@ -295,8 +295,8 @@ if __name__ == '__main__':
         outFile = 'data/fakeRates_TEST.root'
 
         ratioMaker = RatioMaker(inFile, outFile, scale = 19.7)
-        ratioMaker.get_scale_factors([''], corrected = False)
-        #ratioMaker.get_scale_factors(['PROMPT'], corrected = False)
+        #ratioMaker.get_scale_factors([''], corrected = False)
+        ratioMaker.get_scale_factors(['PROMPT'], corrected = False)
 
         fakeDict1D = {
             'MuonFakeMet':('MuNumerMet', 'MuDenomMet'),
@@ -312,7 +312,7 @@ if __name__ == '__main__':
             'ElectronFake':('EleNumer', 'EleDenom')
         }
 
-        fakeCategories = ['QCD2l', 'ZPlusJet', 'AntiIso3l']
+        fakeCategories = ['QCD2l']#, 'ZPlusJet', 'AntiIso3l']
 
         for category in fakeCategories:
             print category
