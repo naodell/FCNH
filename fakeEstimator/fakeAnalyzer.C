@@ -339,27 +339,27 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
             if (isQCD2l.test(1)) {
                 FillJetHists(eleProbe, cleanJets, "inclusive");
-                FillDenominatorHists(eleProbe);
+                FillDenominatorHists(eleProbe, cleanJets.size());
 
                 if (selector->ElectronMVA(&eleProbe) && eleProbe.IdMap("IsoRel") < 0.15) {
                     FillJetHists(eleProbe, cleanJets, "tight");
-                    FillNumeratorHists(eleProbe);
+                    FillNumeratorHists(eleProbe, cleanJets.size());
                 } else if (!selector->ElectronMVA(&eleProbe) || eleProbe.IdMap("IsoRel") > 0.20) {
                     FillJetHists(eleProbe, cleanJets, "fail");
-                    FillClosureHists(eleProbe);
+                    FillClosureHists(eleProbe, cleanJets.size());
                 }
             }
             
             if (isQCD2l.test(0)) {
                 FillJetHists(muProbe, cleanJets, "inclusive");
-                FillDenominatorHists(muProbe);
+                FillDenominatorHists(muProbe, cleanJets.size());
 
                 if (muProbe.IdMap("IsoRel") < 0.12) {
                     FillJetHists(muProbe, cleanJets, "tight");
-                    FillNumeratorHists(muProbe);
+                    FillNumeratorHists(muProbe, cleanJets.size());
                 } else if (muProbe.IdMap("IsoRel") > 0.20) {
                     FillJetHists(muProbe, cleanJets, "fail");
-                    FillClosureHists(muProbe);
+                    FillClosureHists(muProbe, cleanJets.size());
                 }
             }
         }
@@ -441,14 +441,14 @@ bool fakeAnalyzer::Process(Long64_t entry)
                 if (nEleProbes == 1) {
                     if (CheckZPlusJetCR(eleProbe)) {
                         FillJetHists(eleProbe, cleanJets, "inclusive");
-                        FillDenominatorHists(eleProbe);
+                        FillDenominatorHists(eleProbe, cleanJets.size());
 
                         if (selector->ElectronMVA(&eleProbe) && eleProbe.IdMap("IsoRel") < 0.15) {
                             FillJetHists(eleProbe, cleanJets, "tight");
-                            FillNumeratorHists(eleProbe);
+                            FillNumeratorHists(eleProbe, cleanJets.size());
                         } else if (!selector->ElectronMVA(&eleProbe) || eleProbe.IdMap("IsoRel") > 0.20) {
                             FillJetHists(eleProbe, cleanJets, "fail");
-                            FillClosureHists(eleProbe);
+                            FillClosureHists(eleProbe, cleanJets.size());
                         }
                     }                 
                 } 
@@ -456,14 +456,14 @@ bool fakeAnalyzer::Process(Long64_t entry)
                 if (nMuProbes == 1) {
                     if (CheckZPlusJetCR(muProbe)) {
                         FillJetHists(muProbe, cleanJets, "inclusive");
-                        FillDenominatorHists(muProbe);
+                        FillDenominatorHists(muProbe, cleanJets.size());
 
                         if (muProbe.IdMap("IsoRel") < 0.12) {
                             FillJetHists(muProbe, cleanJets, "tight");
-                            FillNumeratorHists(muProbe);
+                            FillNumeratorHists(muProbe, cleanJets.size());
                         } else if (muProbe.IdMap("IsoRel") > 0.20) {
                             FillJetHists(muProbe, cleanJets, "fail");
-                            FillClosureHists(muProbe);
+                            FillClosureHists(muProbe, cleanJets.size());
                         }
                     } 
                 } 
@@ -556,14 +556,14 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
                 if (nEleProbes == 1) {
                     FillJetHists(eleProbe, cleanJets, "inclusive");
-                    FillDenominatorHists(eleProbe);
+                    FillDenominatorHists(eleProbe, cleanJets.size());
 
                     if (selector->ElectronMVA(&eleProbe) && eleProbe.IdMap("IsoRel") < 0.15) {
                         FillJetHists(eleProbe, cleanJets, "tight");
-                        FillNumeratorHists(eleProbe);
+                        FillNumeratorHists(eleProbe, cleanJets.size());
                     } else if (!selector->ElectronMVA(&eleProbe) || eleProbe.IdMap("IsoRel") > 0.20) {
                         FillJetHists(eleProbe, cleanJets, "fail");
-                        FillClosureHists(eleProbe);
+                        FillClosureHists(eleProbe, cleanJets.size());
                     }
                 } 
 
@@ -582,14 +582,14 @@ bool fakeAnalyzer::Process(Long64_t entry)
                             "h2_MuProbeTag2DeltaRVsEta", "#Delta R(tag2, probe) vs. #eta;#Delta R(tag2, probe);#eta", 50, 0., 5., 4, -2.5, 2.5);
 
                     FillJetHists(muProbe, cleanJets, "inclusive");
-                    FillDenominatorHists(muProbe);
+                    FillDenominatorHists(muProbe, cleanJets.size());
 
                     if (muProbe.IdMap("IsoRel") < 0.12) {
                         FillJetHists(muProbe, cleanJets, "tight");
-                        FillNumeratorHists(muProbe);
+                        FillNumeratorHists(muProbe, cleanJets.size());
                     } else if (muProbe.IdMap("IsoRel") > 0.20) {
                         FillJetHists(muProbe, cleanJets, "fail");
-                        FillClosureHists(muProbe);
+                        FillClosureHists(muProbe, cleanJets.size());
                     }
                 }
             } 
@@ -619,10 +619,10 @@ bool fakeAnalyzer::Process(Long64_t entry)
                 }
 
                 FillJetHists(muProbe, cleanJets, "inclusive");
-                FillDenominatorHists(muProbe);
+                FillDenominatorHists(muProbe, cleanJets.size());
                 if (muProbe.IdMap("IsoRel") < 0.12) {
                     FillJetHists(muProbe, cleanJets, "tight");
-                    FillNumeratorHists(muProbe);
+                    FillNumeratorHists(muProbe, cleanJets.size());
                 }
             }
         }     
@@ -634,8 +634,10 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
             if (
                     muonsNoIso[0].IdMap("IsoRel") < 0.12 
+                    && muonsNoIso[1].IdMap("IsoRel") < 1. && !(muonsNoIso[1].IdMap("IsoRel") > 0.12 && muonsNoIso[1].IdMap("IsoRel") < 0.2)
                     && muonsNoIso[0].DeltaR(muonsNoIso[1]) > 0.5
                     && muonsNoIso[0].Charge() == muonsNoIso[1].Charge()
+
                ) {
 
                 TCMuon muProbe = muonsNoIso[1];
@@ -650,23 +652,14 @@ bool fakeAnalyzer::Process(Long64_t entry)
                     }
                 }
 
-                if (!isRealData && doGenMatching) { 
-                    if (nMuProbes == 1)
-                        if (!GenProbeMatcher(muProbe, gLeptons))
-                            nMuProbes = 0;
-                    //if (nEleProbes == 1)
-                    //    if (!GenProbeMatcher(eleProbe, gLeptons))
-                    //        nEleProbes = 0;
-                }
-
                 FillJetHists(muProbe, cleanJets, "inclusive");
-                FillDenominatorHists(muProbe);
+                FillDenominatorHists(muProbe, cleanJets.size());
                 if (muProbe.IdMap("IsoRel") < 0.12) {
                     FillJetHists(muProbe, cleanJets, "tight");
-                    FillNumeratorHists(muProbe);
+                    FillNumeratorHists(muProbe, cleanJets.size());
                 } else if (muProbe.IdMap("IsoRel") > 0.2) {
                     FillJetHists(muProbe, cleanJets, "fail");
-                    FillClosureHists(muProbe);
+                    FillClosureHists(muProbe, cleanJets.size());
                 }
             }
         }     
@@ -731,7 +724,7 @@ void fakeAnalyzer::DoZTag(vObj& leptons, float window)
     }
 }
 
-void fakeAnalyzer::FillDenominatorHists(TCPhysObject& probe)
+void fakeAnalyzer::FillDenominatorHists(TCPhysObject& probe, unsigned nJets)
 {
     string lepType = "";
     if (probe.Type() == "muon")
@@ -799,7 +792,7 @@ void fakeAnalyzer::FillDenominatorHists(TCPhysObject& probe)
     }
 }
 
-void fakeAnalyzer::FillNumeratorHists(TCPhysObject& probe)
+void fakeAnalyzer::FillNumeratorHists(TCPhysObject& probe, unsigned nJets)
 {
     string lepType = "";
     if (probe.Type() == "muon")
@@ -828,18 +821,19 @@ void fakeAnalyzer::FillNumeratorHists(TCPhysObject& probe)
                     "h1_" + lepType + "NumerEta", "pass electron #eta;#eta;Entries", 3, etaBinsEle);
             histManager->Fill2DHistUnevenBins(probe.Pt(), fabs(probe.Eta()),
                     "h2_" + lepType + "Numer", "pass electron p_{T};p_{T};#eta", nPtBins, ptBins, 3, etaBinsEle);
-
-            histManager->Fill1DHistUnevenBins(probe.Pt(),
-                    "h1_" + lepType + "NumerPt", "pass lepton p_{T};p_{T};Entries", nPtBins, ptBins);
-            histManager->Fill1DHist(probe.IdMap("IsoRel"),
-                    "h1_" + lepType + "NumerIsoRel", "pass lepton IsoRel;IsoRel;Entries", 40, 0., 0.20);
-            histManager->Fill1DHistUnevenBins(recoMET->Mod(),
-                    "h1_" + lepType + "NumerMet", "pass lepton Met;Met;Entries", nMetBins, metBins);
         }
+
+        histManager->Fill1DHistUnevenBins(probe.Pt(),
+                "h1_" + lepType + "NumerPt", "pass lepton p_{T};p_{T};Entries", nPtBins, ptBins);
+        histManager->Fill1DHist(probe.IdMap("IsoRel"),
+                "h1_" + lepType + "NumerIsoRel", "pass lepton IsoRel;IsoRel;Entries", 40, 0., 0.20);
+        histManager->Fill1DHistUnevenBins(recoMET->Mod(),
+                "h1_" + lepType + "NumerMet", "pass lepton Met;Met;Entries", nMetBins, metBins);
+
     }
 }
 
-void fakeAnalyzer::FillClosureHists(TCPhysObject& probe)
+void fakeAnalyzer::FillClosureHists(TCPhysObject& probe, unsigned nJets)
 {
     string lepType = "";
     if (probe.Type() == "muon")
@@ -867,15 +861,17 @@ void fakeAnalyzer::FillClosureHists(TCPhysObject& probe)
             "h1_Tag" + lepType + "FailDeltaR", "#Delta R(tag,probe);#Delta R(tag,probe);Entries / 3 GeV", 50, 0., 5.);
 
     histManager->Fill1DHist(probe.Pt(),
-            "h1_" + lepType + "FailLepPt", "probe muon p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
+            "h1_" + lepType + "FailLepPt", "fail lepton p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
     histManager->Fill1DHist(probe.Eta(),
-            "h1_" + lepType + "FailLepEta", "probe muon #eta;#eta;Entries / bin", 25, -2.5, 2.5);
+            "h1_" + lepType + "FailLepEta", "fail lepton #eta;#eta;Entries / bin", 25, -2.5, 2.5);
     histManager->Fill1DHist(CalculateTransMass(probe, *recoMET),
-            "h1_" + lepType + "FailTransverseMass", "MT muon probe;MT;Entries / bin", 75, 0., 150.);
+            "h1_" + lepType + "FailTransverseMass", "MT fail lepton;MT;Entries / bin", 75, 0., 150.);
+    histManager->Fill1DHist(probe.IdMap("IsoRel"),
+            "h1_" + lepType + "FailIsoRel", "fail lepton IsoRel;IsoRel;Entries", 24, 0., 1.2);
 
 
     string categories[3] = {"QCD2l", "ZPlusJet", "AntiIso3l"};
-    for (unsigned i = 0; i < 1; ++i) {
+    for (unsigned i = 0; i < 3; ++i) {
         string cat = categories[i];
         float fakeWeight = weighter->GetFakeWeight(probe, cat);
         histManager->SetWeight(fakeWeight);

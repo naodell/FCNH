@@ -53,7 +53,7 @@ if doPlots:
     plotter.set_period(period)
     plotter.set_output_type(plotType)
     plotter.set_save_path('plots/{0}/{1}_{2}_{3}/log'.format(currentDate, selection, batch, suffix))
-    plotter.set_clean_fakes(True)
+    plotter.set_clean_fakes(False)
 
     ### DATASETS ###
 
@@ -64,24 +64,20 @@ if doPlots:
 
     plotter._directoryList1D            = ['Muon', 'Electron', 'Misc']
     plotter._variableDict['Misc']       = ['bJetLooseMult', 'bJetMediumMult', 'JetMult', 'Met',
-                                           'TagMuProbeDeltaPhi', 'TagMuProbePtBalance', 
-                                           'TagEleProbeDeltaPhi', 'TagEleProbePtBalance', 
                                            ] 
 
     plotter._variableDict['Muon']       = ['MuPassLepPt', 'MuPassLepEta', 
                                            'MuProbeLepPt', 'MuProbeLepEta', 'MuProbeTransverseMass',
-                                           'MuDenomPt', 'MuDenomEta', 
-                                           'MuNumerPt', 'MuNumerEta', 
-                                           'MuDenomMet', 'MuNumerMet', 
-                                           'MuDenomIsoRel', 'MuNumerIsoRel',
+                                           'MuNumerPt', 'MuNumerEta', 'MuNumerMet', 'MuNumerIsoRel',
+                                           'MuDenomPt', 'MuDenomEta', 'MuDenomMet', 'MuDenomIsoRel',
                                            'MuDenomIsoRelBin1', 'MuDenomIsoRelBin2',
-                                           'MuonIso_1', 'MuonIso_2', 'MuonIso_3',
-                                           'MuonIsoRel_Iso', 'MuonIsoRel_AntiIso'
-                                           'MuonPt_Iso', 'MuonPt_AntiIso', 
+                                           'MuFailLepPt', 'MuFailLepEta', 'MuFailTransverseMass', 
                                            'MuTagLepPt', 'MuTagLepEta', 'MuTagIsoRel', 'MuTagDz', 'MuTagDxy', 
                                            'TagMuPassMass', 'TagMuPassDeltaR',
                                            'TagMuProbeMass', 'TagMuProbeDeltaR',
-                                           'MuJetMult']
+                                           'TagMuProbeDeltaPhi', 'TagMuProbePtBalance', 
+                                           'TagMuFailMass', 'TagMuFailDeltaR',
+                                           'MuJetMult_tight', 'MuJetMult_inclusive', 'MuJetMult_fail']
 
     plotter._variableDict['Electron']   = ['ElePassLepPt', 'ElePassLepEta', 
                                            'EleProbeLepPt', 'EleProbeLepEta', 'EleProbeTransverseMass',
@@ -90,9 +86,8 @@ if doPlots:
                                            'EleDenomMet', 'EleNumerMet', 
                                            'EleDenomIsoRel', 'EleNumerIsoRel',
                                            'EleDenomIsoRelBin1', 'EleDenomIsoRelBin2',
-                                           'ElectronIso_1', 'ElectronIso_2', 'ElectronIso_3',
-                                           'ElectronIsoRel_Iso', 'ElectronIsoRel_AntiIso',
-                                           'ElectronPt_Iso', 'ElectronPt_AntiIso', 'TagEleProbeMass',
+                                           'TagEleProbeMass',
+                                           'TagEleProbeDeltaPhi', 'TagEleProbePtBalance', 
                                            'EleTagLepPt', 'EleTagLepEta', 'EleTagIsoRel', 'EleTagDz', 'EleTagDxy'
                                            ]
 
@@ -122,23 +117,24 @@ if doPlots:
         plotter.set_category(category)
         plotter.make_overlays_1D(logScale = doLog, doRatio = doRatio, doEff = doEff)
 
-        plotter._directoryList1D = ['GenStudies']
-        plotter.make_stacks_by_category(logScale = doLog)
 
         #plotter.make_overlays_diff([(['DATA_FAKES'], ['MuUnevenPtClosure_{0}'.format(category)]), (['DATA'],['MuNumerPt'])], 'Muon', 'MuClosurePt') 
         #plotter.make_overlays_diff([(['DATA_FAKES'], ['EleUnevenPtClosure_{0}'.format(category)]), (['DATA'],['EleNumerPt'])], 'Lepton', 'EleClosurePt') 
 
         # Closure plots
-        #for CR in catList:
-        #    if CR == 'inclusive' or category == 'inclusive':
-        #        continue
+        for CR in ['QCD2l', 'AntiIso3l', 'ZPlusJet']:
+            if CR == 'inclusive' or category == 'inclusive':
+                continue
 
-        #    plotter.make_overlays_diff([(['PROMPT', 'DATA_FAKES'], ['MuNumerEta', 'MuUnevenEtaClosure_{0}'.format(CR)]), 
-        #                                (['DATA'],['MuNumerEta'])], 'Muon', 'MuClosureEta_{0}'.format(CR)) 
-        #    plotter.make_overlays_diff([(['PROMPT', 'DATA_FAKES'], ['EleNumerEta', 'EleUnevenEtaClosure_{0}'.format(CR)]), 
-        #                                (['DATA'],['EleNumerEta'])], 'Electron', 'EleClosureEta_{0}'.format(CR)) 
+            plotter.make_overlays_diff([(['PROMPT', 'DATA_FAKES'], ['MuNumerEta', 'MuUnevenEtaClosure_{0}'.format(CR)]), 
+                                        (['DATA'],['MuNumerEta'])], 'Muon', 'MuClosureEta_{0}'.format(CR)) 
+            plotter.make_overlays_diff([(['PROMPT', 'DATA_FAKES'], ['EleNumerEta', 'EleUnevenEtaClosure_{0}'.format(CR)]), 
+                                        (['DATA'],['EleNumerEta'])], 'Electron', 'EleClosureEta_{0}'.format(CR)) 
 
-        #    plotter.make_overlays_diff([(['PROMPT', 'DATA_FAKES'], ['MuNumerPt', 'MuUnevenPtClosure_{0}'.format(CR)]), 
-        #                                (['DATA'],['MuNumerPt'])], 'Muon', 'MuClosurePt_{0}'.format(CR)) 
-        #    plotter.make_overlays_diff([(['PROMPT', 'DATA_FAKES'], ['EleNumerPt', 'EleUnevenPtClosure_{0}'.format(CR)]), 
-        #                                (['DATA'],['EleNumerPt'])], 'Electron', 'EleClosurePt_{0}'.format(CR)) 
+            plotter.make_overlays_diff([(['PROMPT', 'DATA_FAKES'], ['MuNumerPt', 'MuUnevenPtClosure_{0}'.format(CR)]), 
+                                        (['DATA'],['MuNumerPt'])], 'Muon', 'MuClosurePt_{0}'.format(CR)) 
+            plotter.make_overlays_diff([(['PROMPT', 'DATA_FAKES'], ['EleNumerPt', 'EleUnevenPtClosure_{0}'.format(CR)]), 
+                                        (['DATA'],['EleNumerPt'])], 'Electron', 'EleClosurePt_{0}'.format(CR)) 
+
+        #plotter._directoryList1D = ['GenStudies']
+        #plotter.make_stacks_by_category(logScale = doLog)

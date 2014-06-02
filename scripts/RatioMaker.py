@@ -299,12 +299,12 @@ if __name__ == '__main__':
         ratioMaker.get_scale_factors(['PROMPT'], corrected = False)
 
         fakeDict1D = {
-            'MuonFakeMet':('MuNumerMet', 'MuDenomMet'),
             'MuonFakePt':('MuNumerPt', 'MuDenomPt'),
             'MuonFakeEta':('MuNumerEta', 'MuDenomEta'),
-            'ElectronFakeMet':('EleNumerMet', 'EleDenomMet'),
+            'MuonFakeMet':('MuNumerMet', 'MuDenomMet'),
             'ElectronFakePt':('EleNumerPt', 'EleDenomPt'),
-            'ElectronFakeEta':('EleNumerEta', 'EleDenomEta')
+            'ElectronFakeEta':('EleNumerEta', 'EleDenomEta'),
+            'ElectronFakeMet':('EleNumerMet', 'EleDenomMet'),
         }
 
         fakeDict2D = {
@@ -312,7 +312,7 @@ if __name__ == '__main__':
             'ElectronFake':('EleNumer', 'EleDenom')
         }
 
-        fakeCategories = ['QCD2l']#, 'ZPlusJet', 'AntiIso3l']
+        fakeCategories = ['QCD2l', 'ZPlusJet', 'AntiIso3l']
 
         for category in fakeCategories:
             print category

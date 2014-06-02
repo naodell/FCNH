@@ -452,7 +452,7 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
         }
     }
     //cout << fakeRate << endl;
-    if (fakeRate < 0.)
+    if (fakeRate < 0. || fakeRate >= 0.5)
         return 0.;
     else 
         return fakeRate / (1 - fakeRate);
