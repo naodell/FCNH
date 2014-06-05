@@ -463,14 +463,20 @@ float WeightUtils::GetFakeUncertainty(TCPhysObject& fakeable, string controlRegi
 {
     float fakeError   = 0.;
     unsigned iPt = 0;
-    unsigned  nPtBins = 8;
-    float     ptBins[] = {10., 15., 20., 25., 30., 35., 40., 45., 50.}; 
-    for (unsigned j = 0; j < nPtBins; ++j) {
-        if (fakeable.Pt() > ptBins[j] && fakeable.Pt() < ptBins[j + 1]) {
-            iPt = j+1;
-            break;
+    unsigned  nPtBins = 5;
+    float     ptBins[] = {10., 15., 20., 25., 30., 35.};//, 40., 45., 50.}; 
+
+    if (fakeable.Pt() > ptBins[nPtBins]) {
+        iPt = nPtBins;
+    } else {
+        for (unsigned j = 0; j < nPtBins; ++j) {
+            if (fakeable.Pt() > ptBins[j] && fakeable.Pt() < ptBins[j + 1]) {
+                iPt = j+1;
+                break;
+            }
         }
     }
+
     float fakeablePt;
     if (fakeable.Type() == "muon") {
         

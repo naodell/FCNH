@@ -319,7 +319,6 @@ if __name__ == '__main__':
             ratioMaker.set_category(category)
 
             bgType ='PROMPT'
-            #bgType =''
 
             ratioMaker.set_ratio_1D(fakeDict1D)
             ratioMaker.make_1D_ratios('DATA', bgType)
@@ -331,4 +330,3 @@ if __name__ == '__main__':
 
         # Combined fakeCategory rates
         #ratioMaker.combine_rates(fakeCategories)
-

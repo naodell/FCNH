@@ -286,10 +286,13 @@ combineDict['AIC']              = ['eeeAIC', 'eemuAIC', 'emumuAIC', 'mumumuAIC']
 combineDict['AIC_BG']           = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'muFakes', 'eFakes', 'llFakes']
 combineDict['Fakes']            = ['eFakes', 'muFakes', 'llFakes']
 #combineDict['PROMPT']           = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarHad', 'ttbarLep', 'tbarW', 'tW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'WbbToLNu', 'WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
-combineDict['PROMPT']           = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarHad', 'ttbarLep', 'WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'WJetsToLNu']
 combineDict['Remove_ss']        = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarLep']#, 'tW', 'tbarW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'ZZJets2L2Q']
 combineDict['Remove_3l']        = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW']#, 'WWW', 'WWZ', 'WZZ', 'ZZZ']
 combineDict['Irreducible']      = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125', 'WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ']#, 'WWG']
+combineDict['PROMPT']           = ['ZJets_M-50', 'ZJets_M-10To50', 'WJetsToLNu', 
+                                   'ttbarHad', 'ttbarLep', 'tbarW', 'tW', 
+                                   'WZJets3LNu', #'WWJets2L2Nu', 'ZZJets2L2Nu', 'WZJets2L2Q', 'ZZJets2L2Q',
+                                   'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
 
 combineDict['DATA_FAKES']       = combineDict['DATA']
 combineDict['PASS']             = combineDict['DATA']
@@ -297,7 +300,10 @@ combineDict['FAKEABLE']         = combineDict['DATA']
 
 cleanDict = {}
 #cleanDict['AIC']                = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
-#cleanDict['DATA_FAKES']         = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarHad', 'ttbarLep', 'tbarW', 'tW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
+#cleanDict['DATA_FAKES']         = ['ZJets_M-50', 'ZJets_M-10To50', 'WJetsToLNu',
+#                                   'ttbarHad', 'ttbarLep', 'tbarW', 'tW',   
+#                                   'WWJets2L2Nu', 'ZZJets2L2Nu', 'WZJets2L2Q', 'WWJets2L2Q', 'WZJets3LNu', 
+#                                   'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
 
 categoryDict = {'inclusive':'inclusive',
                 'ss_inclusive':'ss inclusive', 'ss_mumu':'#mu^{#pm}#mu^{#pm}', 'ss_ee':'e^{#pm}e^{#pm}', 'ss_emu':'e^{#pm}#mu^{#pm}',

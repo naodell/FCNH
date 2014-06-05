@@ -273,8 +273,7 @@ void Selector::MuonSelector(TClonesArray* muons)
             
             if (
                     MuonTightID(thisMuon) 
-                    && muISO < 1. 
-                    && !(muISO > 0.12 && muISO < 0.2)
+                    && muISO < 1. && !(muISO > 0.12 && muISO < 0.2)
                     )
                 _selMuons["probe"].push_back(*thisMuon);
 

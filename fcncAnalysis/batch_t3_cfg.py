@@ -44,7 +44,7 @@ signal  = []
 
 if period == '2012':
     data.extend([
-        cfg('muon_2012A', '{0}/DoubleMu_Run2012A'.format(dataDir), 80, 'DATA_MUON muon 2012'),
+        cfg('muon_2012A', '{0}/DoubleMu_Run2012A_v2'.format(dataDir), 80, 'DATA_MUON muon 2012'),
         cfg('muon_2012B', '{0}/DoubleMu_Run2012B'.format(dataDir), 80, 'DATA_MUON muon 2012'),
         cfg('muon_2012C', '{0}/DoubleMu_Run2012C'.format(dataDir), 80, 'DATA_MUON muon 2012'),
         cfg('muon_2012D', '{0}/DoubleMu_Run2012D'.format(dataDir), 85, 'DATA_MUON muon 2012'),
@@ -90,7 +90,9 @@ if period == '2012':
         #cfg('WWG', mcDir+'/WWGJets', 5, 'WWG muon 2012'),
 
         cfg('ZZJets2L2Nu', mcDir+'/ZZJetsTo2L2Nu', 5, 'ZZJets2L2Nu muon 2012'),
-        #cfg('ZZJets2L2Q', mcDir+'/ZZJetsTo2L2Q', 5, 'ZZJets2L2Q muon 2012'),
+        cfg('ZZJets2L2Q', mcDir+'/ZZJetsTo2L2Q', 5, 'ZZJets2L2Q muon 2012'),
+        cfg('WWJets2L2Nu', mcDir+'/WWJetsTo2L2Nu', 5, 'WWJets2L2Nu muon 2012'),
+        cfg('WZJets2L2Q', mcDir+'/WZJetsTo2L2Q', 10, 'WZJets2L2Q muon 2012'),
         #cfg('ZZJets4L', mcDir+'/ZZJetsTo4L', 5, 'ZZJets4L muon 2012'),
         cfg('ZZTo4e', mcDir+'/ZZTo4e', 5, 'ZZ4e muon 2012'),
         cfg('ZZTo4mu', mcDir+'/ZZTo4mu', 5, 'ZZ4mu muon 2012'),
@@ -98,9 +100,7 @@ if period == '2012':
         cfg('ZZTo2e2mu', mcDir+'/ZZTo2e2mu', 5, 'ZZ2e2mu muon 2012'),
         cfg('ZZTo2e2tau', mcDir+'/ZZTo2e2tau', 5, 'ZZ2e2tau muon 2012'),
         cfg('ZZTo2mu2tau', mcDir+'/ZZTo2mu2tau', 5, 'ZZ2mu2tau muon 2012'),
-        cfg('WWJets2L2Nu', mcDir+'/WWJetsTo2L2Nu', 5, 'WWJets2L2Nu muon 2012'),
         cfg('WZJets3LNu', mcDir+'/WZJetsTo3LNu', 5, 'WZJets3LNu muon 2012'),
-        cfg('WZJets2L2Q', mcDir+'/WZJetsTo2L2Q', 10, 'WZJets2L2Q muon 2012'),
 
         #cfg('QCD_20-30_EM', mcDir+'/QCD_Pt_20_30_EMEnriched', 10, 'QCD_20-30_EM muon 2012'),
         #cfg('QCD_30-80_EM', mcDir+'/QCD_Pt_30_80_EMEnriched', 10, 'QCD_30-80_EM muon 2012'),
