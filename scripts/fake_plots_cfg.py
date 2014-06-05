@@ -119,8 +119,7 @@ if doPlots:
     plotter.add_datasets(samples, Clear=True)
 
     ### Categories to be plotted ###
-    catList = ['QCD2l', 'AntiIso3l', 'ZPlusJet', 'SameSign']
-    #catList = ['SameSign']
+    catList = ['QCD2l', 'ZPlusJet', 'SameSign']#, 'AntiIso3l']
 
     for category in catList:
         plotter._directoryList1D = ['Muon', 'Electron']

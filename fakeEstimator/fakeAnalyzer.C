@@ -8,9 +8,9 @@ using namespace std;
 //Analysis cuts//
 /////////////////
 
-const bool  doQCDDileptonCR = false;
-const bool  doZPlusJetCR    = false;
-const bool  doAntiIso3l     = false;
+const bool  doQCDDileptonCR = true;
+const bool  doZPlusJetCR    = true;
+const bool  doAntiIso3l     = true;
 const bool  doPureLep       = false;
 const bool  doSameSign      = true;
 
@@ -333,41 +333,37 @@ bool fakeAnalyzer::Process(Long64_t entry)
                         isQCD2l.reset(1);
             }
 
-            vector<TCJet> cleanJets;
             // Make jet collection which does not include tag
+            vector<TCJet> cleanJets;
             for (unsigned i = 0; i < jets.size(); ++i) {
-                if (isQCD2l.test(0)) {
-                    if (jets[i].DeltaR(tag) > 0.5 && jets[i].DeltaR(muProbe) > 0.5) cleanJets.push_back(jets[i]);
-                }
-                if (isQCD2l.test(1)) {
-                    if (jets[i].DeltaR(tag) > 0.5 && jets[i].DeltaR(eleProbe) > 0.5) cleanJets.push_back(jets[i]);
-                }
+                if (jets[i].DeltaR(tag) > 0.5) 
+                    cleanJets.push_back(jets[i]);
             }
 
 
             if (isQCD2l.test(1)) {
                 FillJetHists(eleProbe, cleanJets, "inclusive");
-                FillDenominatorHists(eleProbe, cleanJets.size());
+                FillDenominatorHists(eleProbe, cleanJets);
 
                 if (selector->ElectronMVA(&eleProbe) && eleProbe.IdMap("IsoRel") < 0.15) {
                     FillJetHists(eleProbe, cleanJets, "tight");
-                    FillNumeratorHists(eleProbe, cleanJets.size());
+                    FillNumeratorHists(eleProbe, cleanJets);
                 } else if (!selector->ElectronMVA(&eleProbe) || eleProbe.IdMap("IsoRel") > 0.20) {
                     FillJetHists(eleProbe, cleanJets, "fail");
-                    FillClosureHists(eleProbe, cleanJets.size());
+                    FillClosureHists(eleProbe, cleanJets);
                 }
             }
             
             if (isQCD2l.test(0)) {
                 FillJetHists(muProbe, cleanJets, "inclusive");
-                FillDenominatorHists(muProbe, cleanJets.size());
+                FillDenominatorHists(muProbe, cleanJets);
 
                 if (muProbe.IdMap("IsoRel") < 0.12) {
                     FillJetHists(muProbe, cleanJets, "tight");
-                    FillNumeratorHists(muProbe, cleanJets.size());
+                    FillNumeratorHists(muProbe, cleanJets);
                 } else if (muProbe.IdMap("IsoRel") > 0.20) {
                     FillJetHists(muProbe, cleanJets, "fail");
-                    FillClosureHists(muProbe, cleanJets.size());
+                    FillClosureHists(muProbe, cleanJets);
                 }
             }
         }
@@ -445,35 +441,21 @@ bool fakeAnalyzer::Process(Long64_t entry)
                 vector<TCJet> cleanJets;
                 // Make jet collection which does not include tag
                 for (unsigned i = 0; i < jets.size(); ++i) {
-                    if (nMuProbes == 1) {
-                        if (
-                                jets[i].DeltaR(muProbe) > 0.5
-                                && jets[i].DeltaR(lep1) > 0.5 
-                                && jets[i].DeltaR(lep2) > 0.5
-                           ) 
-                            cleanJets.push_back(jets[i]);
-                    }
-                    if (nEleProbes == 1) {
-                        if (
-                                jets[i].DeltaR(eleProbe) > 0.5
-                                && jets[i].DeltaR(lep1) > 0.5 
-                                && jets[i].DeltaR(lep2) > 0.5
-                           ) 
-                            cleanJets.push_back(jets[i]);
-                    }
+                    if (jets[i].DeltaR(lep1) > 0.5 && jets[i].DeltaR(lep2) > 0.5) 
+                        cleanJets.push_back(jets[i]);
                 }
 
                 if (nEleProbes == 1) {
                     if (CheckZPlusJetCR(eleProbe)) {
                         FillJetHists(eleProbe, cleanJets, "inclusive");
-                        FillDenominatorHists(eleProbe, cleanJets.size());
+                        FillDenominatorHists(eleProbe, cleanJets);
 
                         if (selector->ElectronMVA(&eleProbe) && eleProbe.IdMap("IsoRel") < 0.15) {
                             FillJetHists(eleProbe, cleanJets, "tight");
-                            FillNumeratorHists(eleProbe, cleanJets.size());
+                            FillNumeratorHists(eleProbe, cleanJets);
                         } else if (!selector->ElectronMVA(&eleProbe) || eleProbe.IdMap("IsoRel") > 0.20) {
                             FillJetHists(eleProbe, cleanJets, "fail");
-                            FillClosureHists(eleProbe, cleanJets.size());
+                            FillClosureHists(eleProbe, cleanJets);
                         }
                     }                 
                 } 
@@ -481,14 +463,14 @@ bool fakeAnalyzer::Process(Long64_t entry)
                 if (nMuProbes == 1) {
                     if (CheckZPlusJetCR(muProbe)) {
                         FillJetHists(muProbe, cleanJets, "inclusive");
-                        FillDenominatorHists(muProbe, cleanJets.size());
+                        FillDenominatorHists(muProbe, cleanJets);
 
                         if (muProbe.IdMap("IsoRel") < 0.12) {
                             FillJetHists(muProbe, cleanJets, "tight");
-                            FillNumeratorHists(muProbe, cleanJets.size());
+                            FillNumeratorHists(muProbe, cleanJets);
                         } else if (muProbe.IdMap("IsoRel") > 0.20) {
                             FillJetHists(muProbe, cleanJets, "fail");
-                            FillClosureHists(muProbe, cleanJets.size());
+                            FillClosureHists(muProbe, cleanJets);
                         }
                     } 
                 } 
@@ -504,13 +486,13 @@ bool fakeAnalyzer::Process(Long64_t entry)
         vector<TCMuon> muonProbeCandidates;
         for (unsigned i = 0; i < muonsNoIso.size(); ++i) {
             if (muonsNoIso[i].IdMap("IsoRel") > 0.4 && leptonsAntiIso.size() < 2) { 
-                leptonsAntiIso.push_back(muonsNoIso[0]);
+                leptonsAntiIso.push_back(muonsNoIso[i]);
             } else {
-                muonProbeCandidates.push_back(muonsNoIso[0]);
+                muonProbeCandidates.push_back(muonsNoIso[i]);
             }
         }
 
-        if (leptonsAntiIso.size() == 2 && (muonProbeCandidates.size() == 1 || electronsNoIso.size() >= 1)) {
+        if (leptonsAntiIso.size() == 2 && (muonProbeCandidates.size() >= 1 || electronsNoIso.size() >= 1)) {
 
             // A tag for this CR exists if the leading two leptons are
             // anti-isolated the probe is then the trailing (third in pt) lepton
@@ -576,35 +558,21 @@ bool fakeAnalyzer::Process(Long64_t entry)
                 vector<TCJet> cleanJets;
                 // Make jet collection which does not include tag
                 for (unsigned i = 0; i < jets.size(); ++i) {
-                    if (muonsNoIso.size() == 1) {
-                        if (
-                                jets[i].DeltaR(muonsNoIso[0]) > 0.5
-                                && jets[i].DeltaR(leptonsAntiIso[0]) > 0.5 
-                                && jets[i].DeltaR(leptonsAntiIso[1]) > 0.5
-                           ) 
-                            cleanJets.push_back(jets[i]);
-                    }
-                    if (electronsNoIso.size() == 1) {
-                        if (
-                                jets[i].DeltaR(electronsNoIso[0]) > 0.5
-                                && jets[i].DeltaR(leptonsAntiIso[0]) > 0.5 
-                                && jets[i].DeltaR(leptonsAntiIso[1]) > 0.5
-                           ) 
-                            cleanJets.push_back(jets[i]);
-                    }
+                    if ( jets[i].DeltaR(leptonsAntiIso[0]) > 0.5 && jets[i].DeltaR(leptonsAntiIso[1]) > 0.5) 
+                        cleanJets.push_back(jets[i]);
                 }
 
                 // Fill hists for fake rate measurement and validation
                 if (nEleProbes == 1) {
                     FillJetHists(eleProbe, cleanJets, "inclusive");
-                    FillDenominatorHists(eleProbe, cleanJets.size());
+                    FillDenominatorHists(eleProbe, cleanJets);
 
                     if (selector->ElectronMVA(&eleProbe) && eleProbe.IdMap("IsoRel") < 0.15) {
                         FillJetHists(eleProbe, cleanJets, "tight");
-                        FillNumeratorHists(eleProbe, cleanJets.size());
+                        FillNumeratorHists(eleProbe, cleanJets);
                     } else if (!selector->ElectronMVA(&eleProbe) || eleProbe.IdMap("IsoRel") > 0.20) {
                         FillJetHists(eleProbe, cleanJets, "fail");
-                        FillClosureHists(eleProbe, cleanJets.size());
+                        FillClosureHists(eleProbe, cleanJets);
                     }
                 } 
 
@@ -623,14 +591,14 @@ bool fakeAnalyzer::Process(Long64_t entry)
                             "h2_MuProbeTag2DeltaRVsEta", "#Delta R(tag2, probe) vs. #eta;#Delta R(tag2, probe);#eta", 50, 0., 5., 4, -2.5, 2.5);
 
                     FillJetHists(muProbe, cleanJets, "inclusive");
-                    FillDenominatorHists(muProbe, cleanJets.size());
+                    FillDenominatorHists(muProbe, cleanJets);
 
                     if (muProbe.IdMap("IsoRel") < 0.12) {
                         FillJetHists(muProbe, cleanJets, "tight");
-                        FillNumeratorHists(muProbe, cleanJets.size());
+                        FillNumeratorHists(muProbe, cleanJets);
                     } else if (muProbe.IdMap("IsoRel") > 0.20) {
                         FillJetHists(muProbe, cleanJets, "fail");
-                        FillClosureHists(muProbe, cleanJets.size());
+                        FillClosureHists(muProbe, cleanJets);
                     }
                 }
             } 
@@ -654,16 +622,16 @@ bool fakeAnalyzer::Process(Long64_t entry)
                 // Make jet collection which does not include tag
                 vector<TCJet> cleanJets;
                 for (unsigned i = 0; i < jets.size(); ++i) {
-                    if (jets[i].DeltaR(tag) > 0.5 && jets[i].DeltaR(muProbe) > 0.5) {
+                    if (jets[i].DeltaR(tag) > 0.5) {
                         cleanJets.push_back(jets[i]);
                     }
                 }
 
                 FillJetHists(muProbe, cleanJets, "inclusive");
-                FillDenominatorHists(muProbe, cleanJets.size());
+                FillDenominatorHists(muProbe, cleanJets);
                 if (muProbe.IdMap("IsoRel") < 0.12) {
                     FillJetHists(muProbe, cleanJets, "tight");
-                    FillNumeratorHists(muProbe, cleanJets.size());
+                    FillNumeratorHists(muProbe, cleanJets);
                 }
             }
         }     
@@ -687,11 +655,9 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
                 // Make jet collection which does not include tag
                 vector<TCJet> cleanJets;
-                unsigned nJets;
                 for (unsigned i = 0; i < jets.size(); ++i) {
-                    if (jets[i].DeltaR(tag) > 0.5 && jets[i].DeltaR(muProbe) > 0.5) {
+                    if (jets[i].DeltaR(tag) > 0.5) 
                         cleanJets.push_back(jets[i]);
-                    }
                 }
 
                 // MC-truth matching for cleaning prompt lepton
@@ -703,13 +669,13 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
                 if (nMuProbes == 1) {
                     FillJetHists(muProbe, cleanJets, "inclusive");
-                    FillDenominatorHists(muProbe, nJets);
+                    FillDenominatorHists(muProbe, cleanJets);
                     if (muProbe.IdMap("IsoRel") < 0.12) {
                         FillJetHists(muProbe, cleanJets, "tight");
-                        FillNumeratorHists(muProbe, nJets);
+                        FillNumeratorHists(muProbe, cleanJets);
                     } else if (muProbe.IdMap("IsoRel") > 0.2) {
                         FillJetHists(muProbe, cleanJets, "fail");
-                        FillClosureHists(muProbe, nJets);
+                        FillClosureHists(muProbe, cleanJets);
                     }
                 }
             }
@@ -775,13 +741,19 @@ void fakeAnalyzer::DoZTag(vObj& leptons, float window)
     }
 }
 
-void fakeAnalyzer::FillDenominatorHists(TCPhysObject& probe, unsigned nJets)
+void fakeAnalyzer::FillDenominatorHists(TCPhysObject& probe, vector<TCJet>& jets)
 {
     string lepType = "";
     if (probe.Type() == "muon")
         lepType = "Mu";
     else if (probe.Type() == "electron")
         lepType = "Ele";
+
+    vector<TCJet> cleanJets;
+    for (unsigned i = 0; i < jets.size(); ++i) {
+        if (jets[i].DeltaR(probe) > 0.5) 
+            cleanJets.push_back(jets[i]);
+    }
 
     histManager->Fill1DHist(tag.Pt(),
             "h1_" + lepType + "TagLepPt", "tag lepton p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
@@ -840,18 +812,24 @@ void fakeAnalyzer::FillDenominatorHists(TCPhysObject& probe, unsigned nJets)
                 "h1_" + lepType + "DenomIsoRel", "probe lepton IsoRel;IsoRel;Entries", 40, 0., 1.2);
         histManager->Fill1DHistUnevenBins(recoMET->Mod(),
                 "h1_" + lepType + "DenomMet", "probe lepton Met;Met;Entries", nMetBins, metBins);
-        histManager->Fill1DHist(nJets,
+        histManager->Fill1DHist(cleanJets.size(),
                 "h1_" + lepType + "DenomJetMult", "jet multiplicity; N_{jets}; Entries / bin", 10, -0.5, 9.5);
     }
 }
 
-void fakeAnalyzer::FillNumeratorHists(TCPhysObject& probe, unsigned nJets)
+void fakeAnalyzer::FillNumeratorHists(TCPhysObject& probe, vector<TCJet>& jets)
 {
     string lepType = "";
     if (probe.Type() == "muon")
         lepType = "Mu";
     else if (probe.Type() == "electron")
         lepType = "Ele";
+
+    vector<TCJet> cleanJets;
+    for (unsigned i = 0; i < jets.size(); ++i) {
+        if (jets[i].DeltaR(probe) > 0.5) 
+            cleanJets.push_back(jets[i]);
+    }
 
     histManager->Fill1DHist((tag + probe).M(),
             "h1_Tag" + lepType + "PassMass", "M_{tag,probe};M_{tag,probe};Entries / 4 GeV", 50, 0., 200.);
@@ -882,19 +860,25 @@ void fakeAnalyzer::FillNumeratorHists(TCPhysObject& probe, unsigned nJets)
                 "h1_" + lepType + "NumerIsoRel", "pass lepton IsoRel;IsoRel;Entries", 40, 0., 0.20);
         histManager->Fill1DHistUnevenBins(recoMET->Mod(),
                 "h1_" + lepType + "NumerMet", "pass lepton Met;Met;Entries", nMetBins, metBins);
-        histManager->Fill1DHist(nJets,
+        histManager->Fill1DHist(cleanJets.size(),
                 "h1_" + lepType + "NumerJetMult", "jet multiplicity; N_{jets}; Entries / bin", 10, -0.5, 9.5);
 
     }
 }
 
-void fakeAnalyzer::FillClosureHists(TCPhysObject& probe, unsigned nJets)
+void fakeAnalyzer::FillClosureHists(TCPhysObject& probe, vector<TCJet>& jets)
 {
     string lepType = "";
     if (probe.Type() == "muon")
         lepType = "Mu";
     else if (probe.Type() == "electron")
         lepType = "Ele";
+
+    vector<TCJet> cleanJets;
+    for (unsigned i = 0; i < jets.size(); ++i) {
+        if (jets[i].DeltaR(probe) > 0.5) 
+            cleanJets.push_back(jets[i]);
+    }
 
     // Fakeable plots
     histManager->Fill1DHist(tag.Pt(),
@@ -953,7 +937,7 @@ void fakeAnalyzer::FillClosureHists(TCPhysObject& probe, unsigned nJets)
                     "h1_" + lepType + "IsoRelClosure_" + cat, "pass lepton IsoRel;IsoRel;Entries", 20, 0., 1.0);
             histManager->Fill1DHistUnevenBins(recoMET->Mod(),
                     "h1_" + lepType + "MetClosure_" + cat, "pass lepton IsoRel;IsoRel;Entries", nMetBins, metBins);
-            histManager->Fill1DHist(nJets,
+            histManager->Fill1DHist(cleanJets.size(),
                     "h1_" + lepType + "JetMultClosure_" + cat, "jet multiplicity; N_{jets}; Entries / bin", 10, -0.5, 9.5);
         }
         histManager->SetWeight(1.);

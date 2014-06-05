@@ -170,9 +170,9 @@ class fakeAnalyzer : public TSelector {
         //virtual void    SlaveTerminate() {};
         virtual void    Terminate();
 
-        virtual void    FillDenominatorHists(TCPhysObject&, unsigned);
-        virtual void    FillNumeratorHists(TCPhysObject&, unsigned);
-        virtual void    FillClosureHists(TCPhysObject&, unsigned);
+        virtual void    FillDenominatorHists(TCPhysObject&, vector<TCJet>&);
+        virtual void    FillNumeratorHists(TCPhysObject&, vector<TCJet>&);
+        virtual void    FillClosureHists(TCPhysObject&, vector<TCJet>&);
         virtual void    FillJetHists(TCPhysObject&, vector<TCJet>&, string);
         virtual bool    GenProbeMatcher(TCPhysObject&, vector<TCGenParticle>&);
         virtual void    DoZTag(vObj&, float);
