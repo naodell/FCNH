@@ -483,16 +483,13 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
         // Find 2 anti-isolated muons and remove them from the muonsNoIso collection
         vObj leptonsAntiIso;
-        vector<TCMuon> muonProbeCandidates;
         for (unsigned i = 0; i < muonsNoIso.size(); ++i) {
             if (muonsNoIso[i].IdMap("IsoRel") > 0.4 && leptonsAntiIso.size() < 2) { 
                 leptonsAntiIso.push_back(muonsNoIso[i]);
-            } else {
-                muonProbeCandidates.push_back(muonsNoIso[i]);
-            }
+            } 
         }
 
-        if (leptonsAntiIso.size() == 2 && (muonProbeCandidates.size() >= 1 || electronsNoIso.size() >= 1)) {
+        if (leptonsAntiIso.size() == 2 && (muonsNoIso.size() >= 1 || electronsNoIso.size() >= 1)) {
 
             // A tag for this CR exists if the leading two leptons are
             // anti-isolated the probe is then the trailing (third in pt) lepton
@@ -505,14 +502,14 @@ bool fakeAnalyzer::Process(Long64_t entry)
             tag = leptonsAntiIso[0]; // No clear how to define this for this case
             // Find probes.  Ensure that they don't overlap with tag leptons
             nMuProbes = 0;
-            if (muonProbeCandidates.size() == 1) {
-                float muISO = muonProbeCandidates[0].IdMap("IsoRel");
+            for (unsigned i = 0; i < muonsNoIso.size(); ++i) {
+                float muISO = muonsNoIso[i].IdMap("IsoRel");
                 if (
-                        muISO < 1. && !(muISO > 0.12 && muISO < 0.2)
-                        && muonProbeCandidates[0].DeltaR(leptonsAntiIso[0]) > 0.5
-                        && muonProbeCandidates[0].DeltaR(leptonsAntiIso[1]) > 0.5
+                        muISO < 0.6 && !(muISO > 0.12 && muISO < 0.2)
+                        && muonsNoIso[i].DeltaR(leptonsAntiIso[0]) > 0.5
+                        && muonsNoIso[i].DeltaR(leptonsAntiIso[1]) > 0.5
                    ) {
-                    muProbe = muonProbeCandidates[0];
+                    muProbe = muonsNoIso[i];
                     ++nMuProbes;
                 }
             }
@@ -643,7 +640,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
         if (muonsNoIso.size() == 2 && electronsNoIso.size() == 0) {
             if (
                     muonsNoIso[0].IdMap("IsoRel") < 0.12 
-                    && muonsNoIso[1].IdMap("IsoRel") < 1. && !(muonsNoIso[1].IdMap("IsoRel") > 0.12 && muonsNoIso[1].IdMap("IsoRel") < 0.2)
+                    && muonsNoIso[1].IdMap("IsoRel") < 0.6 && !(muonsNoIso[1].IdMap("IsoRel") > 0.12 && muonsNoIso[1].IdMap("IsoRel") < 0.2)
                     && muonsNoIso[0].DeltaR(muonsNoIso[1]) > 0.5
                     && muonsNoIso[0].Charge() == muonsNoIso[1].Charge()
 
@@ -957,7 +954,7 @@ void fakeAnalyzer::FillJetHists(TCPhysObject& probe, vector<TCJet>& jets, string
     TCJet probeJet;
     vector<TCJet> cleanJets;
     for (unsigned i = 0; i < jets.size(); ++i) {
-        if (jets[i].DeltaR(probe) < 0.3) {
+        if (jets[i].DeltaR(probe) < 0.5) {
             probeJet = jets[i];
             jetMatched = true;
         } else {
@@ -1016,7 +1013,7 @@ bool fakeAnalyzer::CheckQCD2lCR(vector<TCJet>& tagJets, TCPhysObject& probe)
     bool jetVeto    = false;
     for (unsigned i = 0; i < tagJets.size(); ++i) {
         //cout << tag.DeltaR(tagJets[i]) << "\t" << probe.DeltaR(tagJets[i]) << endl;
-        if (tag.DeltaR(tagJets[i]) < 0.3) {
+        if (tag.DeltaR(tagJets[i]) < 0.5) {
             jetMatched = true;
             continue;
         }
