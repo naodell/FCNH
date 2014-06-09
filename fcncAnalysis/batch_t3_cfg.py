@@ -5,8 +5,8 @@ import sys
 cfg = b.JobConfig
 
 ''' Specify parameters '''
-dataDir     = '/tthome/bpollack/storage/nuTuples_v9.8_8TeV/Data'
-mcDir       = '/tthome/naodell/storage/data/nuTuples_v9.6_8TeV/MC'
+dataDir     = '/tthome/naodell/storage/ntuples/Data'
+mcDir       = '/tthome/naodell/storage/ntuples/MC_skimmed'
 executable  = 'execBatch.sh'
 
 selection   = 'fcnc'
@@ -15,6 +15,7 @@ doData      = False
 doBG        = False
 doSignal    = False
 doFakes     = False
+mcTrigger   = 'muon'
 
 # Config from command line #
 
@@ -44,71 +45,70 @@ signal  = []
 
 if period == '2012':
     data.extend([
-        cfg('muon_2012A', '{0}/DoubleMu_Run2012A_v2'.format(dataDir), 80, 'DATA_MUON muon 2012'),
-        cfg('muon_2012B', '{0}/DoubleMu_Run2012B'.format(dataDir), 80, 'DATA_MUON muon 2012'),
-        cfg('muon_2012C', '{0}/DoubleMu_Run2012C'.format(dataDir), 80, 'DATA_MUON muon 2012'),
-        cfg('muon_2012D', '{0}/DoubleMu_Run2012D'.format(dataDir), 85, 'DATA_MUON muon 2012'),
+        cfg('muon_2012A', '{0}/DoubleMu_Run2012A_v2'.format(dataDir), 40, 'DATA_MUON muon 2012'),
+        cfg('muon_2012B', '{0}/DoubleMu_Run2012B'.format(dataDir), 40, 'DATA_MUON muon 2012'),
+        cfg('muon_2012C', '{0}/DoubleMu_Run2012C'.format(dataDir), 40, 'DATA_MUON muon 2012'),
+        cfg('muon_2012D', '{0}/DoubleMu_Run2012D'.format(dataDir), 45, 'DATA_MUON muon 2012'),
 
-        cfg('electron_2012A', '{0}/DoubleElectron_Run2012A'.format(dataDir), 80, 'DATA_ELECTRON electron 2012'),
-        cfg('electron_2012B', '{0}/DoubleElectron_Run2012B'.format(dataDir), 80, 'DATA_ELECTRON electron 2012'),
-        cfg('electron_2012C', '{0}/DoubleElectron_Run2012C'.format(dataDir), 80, 'DATA_ELECTRON electron 2012'),
-        cfg('electron_2012D', '{0}/DoubleElectron_Run2012D'.format(dataDir), 85, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012A', '{0}/DoubleElectron_Run2012A'.format(dataDir), 40, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012B', '{0}/DoubleElectron_Run2012B'.format(dataDir), 40, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012C', '{0}/DoubleElectron_Run2012C'.format(dataDir), 40, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012D', '{0}/DoubleElectron_Run2012D'.format(dataDir), 45, 'DATA_ELECTRON electron 2012'),
 
-        cfg('muEG_2012A', '{0}/MuEG_Run2012A'.format(dataDir), 80, 'DATA_MUEG muEG 2012'),
-        cfg('muEG_2012B', '{0}/MuEG_Run2012B'.format(dataDir), 80, 'DATA_MUEG muEG 2012'),
-        cfg('muEG_2012C', '{0}/MuEG_Run2012C'.format(dataDir), 80, 'DATA_MUEG muEG 2012'),
-        cfg('muEG_2012D', '{0}/MuEG_Run2012D'.format(dataDir), 85, 'DATA_MUEG muEG 2012')
+        cfg('muEG_2012A', '{0}/MuEG_Run2012A'.format(dataDir), 40, 'DATA_MUEG muEG 2012'),
+        cfg('muEG_2012B', '{0}/MuEG_Run2012B'.format(dataDir), 40, 'DATA_MUEG muEG 2012'),
+        cfg('muEG_2012C', '{0}/MuEG_Run2012C'.format(dataDir), 40, 'DATA_MUEG muEG 2012'),
+        cfg('muEG_2012D', '{0}/MuEG_Run2012D'.format(dataDir), 45, 'DATA_MUEG muEG 2012')
         ])
 
     bg.extend([
-        cfg('ZJets_M-50', mcDir+'/DYJetsToLL_M-50', 80, 'ZJets_M-50 muon 2012'),
-        cfg('ZJets_M-10To50', mcDir+'/DYJetsToLL_M-10To50filter', 55, 'ZJets_M-10To50 muon 2012'),
+        cfg('ZJets_M-50',      '{0}/DYJetsToLL_M-50'.format(mcDir),            30,  'ZJets_M-50      {0}   2012'.format(mcTrigger)),
+        cfg('ZJets_M-10To50',  '{0}/DYJetsToLL_M-10To50filter'.format(mcDir),  20,  'ZJets_M-10To50  {0}   2012'.format(mcTrigger)),
+        #cfg('WbbToLNu',       '{0}/WbbJetsToLNu'.format(mcDir),               20,  'WbbToLNu        {0}   2012'.format(mcTrigger)),
+        cfg('WjetToLNu',       '{0}/WJetsToLNu'.format(mcDir),                 50,  'WJetsToLNu      {0}   2012'.format(mcTrigger)),
+        cfg('WGStarLNu2Mu',    '{0}/WGstarToLNu2Mu'.format(mcDir),             5,   'WGStarLNu2Mu    {0}   2012'.format(mcTrigger)),
+        cfg('WGStarLNu2Tau',   '{0}/WGstarToLNu2Tau'.format(mcDir),            5,   'WGStarLNu2Tau   {0}   2012'.format(mcTrigger)),
+
         #cfg('ZbbToLL', mcDir+'/ZbbToLL', 20, 'ZbbToLL muon 2012'),
         #cfg('ZG', mcDir+'/ZGToLLG', 10, 'ZG muon 2012'),
-        #cfg('WJets', mcDir+'/WJetsToLNu', 20, 'WJets muon 2012'),
         #cfg('WGStarLNu2E', mcDir+'/WGstarToLNu2E', 5, 'WGStarLNu2E muon 2012'),
-        #cfg('WGStarLNu2Mu', mcDir+'/WGstarToLNu2Mu', 5, 'WGStarLNu2Mu muon 2012'),
-        #cfg('WGStarLNu2Tau', mcDir+'/WGStarToLNu2Tau', 5, 'WGStarLNu2Tau muon 2012'),
-        #cfg('WbbToLNu', mcDir+'/WbbJetsToLNu', 20, 'WbbToLNu muon 2012'),
-        #cfg('WbbToLNu', mcDir+'/WbbToLL', 20, 'WbbToLNu muon 2012'),
         #cfg('WG', mcDir+'/WGToLNuG', 10, 'WG muon 2012'),
 
-        cfg('ttbarHad', mcDir+'/TTJets', 40, 'ttbarHad muon 2012'),
-        cfg('ttbarLep', mcDir+'/TTJets', 40, 'ttbarLep muon 2012'),
-        cfg('tbarW', mcDir+'/Tbar_tW', 5, 'tbarW muon 2012'),
-        cfg('tW', mcDir+'/T_tW', 5, 'tW muon 2012'),
-        cfg('t_t-channel', mcDir+'/T_t', 5, 't_t-channel muon 2012'),
-        cfg('tbar_t-channel', mcDir+'/Tbar_t', 5, 'tbar_t-channel muon 2012'),
-        cfg('ttW', mcDir+'/TTWJets', 5, 'ttW muon 2012'),
-        cfg('ttZ', mcDir+'/TTZJets', 5, 'ttZ muon 2012'),
-        cfg('ttG', mcDir+'/TTGJets', 5, 'ttG muon 2012'),
+        cfg('ttbarHad',  '{0}/TTJets'.format(mcDir),   30,  'ttbarHad  {0}   2012'.format(mcTrigger)),
+        cfg('ttbarLep',  '{0}/TTJets'.format(mcDir),   30,  'ttbarLep  {0}   2012'.format(mcTrigger)),
+        cfg('tbarW',           '{0}/Tbar_tW'.format(mcDir),  10,  'tbarW           {0}  2012'.format(mcTrigger)),
+        cfg('tW',              '{0}/T_tW'.format(mcDir),     10,  'tW              {0}  2012'.format(mcTrigger)),
+        cfg('ttW',             '{0}/TTWJets'.format(mcDir),  5,   'ttW             {0}  2012'.format(mcTrigger)),
+        cfg('ttZ',             '{0}/TTZJets'.format(mcDir),  5,   'ttZ             {0}  2012'.format(mcTrigger)),
+        cfg('ttG',             '{0}/TTGJets'.format(mcDir),  5,   'ttG             {0}  2012'.format(mcTrigger)),
+        cfg('t_t-channel',     '{0}/T_t'.format(mcDir),      5,   't_t-channel     {0}  2012'),
+        cfg('tbar_t-channel',  '{0}/Tbar_t'.format(mcDir),   5,   'tbar_t-channel  {0}  2012'),
 
-        #cfg('WWW', mcDir+'/WWWJets', 5, 'WWW muon 2012'),
-        #cfg('WWZ', mcDir+'/WWZNoGstarJets', 5, 'WWZ muon 2012'),
-        #cfg('WZZ', mcDir+'/WZZNoGstarJets', 5, 'WZZ muon 2012'),
-        #cfg('ZZZ', mcDir+'/ZZZNoGstarJets', 5, 'ZZZ muon 2012'),
-        #cfg('WWG', mcDir+'/WWGJets', 5, 'WWG muon 2012'),
+        cfg('WWW',  '{0}/WWWJets'.format(mcDir),         5,  'WWW  {0}  2012'.format(mcTrigger)),
+        cfg('WWZ',  '{0}/WWZNoGstarJets'.format(mcDir),  5,  'WWZ  {0}  2012'.format(mcTrigger)),
+        cfg('WZZ',  '{0}/WZZNoGstarJets'.format(mcDir),  5,  'WZZ  {0}  2012'.format(mcTrigger)),
+        cfg('ZZZ',  '{0}/ZZZNoGstarJets'.format(mcDir),  5,  'ZZZ  {0}  2012'.format(mcTrigger)),
+        cfg('WWG',  '{0}/WWGJets'.format(mcDir),         5,  'WWG  {0}  2012'.format(mcTrigger)),
 
-        cfg('ZZJets2L2Nu', mcDir+'/ZZJetsTo2L2Nu', 5, 'ZZJets2L2Nu muon 2012'),
-        cfg('ZZJets2L2Q', mcDir+'/ZZJetsTo2L2Q', 5, 'ZZJets2L2Q muon 2012'),
-        cfg('WWJets2L2Nu', mcDir+'/WWJetsTo2L2Nu', 5, 'WWJets2L2Nu muon 2012'),
-        cfg('WZJets2L2Q', mcDir+'/WZJetsTo2L2Q', 10, 'WZJets2L2Q muon 2012'),
-        #cfg('ZZJets4L', mcDir+'/ZZJetsTo4L', 5, 'ZZJets4L muon 2012'),
-        cfg('ZZTo4e', mcDir+'/ZZTo4e', 5, 'ZZ4e muon 2012'),
-        cfg('ZZTo4mu', mcDir+'/ZZTo4mu', 5, 'ZZ4mu muon 2012'),
-        cfg('ZZTo4tau', mcDir+'/ZZTo4tau', 5, 'ZZ4tau muon 2012'),
-        cfg('ZZTo2e2mu', mcDir+'/ZZTo2e2mu', 5, 'ZZ2e2mu muon 2012'),
-        cfg('ZZTo2e2tau', mcDir+'/ZZTo2e2tau', 5, 'ZZ2e2tau muon 2012'),
-        cfg('ZZTo2mu2tau', mcDir+'/ZZTo2mu2tau', 5, 'ZZ2mu2tau muon 2012'),
-        cfg('WZJets3LNu', mcDir+'/WZJetsTo3LNu', 5, 'WZJets3LNu muon 2012'),
+        cfg('WWJets2L2Nu',  '{0}/WWJetsTo2L2Nu'.format(mcDir),  10,  'WWJets2L2Nu  {0}  2012'.format(mcTrigger)),
+        cfg('ZZJets2L2Nu',  '{0}/ZZJetsTo2L2Nu'.format(mcDir),  10,  'ZZJets2L2Nu  {0}  2012'.format(mcTrigger)),
+        cfg('WZJets2L2Q',   '{0}/WZJetsTo2L2Q'.format(mcDir),   10,  'WZJets2L2Q   {0}  2012'.format(mcTrigger)),
+        cfg('ZZJets2L2Q',   '{0}/ZZJetsTo2L2Q'.format(mcDir),   10,  'ZZJets2L2Q   {0}  2012'.format(mcTrigger)),
+        cfg('WZJets3LNu',   '{0}/WZJetsTo3LNu'.format(mcDir),   10,  'WZJets3LNu   {0}  2012'.format(mcTrigger)),
+        cfg('ZZTo4e',       '{0}/ZZTo4e'.format(mcDir),         10,  'ZZ4e         {0}  2012'.format(mcTrigger)),
+        cfg('ZZTo4mu',      '{0}/ZZTo4mu'.format(mcDir),        10,  'ZZ4mu        {0}  2012'.format(mcTrigger)),
+        cfg('ZZTo4tau',     '{0}/ZZTo4tau'.format(mcDir),       10,  'ZZ4tau       {0}  2012'.format(mcTrigger)),
+        cfg('ZZTo2e2mu',    '{0}/ZZTo2e2mu'.format(mcDir),      10,  'ZZ2e2mu      {0}  2012'.format(mcTrigger)),
+        cfg('ZZTo2e2tau',   '{0}/ZZTo2e2tau'.format(mcDir),     10,  'ZZ2e2tau     {0}  2012'.format(mcTrigger)),
+        cfg('ZZTo2mu2tau',  '{0}/ZZTo2mu2tau'.format(mcDir),    10,  'ZZ2mu2tau    {0}  2012'.format(mcTrigger)),
 
-        #cfg('QCD_20-30_EM', mcDir+'/QCD_Pt_20_30_EMEnriched', 10, 'QCD_20-30_EM muon 2012'),
-        #cfg('QCD_30-80_EM', mcDir+'/QCD_Pt_30_80_EMEnriched', 10, 'QCD_30-80_EM muon 2012'),
-        #cfg('QCD_80-170_EM', mcDir+'/QCD_Pt_80_170_EMEnriched', 10, 'QCD_80-170_EM muon 2012'),
-        #cfg('QCD_170-250_EM', mcDir+'/QCD_Pt_170_250_EMEnriched', 10, 'QCD_170-250_EM muon 2012'),
-        #cfg('QCD_250-350_EM', mcDir+'/QCD_Pt_250_350_EMEnriched', 10, 'QCD_250-350_EM muon 2012'),
-        #cfg('QCD_350_EM', mcDir+'/QCD_Pt_350_EMEnriched', 10, 'QCD_350_EM muon 2012'),
-        #cfg('QCD_20_MU', mcDir+'/QCD_Pt_20_MuEnrichedPt_15', 10, 'QCD_20_MU muon 2012'),
+        #cfg('QCD_20-30_EM',    '{0}/QCD_Pt_20_30_EMEnriched'.format(mcDir),    40,  'QCD_20-30_EM    {0}  2012'.format(mcTrigger)),
+        #cfg('QCD_30-80_EM',    '{0}/QCD_Pt_30_80_EMEnriched'.format(mcDir),    40,  'QCD_30-80_EM    {0}  2012'.format(mcTrigger)),
+        #cfg('QCD_80-170_EM',   '{0}/QCD_Pt_80_170_EMEnriched'.format(mcDir),   40,  'QCD_80-170_EM   {0}  2012'.format(mcTrigger)),
+        #cfg('QCD_170-250_EM',  '{0}/QCD_Pt_170_250_EMEnriched'.format(mcDir),  40,  'QCD_170-250_EM  {0}  2012'.format(mcTrigger)),
+        #cfg('QCD_250-350_EM',  '{0}/QCD_Pt_250_350_EMEnriched'.format(mcDir),  40,  'QCD_250-350_EM  {0}  2012'.format(mcTrigger)),
+        #cfg('QCD_350_EM',      '{0}/QCD_Pt_350_EMEnriched'.format(mcDir),      40,  'QCD_350_EM      {0}  2012'.format(mcTrigger)),
+        #cfg('QCD_20_MU',       '{0}/QCD_Pt_20_MuEnrichedPt_15'.format(mcDir),  40,  'QCD_20_MU       {0}  2012'.format(mcTrigger)),
 
         #cfg('ggHToZZ4L_M-125', mcDir+'/GluGluToHToZZTo4L_M-125', 5, 'ggHToZZ4L_M-125 muon 2012'),
         #cfg('ggHToWW2L2Nu_M-125', mcDir+'/GluGluToHToWWTo2LAndTau2Nu_M-125', 5, 'ggHToWW2L2Nu_M-125 muon 2012'),

@@ -505,7 +505,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
             for (unsigned i = 0; i < muonsNoIso.size(); ++i) {
                 float muISO = muonsNoIso[i].IdMap("IsoRel");
                 if (
-                        muISO < 0.6 && !(muISO > 0.12 && muISO < 0.2)
+                        muISO < 0.8 && !(muISO > 0.12 && muISO < 0.2)
                         && muonsNoIso[i].DeltaR(leptonsAntiIso[0]) > 0.5
                         && muonsNoIso[i].DeltaR(leptonsAntiIso[1]) > 0.5
                    ) {
@@ -640,7 +640,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
         if (muonsNoIso.size() == 2 && electronsNoIso.size() == 0) {
             if (
                     muonsNoIso[0].IdMap("IsoRel") < 0.12 
-                    && muonsNoIso[1].IdMap("IsoRel") < 0.6 && !(muonsNoIso[1].IdMap("IsoRel") > 0.12 && muonsNoIso[1].IdMap("IsoRel") < 0.2)
+                    && muonsNoIso[1].IdMap("IsoRel") < 0.8 && !(muonsNoIso[1].IdMap("IsoRel") > 0.12 && muonsNoIso[1].IdMap("IsoRel") < 0.2)
                     && muonsNoIso[0].DeltaR(muonsNoIso[1]) > 0.5
                     && muonsNoIso[0].Charge() == muonsNoIso[1].Charge()
 

@@ -273,7 +273,7 @@ void Selector::MuonSelector(TClonesArray* muons)
             
             if (
                     MuonTightID(thisMuon) 
-                    && muISO < 0.6 && !(muISO > 0.12 && muISO < 0.2)
+                    && muISO < 0.8 && !(muISO > 0.12 && muISO < 0.2)
                     )
                 _selMuons["probe"].push_back(*thisMuon);
 
@@ -282,7 +282,7 @@ void Selector::MuonSelector(TClonesArray* muons)
                 _selMuons["tight_id"].push_back(*thisMuon);
                 if (muISO < 0.12) {
                     _selMuons["tight"].push_back(*thisMuon);
-                } else if (muISO > 0.2 && muISO < 0.6) {
+                } else if (muISO > 0.2 && muISO < 0.8) {
                     thisMuon->SetFake(true);
                     _selMuons["fakeable"].push_back(*thisMuon);
                 }
@@ -448,7 +448,7 @@ void Selector::ElectronSelector(TClonesArray* electrons)
                 _selElectrons["probe"].push_back(*thisElec);
             }
 
-            if (!ElectronMVA(thisElec) || eleISO > 0.20) {
+            if (!ElectronMVA(thisElec) && (eleISO < 1. && eleISO > 0.20)) {
                 thisElec->SetFake(true);
                 _selElectrons["fakeable"].push_back(*thisElec);
             }

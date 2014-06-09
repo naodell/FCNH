@@ -10,7 +10,6 @@ using namespace std;
 
 const bool      doPrintout  = false;
 const bool      doGenPrint  = false;
-const bool      doSync      = false;
 
 // MVA switches
 const bool      doMVACut    = true;
@@ -251,7 +250,7 @@ void fcncAnalyzer::Begin(TTree* tree)
         eventCountWeighted[i] = 0;
     }
 
-    if (doSync) {
+    if (false) {
         fout[0].open("sync_files/mine_os_inclusive.txt");
         fout[1].open("sync_files/mine_os_0jet.txt");
         fout[2].open("sync_files/mine_ss_inclusive.txt");
@@ -539,181 +538,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
         GenPlots(gLeptons, leptons);
     }
 
-    if (doSync) {
-
-        if (runNumber == 191834 && lumiSection < 20)  
-            cout << "run number: " << runNumber << "\tlumi section: " << lumiSection << "\tevent number: " << eventNumber << endl;
-
-        if (runNumber == 191834 && lumiSection == 13 && eventNumber == 12177438) {
-
-            cout << "run number: " << runNumber << "\tlumi section: " << lumiSection << "\tevent number: " << eventNumber << endl;
-            cout << "\t" << muons.size() << "\t" << recoMuons->GetSize() << "\t" << recoJets->GetSize() << endl;
-
-            for (int i = 0; i < recoJets->GetSize(); ++i) {
-                TCJet* thisJet = (TCJet*) recoJets->At(i);    
-                PrintJetIDVars(*thisJet);
-                for (int j = 0; j < recoMuons->GetSize(); ++j) {
-                    TCMuon* thisMuon = (TCMuon*) recoMuons->At(j);    
-                    cout << thisMuon->DeltaR(*thisJet) << "\t";
-                }
-                cout << endl;
-            }
-            cout << endl;
-
-            for (int i = 0; i < recoMuons->GetSize(); ++i) {
-                TCMuon* thisMuon = (TCMuon*) recoMuons->At(i);    
-                PrintMuonIDVars(*thisMuon);
-                cout << endl;
-            }
-            cout << endl;
-        }
-
-        if (muons.size() == 2) {
-
-            if (muons[0].Pt() > leptonPtCut[0] && muons[1].Pt() > leptonPtCut[1]) { 
-
-                // Yields for syncing with Stoyan //
-                if (muons[0].Charge() == muons[1].Charge()) {
-                    fout[2] << "run number: " << runNumber << "\t lumi section: " << lumiSection << "\t event number: " << eventNumber << "\n";
-                    histManager->Fill1DHist(1, "h1_SyncYields", ";cut;Entries", 10, 0.5, 10.5);
-                    ++eventCountSS;
-
-                    if (false) {
-                        cout << "run number: " << runNumber << "\tlumi section: " << lumiSection << "\tevent number: " << eventNumber << endl;
-                        cout << "\t" << recoMuons->GetSize() << "\t" << recoJets->GetSize() << endl;
-
-                        for (int i = 0; i < recoJets->GetSize(); ++i) {
-                            TCJet* thisJet = (TCJet*) recoJets->At(i);    
-                            PrintJetIDVars(*thisJet);
-                            for (int j = 0; j < recoMuons->GetSize(); ++j) {
-                                TCMuon* thisMuon = (TCMuon*) recoMuons->At(j);    
-                                cout << thisMuon->DeltaR(*thisJet) << "\t";
-                            }
-                            cout << endl;
-                        }
-                        cout << endl;
-                    }
-
-                    if (jets.size() == 0){
-                        fout[3] << "run number: " << runNumber << "\t lumi section: " << lumiSection << "\t event number: " << eventNumber << "\n";
-                        histManager->Fill1DHist(2, "h1_SyncYields", ";cut;Entries", 10, 0.5, 10.5);
-                        ++eventCountSS_NoJet;
-                    }
-
-                    if (mlJets.size() == 0)
-                        histManager->Fill1DHist(5, "h1_SyncYields", ";cut;Entries", 10, 0.5, 10.5);
-                    else if (mlJets.size() == 1)
-                        histManager->Fill1DHist(6, "h1_SyncYields", ";cut;Entries", 10, 0.5, 10.5);
-                    else if (mlJets.size() >= 2)
-                        histManager->Fill1DHist(7, "h1_SyncYields", ";cut;Entries", 10, 0.5, 10.5);
-                } else if (muons[0].Charge() != muons[1].Charge()) {
-                    fout[0] << "run number: " << runNumber << "\t lumi section: " << lumiSection << "\t event number: " << eventNumber << endl;
-                    histManager->Fill1DHist(3, "h1_SyncYields", ";cut;Entries", 10, 0.5, 10.5);
-                    ++eventCountOS;
-
-                    if (eventNumber == 4238484) {
-                        cout << "run number: " << runNumber << "\tlumi section: " << lumiSection << "\tevent number: " << eventNumber << endl;
-                        cout << "\t" << recoMuons->GetSize() << "\t" << recoJets->GetSize() << endl;
-                        PrintJetIDVars(jets[0]);
-
-                        for (int i = 0; i < recoJets->GetSize(); ++i) {
-                            TCJet* thisJet = (TCJet*) recoJets->At(i);    
-                            PrintJetIDVars(*thisJet);
-                            for (int j = 0; j < recoMuons->GetSize(); ++j) {
-                                TCMuon* thisMuon = (TCMuon*) recoMuons->At(j);    
-                                cout << thisMuon->DeltaR(*thisJet) << "\t";
-                            }
-                            cout << endl;
-                        }
-                        cout << endl;
-                    }
-
-                    if (jets.size() == 0) {
-                        fout[1] << "run number: " << runNumber << "\t lumi section: " << lumiSection << "\t event number: " << eventNumber << endl;
-                        histManager->Fill1DHist(4, "h1_SyncYields", ";cut;Entries", 10, 0.5, 10.5);
-                        ++eventCountOS_NoJet;
-                    }
-                    if (mlJets.size() == 0)
-                        histManager->Fill1DHist(8, "h1_SyncYields", ";cut;Entries", 10, 0.5, 10.5);
-                    else if (mlJets.size() == 1)
-                        histManager->Fill1DHist(9, "h1_SyncYields", ";cut;Entries", 10, 0.5, 10.5);
-                    else if (mlJets.size() >= 2)
-                        histManager->Fill1DHist(10, "h1_SyncYields", ";cut;Entries", 10, 0.5, 10.5);
-                }
-            }
-        }
-        return kTRUE;
-    }
-
-    if (false) {
-        vector<TCMuon> muonsNoIso = selector->GetSelectedMuons("tight_id");
-        for (unsigned i = 0; i < muonsNoIso.size(); ++i) {
-            TCMuon mu = muonsNoIso[i];
-            histManager->Fill2DHist(mu.Pt(), mu.IdMap("IsoRel"), 
-                    "h1_MuonIsoVsPt", "muon Iso vs p_{T};p_{T};Iso", 5, 0., 150., 16, 0., 2.);
-            histManager->Fill2DHist(mu.Eta(), mu.IdMap("IsoRel"), 
-                    "h1_MuonIsoVsEta", "muon Iso vs #eta;#eta;Iso", 5, -2.5, 2.5, 16, 0., 2.);
-        }
-
-        vector<TCElectron> electronsNoIso = selector->GetSelectedElectrons("tight_id");
-        for (unsigned i = 0; i < electronsNoIso.size(); ++i) {
-            TCElectron ele = electronsNoIso[i];
-            string index = str(i+1);
-
-            histManager->Fill1DHist(ele.IdMap("IsoRel"),
-                    "h1_Electron"  + index + "IsoRel", "Iso_{rel} e;Iso_{rel};Entries", 40, 0., 4.);
-            histManager->Fill1DHist(ele.IdMap("IsoRel_uncorr"),
-                    "h1_Electron"  + index + "IsoRelUncorr", "uncorrected Iso_{rel} e;Iso_{rel};Entries", 40, 0., 4.);
-
-            histManager->Fill1DHist(ele.IdMap("pfPhoIso_corr")/ele.Pt(),
-                    "h1_Electron"  + index + "PhoIsoRel", "corrected Iso_{#gamma,rel};Iso_{#gamma,rel};Entries", 40, 0., 4.);
-            histManager->Fill1DHist(ele.PfIsoCharged()/ele.Pt(),
-                    "h1_Electron"  + index + "PhoIsoRelUncorr", "uncorrected Iso_{#gamma,rel};Iso_{#gamma,rel};Entries", 40, 0., 4.);
-
-            histManager->Fill2DHist(ele.Pt(), ele.IdMap("IsoRel"), 
-                    "h2_ElectronIsoVsPt", "electron Iso vs p_{T};p_{T};Iso", 5, 0., 150., 16, 0., 2.);
-            histManager->Fill2DHist(ele.Eta(), ele.IdMap("IsoRel"), 
-                    "h2_ElectronIsoVsEta", "electron Iso vs #eta;#eta;Iso", 5, -2.5, 2.5, 16, 0., 2.);
-
-            histManager->Fill2DHist(ele.Pt(), ele.PfIsoCharged()/ele.Pt(), 
-                    "h2_ElectronChHadIsoVsPt", "electron Iso vs p_{T};p_{T};Charged Iso", 5, 0., 150., 16, 0., 2.);
-            histManager->Fill2DHist(fabs(ele.Eta()), ele.PfIsoCharged()/ele.Pt(), 
-                    "h2_ElectronChHadIsoVsEta", "electron Iso vs #eta;#eta;Charged Iso", 5, 0., 2.5, 16, 0., 2.);
-            histManager->Fill2DHist(ele.Pt(), ele.PfIsoPhoton()/ele.Pt(), 
-                    "h2_ElectronPhoIsoVsPt", "electron Iso vs p_{T};p_{T};#gamma Iso", 5, 0., 150., 16, 0., 2.);
-            histManager->Fill2DHist(fabs(ele.Eta()), ele.PfIsoPhoton()/ele.Pt(), 
-                    "h2_ElectronPhoIsoVsEta", "electron Iso vs #eta;#eta;#gamma Iso", 5, 0., 2.5, 16, 0., 2.);
-            histManager->Fill2DHist(ele.Pt(), ele.IdMap("pfPhoIso_corr")/ele.Pt(), 
-                    "h2_ElectronCorrPhoIsoVsPt", "electron corrected pfIso vs p_{T};p_{T};#gamma Iso", 5, 0., 150., 16, 0., 2.);
-            histManager->Fill2DHist(fabs(ele.Eta()), ele.IdMap("pfPhoIso_corr")/ele.Pt(), 
-                    "h2_ElectronCorrPhoIsoVsEta", "electron corrected pfIso vs #eta;#eta;#gamma Iso", 5, 0., 2.5, 16, 0., 2.);
-            histManager->Fill2DHist(ele.Pt(), ele.PfIsoNeutral()/ele.Pt(), 
-                    "h2_ElectronNeuIsoVsPt", "electron Iso vs p_{T};p_{T};Neutral Iso", 5, 0., 150., 16, 0., 2.);
-            histManager->Fill2DHist(fabs(ele.Eta()), ele.PfIsoNeutral()/ele.Pt(), 
-                    "h2_ElectronNeuIsoVsEta", "electron Iso vs #eta;#eta;Neutral Iso", 5, 0., 2.5, 16, 0., 2.);
-
-            histManager->Fill2DHist(ele.IdMap("IsoRel"), ele.HadOverEm(), 
-                    "h2_ElectronIsoVsHOverE", "H/E vs electron Iso;Neutral Iso;H/E", 16, 0., 2., 15, 0., .15);
-        }
-
-        for (unsigned i = 0; i < fakeableElectrons.size(); ++i) {
-            TCElectron ele = fakeableElectrons[i];
-            string index = str(i+1);
-
-            histManager->Fill1DHist(ele.IdMap("IsoRel"),
-                    "h1_FakeElectron"  + index + "IsoRel", "Iso_{rel} e;Iso_{rel};Entries", 40, 0., 4.);
-            histManager->Fill1DHist(ele.IdMap("IsoRel_uncorr"),
-                    "h1_FakeElectron"  + index + "IsoRelUncorr", "uncorrected Iso_{rel} e;Iso_{rel};Entries", 40, 0., 4.);
-
-            histManager->Fill1DHist(ele.IdMap("pfPhoIso_corr")/ele.Pt(),
-                    "h1_FakeElectron"  + index + "PhoIsoRel", "corrected Iso_{#gamma,rel};Iso_{#gamma,rel};Entries", 40, 0., 4.);
-            histManager->Fill1DHist(ele.PfIsoCharged()/ele.Pt(),
-                    "h1_FakeElectron"  + index + "PhoIsoRelUncorr", "uncorrected Iso_{#gamma,rel};Iso_{#gamma,rel};Entries", 40, 0., 4.);
-
-        }
-    }
-
-
     if (leptons.size() == 1) {
         //!!! Single leptons just for fakes !!!//
         if (leptons[0].Pt() < leptonPtCut[1]) 
@@ -754,9 +578,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
     } else if (leptons.size() > 4)
         return kTRUE;
 
-
     if (leptons.size() > 1) { // Only do signal extraction if there are at least two leptons
-
         //!! low mass resonance rejection !!//
         bool lowMassOS  = false;
         bool isCosmics  = false;
@@ -973,7 +795,7 @@ void fcncAnalyzer::Terminate()
     cout << "| number of opposite-sign dimuon events:          :" << eventCountOS << endl;
     cout << "| number of opposite-sign dimuon events (0-jet)   :" << eventCountOS_NoJet << endl;
 
-    if (doSync)
+    if (false)
         for (int i = 0; i < 4; ++i) fout[i].close();
 
     // Set alphanumeric bins for charge and flavor histograms
@@ -1105,8 +927,6 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
             && (bJetsM.size() + jets.size()) == 0
             && (leptons[0] + leptons[1]).M() < 30
             && recoMET->Mod() < 50
-            //&& leptons[0].Pt() < 50
-            //&& fabs(leptons[0].Eta() - leptons[1].Eta()) <  1.
        ) 
         return true;
 
@@ -1234,7 +1054,7 @@ void fcncAnalyzer::DoAICBG(vObj& leptons, TCPhoton& photon, vector<TCJet>& jets,
     photon.SetCharge(runNumber%2 ? 1 : -1);
     lepPlusPhoton.push_back(photon);
 
-    cout << lepPlusPhoton[2].Type() << "\t" << lepPlusPhoton[2].Charge() << endl;
+    //cout << lepPlusPhoton[2].Type() << "\t" << lepPlusPhoton[2].Charge() << endl;
     sort(lepPlusPhoton.begin(), lepPlusPhoton.end(), P4SortCondition);
 
     // Enforce low mass dilepton veto

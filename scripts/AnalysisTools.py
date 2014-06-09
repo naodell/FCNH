@@ -123,6 +123,10 @@ class AnalysisTools():
                 for data in self._combineDict[dataName]:
                     print data,
 
+                    if not self._histFile.GetDirectory('inclusive/' + data):
+                        print '\nCould not find {0} in root file!'.format(data)
+                        continue
+
                     yieldHist = self._histFile.GetDirectory('inclusive/' + data).Get('h1_YieldByCut')
                     nInit       = yieldHist.GetBinContent(1)
                     if corrected:
@@ -136,6 +140,10 @@ class AnalysisTools():
             else:
                 if dataName in self._scaleDict[self._period]:
                     print dataName,
+
+                    if not self._histFile.GetDirectory('inclusive/' + data):
+                        print '\nCould not find {0} in root file!'.format(data)
+                        continue
 
                     yieldHist = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCut')
                     nInit       = yieldHist.GetBinContent(1)
