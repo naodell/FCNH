@@ -9,6 +9,12 @@ using namespace std;
 void run(Long64_t nEntries = 1e4, string args = "TEST muon 2012") 
 {
 
+    string libMake = gSystem->GetMakeSharedLib();
+    const string delWarn("-Wshadow");
+    int pos1 = libMake.find(delWarn);
+    libMake= libMake.substr(0, pos1) + libMake.substr(pos1+delWarn.size()+1); 
+    gSystem->SetMakeSharedLib(libMake.c_str());
+
     //container classes
     gROOT->LoadMacro("../src/TCPhysObject.cc+");
     gROOT->LoadMacro("../src/TCTrack.cc+");

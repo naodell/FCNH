@@ -11,10 +11,10 @@ using namespace std;
 const bool  doQCDDileptonCR = true;
 const bool  doZPlusJetCR    = true;
 const bool  doAntiIso3l     = true;
-const bool  doPureLep       = false;
+const bool  doPureLep       = true;
 const bool  doSameSign      = true;
 
-const bool  doGenMatching   = true;
+const bool  doGenMatching   = false;
 
 const float jetPtCut[]  = {30., 15.};
 const float muPtCut[]   = {10., 3.};
@@ -247,7 +247,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
     // Prepare control regions for FR estimation...  
     // The control region is largely defined by the tag, but we'll first check
     // for any probes since they will be the same for both regions of interest
-    //
+    
     // Only consider lower MET events (MET < 50 GeV)
     if (recoMET->Mod() > 50.) return kTRUE;
 
@@ -410,17 +410,17 @@ bool fakeAnalyzer::Process(Long64_t entry)
                 }
             }
 
+            // Require only one probe
+            bool singleProbe = true;
+            if (nEleProbes > 1 || nMuProbes > 1) 
+                singleProbe = false;
+
             // Only allow events with muon and electron probes to proceed
             // if they are the same object
-            bool singleProbe = true;
             if (nEleProbes == 1 && nMuProbes == 1) {
                 if (eleProbe.DeltaR(muProbe) > 0.3)
                     singleProbe = false;
             }
-
-            if (nEleProbes > 1 || nMuProbes > 1) 
-                singleProbe = false;
-
 
             if ((nEleProbes == 1 || nMuProbes == 1) && singleProbe) {
                 // Probe object is found and event is consistent with Z+jet 
@@ -505,7 +505,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
             for (unsigned i = 0; i < muonsNoIso.size(); ++i) {
                 float muISO = muonsNoIso[i].IdMap("IsoRel");
                 if (
-                        muISO < 0.8 && !(muISO > 0.12 && muISO < 0.2)
+                        muISO < 1.0 && !(muISO > 0.12 && muISO < 0.2)
                         && muonsNoIso[i].DeltaR(leptonsAntiIso[0]) > 0.5
                         && muonsNoIso[i].DeltaR(leptonsAntiIso[1]) > 0.5
                    ) {
@@ -640,10 +640,9 @@ bool fakeAnalyzer::Process(Long64_t entry)
         if (muonsNoIso.size() == 2 && electronsNoIso.size() == 0) {
             if (
                     muonsNoIso[0].IdMap("IsoRel") < 0.12 
-                    && muonsNoIso[1].IdMap("IsoRel") < 0.8 && !(muonsNoIso[1].IdMap("IsoRel") > 0.12 && muonsNoIso[1].IdMap("IsoRel") < 0.2)
+                    && muonsNoIso[1].IdMap("IsoRel") < 1.0 && !(muonsNoIso[1].IdMap("IsoRel") > 0.12 && muonsNoIso[1].IdMap("IsoRel") < 0.2)
                     && muonsNoIso[0].DeltaR(muonsNoIso[1]) > 0.5
                     && muonsNoIso[0].Charge() == muonsNoIso[1].Charge()
-
                ) {
 
                 tag = muonsNoIso[0];
@@ -678,7 +677,6 @@ bool fakeAnalyzer::Process(Long64_t entry)
             }
         }     
     }
-
 
     return kTRUE;
 }
@@ -837,6 +835,8 @@ void fakeAnalyzer::FillNumeratorHists(TCPhysObject& probe, vector<TCJet>& jets)
             "h1_" + lepType + "PassLepPt", "pass lepton p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
     histManager->Fill1DHist(probe.Eta(),
             "h1_" + lepType + "PassLepEta", "pass lepton #eta;#eta;Entries / bin", 25, -2.5, 2.5);
+    histManager->Fill1DHist(CalculateTransMass(probe, *recoMET),
+            "h1_" + lepType + "PassTransverseMass", "MT pass muon;MT;Entries / bin", 75, 0., 150.);
 
     if (probe.Pt() < 50.) {
         if (probe.Type() == "muon") {

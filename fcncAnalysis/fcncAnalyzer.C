@@ -656,7 +656,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
         if (
                 doAIC 
                 && isRealData
-                && photons.size() > 0 
+                && photons.size() == 1 
                 && (leptons.size() == 1 || leptons.size() == 2)
            ) { 
 
@@ -668,6 +668,8 @@ bool fcncAnalyzer::Process(Long64_t entry)
                         leptons[0].Type() == leptons[1].Type() 
                         && leptons[0].Charge() != leptons[1].Charge()
                         && (leptons[0] + leptons[1]).M() < 75
+                        && (leptons[0] + photons[0]).M() > 10.
+                        && (leptons[1] + photons[0]).M() > 10.
                    ) {
 
                     if (leptons[0].Type() == "muon") {
@@ -679,7 +681,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
                     }
                 }
             }
-            subdir  = suffix;
+            subdir = suffix;
         }
     } 
 
@@ -1057,11 +1059,6 @@ void fcncAnalyzer::DoAICBG(vObj& leptons, TCPhoton& photon, vector<TCJet>& jets,
     //cout << lepPlusPhoton[2].Type() << "\t" << lepPlusPhoton[2].Charge() << endl;
     sort(lepPlusPhoton.begin(), lepPlusPhoton.end(), P4SortCondition);
 
-    // Enforce low mass dilepton veto
-
-    SetEventVariables(lepPlusPhoton, jets, bJetsM, *recoMET); 
-    SetEventCategory(lepPlusPhoton);
-
     //Set AIC category
     string category = "";
     if (leptons[0].Type() == "muon") {
@@ -1081,6 +1078,8 @@ void fcncAnalyzer::DoAICBG(vObj& leptons, TCPhoton& photon, vector<TCJet>& jets,
     Float_t weight = weighter->GetAICWeight(photon, category);
     evtWeight *= weight;
     histManager->SetWeight(evtWeight);
+    SetEventCategory(lepPlusPhoton);
+    SetEventVariables(lepPlusPhoton, jets, bJetsM, *recoMET); 
     AnalysisSelection(lepPlusPhoton, jets, bJetsM, bJetsL, category + "AIC");
 
     // Reset evtWeight
@@ -1101,13 +1100,19 @@ void fcncAnalyzer::GetFakeBG(vObj& leptons, vObj& fakeables, vector<TCJet>& jets
             if (leptons[0].Charge() == leptons[1].Charge())
                 return;
 
+        string fakeType;
+        if (fakeables[0].Type() == "electron")
+            fakeType = "ZPlusJet";
+        else if (fakeables[0].Type() == "muon")
+            fakeType = "QCD2l";
+
         Float_t fakeWeight1 = 1.;
         Float_t fakeWeight2 = 1.;
         if (fakeables.size() == 2) {
-            fakeWeight1 = weighter->GetFakeWeight(fakeables[0], "QCD2l");
+            fakeWeight1 = weighter->GetFakeWeight(fakeables[0], fakeType);
             fakeWeight2 = weighter->GetFakeWeight(fakeables[1], "QCD2l");
         } else if (fakeables.size() == 1) {
-            fakeWeight1 = weighter->GetFakeWeight(fakeables[0], "QCD2l");
+            fakeWeight1 = weighter->GetFakeWeight(fakeables[0], fakeType);
         }
 
         //cout << fakeWeight1 << ", " << fakeWeight2 << endl;
@@ -1153,7 +1158,6 @@ void fcncAnalyzer::DoFakes(vObj& leptons, vObj& fakeables, vector<TCJet>& jets, 
     SetEventCategory(leptonsPlusFakes);
     SetEventVariables(leptonsPlusFakes, jets, bJetsM, *recoMET); 
 
-    //cout << leptonsPlusFakes.size() << endl;
     // Enforce same-sign dilepton/trilepton selection with fake leptons
     if (leptonsPlusFakes.size() == 2) { 
         if (
@@ -1893,13 +1897,13 @@ void fcncAnalyzer::GenPlots(vector<TCGenParticle>& gen, vObj& leptons)
 void fcncAnalyzer::ConversionPlots(vObj& leptons, TCPhoton& photon)
 {
     if (leptons.size() == 2) {
-
         if (
                 leptons[0].Type() == leptons[1].Type() 
                 && leptons[0].Charge() != leptons[1].Charge()
                 && (leptons[0] + leptons[1]).M() < 75.
+                && (leptons[0] + photon).M() > 10.
+                && (leptons[1] + photon).M() > 10.
            ) {
-
 
             histManager->SetFileNumber(0);
             histManager->SetDirectory("inclusive/" + subdir);

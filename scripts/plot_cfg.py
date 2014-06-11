@@ -88,31 +88,31 @@ samples['3l_inclusive'].append('ttV')
 samples['3l_inclusive'].append('ZZ4l')
 #samples['3l_inclusive'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
 samples['3l_inclusive'].append('WZJets3LNu')
-samples['3l_inclusive'].append('Fakes')
+#samples['3l_inclusive'].append('Fakes')
 samples['3l_inclusive'].append('AIC')
 
 ### eee
 samples['3l_eee'].extend(samples['3l_inclusive'])
-#samples['3l_eee'].extend(['eFakes', 'llFakes'])
+samples['3l_eee'].extend(['eFakes', 'llFakes'])
 #samples['3l_eee'].append('eeeAIC')
 #
 ### eemu
 samples['3l_eemu'].extend(samples['3l_inclusive'])
-#samples['3l_eemu'].extend(['eFakes', 'muFakes', 'llFakes'])
+samples['3l_eemu'].extend(['eFakes', 'muFakes', 'llFakes'])
 #samples['3l_eemu'].append('eemuAIC')
 #
 ### emumu
 samples['3l_emumu'].extend(samples['3l_inclusive'])
-#samples['3l_emumu'].extend(['eFakes', 'muFakes', 'llFakes'])
+samples['3l_emumu'].extend(['eFakes', 'muFakes', 'llFakes'])
 #samples['3l_emumu'].append('emumuAIC')
 #
 ### mumumu
 samples['3l_mumumu'].extend(samples['3l_inclusive'])
-#samples['3l_mumumu'].extend(['muFakes', 'llFakes'])
+samples['3l_mumumu'].extend(['muFakes', 'llFakes'])
 #samples['3l_mumumu'].append('mumumuAIC')
 
 ## inclusive
-#samples['3l_inclusive'].append('Fakes')
+samples['3l_inclusive'].append('Fakes')
 #samples['3l_inclusive'].append('AIC')
 
 #samples['3l'].append('top')

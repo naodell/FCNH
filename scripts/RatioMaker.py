@@ -254,16 +254,17 @@ if __name__ == '__main__':
 
         ratioMaker = RatioMaker(inFile, outFile, scale = 19.7)
         ratioMaker.set_category('inclusive')
-        ratioMaker.get_scale_factors(['AIC_BG'], corrected = False)
+        #ratioMaker.get_scale_factors(['AIC_BG'], corrected = False)
+        ratioMaker.get_scale_factors([''], corrected = False)
 
-        ratioMaker.set_ratio_1D({'mumumu':('TrileptonMass_AIC', 'DimuonPhotonMass_AIC')})
+        ratioMaker.set_ratio_1D({'mumumu':('ThirdMuonPt_AIC', 'PhotonPt_AIC_Mu3l')})
         ratioMaker.make_1D_ratios('DATA', bgSample = '', categories = ['3l_mumumu', 'inclusive'])
-        ratioMaker.set_ratio_1D({'emumu':('TrileptonMass_AIC', 'DimuonPhotonMass_AIC')})
+        ratioMaker.set_ratio_1D({'emumu':('ThirdElectronPt_AIC', 'PhotonPt_AIC_Mu3l')})
         ratioMaker.make_1D_ratios('DATA', bgSample = '', categories = ['3l_emumu', 'inclusive'])
 
-        ratioMaker.set_ratio_1D({'eemu':('TrileptonMass_AIC', 'DimuonPhotonMass_AIC')})
+        ratioMaker.set_ratio_1D({'eemu':('ThirdMuonPt_AIC', 'PhotonPt_AIC_El3l')})
         ratioMaker.make_1D_ratios('DATA', bgSample = '', categories = ['3l_eemu', 'inclusive'])
-        ratioMaker.set_ratio_1D({'eee':('TrileptonMass_AIC', 'DimuonPhotonMass_AIC')})
+        ratioMaker.set_ratio_1D({'eee':('ThirdElectronPt_AIC', 'PhotonPt_AIC_El3l')})
         ratioMaker.make_1D_ratios('DATA', bgSample = '', categories = ['3l_eee', 'inclusive'])
 
         ratioMaker.write_outfile()

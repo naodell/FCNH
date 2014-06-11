@@ -185,13 +185,13 @@ scaleDict['2012']['WZJets2L2Q']         = 5.09
 scaleDict['2012']['WWJets2L2Nu']        = 5.995
 
 scaleDict['2012']['ttbar']              = 234
-scaleDict['2012']['ttbarHad']           = 234#*30*70
-scaleDict['2012']['ttbarLep']           = 234#*30*30
-scaleDict['2012']['tW']                 = 11.77
-scaleDict['2012']['tbarW']              = 11.77
+scaleDict['2012']['ttbarHad']           = 234
+scaleDict['2012']['ttbarLep']           = 234
+scaleDict['2012']['tW']                 = 11.177
+scaleDict['2012']['tbarW']              = 11.177
 scaleDict['2012']['t_t-channel']        = 55.53
 scaleDict['2012']['tbar_t-channel']     = 30.7
-scaleDict['2012']['ttW']                = 0.249
+scaleDict['2012']['ttW']                = 0.232
 scaleDict['2012']['ttZ']                = 0.206
 scaleDict['2012']['ttG']                = 2.166
 
@@ -208,6 +208,10 @@ scaleDict['2012']['QCD_80-170_EM']      = 183722
 scaleDict['2012']['QCD_170-250_EM']     = 4588
 scaleDict['2012']['QCD_250-350_EM']     = 556.75
 scaleDict['2012']['QCD_350_EM']         = 89.1
+scaleDict['2012']['QCD_15-30_MU_B']     = 0.00004*9.883E8
+scaleDict['2012']['QCD_30-50_MU_B']     = 0.00062*6.629E7
+scaleDict['2012']['QCD_50-150_MU_B']    = 0.0024*9.2E6
+scaleDict['2012']['QCD_150_MU_B']       = 0.0086*50000 # Can't find value for this
 
 scaleDict['2012']['DYToMuMu']           = 1666.
 scaleDict['2012']['DYToEE']             = 1666.
