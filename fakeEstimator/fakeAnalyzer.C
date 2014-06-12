@@ -11,7 +11,7 @@ using namespace std;
 const bool  doQCDDileptonCR = true;
 const bool  doZPlusJetCR    = true;
 const bool  doAntiIso3l     = true;
-const bool  doPureLep       = false;
+const bool  doPureLep       = true;
 const bool  doSameSign      = true;
 
 const bool  doGenMatching   = true;
