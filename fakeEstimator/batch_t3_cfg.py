@@ -39,7 +39,6 @@ data    = []
 bg      = []
 signal  = []
 
-
 if period == '2012':
     data.extend([
         cfg('muon_2012A', '{0}/DoubleMu_Run2012A_v2'.format(dataDir), 40, 'DATA_MUON muon 2012'),
