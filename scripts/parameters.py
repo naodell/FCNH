@@ -103,6 +103,7 @@ styleDict['GJets_15to30']       = (2, r.kYellow+2, 0, 1, 'gamma+jets')
 
 #Higgs
 styleDict['higgs']              = (2, r.kBlue+3, 0, 1, 'higgs')
+styleDict['ggHToZZ4L_M-125']    = (2, r.kBlue+3, 0, 1, 'H#rightarrow 4l')
 
 #Misc
 styleDict['BGERROR']            = (0, r.kBlack, 3018, 0, 'BG uncertainty')
@@ -208,10 +209,10 @@ scaleDict['2012']['QCD_80-170_EM']      = 183722
 scaleDict['2012']['QCD_170-250_EM']     = 4588
 scaleDict['2012']['QCD_250-350_EM']     = 556.75
 scaleDict['2012']['QCD_350_EM']         = 89.1
-scaleDict['2012']['QCD_15-30_MU_B']     = 0.00004*9.883E8
-scaleDict['2012']['QCD_30-50_MU_B']     = 0.00062*6.629E7
-scaleDict['2012']['QCD_50-150_MU_B']    = 0.0024*9.2E6
-scaleDict['2012']['QCD_150_MU_B']       = 0.0086*50000 # Can't find value for this
+scaleDict['2012']['QCD_15-30_B+MU']     = 0.00004*9.883E8
+scaleDict['2012']['QCD_30-50_B+MU']     = 0.00062*6.629E7
+scaleDict['2012']['QCD_50-150_B+MU']    = 0.0024*9.2E6
+scaleDict['2012']['QCD_150_B+MU']       = 0.0086*50000 # Can't find value for this
 
 scaleDict['2012']['DYToMuMu']           = 1666.
 scaleDict['2012']['DYToEE']             = 1666.
@@ -283,6 +284,7 @@ combineDict['ZZ4l']             = ['ZZ4mu', 'ZZ4e', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2
 combineDict['VV2l']             = ['ZZJets2L2Nu', 'ZZJets2L2Q', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'WZJets2L2Q']
 combineDict['Triboson']         = ['WWW', 'WWZ', 'WZZ', 'ZZZ']#, 'WWG']
 combineDict['QCD']              = ['QCD_20_MU', 'QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_EM', 'QCD_170-250_EM', 'QCD_250-350_EM', 'QCD_350_EM']
+#combineDict['QCD']              = ['QCD_15-30_B+MU', 'QCD_30-50_B+MU', 'QCD_50-150_B+MU', 'QCD_150_B+MU', 'QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_EM', 'QCD_170-250_EM', 'QCD_250-350_EM', 'QCD_350_EM']
 combineDict['QCD_EM']           = ['QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_EM', 'QCD_170-250_EM', 'QCD_250-350_EM', 'QCD_350_EM']
 combineDict['higgs']            = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125']
 

@@ -528,13 +528,13 @@ bool fakeAnalyzer::Process(Long64_t entry)
             }
 
             bool singleProbe = true;
+            if (nEleProbes > 1 || nMuProbes > 1) 
+                singleProbe = false;
+
             if (nEleProbes == 1 && nMuProbes == 1) {
                 if (eleProbe.DeltaR(muProbe) > 0.3)
                     singleProbe = false;
             }
-
-            if (nEleProbes > 1 || nMuProbes > 1) 
-                singleProbe = false;
 
             if ((nEleProbes == 1 || nMuProbes == 1) && singleProbe) {
                 // Probe object is found and event is consistent with AntiIso3l 
@@ -563,7 +563,6 @@ bool fakeAnalyzer::Process(Long64_t entry)
                 if (nEleProbes == 1) {
                     FillJetHists(eleProbe, cleanJets, "inclusive");
                     FillDenominatorHists(eleProbe, cleanJets);
-
                     if (selector->ElectronMVA(&eleProbe) && eleProbe.IdMap("IsoRel") < 0.15) {
                         FillJetHists(eleProbe, cleanJets, "tight");
                         FillNumeratorHists(eleProbe, cleanJets);
@@ -589,7 +588,6 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
                     FillJetHists(muProbe, cleanJets, "inclusive");
                     FillDenominatorHists(muProbe, cleanJets);
-
                     if (muProbe.IdMap("IsoRel") < 0.12) {
                         FillJetHists(muProbe, cleanJets, "tight");
                         FillNumeratorHists(muProbe, cleanJets);
@@ -605,6 +603,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
     if (doPureLep) {
         histManager->SetDirectory("PureLep/" + suffix);
         if (muonsNoIso.size() == 2) {
+            cout << muonsNoIso << endl;
 
             if (
                     muonsNoIso[0].IdMap("IsoRel") < 0.12 
@@ -686,9 +685,11 @@ void fakeAnalyzer::Terminate()
     histManager->SetDirectory("inclusive/" + suffix);
 
     histManager->SetWeight(eventCount[0]);
-    histManager->Fill1DHist(1, "h1_YieldByCut", ";cut;Entries / bin", 2, 0.5, 2.5);
+    histManager->Fill1DHist(1, "h1_YieldByCut", ";cut;Entries / bin", 3, 0.5, 3.5);
     histManager->SetWeight(eventCount[1]);
-    histManager->Fill1DHist(2, "h1_YieldByCut", ";cut;Entries / bin", 2, 0.5, 2.5);
+    histManager->Fill1DHist(2, "h1_YieldByCut", ";cut;Entries / bin", 3, 0.5, 3.5);
+    histManager->SetWeight(eventCount[2]);
+    histManager->Fill1DHist(3, "h1_YieldByCut", ";cut;Entries / bin", 3, 0.5, 3.5);
 
     cout << "\nFake rate estimation finished." << endl;
 
@@ -762,7 +763,7 @@ void fakeAnalyzer::FillDenominatorHists(TCPhysObject& probe, vector<TCJet>& jets
             "h1_" + lepType + "TagDxy", "tag  d_{xy};d_{xy};Entries", 50, 0., 2.);
 
     histManager->Fill1DHist((tag + probe).M(),
-            "h1_Tag" + lepType + "ProbeMass", "M_{tag,probe};M_{tag,probe};Entries / 4 GeV", 50, 0., 200.);
+            "h1_Tag" + lepType + "ProbeMass", "M_{tag,probe};M_{tag,probe};Entries / 5 GeV", 50, 0., 250.);
     histManager->Fill1DHist((tag + probe).M(),
             "h1_Tag" + lepType + "ProbeMassHiggs", "M_{tag,probe};M_{tag,probe};Entries / 2 GeV", 25, 100., 150.);
     histManager->Fill1DHist(tag.DeltaR(probe),
@@ -802,7 +803,6 @@ void fakeAnalyzer::FillDenominatorHists(TCPhysObject& probe, vector<TCJet>& jets
 
         histManager->Fill1DHistUnevenBins(probe.Pt(),
                 "h1_" + lepType + "DenomPt", "probe lepton p_{T};p_{T};Entries / bin", nPtBins, ptBins);
-
         histManager->Fill1DHist(probe.IdMap("IsoRel"),
                 "h1_" + lepType + "DenomIsoRel", "probe lepton IsoRel;IsoRel;Entries", 40, 0., 1.2);
         histManager->Fill1DHistUnevenBins(recoMET->Mod(),
@@ -827,16 +827,16 @@ void fakeAnalyzer::FillNumeratorHists(TCPhysObject& probe, vector<TCJet>& jets)
     }
 
     histManager->Fill1DHist((tag + probe).M(),
-            "h1_Tag" + lepType + "PassMass", "M_{tag,probe};M_{tag,probe};Entries / 4 GeV", 50, 0., 200.);
+            "h1_Tag" + lepType + "PassMass", "M_{tag,probe};M_{tag,probe};Entries / 5 GeV", 50, 0., 250.);
     histManager->Fill1DHist(tag.DeltaR(probe),
             "h1_Tag" + lepType + "PassDeltaR", "#Delta R(tag,probe);#Delta R(tag,probe);Entries / 3 GeV", 50, 0., 5.);
 
     histManager->Fill1DHist(probe.Pt(),
-            "h1_" + lepType + "PassLepPt", "pass lepton p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
+            "h1_" + lepType + "PassLepPt", "pass lepton p_{T};p_{T};Entries / 4 GeV", 25, 0., 100);
     histManager->Fill1DHist(probe.Eta(),
             "h1_" + lepType + "PassLepEta", "pass lepton #eta;#eta;Entries / bin", 25, -2.5, 2.5);
     histManager->Fill1DHist(CalculateTransMass(probe, *recoMET),
-            "h1_" + lepType + "PassTransverseMass", "MT pass muon;MT;Entries / bin", 75, 0., 150.);
+            "h1_" + lepType + "PassTransverseMass", "MT pass muon;MT;Entries / 5 GeV", 30, 0., 150.);
 
     if (probe.Pt() < 50.) {
         if (probe.Type() == "muon") {
