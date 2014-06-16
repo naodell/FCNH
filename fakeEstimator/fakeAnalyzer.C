@@ -11,10 +11,10 @@ using namespace std;
 const bool  doQCDDileptonCR = true;
 const bool  doZPlusJetCR    = true;
 const bool  doAntiIso3l     = true;
-const bool  doPureLep       = true;
-const bool  doSameSign      = true;
+const bool  doPureLep       = false;
+const bool  doSameSign      = false;
 
-const bool  doGenMatching   = false;
+const bool  doGenMatching   = true;
 
 const float jetPtCut[]  = {30., 15.};
 const float muPtCut[]   = {10., 3.};
@@ -603,7 +603,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
     if (doPureLep) {
         histManager->SetDirectory("PureLep/" + suffix);
         if (muonsNoIso.size() == 2) {
-            cout << muonsNoIso << endl;
+            //cout << muonsNoIso << endl;
 
             if (
                     muonsNoIso[0].IdMap("IsoRel") < 0.12 
@@ -1013,7 +1013,7 @@ bool fakeAnalyzer::CheckQCD2lCR(vector<TCJet>& tagJets, TCPhysObject& probe)
     bool jetVeto    = false;
     for (unsigned i = 0; i < tagJets.size(); ++i) {
         //cout << tag.DeltaR(tagJets[i]) << "\t" << probe.DeltaR(tagJets[i]) << endl;
-        if (tag.DeltaR(tagJets[i]) < 0.5) {
+        if (tag.DeltaR(tagJets[i]) < 0.3) {
             jetMatched = true;
             continue;
         }

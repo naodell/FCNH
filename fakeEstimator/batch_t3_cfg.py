@@ -6,8 +6,8 @@ cfg = b.JobConfig
 
 ''' Specify parameters '''
 dataDir     = '/tthome/naodell/storage/ntuples/Data'
-mcDir       = '/tthome/naodell/storage/ntuples/MC_skimmed'
-mcDir2      = '/tthome/naodell/storage/data/nuTuples_v9.6_8TeV/MC'
+#mcDir       = '/tthome/naodell/storage/ntuples/MC_skimmed'
+mcDir      = '/tthome/naodell/storage/data/nuTuples_v9.6_8TeV/MC'
 executable  = 'execBatch.sh'
 
 selection   = 'fcnc'
@@ -60,12 +60,12 @@ if period == '2012':
     ])
 
     bg.extend([
-        cfg('ZJets_M-50',      '{0}/DYJetsToLL_M-50'.format(mcDir2),            40,  'ZJets_M-50      {0}   2012'.format(mcTrigger)),
-        cfg('ZJets_M-10To50',  '{0}/DYJetsToLL_M-10To50filter'.format(mcDir2),  20,  'ZJets_M-10To50  {0}   2012'.format(mcTrigger)),
-        #cfg('WbbToLNu',         '{0}/WbbJetsToLNu'.format(mcDir),               20,  'WbbToLNu        {0}   2012'.format(mcTrigger)),
+        cfg('ZJets_M-50',      '{0}/DYJetsToLL_M-50'.format(mcDir),            40,  'ZJets_M-50      {0}   2012'.format(mcTrigger)),
+        cfg('ZJets_M-10To50',  '{0}/DYJetsToLL_M-10To50filter'.format(mcDir),  20,  'ZJets_M-10To50  {0}   2012'.format(mcTrigger)),
+        cfg('WbbToLNu',         '{0}/WbbJetsToLNu'.format(mcDir),               20,  'WbbToLNu        {0}   2012'.format(mcTrigger)),
         cfg('WjetToLNu',        '{0}/WJetsToLNu'.format(mcDir),                 50,  'WJetsToLNu      {0}   2012'.format(mcTrigger)),
-        #cfg('WGStarLNu2Mu',    '{0}/WGstarToLNu2Mu'.format(mcDir),             5,   'WGStarLNu2Mu    {0}   2012'.format(mcTrigger)),
-        #cfg('WGStarLNu2Tau',   '{0}/WGstarToLNu2Tau'.format(mcDir),            5,   'WGStarLNu2Tau   {0}   2012'.format(mcTrigger)),
+        cfg('WGStarLNu2Mu',    '{0}/WGstarToLNu2Mu'.format(mcDir),             5,   'WGStarLNu2Mu    {0}   2012'.format(mcTrigger)),
+        cfg('WGStarLNu2Tau',   '{0}/WGstarToLNu2Tau'.format(mcDir),            5,   'WGStarLNu2Tau   {0}   2012'.format(mcTrigger)),
 
         cfg('ttbarHad',  '{0}/TTJets'.format(mcDir),   30,  'ttbarHad  {0}   2012'.format(mcTrigger)),
         cfg('ttbarLep',  '{0}/TTJets'.format(mcDir),   30,  'ttbarLep  {0}   2012'.format(mcTrigger)),
@@ -87,26 +87,26 @@ if period == '2012':
         cfg('ZZTo2e2tau',   '{0}/ZZTo2e2tau'.format(mcDir),     10,  'ZZ2e2tau     {0}  2012'.format(mcTrigger)),
         cfg('ZZTo2mu2tau',  '{0}/ZZTo2mu2tau'.format(mcDir),    10,  'ZZ2mu2tau    {0}  2012'.format(mcTrigger)),
 
-        cfg('WWW',  '{0}/WWWJets'.format(mcDir),         5,  'WWW  {0}  2012'.format(mcTrigger)),
-        cfg('WWZ',  '{0}/WWZNoGstarJets'.format(mcDir),  5,  'WWZ  {0}  2012'.format(mcTrigger)),
-        cfg('WZZ',  '{0}/WZZNoGstarJets'.format(mcDir),  5,  'WZZ  {0}  2012'.format(mcTrigger)),
-        cfg('ZZZ',  '{0}/ZZZNoGstarJets'.format(mcDir),  5,  'ZZZ  {0}  2012'.format(mcTrigger)),
-        cfg('WWG',  '{0}/WWGJets'.format(mcDir),         5,  'WWG  {0}  2012'.format(mcTrigger)),
+        #cfg('WWW',  '{0}/WWWJets'.format(mcDir),         5,  'WWW  {0}  2012'.format(mcTrigger)),
+        #cfg('WWZ',  '{0}/WWZNoGstarJets'.format(mcDir),  5,  'WWZ  {0}  2012'.format(mcTrigger)),
+        #cfg('WZZ',  '{0}/WZZNoGstarJets'.format(mcDir),  5,  'WZZ  {0}  2012'.format(mcTrigger)),
+        #cfg('ZZZ',  '{0}/ZZZNoGstarJets'.format(mcDir),  5,  'ZZZ  {0}  2012'.format(mcTrigger)),
+        #cfg('WWG',  '{0}/WWGJets'.format(mcDir),         5,  'WWG  {0}  2012'.format(mcTrigger)),
 
-        cfg('QCD_20-30_EM',    '{0}/QCD_Pt_20_30_EMEnriched'.format(mcDir),    40,  'QCD_20-30_EM    {0}  2012'.format(mcTrigger)),
-        cfg('QCD_30-80_EM',    '{0}/QCD_Pt_30_80_EMEnriched'.format(mcDir),    40,  'QCD_30-80_EM    {0}  2012'.format(mcTrigger)),
-        cfg('QCD_80-170_EM',   '{0}/QCD_Pt_80_170_EMEnriched'.format(mcDir),   40,  'QCD_80-170_EM   {0}  2012'.format(mcTrigger)),
-        cfg('QCD_170-250_EM',  '{0}/QCD_Pt_170_250_EMEnriched'.format(mcDir),  40,  'QCD_170-250_EM  {0}  2012'.format(mcTrigger)),
-        cfg('QCD_250-350_EM',  '{0}/QCD_Pt_250_350_EMEnriched'.format(mcDir),  40,  'QCD_250-350_EM  {0}  2012'.format(mcTrigger)),
-        cfg('QCD_350_EM',      '{0}/QCD_Pt_350_EMEnriched'.format(mcDir),      40,  'QCD_350_EM      {0}  2012'.format(mcTrigger)),
-        cfg('QCD_20_MU',       '{0}/QCD_Pt_20_MuEnrichedPt_15'.format(mcDir2),  40,  'QCD_20_MU       {0}  2012'.format(mcTrigger)),
+        #cfg('QCD_20-30_EM',    '{0}/QCD_Pt_20_30_EMEnriched'.format(mcDir),    40,  'QCD_20-30_EM    {0}  2012'.format(mcTrigger)),
+        #cfg('QCD_30-80_EM',    '{0}/QCD_Pt_30_80_EMEnriched'.format(mcDir),    40,  'QCD_30-80_EM    {0}  2012'.format(mcTrigger)),
+        #cfg('QCD_80-170_EM',   '{0}/QCD_Pt_80_170_EMEnriched'.format(mcDir),   40,  'QCD_80-170_EM   {0}  2012'.format(mcTrigger)),
+        #cfg('QCD_170-250_EM',  '{0}/QCD_Pt_170_250_EMEnriched'.format(mcDir),  40,  'QCD_170-250_EM  {0}  2012'.format(mcTrigger)),
+        #cfg('QCD_250-350_EM',  '{0}/QCD_Pt_250_350_EMEnriched'.format(mcDir),  40,  'QCD_250-350_EM  {0}  2012'.format(mcTrigger)),
+        #cfg('QCD_350_EM',      '{0}/QCD_Pt_350_EMEnriched'.format(mcDir),      40,  'QCD_350_EM      {0}  2012'.format(mcTrigger)),
+        #cfg('QCD_20_MU',       '{0}/QCD_Pt_20_MuEnrichedPt_15'.format(mcDir),  40,  'QCD_20_MU       {0}  2012'.format(mcTrigger)),
 
         #cfg('QCD_15-30_B+MU',   '{0}/QCD_Pt_15to30_bEnriched_MuEnrichedPt_14'.format(mcDir),   40,  'QCD_15-30_B+MU   {0}  2012'.format(mcTrigger)),
         #cfg('QCD_30-50_B+MU',   '{0}/QCD_Pt_30to50_bEnriched_MuEnrichedPt_14'.format(mcDir),   40,  'QCD_30-50_B+MU   {0}  2012'.format(mcTrigger)),
         #cfg('QCD_50-150_B+MU',  '{0}/QCD_Pt_50to150_bEnriched_MuEnrichedPt_14'.format(mcDir),  40,  'QCD_50-150_B+MU  {0}  2012'.format(mcTrigger)),
         #cfg('QCD_150_B+MU',     '{0}/QCD_Pt_150_bEnriched_MuEnrichedPt_14'.format(mcDir),      40,  'QCD_150_B+MU     {0}  2012'.format(mcTrigger)),
 
-        cfg('ggHToZZ4L_M-125',  '{0}/GluGluToHToZZTo4L_M-125'.format(mcDir), 5, 'ggHToZZ4L_M-125 {0} 2012'.format(mcTrigger)),
+        #cfg('ggHToZZ4L_M-125',  '{0}/GluGluToHToZZTo4L_M-125'.format(mcDir), 5, 'ggHToZZ4L_M-125 {0} 2012'.format(mcTrigger)),
     ])
 
 

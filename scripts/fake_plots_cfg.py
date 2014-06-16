@@ -34,12 +34,12 @@ doRatio     = False
 
 ### Samples to be included in stacks ###
 samples = {}
-samples['inclusive']    = ['ZJets', 'ttbar', 'ZZ4l', 'WJetsToLNu', 'WZJets3LNu', 'ttV', 'QCD']
+samples['inclusive']    = ['ZJets', 'ttbar', 'ZZ4l', 'WJetsToLNu', 'WZJets3LNu', 'ttV']
 samples['ZPlusJet']     = ['ggHToZZ4L_M-125', 'ZZ4l', 'WZJets3LNu', 'WZJets2L2Q', 'ZZJets2L2Q', 'ttbar', 'ZJets']
-samples['QCD2l']        = ['ttbar', 'single top', 'ZJets', 'WJetsToLNu', 'QCD']
-samples['AntiIso3l']    = ['ttbar', 'single top', 'ZJets', 'WJetsToLNu', 'QCD']
+samples['QCD2l']        = ['ttbar', 'single top', 'ZJets', 'WJetsToLNu']
+samples['AntiIso3l']    = ['ttbar', 'single top', 'ZJets', 'WJetsToLNu']
 samples['PureLep']      = ['ttbar', 'ZJets', 'WZJets3LNu']
-samples['SameSign']     = ['ZZ4l', 'WZJets3LNu', 'single top', 'ttbar', 'ZJets', 'WJetsToLNu', 'QCD']
+samples['SameSign']     = ['ZZ4l', 'WZJets3LNu', 'single top', 'ttbar', 'ZJets', 'WJetsToLNu']
 #samples['AntiIso3l']    = ['ZJets', 'ttbarLep', 'ttbarHad', 'WZJets3LNu', 'WbbToLNu'] #'WJetsToLNu']
 
 if doPlots:
@@ -57,7 +57,7 @@ if doPlots:
 
     ### DATASETS ###
 
-    plotter.add_datasets(['PROMPT', 'QCD', 'WZJets2L2Q', 'ZZJets2L2Q'])#, 'ggHToZZ4L_M-125'])
+    plotter.add_datasets(['PROMPT', 'WZJets2L2Q', 'ZZJets2L2Q'])#, 'ggHToZZ4L_M-125'])
     plotter._overlayList.extend(['DATA'])
 
     plotter.get_scale_factors(addData = [], corrected = False)
@@ -119,7 +119,7 @@ if doPlots:
     plotter.add_datasets(samples, Clear=True)
 
     ### Categories to be plotted ###
-    catList = ['QCD2l', 'ZPlusJet', 'SameSign', 'AntiIso3l', 'PureLep']
+    catList = ['QCD2l', 'ZPlusJet', 'AntiIso3l']
 
     for category in catList:
         plotter._directoryList1D = ['Muon', 'Electron']
