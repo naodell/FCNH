@@ -13,7 +13,6 @@ const bool  doZPlusJetCR    = true;
 const bool  doAntiIso3l     = true;
 const bool  doPureLep       = false;
 const bool  doSameSign      = false;
-
 const bool  doGenMatching   = true;
 
 const float jetPtCut[]  = {30., 15.};
@@ -489,7 +488,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
             } 
         }
 
-        if (leptonsAntiIso.size() == 2 && (muonsNoIso.size() >= 1 || electronsNoIso.size() >= 1)) {
+        if (leptonsAntiIso.size() == 2 && (muProbes.size() >= 1 || eleProbes.size() >= 1)) {
 
             // A tag for this CR exists if the leading two leptons are
             // anti-isolated the probe is then the trailing (third in pt) lepton
@@ -502,30 +501,27 @@ bool fakeAnalyzer::Process(Long64_t entry)
             tag = leptonsAntiIso[0]; // No clear how to define this for this case
             // Find probes.  Ensure that they don't overlap with tag leptons
             nMuProbes = 0;
-            for (unsigned i = 0; i < muonsNoIso.size(); ++i) {
-                float muISO = muonsNoIso[i].IdMap("IsoRel");
-                if (
-                        muISO < 1.0 && !(muISO > 0.12 && muISO < 0.2)
-                        && muonsNoIso[i].DeltaR(leptonsAntiIso[0]) > 0.5
-                        && muonsNoIso[i].DeltaR(leptonsAntiIso[1]) > 0.5
-                   ) {
-                    muProbe = muonsNoIso[i];
+            for (unsigned i = 0; i < muProbes.size(); ++i) {
+                float muISO = muProbes[i].IdMap("IsoRel");
+                if (muProbes[i].DeltaR(leptonsAntiIso[0]) > 0.5 && muProbes[i].DeltaR(leptonsAntiIso[1]) > 0.5) {
+                    muProbe = muProbes[i];
                     ++nMuProbes;
                 }
             }
 
             nEleProbes = 0;
-            for (unsigned i = 0; i < electronsNoIso.size(); ++i) {
-                float eleISO = electronsNoIso[i].IdMap("IsoRel");
+            for (unsigned i = 0; i < eleProbes.size(); ++i) {
+                float eleISO = eleProbes[i].IdMap("IsoRel");
                 if (
                         eleISO < 1. && !(eleISO > 0.15 && eleISO < 0.2)
-                        && electronsNoIso[i].DeltaR(leptonsAntiIso[0]) > 0.5
-                        && electronsNoIso[i].DeltaR(leptonsAntiIso[1]) > 0.5
+                        && eleProbes[i].DeltaR(leptonsAntiIso[0]) > 0.5
+                        && eleProbes[i].DeltaR(leptonsAntiIso[1]) > 0.5
                    ) {
-                    eleProbe = electronsNoIso[i];
+                    eleProbe = eleProbes[i];
                     ++nEleProbes;
                 }
             }
+
 
             bool singleProbe = true;
             if (nEleProbes > 1 || nMuProbes > 1) 
