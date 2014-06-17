@@ -405,8 +405,8 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
     unsigned  nPtBins = 8;
     float     ptBins[] = {10., 15., 20., 25., 30., 35., 40., 45., 50.}; 
 
-    if (fakeable.Pt() > 35.) {
-        iPt = 5;
+    if (fakeable.Pt() > 50.) {
+        iPt = 8;
     } else {
         for (unsigned j = 0; j < nPtBins; ++j) {
             if (fakeable.Pt() > ptBins[j] && fakeable.Pt() < ptBins[j + 1]) {

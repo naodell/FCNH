@@ -12,7 +12,7 @@ const bool  doQCDDileptonCR = true;
 const bool  doZPlusJetCR    = true;
 const bool  doAntiIso3l     = true;
 const bool  doPureLep       = false;
-const bool  doSameSign      = false;
+const bool  doSameSign      = true;
 const bool  doGenMatching   = true;
 
 const float jetPtCut[]  = {30., 15.};
@@ -235,6 +235,21 @@ bool fakeAnalyzer::Process(Long64_t entry)
     sort(bJetsM.begin(), bJetsM.end(), BTagSortCondition);
     sort(leptons.begin(), leptons.end(), P4SortCondition);
 
+    //!!! same-sign dimuon cross-check !!!//
+    if (leptons.size() == 2) {
+        if (
+                leptons[0].Pt() > 20.
+                && leptons[0].Type() == "muon" && leptons[1].Type() == "muon"
+                && leptons[0].Charge() == leptons[1].Charge()
+                && (leptons[0] + leptons[1]).M() > 12.
+           ) {
+            cout << leptons[0].Pt() << ", " << leptons[1].Pt() << endl;
+            histManager->Fill1DHist(leptons[0].Pt(),
+                    "h1_LeadMuonPt_SS", "lead muon p_{T} test;p_{T};Entries / 4 GeV", 40, 0., 160.);
+            histManager->Fill1DHist(leptons[1].Pt(),
+                    "h1_TrailingMuonPt_SS", "lead muon p_{T} test;p_{T};Entries / 4 GeV", 30, 0., 120.);
+        }
+    }
 
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
     //                            //
@@ -748,7 +763,7 @@ void fakeAnalyzer::FillDenominatorHists(TCPhysObject& probe, vector<TCJet>& jets
     }
 
     histManager->Fill1DHist(tag.Pt(),
-            "h1_" + lepType + "TagLepPt", "tag lepton p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
+            "h1_" + lepType + "TagLepPt", "tag lepton p_{T};p_{T};Entries / 3 GeV", 40, 0., 160);
     histManager->Fill1DHist(tag.Eta(),
             "h1_" + lepType + "TagLepEta", "tag lepton #eta;#eta;Entries / bin", 25, -2.5, 2.5);
     histManager->Fill1DHist(tag.IdMap("IsoRel"),
@@ -767,7 +782,7 @@ void fakeAnalyzer::FillDenominatorHists(TCPhysObject& probe, vector<TCJet>& jets
 
     // fake rate measurement plots
     histManager->Fill1DHist(probe.Pt(),
-            "h1_" + lepType + "ProbeLepPt", "probe muon p_{T};p_{T};Entries / 3 GeV", 50, 0., 150);
+            "h1_" + lepType + "ProbeLepPt", "probe muon p_{T};p_{T};Entries / 3 GeV", 40, 0., 160);
     histManager->Fill1DHist(probe.Eta(),
             "h1_" + lepType + "ProbeLepEta", "probe muon #eta;#eta;Entries / bin", 25, -2.5, 2.5);
     histManager->Fill1DHist(CalculateTransMass(probe, *recoMET),

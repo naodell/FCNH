@@ -254,8 +254,8 @@ if __name__ == '__main__':
 
         ratioMaker = RatioMaker(inFile, outFile, scale = 19.7)
         ratioMaker.set_category('inclusive')
-        #ratioMaker.get_scale_factors(['AIC_BG'], corrected = False)
-        ratioMaker.get_scale_factors([''], corrected = False)
+        ratioMaker.get_scale_factors(['AIC_BG'], corrected = False)
+        #ratioMaker.get_scale_factors([''], corrected = False)
 
         ratioMaker.set_ratio_1D({'mumumu':('ThirdMuonPt_AIC', 'PhotonPt_AIC_Mu3l')})
         ratioMaker.make_1D_ratios('DATA', bgSample = '', categories = ['3l_mumumu', 'inclusive'])
