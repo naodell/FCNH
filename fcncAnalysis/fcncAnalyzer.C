@@ -16,11 +16,11 @@ const bool      doMVACut    = true;
 const bool      doMVATree   = false;
 
 // Data-driven BG estimation switches
-bool doCR       = false;
-bool doQFlips   = false;
-bool doFakes    = false;
+bool doCR       = true;
+bool doQFlips   = true;
+bool doFakes    = true;
 bool doFakeMC   = false;
-bool doAIC      = false;
+bool doAIC      = true;
 
 
 /////////////////
@@ -510,6 +510,22 @@ bool fcncAnalyzer::Process(Long64_t entry)
     //  Overlap Jets/Leptons  //
     //                        //
     //!!!!!!!!!!!!!!!!!!!!!!!!//
+    
+    //!!! same-sign dimuon cross-check !!!//
+    if (leptons.size() == 2) {
+        if (
+                leptons[0].Pt() > 20.
+                && leptons[0].Type() == "muon" && leptons[1].Type() == "muon"
+                && leptons[0].Charge() == leptons[1].Charge()
+                && (leptons[0] + leptons[1]).M() > 12.
+           ) {
+            cout << leptons[0].Pt() << ", " << leptons[1].Pt() << endl;
+            histManager->Fill1DHist(leptons[0].Pt(),
+                    "h1_LeadMuonPt_SS", "lead muon p_{T} test;p_{T};Entries / 4 GeV", 40, 0., 160.);
+            histManager->Fill1DHist(leptons[1].Pt(),
+                    "h1_TrailingMuonPt_SS", "lead muon p_{T} test;p_{T};Entries / 4 GeV", 30, 0., 120.);
+        }
+    }
 
     histManager->Fill1DHist(muJets.size() + eleJets.size(), 
             "h1_OverlapJetMult", "(e/#mu)-jet multiplicity;N_{jets};Entries / bin", 5, -0.5, 4.5);
@@ -532,22 +548,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
     //  and weighting....     //
     //                        //
     //!!!!!!!!!!!!!!!!!!!!!!!!//
-
-    //!!! same-sign dimuon cross-check !!!//
-    if (leptons.size() == 2) {
-        if (
-                leptons[0].Pt() > leptonPtCut[0]
-                && leptons[0].Type() == "muon" && leptons[1].Type() == "muon"
-                && leptons[0].Charge() == leptons[1].Charge()
-                && (leptons[0] + leptons[1]).M() > 12.
-           ) {
-            cout << leptons[0].Pt() << ", " << leptons[1].Pt() << endl;
-            histManager->Fill1DHist(leptons[0].Pt(),
-                    "h1_LeadMuonPt_SS", "lead muon p_{T} test;p_{T};Entries / 4 GeV", 40, 0., 160.);
-            histManager->Fill1DHist(leptons[1].Pt(),
-                    "h1_TrailingMuonPt_SS", "lead muon p_{T} test;p_{T};Entries / 4 GeV", 30, 0., 120.);
-        }
-    }
 
     histManager->Fill1DHist(leptons.size(), "h1_LeptonMult", "lepton multiplicity;N_{leptons};Events / bin", 6, -0.5, 5.5);
 
@@ -601,7 +601,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
         for (unsigned i = 1; i < leptons.size(); ++i) {
             for (unsigned j = 0; j < i; ++j) {
-                if ((leptons[i] + leptons[j]).M() < 12) 
+                if ((leptons[i] + leptons[j]).M() < 20.) 
                     lowMassOS = true;
 
                 //if (isRealData && leptons[i].Type() == "muon" && leptons[j].Type() == "muon")
@@ -1245,16 +1245,6 @@ void fcncAnalyzer::MakePlots(vObj& leptons, vector<TCJet>& jets, vector<TCJet>& 
         //    cout << categoryNames[histCategory] << ":\t(" << leptons[0].Type() << ", " << leptons[0].Charge() << ", " << leptons[0].Eta() << ")\t(" << leptons[1].Type() << ", " << leptons[1].Charge() << ", " << leptons[1].Eta() <<  ")\t" << (bJets.size() + jets.size()) << endl;
         //}
         
-        if (leptons.size() == 2 && i == 3) {
-            if (
-                    leptons[0].Pt() > leptonPtCut[0]
-                    && leptons[0].Type() == "muon" && leptons[1].Type() == "muon"
-                    && leptons[0].Charge() == leptons[1].Charge()
-                    && (leptons[0] + leptons[1]).M() > 12.
-               ) 
-                cout << leptons[0].Pt() << ", " << leptons[1].Pt() << ", " << categoryNames[histCategory] << "\n\n";
-        }
-
         histManager->SetDirectory(categoryNames[histCategory] + "/" + subdir);
 
         LeptonPlots(leptons, jets, bJets);
@@ -1796,7 +1786,7 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
                     "h2_TrailingElecQMisIDDenom", "trailing e charge misID (denominator);p_{T};#eta", 4, ptBins, 2, etaBins); 
 
             histManager->Fill2DHist(2*iEta1 + iPt1, 2*iEta2 + iPt2,
-                    "h2_DileptonQMisIDDenom", "e charge misID (denominator);e_{leading};e_{trailing}", 8, 0.5, 8.5, 9, 0.5, 8.5);
+                    "h2_DileptonQMisIDDenom", "e charge misID (denominator);e_{leading};e_{trailing}", 8, 0.5, 8.5, 8, 0.5, 8.5);
         }
     }
 }

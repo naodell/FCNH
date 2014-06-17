@@ -235,21 +235,6 @@ bool fakeAnalyzer::Process(Long64_t entry)
     sort(bJetsM.begin(), bJetsM.end(), BTagSortCondition);
     sort(leptons.begin(), leptons.end(), P4SortCondition);
 
-    //!!! same-sign dimuon cross-check !!!//
-    if (leptons.size() == 2) {
-        if (
-                leptons[0].Pt() > 20.
-                && leptons[0].Type() == "muon" && leptons[1].Type() == "muon"
-                && leptons[0].Charge() == leptons[1].Charge()
-                && (leptons[0] + leptons[1]).M() > 12.
-           ) {
-            cout << leptons[0].Pt() << ", " << leptons[1].Pt() << endl;
-            histManager->Fill1DHist(leptons[0].Pt(),
-                    "h1_LeadMuonPt_SS", "lead muon p_{T} test;p_{T};Entries / 4 GeV", 40, 0., 160.);
-            histManager->Fill1DHist(leptons[1].Pt(),
-                    "h1_TrailingMuonPt_SS", "lead muon p_{T} test;p_{T};Entries / 4 GeV", 30, 0., 120.);
-        }
-    }
 
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
     //                            //

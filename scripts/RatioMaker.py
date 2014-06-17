@@ -272,7 +272,8 @@ if __name__ == '__main__':
     ### For electron charge misID efficiencies ###
     if type == 'QFlips':
         inFile  = 'fcncAnalysis/combined_histos/fcnh_cut1_2012_{0}.root'.format(batch)
-        outFile = 'data/eleQMisID_TEST.root'
+        outFile = 'data/electronQMisID_TEST.root'
+
 
         ratioMaker = RatioMaker(inFile, outFile, scale = 19.7)
         ratioMaker.set_category('inclusive')
