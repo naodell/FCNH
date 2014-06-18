@@ -274,19 +274,18 @@ if __name__ == '__main__':
         inFile  = 'fcncAnalysis/combined_histos/fcnh_cut1_2012_{0}.root'.format(batch)
         outFile = 'data/electronQMisID_TEST.root'
 
-
         ratioMaker = RatioMaker(inFile, outFile, scale = 19.7)
         ratioMaker.set_category('inclusive')
 
         eMisQDict = {
-            #'LeadElectronMisQ':('LeadElecQMisIDNumer', 'LeadElecQMisIDDenom'),
-            #'TrailingElectronMisQ':('TrailingElecQMisIDNumer', 'TrailingElecQMisIDDenom'),
+            'LeadElectronMisQ':('LeadElecQMisIDNumer', 'LeadElecQMisIDDenom'),
+            'TrailingElectronMisQ':('TrailingElecQMisIDNumer', 'TrailingElecQMisIDDenom'),
             'DielectronMisQ':('DileptonQMisIDNumer', 'DileptonQMisIDDenom')
             }
 
         ratioMaker.set_ratio_2D(eMisQDict)
         ratioMaker.charge_flip_fitter('DATA_ELECTRON', nToys = 50)
-        #ratioMaker.make_2D_ratios('DATA', doProjections = False)
+        ratioMaker.make_2D_ratios('DATA', doProjections = False)
 
         ratioMaker.write_outfile()
 

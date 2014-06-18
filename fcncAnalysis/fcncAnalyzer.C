@@ -1720,41 +1720,48 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
     histManager->SetFileNumber(0);
     histManager->SetDirectory("inclusive/" + subdir);
 
-    float ptBins[]  = {0., 20., 35., 75., 150.};
-    float etaBins[] = {0., 1.479, 2.5};
+    float ptBins[]  = {10., 40., 45., 50., 75., 150.};
+    float etaBins[] = {0., 0.8, 1.479, 2.5};
 
     unsigned iEta1, iPt1, iEta2, iPt2;
 
     // Set iEta bins for leading and trailing electrons
-    if (fabs(electrons[0].Eta()) < 1.479)
+    if (fabs(electrons[0].Eta()) < 0.8)
         iEta1 = 0;
-    else //if (fabs(electrons[0].Eta()) > 1.479)
+    else if (fabs(electrons[0].Eta()) > 0.8 && fabs(electrons[0].Eta()) < 1.479)
         iEta1 = 1;
+    else if (fabs(electrons[0].Eta()) > 1.479 && fabs(electrons[0].Eta()) < 2.5)
+        iEta1 = 2;
 
     if (fabs(electrons[1].Eta()) < 0.8)
         iEta2 = 0;
-    else //if (fabs(electrons[1].Eta()) > 1.479)
+    else if (fabs(electrons[0].Eta()) > 0.8 && fabs(electrons[0].Eta()) < 1.479)
         iEta2 = 1;
-
+    else if (fabs(electrons[1].Eta()) > 1.479 && fabs(electrons[1].Eta()) < 2.5)
+        iEta2 = 2;
 
     // Set iPt bins for leading and trailing electrons
-    if (electrons[0].Pt() < 20.)
+    if (electrons[0].Pt() >= 10. && electrons[0].Pt() < 40.)
         iPt1 = 1;
-    else if (electrons[0].Pt() >= 20 && electrons[0].Pt() < 35)
+    else if (electrons[0].Pt() >= 40. && electrons[0].Pt() < 45.)
         iPt1 = 2;
-    else if (electrons[0].Pt() >= 35 && electrons[0].Pt() < 75)
+    else if (electrons[0].Pt() >= 45. && electrons[0].Pt() < 50.)
         iPt1 = 3;
-    else if (electrons[0].Pt() >= 75)
-        iPt1 = 4;
+    else if (electrons[0].Pt() >= 50. && electrons[0].Pt() < 75.)
+        iPt1 = 3;
+    else if (electrons[0].Pt() >= 75.)
+        iPt1 = 5;
 
-    if (electrons[1].Pt() < 20.)
+    if (electrons[1].Pt() > 10. && electrons[1].Pt() < 40.)
         iPt2 = 1;
-    else if (electrons[1].Pt() >= 20 && electrons[1].Pt() < 35)
+    else if (electrons[1].Pt() >= 40. && electrons[1].Pt() < 45.)
         iPt2 = 2;
-    else if (electrons[1].Pt() >= 35 && electrons[1].Pt() < 75)
+    else if (electrons[1].Pt() >= 45. && electrons[1].Pt() < 50.)
         iPt2 = 3;
-    else if (electrons[1].Pt() >= 75)
+    else if (electrons[1].Pt() >= 50. && electrons[1].Pt() < 75.)
         iPt2 = 4;
+    else if (electrons[1].Pt() >= 75)
+        iPt2 = 5;
 
     //cout << "===========================" << endl;
     //cout << iPt1 << ", " << iEta1 << "\t\t" << electrons[0].Pt() << ", " << electrons[0].Eta() << "\t\t" << 3*iEta1 + iPt1 << endl;
@@ -1779,8 +1786,8 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
             histManager->Fill2DHistUnevenBins(electrons[1].Pt(), electrons[1].Eta(),
                     "h2_TrailingElecQMisIDNumer", "trailing e charge misID (numerator);p_{T};#eta", 4, ptBins, 2, etaBins); 
 
-            histManager->Fill2DHist(2*iEta1 + iPt1, 2*iEta2 + iPt2,
-                    "h2_DileptonQMisIDNumer", "e charge misID (numerator);e_{leading};e_{trailing}", 8, 0.5, 8.5, 8, 0.5, 8.5);
+            histManager->Fill2DHist(5*iEta1 + iPt1, 5*iEta2 + iPt2,
+                    "h2_DileptonQMisIDNumer", "e charge misID (numerator);e_{leading};e_{trailing}", 15, 0.5, 15.5, 15, 0.5, 15.5);
         }
 
         if (electrons[0].Charge() != electrons[1].Charge()) {
@@ -1789,8 +1796,8 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
             histManager->Fill2DHistUnevenBins(electrons[1].Pt(), electrons[1].Eta(),
                     "h2_TrailingElecQMisIDDenom", "trailing e charge misID (denominator);p_{T};#eta", 4, ptBins, 2, etaBins); 
 
-            histManager->Fill2DHist(2*iEta1 + iPt1, 2*iEta2 + iPt2,
-                    "h2_DileptonQMisIDDenom", "e charge misID (denominator);e_{leading};e_{trailing}", 8, 0.5, 8.5, 8, 0.5, 8.5);
+            histManager->Fill2DHist(5*iEta1 + iPt1, 5*iEta2 + iPt2,
+                    "h2_DileptonQMisIDDenom", "e charge misID (denominator);e_{leading};e_{trailing}", 15, 0.5, 15.5, 15, 0.5, 15.5);
         }
     }
 }

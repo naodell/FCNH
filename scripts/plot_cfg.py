@@ -146,7 +146,7 @@ samples['ss_mumu'].extend(samples['ss_inclusive'])
 samples['ss_mumu'].extend(['muFakes', 'llFakes'])
 
 ## inclusive
-#samples['ss_inclusive'].append('Fakes')
+samples['ss_inclusive'].append('Fakes')
 samples['ss_inclusive'].append('QFlips')
 
 ## geometric categories
