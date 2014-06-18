@@ -26,7 +26,7 @@ selection   = 'fcnh'
 
 cutList     = ['1_preselection']
 #cutList.extend(['2_Z_veto', '3_jet', '4_MET'])
-fakeType    = 'eFakes'
+fakeType    = 'muFakes'
 
 period      = '2012'
 LUMIDATA    = 19.712 
@@ -55,17 +55,18 @@ samples     = {'all':[], 'inclusive':[], '3l':[], 'ss':[]}
 
 #samples['all'].append('higgs')
 #samples['all'].append('Triboson')
-samples['all'].append('ttV')
-samples['all'].append('Diboson')
+#samples['all'].append('ttV')
+#samples['all'].append('Diboson')
 samples['all'].append('top')
 samples['all'].append('ZJets')
+samples['all'].append('WZJets3LNu')
 #samples['all'].append('WJets')
 #samples['all'].append('QCD')
 #samples['all'].extend(['ZbbToLL', 'WbbToLNu']) #, 'ZGstar'])
 
 #samples['3l'].append(fakeType + '_Triboson')
-samples['3l'].append(fakeType + '_ttV')
-samples['3l'].append(fakeType + '_ZZ4l')
+#samples['3l'].append(fakeType + '_ttV')
+#samples['3l'].append(fakeType + '_ZZ4l')
 samples['3l'].append(fakeType + '_WZJets3LNu')
 samples['3l'].append(fakeType + '_ttbarHad')
 samples['3l'].append(fakeType + '_ttbarLep')
@@ -74,7 +75,8 @@ samples['3l'].append(fakeType + '_ZJets')
 #samples['ss'].append(fakeType + '_WWJets2L2Nu')
 #samples['ss'].append(fakeType + '_ZZJets2L2Nu')
 #samples['ss'].append(fakeType + '_ZZJets2L2Q')
-samples['ss'].append(fakeType + '_Diboson')
+#samples['ss'].append(fakeType + '_Diboson')
+samples['ss'].append(fakeType + '_WZJets3LNu')
 samples['ss'].append(fakeType + '_ZJets')
 samples['ss'].append(fakeType + '_ttbarLep')
 #samples['ss'].append(fakeType + '_WG')

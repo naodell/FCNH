@@ -41,7 +41,7 @@ doNorm      = True
 do1D        = True
 do2D        = True
 
-doOS        = False
+doOS        = True
 doSS        = True
 do3l        = True
 
@@ -129,21 +129,21 @@ samples['ss_inclusive'].append('ttV')
 samples['ss_inclusive'].append('ZZ4l')
 #samples['ss_inclusive'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
 samples['ss_inclusive'].append('WZJets3LNu')
-samples['ss_inclusive'].append('Fakes')
+#samples['ss_inclusive'].append('Fakes')
 
 ## dielectrons
 samples['ss_ee'].extend(samples['ss_inclusive'])
 samples['ss_ee'].append('QFlips')
-#samples['ss_ee'].extend(['eFakes', 'llFakes'])
+samples['ss_ee'].extend(['eFakes', 'llFakes'])
 
 ## electron+muon
 samples['ss_emu'].extend(samples['ss_inclusive'])
 samples['ss_emu'].append('QFlips')
-#samples['ss_emu'].extend(['eFakes', 'muFakes', 'llFakes'])
+samples['ss_emu'].extend(['eFakes', 'muFakes', 'llFakes'])
 
 ## dimuons
 samples['ss_mumu'].extend(samples['ss_inclusive'])
-#samples['ss_mumu'].extend(['muFakes', 'llFakes'])
+samples['ss_mumu'].extend(['muFakes', 'llFakes'])
 
 ## inclusive
 #samples['ss_inclusive'].append('Fakes')
@@ -175,7 +175,7 @@ if doPlots:
     plotter = PlotProducer(inputFile = 'fcncAnalysis/combined_histos/{0}_cut1_{1}_{2}.root'.format(selection, period, batch), savePath = '', scale = LUMIDATA, isAFS = False)
     plotter.set_period(period)
     plotter.set_output_type(plotType)
-    plotter.set_clean_fakes(True)
+    plotter.set_clean_fakes(False)
 
     ### DATASETS ###
     ### Specify the datasets you wish to stack 
@@ -218,7 +218,7 @@ if doPlots:
                                            'LeptonMult', 'OverlapEleMu', 'fakeableOverlapMult']
                                            #'Lepton1Phi', 'Lepton2Phi', 'Lepton3Phi']
 
-    plotter._variableDict['Dilepton']   = ['DileptonMass21', 'DileptonTransMass21', 'DileptonQt21', 'DileptonBalance21',
+    plotter._variableDict['Dilepton']   = ['DileptonZMass21', 'DileptonMass21', 'DileptonTransMass21', 'DileptonQt21', 'DileptonBalance21',
                                            'DileptonDeltaPhi21', 'DileptonDeltaEta21', 'DileptonDeltaR21', 'DileptonDeltaPt21']
                                            #'DileptonMass31', 'DileptonTransMass31', 'DileptonQt31', 
                                            #'DileptonDeltaPhi31', 'DileptonDeltaEta31', 'DileptonDeltaR31', 'DileptonDeltaPt31',

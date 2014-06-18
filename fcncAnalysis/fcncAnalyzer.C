@@ -35,6 +35,7 @@ const float   phoPtCut[]        = {10., 10.};
 const float   leptonPtCut[]     = {20., 10.};
 const float   metCut[]          = {30., 0.};
 const float   htCut[]           = {13., 14.};
+const float   massCut           = 20.;
 const float   bJetVeto          = 1e9;
 
 bool P4SortCondition(TLorentzVector p1, TLorentzVector p2) {return (p1.Pt() > p2.Pt());} 
@@ -90,7 +91,7 @@ void fcncAnalyzer::Begin(TTree* tree)
                 doQFlips = false;
 
             // Samples for fake bg cleanup
-            string fakeMC[23] = {"ZJets_M-50", "ZJets_M-10To50", "ttbarLep", "ttbarHad", "WZJets3LNu"};
+            string fakeMC[23] = {"ZJets_M-50", "ZJets_M-10To50", "ttbarLep", "ttbarHad", "WZJets3LNu", "WJetsToLNu"};
 
             for (unsigned j = 0; j < 5; ++j) {
                 if (suffix == fakeMC[j]) { 
@@ -517,9 +518,8 @@ bool fcncAnalyzer::Process(Long64_t entry)
                 leptons[0].Pt() > 20.
                 && leptons[0].Type() == "muon" && leptons[1].Type() == "muon"
                 && leptons[0].Charge() == leptons[1].Charge()
-                && (leptons[0] + leptons[1]).M() > 12.
+                && (leptons[0] + leptons[1]).M() > massCut
            ) {
-            cout << leptons[0].Pt() << ", " << leptons[1].Pt() << endl;
             histManager->Fill1DHist(leptons[0].Pt(),
                     "h1_LeadMuonPt_SS", "lead muon p_{T} test;p_{T};Entries / 4 GeV", 40, 0., 160.);
             histManager->Fill1DHist(leptons[1].Pt(),
@@ -601,7 +601,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
         for (unsigned i = 1; i < leptons.size(); ++i) {
             for (unsigned j = 0; j < i; ++j) {
-                if ((leptons[i] + leptons[j]).M() < 20.) 
+                if ((leptons[i] + leptons[j]).M() < massCut) 
                     lowMassOS = true;
 
                 //if (isRealData && leptons[i].Type() == "muon" && leptons[j].Type() == "muon")
@@ -683,8 +683,8 @@ bool fcncAnalyzer::Process(Long64_t entry)
                         leptons[0].Type() == leptons[1].Type() 
                         && leptons[0].Charge() != leptons[1].Charge()
                         && (leptons[0] + leptons[1]).M() < 75
-                        && (leptons[0] + photons[0]).M() > 10.
-                        && (leptons[1] + photons[0]).M() > 10.
+                        && (leptons[0] + photons[0]).M() > massCut
+                        && (leptons[1] + photons[0]).M() > massCut
                    ) {
 
                     if (leptons[0].Type() == "muon") {
@@ -718,7 +718,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
                     break;
                 }
 
-                if ((fakeables[i] + leptons[j]).M() < 10.) {
+                if ((fakeables[i] + leptons[j]).M() < massCut) {
                     lowMassResonance = true;
                     break;
                 }
@@ -734,7 +734,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
                     fakeMatched = true;
                     matchedFakeables.push_back(fakeables[i]);
 
-                } else if ((fakeables[i] + fakeables[j]).M() < 10.) {
+                } else if ((fakeables[i] + fakeables[j]).M() < 20.) {
                     lowMassResonance = true;
                     break;
                 }
@@ -1480,10 +1480,14 @@ void fcncAnalyzer::LeptonPlots(vObj& leptons, vector<TCJet>& jets, vector<TCJet>
 
     histManager->Fill1DHist(centralCount,
             "h1_Centrality", "Event Centrality;centrality;Entries / bin", 10, -0.5, 9.5);
-    histManager->Fill1DHist(HT,
-            "h1_HT", "HT;HT;Entries / 20 GeV", 75, 0., 1500.);
-    histManager->Fill1DHist(sqrt(HT),
-            "h1_sqrtHT", "HT;HT;Entries / bin", 80, 0., 40.);
+
+    if (jets.size() > 0) {
+        histManager->Fill1DHist(HT,
+                "h1_HT", "HT;HT;Entries / 20 GeV", 75, 0., 1500.);
+        histManager->Fill1DHist(sqrt(HT),
+                "h1_sqrtHT", "HT;HT;Entries / bin", 80, 0., 40.);
+    }
+
     histManager->Fill1DHist(HTs + MET,
             "h1_HTs", "HT_{s};HT_{s};Entries / 10 GeV", 100, 0., 2000.);
     histManager->Fill1DHist(MHT/HTs,

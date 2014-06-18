@@ -225,7 +225,7 @@ class PlotProducer(AnalysisTools):
         hRatio.Divide(hist1, hist2)
 
         set_hist_style(hRatio, 'RATIO', self._styleDict)
-        prep_hist(hRatio, (0, 2.499))
+        prep_hist(hRatio, (0.5, 2.))
 
         ### a fudge to get labels for category hists
         if hist1.GetName() in ['h1_LeptonFlavor', 'h1_LeptonCharge']:
