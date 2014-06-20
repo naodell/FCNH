@@ -64,8 +64,9 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
     // Weights for charge flip background
     TFile* f_misQFile = new TFile("../data/electronQMisID.root", "OPEN");
     h2_DielectronMisQ = (TH2D*)f_misQFile->Get("inclusive/h2_DielectronMisQ");
-    g_QFlipB = (TGraph*)f_misQFile->Get("inclusive/g_QFlipB");
-    g_QFlipE = (TGraph*)f_misQFile->Get("inclusive/g_QFlipE");
+    g_QFlipBB = (TGraph*)f_misQFile->Get("inclusive/g_QFlipBB");
+    g_QFlipBE = (TGraph*)f_misQFile->Get("inclusive/g_QFlipBE");
+    g_QFlipEE = (TGraph*)f_misQFile->Get("inclusive/g_QFlipEE");
 
     // Weight files for AIC background
     TFile* f_aicFile = new TFile("../data/AIC.root", "OPEN");
@@ -538,16 +539,18 @@ float WeightUtils::GetQFlipWeight()
     for (unsigned i = 0; i < _leptons.size(); ++i) {
         if (_leptons[i].Type() != "electron") continue;
 
-        float electronPt;
-        if (_leptons[i].Pt() < 125.)
-            electronPt = _leptons[i].Pt();
-        else
-            electronPt = 125.;
+        float electronPt = _leptons[i].Pt();
+        //if (_leptons[i].Pt() < 125.)
+        //    electronPt = _leptons[i].Pt();
+        //else
+        //    electronPt = 125.;
 
-        if (fabs(_leptons[0].Eta()) < 1.5)
-            weight += g_QFlipB->Eval(electronPt);
-        else 
-            weight += g_QFlipE->Eval(electronPt);
+        if (fabs(_leptons[i].Eta()) < 0.8)
+            weight += g_QFlipBB->Eval(electronPt);
+        else if (fabs(_leptons[i].Eta()) > 0.8 && fabs(_leptons[i].Eta()) < 1.479)
+            weight += g_QFlipBE->Eval(electronPt);
+        else if (fabs(_leptons[i].Eta()) > 1.479)
+            weight += g_QFlipEE->Eval(electronPt);
     }
 
     //cout << weight << endl;

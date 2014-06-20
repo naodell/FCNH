@@ -221,18 +221,25 @@ class RatioMaker(AnalysisTools):
                         prob0[1][binX] = 1./sqrt(probs[1][binX])
 
 
-            #ptBins = [15., 25., 37.5, 57.5, 85., 125.]
-            ptBins = [15., 27.5, 55., 115.]
-            g_ProbB = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][:nBinsX/2]), array('f', [0.1 for bin in ptBins]), array('f', prob0[1][:nBinsX/2]))
-            g_ProbB.SetName('g_QFlipB')
-            g_ProbB.SetTitle('barrel electron charge flips;iPt;#varepsilon')
+            ptBins = [25., 42.5, 47.5, 62.5, 112.5]
+            g_ProbBB = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][:nBinsX/3]), \
+                                                   array('f', [0.1 for bin in ptBins]), array('f', prob0[1][:nBinsX/3]))
+            g_ProbBB.SetName('g_QFlipBB')
+            g_ProbBB.SetTitle('barrel electron charge flips;iPt;#varepsilon')
 
-            g_ProbE = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][nBinsX/2:]), array('f', [0.1 for bin in ptBins]), array('f', prob0[1][nBinsX/2:]))
-            g_ProbE.SetName('g_QFlipE')
-            g_ProbE.SetTitle('endcap electron charge flips;iPt;#varepsilon')
+            g_ProbBE = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][nBinsX/3:2*nBinsX/3]), 
+                                                   array('f', [0.1 for bin in ptBins]), array('f', prob0[1][nBinsX/3:2*nBinsX/3]))
+            g_ProbBE.SetName('g_QFlipBE')
+            g_ProbBE.SetTitle('barrel electron charge flips;iPt;#varepsilon')
 
-            self._outFile.GetDirectory(self._category).Add(g_ProbB)
-            self._outFile.GetDirectory(self._category).Add(g_ProbE)
+            g_ProbEE = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][2*nBinsX/3:]), 
+                                                   array('f', [0.1 for bin in ptBins]), array('f', prob0[1][2*nBinsX/3:]))
+            g_ProbEE.SetName('g_QFlipEE')
+            g_ProbEE.SetTitle('endcap electron charge flips;iPt;#varepsilon')
+
+            self._outFile.GetDirectory(self._category).Add(g_ProbBB)
+            self._outFile.GetDirectory(self._category).Add(g_ProbBE)
+            self._outFile.GetDirectory(self._category).Add(g_ProbEE)
 
 
 if __name__ == '__main__':
@@ -278,14 +285,14 @@ if __name__ == '__main__':
         ratioMaker.set_category('inclusive')
 
         eMisQDict = {
-            'LeadElectronMisQ':('LeadElecQMisIDNumer', 'LeadElecQMisIDDenom'),
-            'TrailingElectronMisQ':('TrailingElecQMisIDNumer', 'TrailingElecQMisIDDenom'),
+            #'LeadElectronMisQ':('LeadElecQMisIDNumer', 'LeadElecQMisIDDenom'),
+            #'TrailingElectronMisQ':('TrailingElecQMisIDNumer', 'TrailingElecQMisIDDenom'),
             'DielectronMisQ':('DileptonQMisIDNumer', 'DileptonQMisIDDenom')
             }
 
         ratioMaker.set_ratio_2D(eMisQDict)
         ratioMaker.charge_flip_fitter('DATA_ELECTRON', nToys = 50)
-        ratioMaker.make_2D_ratios('DATA', doProjections = False)
+        #ratioMaker.make_2D_ratios('DATA', doProjections = False)
 
         ratioMaker.write_outfile()
 

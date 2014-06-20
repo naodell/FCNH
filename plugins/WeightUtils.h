@@ -87,7 +87,7 @@ class WeightUtils: public TObject {
         TH2D    *h2_EleMVASF;
         TH2D    *h2_DielectronMisQ;
 
-        TGraph  *g_QFlipB, *g_QFlipE;
+        TGraph  *g_QFlipBB, *g_QFlipBE, *g_QFlipEE;
         map<string, TGraph*>  g_AIC;
 
         map<string, TGraphAsymmErrors*> g_MuonFakesPtB;

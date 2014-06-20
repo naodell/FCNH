@@ -734,7 +734,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
                     fakeMatched = true;
                     matchedFakeables.push_back(fakeables[i]);
 
-                } else if ((fakeables[i] + fakeables[j]).M() < 20.) {
+                } else if ((fakeables[i] + fakeables[j]).M() < massCut) {
                     lowMassResonance = true;
                     break;
                 }
@@ -765,7 +765,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
             if (matchedFakeables.size() == 0) {
                 GetFakeBG(leptons, fakeables, fJets, fBJetsM, fBJetsL);
-            } else if (matchedFakeables.size() == 2) {
+            } /*else if (matchedFakeables.size() == 2) {
                 evtWeight /= matchedFakeables.size();
                 for (unsigned i = 0; i < matchedFakeables.size(); ++i) {
                     vObj tmpFakeables = unmatchedFakeables;
@@ -773,7 +773,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
                     GetFakeBG(leptons, tmpFakeables, fJets, fBJetsM, fBJetsL);
                 }
                 evtWeight *= matchedFakeables.size();
-            }
+            }*/
         }
     }
 
@@ -952,8 +952,6 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
 
     MakePlots(leptons, jets, bJetsM, *recoMET, 0);
     SetYields(5);
-
-    return true;
 
     //    MakePlots(leptons, jets, bJetsM, *recoMET, 1);
     //    SetYields(6);
@@ -1735,7 +1733,7 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
 
     if (fabs(electrons[1].Eta()) < 0.8)
         iEta2 = 0;
-    else if (fabs(electrons[0].Eta()) > 0.8 && fabs(electrons[0].Eta()) < 1.479)
+    else if (fabs(electrons[1].Eta()) > 0.8 && fabs(electrons[1].Eta()) < 1.479)
         iEta2 = 1;
     else if (fabs(electrons[1].Eta()) > 1.479 && fabs(electrons[1].Eta()) < 2.5)
         iEta2 = 2;
@@ -1748,7 +1746,7 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
     else if (electrons[0].Pt() >= 45. && electrons[0].Pt() < 50.)
         iPt1 = 3;
     else if (electrons[0].Pt() >= 50. && electrons[0].Pt() < 75.)
-        iPt1 = 3;
+        iPt1 = 4;
     else if (electrons[0].Pt() >= 75.)
         iPt1 = 5;
 
@@ -1932,8 +1930,8 @@ void fcncAnalyzer::ConversionPlots(vObj& leptons, TCPhoton& photon)
                 leptons[0].Type() == leptons[1].Type() 
                 && leptons[0].Charge() != leptons[1].Charge()
                 && (leptons[0] + leptons[1]).M() < 75.
-                && (leptons[0] + photon).M() > 10.
-                && (leptons[1] + photon).M() > 10.
+                && (leptons[0] + photon).M() > massCut
+                && (leptons[1] + photon).M() > massCut
            ) {
 
             histManager->SetFileNumber(0);

@@ -635,7 +635,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
         if (muonsNoIso.size() == 2 && electrons.size() == 0) {
             if (
                     muonsNoIso[0].IdMap("IsoRel") < 0.12 
-                    && muonsNoIso[1].IdMap("IsoRel") < 1.0 && !(muonsNoIso[1].IdMap("IsoRel") > 0.12 && muonsNoIso[1].IdMap("IsoRel") < 0.2)
+                    && muonsNoIso[1].IdMap("IsoRel") < 0.9 && !(muonsNoIso[1].IdMap("IsoRel") > 0.12 && muonsNoIso[1].IdMap("IsoRel") < 0.2)
                     && muonsNoIso[0].DeltaR(muonsNoIso[1]) > 0.5
                     && muonsNoIso[0].Charge() == muonsNoIso[1].Charge()
                ) {
