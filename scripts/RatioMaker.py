@@ -119,7 +119,6 @@ class RatioMaker(AnalysisTools):
             self._outFile.GetDirectory(self._category).Add(g_Ratio)
 
 
-
     def make_2D_ratios(self, ratioSample, bgSample = '', doProjections = True): 
         ### make ratios for all variables specified in ratioDict2D.  Sample
         ### combinations should be specified in combineDict in parameters.py.
@@ -337,4 +336,8 @@ if __name__ == '__main__':
         ratioMaker.write_outfile()
 
         # Combined fakeCategory rates
-        #ratioMaker.combine_rates(fakeCategories)
+        #ratioMaker.combine_fake_rates(fakeCategories)
+        #h1_combined = r.TH1F()
+        #for category in fakeCategories:
+        #    h1_combined.Add(outFile.GetDirectory(category))
+

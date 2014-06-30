@@ -10,13 +10,22 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
     Initialize();
 
     // Muon reco efficiencies
-    //TFile* f_muRecoSF2012 = new TFile("../data/Muon_ID_iso_Efficiencies_Run_2012ABCD_53X.root", "OPEN"); 
-    TFile* f_muRecoSF2012 = new TFile("../data/MuonEfficiencies_ISO_Run_2012ReReco_53X.root", "OPEN"); 
+    TFile* f_muRecoSF2012_TRIG  = new TFile("../data/MuHLTEfficiencies_Run_2012ABCD_53X_DR03-2.root"); // Trigger scale factors
+    TFile* f_muRecoSF2012_ID    = new TFile("../data/MuonEfficiencies_Run2012ReReco_53X.root", "OPEN"); // ID scale factors
+    TFile* f_muRecoSF2012_ISO   = new TFile("../data/MuonEfficiencies_ISO_Run_2012ReReco_53X.root", "OPEN"); // ISO scale factors
 
-    _muSF2012[0] = (TGraphErrors*)f_muRecoSF2012->Get("DATA_over_MC_combRelIsoPF04dBeta<012_Tight_pt_abseta<0.9");
-    _muSF2012[1] = (TGraphErrors*)f_muRecoSF2012->Get("DATA_over_MC_combRelIsoPF04dBeta<012_Tight_pt_abseta0.9-1.2");
-    _muSF2012[2] = (TGraphErrors*)f_muRecoSF2012->Get("DATA_over_MC_combRelIsoPF04dBeta<012_Tight_pt_abseta1.2-2.1");
-    _muSF2012[3] = (TGraphErrors*)f_muRecoSF2012->Get("DATA_over_MC_combRelIsoPF04dBeta<012_Tight_pt_abseta2.1-2.4");
+    _muSF2012_ID[0] = (TGraphErrors*)f_muRecoSF2012_ID->Get("DATA_over_MC_Tight_pt_abseta<0.9");
+    _muSF2012_ID[1] = (TGraphErrors*)f_muRecoSF2012_ID->Get("DATA_over_MC_Tight_pt_abseta0.9-1.2");
+    _muSF2012_ID[2] = (TGraphErrors*)f_muRecoSF2012_ID->Get("DATA_over_MC_Tight_pt_abseta1.2-2.1");
+    _muSF2012_ID[3] = (TGraphErrors*)f_muRecoSF2012_ID->Get("DATA_over_MC_Tight_pt_abseta2.1-2.4");
+
+    _muSF2012_ISO[0] = (TGraphErrors*)f_muRecoSF2012_ISO->Get("DATA_over_MC_combRelIsoPF04dBeta<012_Tight_pt_abseta<0.9");
+    _muSF2012_ISO[1] = (TGraphErrors*)f_muRecoSF2012_ISO->Get("DATA_over_MC_combRelIsoPF04dBeta<012_Tight_pt_abseta0.9-1.2");
+    _muSF2012_ISO[2] = (TGraphErrors*)f_muRecoSF2012_ISO->Get("DATA_over_MC_combRelIsoPF04dBeta<012_Tight_pt_abseta1.2-2.1");
+    _muSF2012_ISO[3] = (TGraphErrors*)f_muRecoSF2012_ISO->Get("DATA_over_MC_combRelIsoPF04dBeta<012_Tight_pt_abseta2.1-2.4");
+
+    h2_MuTriggerSFs[0] = (TH2D*)f_muRecoSF2012_TRIG->Get("DATA_over_MC_Mu17Mu8_OR_Mu17TkMu8_Tight_Mu1_10To20_&_Mu2_20ToInfty_with_STAT_uncrt");
+    h2_MuTriggerSFs[1] = (TH2D*)f_muRecoSF2012_TRIG->Get("DATA_over_MC_Mu17Mu8_OR_Mu17TkMu8_Tight_Mu1_20ToInfty_&_Mu2_20ToInfty_with_STAT_uncrt");
 
     // Electron reco (MVA) efficiencies
     TFile* f_elRecoFile2012 = new TFile("../data/CombinedMethod_ScaleFactors_IdIsoSip.root", "OPEN");
@@ -157,10 +166,13 @@ float WeightUtils::RecoWeight()
 
     // trigger efficiencies
     if (_leptons.size() == 2) {
-        if (_leptons[0].Type() == "muon" && _leptons[1].Type() == "muon") 
+        if (_leptons[0].Type() == "muon" && _leptons[1].Type() == "muon") {
             _triggerWeight = GetMuTriggerEff(_leptons[0], _leptons[1]);
-        if (_leptons[0].Type() == "electron" && _leptons[1].Type() == "electron") 
+            //cout << _leptons[0].Eta() << ", (" << _leptons[1].Eta() << ", " << _leptons[1].Pt() << ")\t" << _triggerWeight << endl;
+        }
+        if (_leptons[0].Type() == "electron" && _leptons[1].Type() == "electron")  {
             _triggerWeight = GetEleTriggerEff(_leptons[0], _leptons[1]);
+        }
     } else {
         _triggerWeight = 1.;
     }
@@ -176,136 +188,47 @@ float WeightUtils::VBFHiggsWeight(float genMass, int higgsMass)
 
 float WeightUtils::GetMuTriggerEff(TLorentzVector& lep1, TLorentzVector& lep2) const
 {
-    float _DataEff_HLTMu17Mu8_8Leg2012[9][3] = {
-        //|eta|<0.9 , 0.9<|eta|<1.2 , 1.2<|eta|<2.4
-        {0.967172 , 0.930476 , 0.916004}, // 10<pt<20
-        {0.967066 , 0.93713 , 0.920873}, // 20<pt<30
-        {0.965728 , 0.935549 , 0.916849}, // 30<pt<35
-        {0.965991 , 0.932407 , 0.915271}, // 35<pt<40
-        {0.965568 , 0.935851 , 0.918777}, // 40<pt<50
-        {0.964775 , 0.937591 , 0.917744}, // 50<pt<60
-        {0.96494 , 0.933094 , 0.918446}, // 60<pt<90
-        {0.960397 , 0.939106 , 0.909972}, // 90<pt<140
-        {0.961868 , 0.92921 , 0.937057} // 140<pt<500
-    };
-    float _MCEff_HLTMu17Mu8_8Leg2012[9][3] = {
-        //|eta|<0.9 , 0.9<|eta|<1.2 , 1.2<|eta|<2.4
-        {0.969444 , 0.925885 , 0.921075} , // 10<pt<20
-        {0.976136 , 0.945697 , 0.927715} , // 20<pt<30
-        {0.976453 , 0.948453 , 0.926418} , // 30<pt<35
-        {0.975895 , 0.944976 , 0.925758} , // 35<pt<40
-        {0.976162 , 0.946528 , 0.928904} , // 40<pt<50
-        {0.975507 , 0.950925 , 0.931956} , // 50<pt<60
-        {0.976274 , 0.951396 , 0.926831} , // 60<pt<90
-        {0.972801 , 0.951352 , 0.932385} , // 90<pt<140
-        {0.971679 , 0.973072 , 0.939368} // 140<pt<500
-    };
-    float _DataEff_HLTMu17Mu8_17Leg2012[9][3] = {
-        //|eta|<0.9 , 0.9<|eta|<1.2 , 1.2<|eta|<2.4
-        {0.609746 , 0.496018 , 0.428991} , // 10<pt<20
-        {0.964723 , 0.923791 , 0.892096} , // 20<pt<30
-        {0.964065 , 0.924091 , 0.896823} , // 30<pt<35
-        {0.964584 , 0.923641 , 0.898797} , // 35<pt<40
-        {0.964363 , 0.928434 , 0.90573} , // 40<pt<50
-        {0.963617 , 0.930997 , 0.907169} , // 50<pt<60
-        {0.963878 , 0.925745 , 0.908756} , // 60<pt<90
-        {0.960051 , 0.935225 , 0.901006} , // 90<pt<140
-        {0.959271 , 0.92921 , 0.937057} // 140<pt<500
-    };
-    float _MCEff_HLTMu17Mu8_17Leg2012[9][3] = {
-        //|eta|<0.9 , 0.9<|eta|<1.2 , 1.2<|eta|<2.4
-        {0.617508 , 0.488784 , 0.428354} , // 10<pt<20
-        {0.97418 , 0.935211 , 0.893312} , // 20<pt<30
-        {0.975246 , 0.93891 , 0.903676} , // 30<pt<35
-        {0.974711 , 0.93787 , 0.907107} , // 35<pt<40
-        {0.975291 , 0.939777 , 0.915754} , // 40<pt<50
-        {0.974371 , 0.94515 , 0.920956} , // 50<pt<60
-        {0.975252 , 0.946933 , 0.917094} , // 60<pt<90
-        {0.972801 , 0.945771 , 0.92517} , // 90<pt<140
-        {0.971679 , 0.973072 , 0.931013} // 140<pt<500
-    };
+    float binningEta[] = {0., 0.9, 1.2, 2.1, 2.4};
+    float weight = 1.;
 
-    float _HLTMu17Mu8_2012[3][10] = {
-        //10<pt<20 , 20<pt<25 , 25<pt<30 , 30<pt<35 , 35<pt<40 , 40<pt<50 , 50<pt<60 , 60<pt<90 , 90<pt<140 , 140<pt<500
-        {0.991 , 0.989 , 0.989 , 0.988 , 0.989 , 0.988 , 0.987 , 0.989 , 0.990 , 0.982}, // |eta| < 0.9
-        {1.00 , 0.985 , 0.986 , 0.983 , 0.984 , 0.984 , 0.986 , 0.983 , 0.982 , 0.964}, // 0.9 < |eta| < 1.2
-        {1.01 , 1.00 , 0.994 , 0.991 , 0.987 , 0.986 , 0.985 , 0.984 , 0.972 , 1.01} // |eta| > 1.2
-    };
+    if (lep2.Pt() < 20.) {
+        unsigned etaBin1, etaBin2;
+        if (fabs(lep1.Eta()) > 0. && fabs(lep1.Eta()) <= 1.2) {
+            etaBin1 = 1;
+        } else {
+            etaBin1 = 2;
+        }
 
-    float muTrigSF1 = 1.0;
-    float muTrigSF2 = 1.0;
+        if (fabs(lep2.Eta()) > 0. && fabs(lep2.Eta()) <= 1.2) {
+            etaBin2 = 1;
+        } else {
+            etaBin2 = 2;
+        }
 
-    float muTrigDataA8  = 1.0;
-    float muTrigDataA17 = 1.0;
-    float muTrigDataB8  = 1.0;
-    float muTrigDataB17 = 1.0;
+        weight = h2_MuTriggerSFs[0]->GetBinContent(etaBin2, etaBin1);
 
-    float muTrigMCA8    = 1.0;
-    float muTrigMCA17   = 1.0;
-    float muTrigMCB8    = 1.0;
-    float muTrigMCB17   = 1.0;
+    } else {
+        unsigned etaBin1, etaBin2;
+        for (int i = 0; i < 4; ++i) {
+            if (fabs(lep1.Eta()) > binningEta[i] && fabs(lep1.Eta()) <= binningEta[i+1]) {
+                etaBin1 = i+1;
+                break;
+            }
+        }
+        for (int i = 0; i < 4; ++i) {
+            if (fabs(lep2.Eta()) > binningEta[i] && fabs(lep2.Eta()) <= binningEta[i+1]) {
+                etaBin2 = i+1;
+                break;
+            }
+        }
 
-    // 2012 use the 2D arrays
-
-    int ptBinV1 = 0;
-    int ptBinV2 = 0;
-    int etaBin = 0;
-    float binningPtV1[] = {10., 20., 25., 30., 35., 40., 50., 60., 90., 140., 500.};
-    float binningPtV2[] = {10., 20., 30., 35., 40., 50., 60., 90., 140., 500.};
-
-    if (fabs(lep1.Eta()) < 0.9) {
-        etaBin = 0;
-    }else if (fabs(lep1.Eta()) < 1.2){
-        etaBin = 1;
-    }else{
-        etaBin = 2;
-    }
-    for (int i = 0; i < 10; ++i) {
-        if (lep1.Pt() >= binningPtV1[i] && lep1.Pt() < binningPtV1[i+1]) {
-            ptBinV1 = i;
-            break;
+        if (fabs(etaBin2) < fabs(etaBin1)) {
+            weight = h2_MuTriggerSFs[1]->GetBinContent(etaBin1, etaBin2);
+        } else {
+            weight = h2_MuTriggerSFs[1]->GetBinContent(etaBin2, etaBin1);
         }
     }
-    for (int i = 0; i < 9; ++i) {
-        if (lep1.Pt() >= binningPtV2[i] && lep1.Pt() < binningPtV2[i+1]) {
-            ptBinV2 = i;
-            break;
-        }
-    }
-    muTrigSF1 = _HLTMu17Mu8_2012[etaBin][ptBinV1];
-    muTrigDataA17 = _DataEff_HLTMu17Mu8_17Leg2012[etaBin][ptBinV2];
-    muTrigDataA8 = _DataEff_HLTMu17Mu8_8Leg2012[etaBin][ptBinV2];
-    muTrigMCA17 = _MCEff_HLTMu17Mu8_17Leg2012[etaBin][ptBinV2];
-    muTrigMCA8 = _MCEff_HLTMu17Mu8_8Leg2012[etaBin][ptBinV2];
-
-    if (fabs(lep2.Eta()) < 0.9) {
-        etaBin = 0;
-    }else if (fabs(lep2.Eta()) < 1.2){
-    }else{
-        etaBin = 2;
-    }
-    for (int i = 0; i < 10; ++i) {
-        if (lep2.Pt() >= binningPtV1[i] && lep2.Pt() < binningPtV1[i+1]) {
-            ptBinV1 = i;
-            break;
-        }
-    }
-    for (int i = 0; i < 9; ++i) {
-        if (lep2.Pt() >= binningPtV2[i] && lep2.Pt() < binningPtV2[i+1]) {
-            ptBinV2 = i;
-            break;
-        }
-    }
-
-    muTrigSF2 = _HLTMu17Mu8_2012[etaBin][ptBinV1];
-    muTrigDataB17 = _DataEff_HLTMu17Mu8_17Leg2012[etaBin][ptBinV2];
-    muTrigDataB8 = _DataEff_HLTMu17Mu8_8Leg2012[etaBin][ptBinV2];
-    muTrigMCB17 = _MCEff_HLTMu17Mu8_17Leg2012[etaBin][ptBinV2];
-    muTrigMCB8  = _MCEff_HLTMu17Mu8_8Leg2012[etaBin][ptBinV2];
-
-    //return muTrigSF1*muTrigSF2;
-    return (muTrigDataA8*muTrigDataB17 + muTrigDataA17*muTrigDataB8 - muTrigDataA17*muTrigDataB17)/
-        (muTrigMCA8*muTrigMCB17 + muTrigMCA17*muTrigMCB8 - muTrigMCA17*muTrigMCB17);
+    return weight;
 }
 
 float WeightUtils::GetEleTriggerEff(TLorentzVector& lep1, TLorentzVector& lep2) const
@@ -389,8 +312,8 @@ float WeightUtils::GetMuEff(TLorentzVector& lep) const
         }
     }
 
-    if (lep.Pt() < 500.)
-        weight = _muSF2012[etaBin]->Eval(lep.Pt());
+    if (lep.Pt() < 300.)
+        weight = _muSF2012_ID[etaBin]->Eval(lep.Pt())*_muSF2012_ISO[etaBin]->Eval(lep.Pt());
     else
         weight = 1;
 

@@ -81,9 +81,12 @@ class WeightUtils: public TObject {
         float                   _nPU;
 
         //sources
-        TGraphErrors *_muSF2012[4];
         map<string, TH1D*>  puReweight;
 
+        TGraphErrors *_muSF2012_ID[4];
+        TGraphErrors *_muSF2012_ISO[4];
+
+        TH2D    *h2_MuTriggerSFs[2]; // Good for Mu17_Mu8 or Mu17_TkMu8
         TH2D    *h2_EleMVASF;
         TH2D    *h2_DielectronMisQ;
 
