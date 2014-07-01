@@ -245,6 +245,8 @@ if __name__ == '__main__':
 
     r.gROOT.SetBatch()
     r.gStyle.SetOptStat(0)
+    r.TH1.SetDefaultSumw2(r.kTRUE)
+    r.TH2.SetDefaultSumw2(r.kTRUE)
 
     if len(sys.argv) > 1:
         type    = sys.argv[1]
@@ -337,7 +339,27 @@ if __name__ == '__main__':
 
         # Combined fakeCategory rates
         #ratioMaker.combine_fake_rates(fakeCategories)
-        #h1_combined = r.TH1F()
-        #for category in fakeCategories:
-        #    h1_combined.Add(outFile.GetDirectory(category))
+
+        fTest = r.TFile('data/fakeRates_TEST.root', 'UPDATE')
+        fTest.mkdir('Combined')
+        fTest.cd('Combined')
+
+        #Get histograms
+        h1_QCD2l    = fTest.GetDirectory('QCD2l').Get('h1_MuonFakePt').Clone()
+        h1_ZPlusJet = fTest.GetDirectory('ZPlusJet').Get('h1_MuonFakePt').Clone()
+        h1_AntiIso3l = fTest.GetDirectory('AntiIso3l').Get('h1_MuonFakePt').Clone()
+
+        h1_QCD2l.SetBit(r.TH1.kIsAverage)    
+        h1_ZPlusJet.SetBit(r.TH1.kIsAverage) 
+        h1_AntiIso3l.SetBit(r.TH1.kIsAverage)        
+
+        h1_combined = r.TH1D('h1_combined', ';p_{T};#varepsilon', h1_QCD2l.GetNbinsX(), h1_QCD2l.GetXaxis().GetXmin(), h1_QCD2l.GetXaxis().GetXmax())
+        h1_combined.SetBit(r.TH1.kIsAverage)
+
+        h1_combined.Add(h1_QCD2l)
+        h1_combined.Add(h1_ZPlusJet)
+        h1_combined.Add(h1_AntiIso3l)
+
+        fTest.Write()
+        fTest.Close()
 
