@@ -317,6 +317,7 @@ class PlotProducer(AnalysisTools):
             stacks, sums = self.get_stack_dict(directory)
 
             if directory is self._directoryList1D[0]: 
+                legend.AddEntry(sums.values()[0], 'BG uncertainty')
 
             self.make_save_path(self._savePath + '/' + self._category + '/' + directory)
 

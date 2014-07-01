@@ -344,21 +344,48 @@ if __name__ == '__main__':
         fTest.mkdir('Combined')
         fTest.cd('Combined')
 
-        #Get histograms
-        h1_QCD2l    = fTest.GetDirectory('QCD2l').Get('h1_MuonFakePt').Clone()
-        h1_ZPlusJet = fTest.GetDirectory('ZPlusJet').Get('h1_MuonFakePt').Clone()
-        h1_AntiIso3l = fTest.GetDirectory('AntiIso3l').Get('h1_MuonFakePt').Clone()
+        #Get 1D histograms
+        histList_1D = ['MuonFakePt', 'MuonFakeEta', 'ElectronFakePt', 'ElectronFakeEta']
+        histList_2D = ['MuonFake', 'ElectronFake']
+        outHists = []
+        for hist in histList_1D:
+            h1_QCD2l        = fTest.GetDirectory('QCD2l').Get('h1_{0}'.format(hist))
+            h1_ZPlusJet     = fTest.GetDirectory('ZPlusJet').Get('h1_{0}'.format(hist))
+            h1_AntiIso3l    = fTest.GetDirectory('AntiIso3l').Get('h1_{0}'.format(hist))
 
-        h1_QCD2l.SetBit(r.TH1.kIsAverage)    
-        h1_ZPlusJet.SetBit(r.TH1.kIsAverage) 
-        h1_AntiIso3l.SetBit(r.TH1.kIsAverage)        
+            h1_QCD2l.SetBit(r.TH1.kIsAverage)    
+            h1_ZPlusJet.SetBit(r.TH1.kIsAverage) 
+            h1_AntiIso3l.SetBit(r.TH1.kIsAverage)        
 
-        h1_combined = r.TH1D('h1_combined', ';p_{T};#varepsilon', h1_QCD2l.GetNbinsX(), h1_QCD2l.GetXaxis().GetXmin(), h1_QCD2l.GetXaxis().GetXmax())
-        h1_combined.SetBit(r.TH1.kIsAverage)
+            h1_combined = r.TH1D('h1_{0}'.format(hist), ';p_{T};#varepsilon', h1_QCD2l.GetNbinsX(), h1_QCD2l.GetXaxis().GetXmin(), h1_QCD2l.GetXaxis().GetXmax())
+            h1_combined.SetBit(r.TH1.kIsAverage)
 
-        h1_combined.Add(h1_QCD2l)
-        h1_combined.Add(h1_ZPlusJet)
-        h1_combined.Add(h1_AntiIso3l)
+            h1_combined.Add(h1_QCD2l)
+            h1_combined.Add(h1_ZPlusJet)
+            h1_combined.Add(h1_AntiIso3l)
+
+            outHists.append(h1_combined)
+
+        for hist in histList_2D:
+            h2_QCD2l        = fTest.GetDirectory('QCD2l').Get('h2_{0}'.format(hist))
+            h2_ZPlusJet     = fTest.GetDirectory('ZPlusJet').Get('h2_{0}'.format(hist))
+            h2_AntiIso3l    = fTest.GetDirectory('AntiIso3l').Get('h2_{0}'.format(hist))
+
+            h2_QCD2l.SetBit(r.TH1.kIsAverage)    
+            h2_ZPlusJet.SetBit(r.TH1.kIsAverage) 
+            h2_AntiIso3l.SetBit(r.TH1.kIsAverage)        
+
+            h2_combined = r.TH2D('h2_{0}'.format(hist), ';p_{T};#varepsilon', 
+                             h2_QCD2l.GetNbinsX(), h2_QCD2l.GetXaxis().GetXmin(), h2_QCD2l.GetXaxis().GetXmax(), 
+                             h2_QCD2l.GetNbinsY(), h2_QCD2l.GetYaxis().GetXmin(), h2_QCD2l.GetYaxis().GetXmax())
+
+            h2_combined.SetBit(r.TH1.kIsAverage)
+
+            h2_combined.Add(h2_QCD2l)
+            h2_combined.Add(h2_ZPlusJet)
+            h2_combined.Add(h2_AntiIso3l)
+
+            outHists.append(h2_combined)
 
         fTest.Write()
         fTest.Close()
