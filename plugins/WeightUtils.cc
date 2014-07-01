@@ -37,7 +37,7 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
     puReweight["2012"]  = (TH1D*)f_puFile->Get("pileupWeights");
 
     // weights for fake background
-    TFile* f_fakeFile = new TFile("../data/fakeRates.root", "OPEN");
+    TFile* f_fakeFile = new TFile("../data/fakeRates_Iso_0.8.root", "OPEN");
     //g_MuonFakesPtB["QCD2l"]         = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_MuonFake_1");
     //g_MuonFakesPtE["QCD2l"]         = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_MuonFake_2");
     //g_ElectronFakesPtB["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_ElectronFake_1");
