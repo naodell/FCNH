@@ -35,7 +35,7 @@ const float   phoPtCut[]        = {10., 10.};
 const float   leptonPtCut[]     = {20., 10.};
 const float   metCut[]          = {30., 0.};
 const float   htCut[]           = {13., 14.};
-const float   massCut           = 20.;
+const float   massCut           = 30.;
 const float   bJetVeto          = 1e9;
 
 bool P4SortCondition(TLorentzVector p1, TLorentzVector p2) {return (p1.Pt() > p2.Pt());} 
@@ -876,16 +876,26 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
         }
 
         // ttbar control region //
+        //if (
+        //        leptons.size() == 2 
+        //        && (bJetsM.size() == 1 || bJetsL.size() == 2)
+        //        && leptons[0].Type() != leptons[1].Type()
+        //        && leptons[0].Charge() != leptons[1].Charge()
+        //        && MET > 30
+        //   ) {
+        //    MakePlots(leptons, jets, bJetsM, *recoMET, 6);
+        //    SetYields(11);
+        //}
+        
+        // multilepton SUSY cross-check (
         if (
-                leptons.size() == 2 
-                && (bJetsM.size() == 1 || bJetsL.size() == 2)
-                && leptons[0].Type() != leptons[1].Type()
-                && leptons[0].Charge() != leptons[1].Charge()
-                && MET > 30
-           ) {
+                leptons.size() == 3
+                && HT < 200.
+                && MET > 50. && MET < 100.
+                && bJetsM.size() == 0
+           )
             MakePlots(leptons, jets, bJetsM, *recoMET, 6);
             SetYields(11);
-        }
 
         // Z+fake control region //
         if (
@@ -1118,7 +1128,7 @@ void fcncAnalyzer::GetFakeBG(vObj& leptons, vObj& fakeables, vector<TCJet>& jets
 
         string fakeType;
         if (fakeables[0].Type() == "electron")
-            fakeType = "ZPlusJet";
+            fakeType = "Combined";
         else if (fakeables[0].Type() == "muon")
             fakeType = "QCD2l";
 
@@ -1126,7 +1136,12 @@ void fcncAnalyzer::GetFakeBG(vObj& leptons, vObj& fakeables, vector<TCJet>& jets
         Float_t fakeWeight2 = 1.;
         if (fakeables.size() == 2) {
             fakeWeight1 = weighter->GetFakeWeight(fakeables[0], fakeType);
-            fakeWeight2 = weighter->GetFakeWeight(fakeables[1], "QCD2l");
+
+            if (fakeables[1].Type() == "muon")
+                fakeWeight2 = weighter->GetFakeWeight(fakeables[1], "QCD2l");
+            else if (fakeables[1].Type() == "electron")
+                fakeWeight2 = weighter->GetFakeWeight(fakeables[1], "Combined");
+
         } else if (fakeables.size() == 1) {
             fakeWeight1 = weighter->GetFakeWeight(fakeables[0], fakeType);
         }

@@ -53,7 +53,6 @@ class WeightUtils: public TObject {
         float   GetTotalWeight();
         float   GetFakeWeight(TCPhysObject&, string);
         float   GetFakeUncertainty(TCPhysObject&, string);
-        float   GetCombinedFakeWeight(TCPhysObject&);
         float   GetQFlipWeight();
         float   GetAICWeight(const TCPhoton&, const string&);
 

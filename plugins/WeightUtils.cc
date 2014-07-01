@@ -37,7 +37,7 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
     puReweight["2012"]  = (TH1D*)f_puFile->Get("pileupWeights");
 
     // weights for fake background
-    TFile* f_fakeFile = new TFile("../data/fakeRates_Iso_0.8.root", "OPEN");
+    TFile* f_fakeFile = new TFile("../data/fakeRates.root", "OPEN");
     //g_MuonFakesPtB["QCD2l"]         = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_MuonFake_1");
     //g_MuonFakesPtE["QCD2l"]         = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_MuonFake_2");
     //g_ElectronFakesPtB["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_ElectronFake_1");
@@ -59,16 +59,11 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
     h2_MuonFakes["QCD2l"]           = (TH2D*)f_fakeFile->Get("QCD2l/h2_MuonFake");
     h2_MuonFakes["ZPlusJet"]        = (TH2D*)f_fakeFile->Get("ZPlusJet/h2_MuonFake");
     h2_MuonFakes["AntiIso3l"]       = (TH2D*)f_fakeFile->Get("AntiIso3l/h2_MuonFake");
+    h2_MuonFakes["Combined"]        = (TH2D*)f_fakeFile->Get("Combined/h2_MuonFake");
     h2_ElectronFakes["QCD2l"]       = (TH2D*)f_fakeFile->Get("QCD2l/h2_ElectronFake");
     h2_ElectronFakes["ZPlusJet"]    = (TH2D*)f_fakeFile->Get("ZPlusJet/h2_ElectronFake");
     h2_ElectronFakes["AntiIso3l"]   = (TH2D*)f_fakeFile->Get("AntiIso3l/h2_ElectronFake");
-
-    h1_MuonFakes["QCD2l"]           = (TH1D*)f_fakeFile->Get("QCD2l/h1_MuonFakePt");
-    h1_MuonFakes["ZPlusJet"]        = (TH1D*)f_fakeFile->Get("ZPlusJet/h1_MuonFakePt");
-    h1_MuonFakes["AntiIso3l"]       = (TH1D*)f_fakeFile->Get("AntiIso3l/h1_MuonFakePt");
-    h1_ElectronFakes["QCD2l"]       = (TH1D*)f_fakeFile->Get("QCD2l/h1_ElectronFakePt");
-    h1_ElectronFakes["ZPlusJet"]    = (TH1D*)f_fakeFile->Get("ZPlusJet/h1_ElectronFakePt");
-    h1_ElectronFakes["AntiIso3l"]   = (TH1D*)f_fakeFile->Get("AntiIso3l/h1_ElectronFakePt");
+    h2_ElectronFakes["Combined"]    = (TH2D*)f_fakeFile->Get("Combined/h2_ElectronFake");
 
     // Weights for charge flip background
     TFile* f_misQFile = new TFile("../data/electronQMisID.root", "OPEN");
@@ -325,12 +320,12 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
     float fakeWeight    = 1.;
     float fakeRate      = 0.;
 
-    unsigned iPt = 0;
+    unsigned  iPt = 0;
     unsigned  nPtBins = 8;
     float     ptBins[] = {10., 15., 20., 25., 30., 35., 40., 45., 50.}; 
 
-    if (fakeable.Pt() > 45.) {
-        iPt = 7;
+    if (fakeable.Pt() > 35.) {
+        iPt = 5;
     } else {
         for (unsigned j = 0; j < nPtBins; ++j) {
             if (fakeable.Pt() > ptBins[j] && fakeable.Pt() < ptBins[j + 1]) {
@@ -340,6 +335,8 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
         }
     }
 
+    cout << fakeable.Type() << ", " << iPt << ", " << fakeable.Eta() << ", " << controlRegion << endl;
+
     if (fakeable.Type() == "muon") {
         
         float fakeablePt = fakeable.Pt();
@@ -348,7 +345,6 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
         else
             fakeablePt = 35;
 
-        //fakeRate = h1_MuonFakes[controlRegion]->GetBinContent(iPt);
         if (fabs(fakeable.Eta()) < 1.5) {
             //fakeRate  = g_MuonFakesPtB[controlRegion]->Eval(fakeablePt);
             fakeRate  = h2_MuonFakes[controlRegion]->GetBinContent(iPt, 1);
@@ -434,24 +430,6 @@ float WeightUtils::GetFakeUncertainty(TCPhysObject& fakeable, string controlRegi
     }
 
     return fakeError;
-}
-
-float WeightUtils::GetCombinedFakeWeight(TCPhysObject& fakeable)
-{
-    string categories[3] = {"QCD2l", "ZPlusJet", "AntiIso3l"};
-    float avgFakeRate       = 0.;
-    float avgFakeVariance   = 0.;
-
-    for (unsigned i = 0; i < 3; ++i) {
-        float fakeWeight    = GetFakeWeight(fakeable, categories[i]);
-        float fakeError     = GetFakeWeight(fakeable, categories[i]);
-        float fakeRate      = fakeWeight/(1 + fakeWeight);
-        
-        avgFakeRate += fakeRate/(fakeError*fakeError);
-        avgFakeVariance += 1./(fakeError*fakeError);
-    }
-
-    return avgFakeRate/avgFakeVariance;
 }
 
 float WeightUtils::GetQFlipWeight()

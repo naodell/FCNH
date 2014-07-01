@@ -41,7 +41,7 @@ doNorm      = True
 do1D        = True
 do2D        = True
 
-doOS        = True
+doOS        = False
 doSS        = True
 do3l        = True
 
@@ -64,13 +64,13 @@ samples     = {'all':[], 'inclusive':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[],
 
 #samples['all'].append('higgs')
 #samples['all'].append('Triboson')
-samples['all'].append('ttV')
-samples['all'].append('Diboson')
-samples['all'].append('top')
-samples['all'].append('ZJets')
+#samples['all'].append('ttV')
+#samples['all'].append('Diboson')
+#samples['all'].append('top')
+#samples['all'].append('ZJets')
 #samples['all'].append('WG')
-#samples['all'].append('ZZ4l')
-#samples['all'].append('WZJets3LNu')
+samples['all'].append('ZZ4l')
+samples['all'].append('WZJets3LNu')
 #samples['all'].append('QCD')
 #samples['all'].extend(['ZbbToLL', 'WbbToLNu']) #, 'ZGstar'])
 
@@ -84,7 +84,7 @@ samples['inclusive'].append('ZJets')
 ## trilepton categories
 #samples['3l_inclusive'].append('higgs')
 #samples['3l_inclusive'].append('Triboson')
-samples['3l_inclusive'].append('ttV')
+#samples['3l_inclusive'].append('ttV')
 samples['3l_inclusive'].append('ZZ4l')
 #samples['3l_inclusive'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
 samples['3l_inclusive'].append('WZJets3LNu')
@@ -125,7 +125,7 @@ samples['3l_inclusive'].append('Fakes')
 ## same-sign categories
 #samples['ss_inclusive'].append('higgs')
 #samples['ss_inclusive'].append('Triboson')
-samples['ss_inclusive'].append('ttV')
+#samples['ss_inclusive'].append('ttV')
 samples['ss_inclusive'].append('ZZ4l')
 #samples['ss_inclusive'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
 samples['ss_inclusive'].append('WZJets3LNu')
