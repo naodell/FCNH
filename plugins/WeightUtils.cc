@@ -324,8 +324,8 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
     unsigned  nPtBins = 8;
     float     ptBins[] = {10., 15., 20., 25., 30., 35., 40., 45., 50.}; 
 
-    if (fakeable.Pt() > 35.) {
-        iPt = 5;
+    if (fakeable.Pt() > 40.) {
+        iPt = 6;
     } else {
         for (unsigned j = 0; j < nPtBins; ++j) {
             if (fakeable.Pt() > ptBins[j] && fakeable.Pt() < ptBins[j + 1]) {
@@ -334,8 +334,6 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
             }
         }
     }
-
-    cout << fakeable.Type() << ", " << iPt << ", " << fakeable.Eta() << ", " << controlRegion << endl;
 
     if (fakeable.Type() == "muon") {
         

@@ -515,7 +515,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
     //!!! same-sign dimuon cross-check !!!//
     if (leptons.size() == 2) {
         if (
-                leptons[0].Pt() > 20.
+                leptons[0].Pt() > 20. && leptons[1].Pt() > 10.
                 && leptons[0].Type() == "muon" && leptons[1].Type() == "muon"
                 && leptons[0].Charge() == leptons[1].Charge()
                 && (leptons[0] + leptons[1]).M() > massCut
@@ -733,8 +733,9 @@ bool fcncAnalyzer::Process(Long64_t entry)
                 if (fakeables[i].DeltaR(fakeables[j]) < 0.1) {
                     fakeMatched = true;
                     matchedFakeables.push_back(fakeables[i]);
+                }  
 
-                } else if ((fakeables[i] + fakeables[j]).M() < massCut) {
+                if ((fakeables[i] + fakeables[j]).M() < massCut) {
                     lowMassResonance = true;
                     break;
                 }
@@ -1510,7 +1511,7 @@ void fcncAnalyzer::LeptonPlots(vObj& leptons, vector<TCJet>& jets, vector<TCJet>
     histManager->Fill1DHist(MHT - MET,
             "h1_MHT-MET", "MHT - MET;MHT - MET;Entries / 6 GeV", 50, -150., 150.); 
     histManager->Fill1DHist(METLD,
-            "h1_METLD", "METLD;METLD;Entries / bin", 100, 0., 1.); 
+            "h1_METLD", "METLD;METLD;Entries / bin", 50, 0., 1.); 
 
     histManager->Fill2DHist(HT, MET,
             "h2_metVsHt", "MET vs HT;HT;MET", 50, 0., 1000., 35, 0., 350.); 
@@ -1524,7 +1525,7 @@ void fcncAnalyzer::LeptonPlots(vObj& leptons, vector<TCJet>& jets, vector<TCJet>
 void fcncAnalyzer::MetPlots(TCMET& met, vObj& leptons)
 {
     histManager->Fill1DHist(met.Mod(), 
-            "h1_Met", "MET;MET;Entries / 10 GeV", 35, 0., 350.);
+            "h1_Met", "MET;MET;Entries / 10 GeV", 30, 0., 150.);
     histManager->Fill1DHist(met.Phi() - TMath::Pi(),
             "h1_MetPhi", "#phi MET;#phi;Entries / 0.087 rad", 36, -TMath::Pi(), TMath::Pi());
     histManager->Fill1DHist(met.SumEt(),
