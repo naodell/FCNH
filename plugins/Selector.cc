@@ -309,21 +309,23 @@ bool Selector::ElectronMVA(TCElectron* electron)
     double mvaValue = electron->MvaID_Old();
     electron->SetIdMap("mva", mvaValue);
 
-    if (fabs(electron->Eta()) < 0.8) {
-        if (electron->Pt() >= 20 && mvaValue > 0.94)
-            pass = true;
-        else if (electron->Pt() < 20 && mvaValue > 0.)
-            pass = true;
-    } else if (fabs(electron->Eta()) > 0.8 && fabs(electron->Eta()) < 1.48) {
-        if (electron->Pt() >= 20 && mvaValue > 0.85)
-            pass = true;
-        else if (electron->Pt() < 20 && mvaValue > 0.1)
-            pass = true;
-    } else if (fabs(electron->Eta()) > 1.48 && fabs(electron->Eta()) < 2.5) {
-        if (electron->Pt() >= 20 && mvaValue > 0.92)
-            pass = true;
-        else if (electron->Pt() < 20 && mvaValue > 0.62)
-            pass = true;
+    if (electron->ConversionMissHits() == 0) {
+        if (fabs(electron->Eta()) < 0.8) {
+            if (electron->Pt() >= 20 && mvaValue > 0.94)
+                pass = true;
+            else if (electron->Pt() < 20 && mvaValue > 0.)
+                pass = true;
+        } else if (fabs(electron->Eta()) > 0.8 && fabs(electron->Eta()) < 1.48) {
+            if (electron->Pt() >= 20 && mvaValue > 0.85)
+                pass = true;
+            else if (electron->Pt() < 20 && mvaValue > 0.1)
+                pass = true;
+        } else if (fabs(electron->Eta()) > 1.48 && fabs(electron->Eta()) < 2.5) {
+            if (electron->Pt() >= 20 && mvaValue > 0.92)
+                pass = true;
+            else if (electron->Pt() < 20 && mvaValue > 0.62)
+                pass = true;
+        }
     }
 
     return pass;

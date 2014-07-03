@@ -13,7 +13,7 @@ hists   = {}
 
 files = []
 for batch in batches:
-    file = r.TFile('fcncAnalysis/combined_histos/fcnh_cut1_2012_{0}.root'.format(batch), 'OPEN')
+    file = r.TFile('fcncAnalysis/combined_histos/fcnh_cut3_2012_{0}.root'.format(batch), 'OPEN')
     files.append(file)
 
     h1_JetMult_mu = file.GetDirectory('ss_mumu/muFakes').Get('h1_AllJetMult')

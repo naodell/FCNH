@@ -25,7 +25,7 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-#cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.'])#, '5_BDT'])
+cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.'])#, '5_BDT'])
 #cutList.extend(['.', '.', '.', 'X_0jet', 'X_1jet'])
 
 crList      = []#'CR_WZ', 'CR_ttbar', 'CR_ZFake']
@@ -64,10 +64,10 @@ samples     = {'all':[], 'inclusive':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[],
 
 #samples['all'].append('higgs')
 #samples['all'].append('Triboson')
-#samples['all'].append('ttV')
+samples['all'].append('ttV')
 #samples['all'].append('Diboson')
-samples['all'].append('top')
-samples['all'].append('ZJets')
+#samples['all'].append('top')
+#samples['all'].append('ZJets')
 #samples['all'].append('WG')
 samples['all'].append('ZZ4l')
 samples['all'].append('WZJets3LNu')
@@ -84,35 +84,35 @@ samples['inclusive'].append('ZJets')
 ## trilepton categories
 #samples['3l_inclusive'].append('higgs')
 #samples['3l_inclusive'].append('Triboson')
-#samples['3l_inclusive'].append('ttV')
+samples['3l_inclusive'].append('ttV')
 samples['3l_inclusive'].append('ZZ4l')
 #samples['3l_inclusive'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
 samples['3l_inclusive'].append('WZJets3LNu')
-#samples['3l_inclusive'].append('Fakes')
+samples['3l_inclusive'].append('Fakes')
 samples['3l_inclusive'].append('AIC')
 
 ### eee
 samples['3l_eee'].extend(samples['3l_inclusive'])
-samples['3l_eee'].extend(['eFakes', 'llFakes'])
+#samples['3l_eee'].extend(['eFakes', 'llFakes'])
 #samples['3l_eee'].append('eeeAIC')
 #
 ### eemu
 samples['3l_eemu'].extend(samples['3l_inclusive'])
-samples['3l_eemu'].extend(['eFakes', 'muFakes', 'llFakes'])
+#samples['3l_eemu'].extend(['eFakes', 'muFakes', 'llFakes'])
 #samples['3l_eemu'].append('eemuAIC')
 #
 ### emumu
 samples['3l_emumu'].extend(samples['3l_inclusive'])
-samples['3l_emumu'].extend(['eFakes', 'muFakes', 'llFakes'])
+#samples['3l_emumu'].extend(['eFakes', 'muFakes', 'llFakes'])
 #samples['3l_emumu'].append('emumuAIC')
 #
 ### mumumu
 samples['3l_mumumu'].extend(samples['3l_inclusive'])
-samples['3l_mumumu'].extend(['muFakes', 'llFakes'])
+#samples['3l_mumumu'].extend(['muFakes', 'llFakes'])
 #samples['3l_mumumu'].append('mumumuAIC')
 
 ## inclusive
-samples['3l_inclusive'].append('Fakes')
+#samples['3l_inclusive'].append('Fakes')
 #samples['3l_inclusive'].append('AIC')
 
 #samples['3l'].append('top')
@@ -125,7 +125,7 @@ samples['3l_inclusive'].append('Fakes')
 ## same-sign categories
 #samples['ss_inclusive'].append('higgs')
 #samples['ss_inclusive'].append('Triboson')
-#samples['ss_inclusive'].append('ttV')
+samples['ss_inclusive'].append('ttV')
 samples['ss_inclusive'].append('ZZ4l')
 #samples['ss_inclusive'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
 samples['ss_inclusive'].append('WZJets3LNu')

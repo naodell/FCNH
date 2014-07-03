@@ -64,7 +64,11 @@ void fcncAnalyzer::Begin(TTree* tree)
     // Initialize utilities and selectors here //
     selector        = new Selector(muPtCut, elePtCut, jetPtCut, phoPtCut);
     weighter        = new WeightUtils(suffix, period, selection, isRealData);
-    triggerSelector = new TriggerSelector(selection, period, *triggerNames, true, true);
+    triggerSelector = new TriggerSelector(selection, period, *triggerNames, false, true);
+
+    vstring triggers;
+    if (selection == "muon") triggers.push_back("HLT_Mu17_Mu8_v"); 
+    triggerSelector->AddTriggers(triggers);
 
     // Initialize histograms //
     TH1::SetDefaultSumw2(kTRUE);
@@ -443,6 +447,10 @@ bool fcncAnalyzer::Process(Long64_t entry)
     selector->ElectronSelector(recoElectrons);
     selector->JetSelector(recoJets);
 
+    // Muons for syncing with Brian
+    vector<TCMuon>  tightMuons  = selector->GetSelectedMuons("tight_id");
+    sort(tightMuons.begin(), tightMuons.end(), P4SortCondition);
+
     // Get analysis leptons
     vector<TCMuon>     muons       = selector->GetSelectedMuons("tight");
     vector<TCElectron> electrons   = selector->GetSelectedElectrons("tight");
@@ -728,9 +736,9 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
             bool fakeMatched = false;
             for (unsigned j = 0; j < fakeables.size(); ++j) {
-                if (i == j || fakeables[i].Type() == fakeables[j].Type()) continue;
+                if (i == j) continue;
 
-                if (fakeables[i].DeltaR(fakeables[j]) < 0.1) {
+                if (fakeables[i].DeltaR(fakeables[j]) < 0.3) {
                     fakeMatched = true;
                     matchedFakeables.push_back(fakeables[i]);
                 }  

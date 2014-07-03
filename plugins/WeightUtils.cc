@@ -28,8 +28,8 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
     h2_MuTriggerSFs[1] = (TH2D*)f_muRecoSF2012_TRIG->Get("DATA_over_MC_Mu17Mu8_OR_Mu17TkMu8_Tight_Mu1_20ToInfty_&_Mu2_20ToInfty_with_STAT_uncrt");
 
     // Electron reco (MVA) efficiencies
-    TFile* f_elRecoFile2012 = new TFile("../data/CombinedMethod_ScaleFactors_IdIsoSip.root", "OPEN");
-    h2_EleMVASF = (TH2D*)f_elRecoFile2012->Get("h_electronScaleFactor_IdIsoSip");
+    TFile* f_elRecoFile2012 = new TFile("../data/electrons_scale_factors.root", "OPEN");
+    h2_EleMVASF = (TH2D*)f_elRecoFile2012->Get("electronsDATAMCratio_FO_ID_ISO");
 
     // PU weights
     TFile* f_puFile = new TFile("../data/puReweight.root", "OPEN");
@@ -283,14 +283,11 @@ float WeightUtils::GetEleTriggerEff(TLorentzVector& lep1, TLorentzVector& lep2) 
 
 float WeightUtils::GetElectronEff(TLorentzVector& lep) const
 {
-
     float weight = 1.;
-
-    if (lep.Pt() < 200) 
-        weight = h2_EleMVASF->GetBinContent(h2_EleMVASF->FindBin(lep.Pt(), lep.Eta()));
+    if (lep.Pt() < 200.) 
+        weight = h2_EleMVASF->GetBinContent(h2_EleMVASF->FindBin(fabs(lep.Eta()), lep.Pt()));
     else
-        weight = h2_EleMVASF->GetBinContent(h2_EleMVASF->FindBin(199, lep.Eta()));
-
+        weight = h2_EleMVASF->GetBinContent(h2_EleMVASF->FindBin(fabs(lep.Eta()), 199.));
     return weight;
 }
 
