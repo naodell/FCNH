@@ -64,11 +64,11 @@ void fcncAnalyzer::Begin(TTree* tree)
     // Initialize utilities and selectors here //
     selector        = new Selector(muPtCut, elePtCut, jetPtCut, phoPtCut);
     weighter        = new WeightUtils(suffix, period, selection, isRealData);
-    triggerSelector = new TriggerSelector(selection, period, *triggerNames, false, true);
+    triggerSelector = new TriggerSelector(selection, period, *triggerNames, true, true);
 
-    vstring triggers;
-    if (selection == "muon") triggers.push_back("HLT_Mu17_Mu8_v"); 
-    triggerSelector->AddTriggers(triggers);
+    //vstring triggers;
+    //if (selection == "muon") triggers.push_back("HLT_Mu17_Mu8_v"); 
+    //triggerSelector->AddTriggers(triggers);
 
     // Initialize histograms //
     TH1::SetDefaultSumw2(kTRUE);
@@ -535,6 +535,17 @@ bool fcncAnalyzer::Process(Long64_t entry)
         }
     }
 
+    //!! Syncing muons with Brian !!//
+    //if (tightMuons.size() >= 2) {
+    //    ++eventCount[5];
+    //}
+
+    //return kTRUE;
+
+    /////////////////////
+    // Overlap studies //
+    /////////////////////
+    
     histManager->Fill1DHist(muJets.size() + eleJets.size(), 
             "h1_OverlapJetMult", "(e/#mu)-jet multiplicity;N_{jets};Entries / bin", 5, -0.5, 4.5);
 
@@ -798,8 +809,10 @@ void fcncAnalyzer::Terminate()
     cout << "| Pass HLT selection:         |\t" << eventCount[2]  << "\t|\t" << eventCountWeighted[2] << "\t|"<<endl;
     cout << "| Good PV:                    |\t" << eventCount[3]  << "\t|\t" << eventCountWeighted[3] << "\t|"<<endl;
     //cout << "| Data quality bits:          |\t" << eventCount[4]  << "\t|\t" << eventCountWeighted[4] << "\t|"<<endl;
+
+    cout << "| >= 2 muons tight ID:        |\t" << eventCount[5] << "\t|\t" << eventCountWeighted[5]  << "\t|"<<endl;
     // FCNH selection //
-    cout << "| Lepton selection:           |\t" << eventCount[5] << "\t|\t" << eventCountWeighted[5]  << "\t|"<<endl;
+    //cout << "| Lepton selection:           |\t" << eventCount[5] << "\t|\t" << eventCountWeighted[5]  << "\t|"<<endl;
     cout << "| Z veto:                     |\t" << eventCount[6] << "\t|\t" << eventCountWeighted[6]  << "\t|"<<endl;
     cout << "| At least two jets:          |\t" << eventCount[7] << "\t|\t" << eventCountWeighted[7]  << "\t|"<<endl;
     cout << "| MET cut:                    |\t" << eventCount[8] << "\t|\t" << eventCountWeighted[8]  << "\t|"<<endl;
@@ -1447,7 +1460,7 @@ void fcncAnalyzer::LeptonPlots(vObj& leptons, vector<TCJet>& jets, vector<TCJet>
 
         TLorentzVector trileptonP4 = leptons[0] + leptons[1] + leptons[2];
         histManager->Fill1DHist(trileptonP4.M(),
-                "h1_TrileptonMass", "M_{lll};M_{lll};Entries / 5 GeV", 60, 0., 300.);
+                "h1_TrileptonMass", "M_{lll};M_{lll};Entries / 5 GeV", 60, 50., 350.);
         histManager->Fill1DHist(trileptonP4.Pt(),
                 "h1_TrileptonPt", "p_{T,3l};p_{T,3l};Entries / 5 GeV", 40, 0., 400.);
 

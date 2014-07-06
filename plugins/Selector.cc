@@ -205,17 +205,17 @@ bool Selector::MuonTightID(TCMuon* muon)
             && muon->NormalizedChi2() < 10
             && muon->NumberOfValidMuonHits()  > 0
             && muon->NumberOfMatchedStations() > 1
+            && muon->NumberOfValidPixelHits() > 0
+            && muon->TrackLayersWithMeasurement() > 5
             && ((
-                    fabs(muon->Eta()) < 1.5 
-                    && fabs(muon->Dz(_selVertices[0]))  < 0.05
-                    && fabs(muon->Dxy(_selVertices[0])) < 0.015
+                    fabs(muon->Eta()) <= 1.5 
+                    && fabs(muon->Dz(_selVertices[0]))  < 0.05 // 0.5
+                    && fabs(muon->Dxy(_selVertices[0])) < 0.015 // 0.2
                 ) || (
                     fabs(muon->Eta()) > 1.5 
                     && fabs(muon->Dz(_selVertices[0]))  < 0.05
                     && fabs(muon->Dxy(_selVertices[0])) < 0.015 // Should probably reduce this to 0.005
                     ))
-            && muon->NumberOfValidPixelHits() > 0
-            && muon->TrackLayersWithMeasurement() > 5
        ) pass = true;
 
     return pass;
@@ -273,7 +273,7 @@ void Selector::MuonSelector(TClonesArray* muons)
             
             if (
                     MuonTightID(thisMuon) 
-                    && muISO < 1. && !(muISO > 0.12 && muISO < 0.2)
+                    && muISO < 0.7 && !(muISO > 0.12 && muISO < 0.2)
                     )
                 _selMuons["probe"].push_back(*thisMuon);
 
@@ -282,7 +282,7 @@ void Selector::MuonSelector(TClonesArray* muons)
                 _selMuons["tight_id"].push_back(*thisMuon);
                 if (muISO < 0.12) {
                     _selMuons["tight"].push_back(*thisMuon);
-                } else if (muISO > 0.2 && muISO < 0.8) {
+                } else if (muISO > 0.2 && muISO < 0.7) {
                     thisMuon->SetFake(true);
                     _selMuons["fakeable"].push_back(*thisMuon);
                 }

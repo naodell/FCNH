@@ -292,7 +292,7 @@ if __name__ == '__main__':
             }
 
         ratioMaker.set_ratio_2D(eMisQDict)
-        ratioMaker.charge_flip_fitter('DATA_ELECTRON', nToys = 50)
+        ratioMaker.charge_flip_fitter('DATA_ELECTRON', nToys = 100)
         #ratioMaker.make_2D_ratios('DATA', doProjections = False)
 
         ratioMaker.write_outfile()
