@@ -99,6 +99,10 @@ styleDict['WW']                 = (2, r.kGreen-4, 0, 1, 'WW')
 styleDict['WZ']                 = (2, r.kPink+9, 0, 1, 'WZ')
 styleDict['ZGToNuNu']           = (2, r.kBlue+3, 0, 1, 'ZG->#nu#nu')
 styleDict['ZGstar']             = (2, r.kBlue+3, 0, 1, 'Z#gamma^{*}')
+styleDict['WWSS']               = (2, r.kBlue+2, 0, 1, 'W^{#pm}W^{#pm}')
+styleDict['WmWmqq']             = (2, r.kBlue+2, 0, 1, 'W^{-}W^{-}')
+styleDict['WpWppq']             = (2, r.kBlue+4, 0, 1, 'W^{+}W^{+}')
+styleDict['WWDPS']              = (2, r.kBlue+5, 0, 1, 'WW (DPS)')
 styleDict['GJets_15to30']       = (2, r.kYellow+2, 0, 1, 'gamma+jets') 
 
 #Higgs
@@ -230,6 +234,10 @@ scaleDict['2012']['GluGluWW']           = 0.1505
 scaleDict['2012']['ZGToNuNu']           = 3.462
 scaleDict['2012']['ZGstar']             = 0.5
 
+scaleDict['2012']['WmWmqq']             = 0.0889
+scaleDict['2012']['WpWpqq']             = 0.2482
+scaleDict['2012']['WWDPS']              = 0.587
+
 scaleDict['2012']['ggHToZZ4L_M-125']    = 19.3*0.0264*0.09*0.09
 scaleDict['2012']['WHToWWW3L_M-125']    = .705*0.3*0.3*0.3
 scaleDict['2012']['ggHToWW2L2Nu_M-125'] = 19.3*0.215*0.3*0.3
@@ -282,6 +290,7 @@ combineDict['WW/ZZ']            = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2
 #combineDict['ZZ4l']             = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
 combineDict['ZZ4l']             = ['ZZ4mu', 'ZZ4e', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
 combineDict['VV2l']             = ['ZZJets2L2Nu', 'ZZJets2L2Q', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'WZJets2L2Q']
+combineDict['WWSS']            = ['WmWmqq', 'WpWpqq', 'WWDPS']
 combineDict['Triboson']         = ['WWW', 'WWZ', 'WZZ', 'ZZZ']#, 'WWG']
 combineDict['QCD']              = ['QCD_20_MU', 'QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_EM', 'QCD_170-250_EM', 'QCD_250-350_EM', 'QCD_350_EM']
 #combineDict['QCD']              = ['QCD_15-30_B+MU', 'QCD_30-50_B+MU', 'QCD_50-150_B+MU', 'QCD_150_B+MU', 'QCD_20-30_EM', 'QCD_30-80_EM', 'QCD_80-170_EM', 'QCD_170-250_EM', 'QCD_250-350_EM', 'QCD_350_EM']

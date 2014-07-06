@@ -25,7 +25,7 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-#cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.'])#, '5_BDT'])
+cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.'])#, '5_BDT'])
 #cutList.extend(['.', '.', '.', 'X_0jet', 'X_1jet'])
 
 crList      = []#'CR_WZ', 'CR_ttbar', 'CR_ZFake']
@@ -71,6 +71,7 @@ samples['all'].append('ttV')
 #samples['all'].append('WG')
 samples['all'].append('ZZ4l')
 samples['all'].append('WZJets3LNu')
+samples['all'].append('WWSS')
 #samples['all'].append('QCD')
 #samples['all'].extend(['ZbbToLL', 'WbbToLNu']) #, 'ZGstar'])
 
@@ -129,6 +130,7 @@ samples['ss_inclusive'].append('ttV')
 samples['ss_inclusive'].append('ZZ4l')
 #samples['ss_inclusive'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
 samples['ss_inclusive'].append('WZJets3LNu')
+samples['ss_inclusive'].append('WWSS')
 #samples['ss_inclusive'].append('Fakes')
 
 ## dielectrons

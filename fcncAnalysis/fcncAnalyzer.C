@@ -970,14 +970,13 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
     //!!!!!!!!!!!!!!!!!!!!!!//
 
 
-    //if ( // Problematic region for same-sign
-    //        leptons.size() == 2 
-    //        && leptons[0].Type() == leptons[1].Type() 
-    //        && (bJetsM.size() + jets.size()) == 0
-    //        && (leptons[0] + leptons[1]).M() < 30
-    //        && recoMET->Mod() < 50
-    //   ) 
-    //    return true;
+    if ( // Problematic region for same-sign
+            leptons.size() == 2 
+            && leptons[0].Charge() == leptons[1].Charge()
+            && leptons[0].Type() == "electron" && leptons[1].Type() == "electron"
+            && fabs(leptons[0].Eta()) > 2.1
+       ) 
+        return true;
 
 
     // Preselection Plots
@@ -1763,16 +1762,16 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
     // Set iEta bins for leading and trailing electrons
     if (fabs(electrons[0].Eta()) < 0.8)
         iEta1 = 0;
-    else if (fabs(electrons[0].Eta()) > 0.8 && fabs(electrons[0].Eta()) < 1.479)
+    else if (fabs(electrons[0].Eta()) >= 0.8 && fabs(electrons[0].Eta()) < 1.479)
         iEta1 = 1;
-    else if (fabs(electrons[0].Eta()) > 1.479 && fabs(electrons[0].Eta()) < 2.5)
+    else if (fabs(electrons[0].Eta()) >= 1.479 && fabs(electrons[0].Eta()) < 2.5)
         iEta1 = 2;
 
     if (fabs(electrons[1].Eta()) < 0.8)
         iEta2 = 0;
-    else if (fabs(electrons[1].Eta()) > 0.8 && fabs(electrons[1].Eta()) < 1.479)
+    else if (fabs(electrons[1].Eta()) >= 0.8 && fabs(electrons[1].Eta()) < 1.479)
         iEta2 = 1;
-    else if (fabs(electrons[1].Eta()) > 1.479 && fabs(electrons[1].Eta()) < 2.5)
+    else if (fabs(electrons[1].Eta()) >= 1.479 && fabs(electrons[1].Eta()) < 2.5)
         iEta2 = 2;
 
     // Set iPt bins for leading and trailing electrons

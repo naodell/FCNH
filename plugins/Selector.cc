@@ -209,12 +209,16 @@ bool Selector::MuonTightID(TCMuon* muon)
             && muon->TrackLayersWithMeasurement() > 5
             && ((
                     fabs(muon->Eta()) <= 1.5 
-                    && fabs(muon->Dz(_selVertices[0]))  < 0.05 // 0.5
-                    && fabs(muon->Dxy(_selVertices[0])) < 0.015 // 0.2
+                    && fabs(muon->Dz(_selVertices[0]))  < 0.5 // 0.5
+                    && fabs(muon->Dxy(_selVertices[0])) < 0.2 // 0.2
+                    //&& fabs(muon->Dz(_selVertices[0]))  < 0.05 // 0.5
+                    //&& fabs(muon->Dxy(_selVertices[0])) < 0.015 // 0.2
                 ) || (
                     fabs(muon->Eta()) > 1.5 
-                    && fabs(muon->Dz(_selVertices[0]))  < 0.05
-                    && fabs(muon->Dxy(_selVertices[0])) < 0.015 // Should probably reduce this to 0.005
+                    && fabs(muon->Dz(_selVertices[0]))  < 0.5 // 0.5
+                    && fabs(muon->Dxy(_selVertices[0])) < 0.2 // 0.2
+                    //&& fabs(muon->Dz(_selVertices[0]))  < 0.05
+                    //&& fabs(muon->Dxy(_selVertices[0])) < 0.015 // Should probably reduce this to 0.005
                     ))
        ) pass = true;
 
