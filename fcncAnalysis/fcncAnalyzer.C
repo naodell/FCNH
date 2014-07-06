@@ -521,17 +521,16 @@ bool fcncAnalyzer::Process(Long64_t entry)
     //!!!!!!!!!!!!!!!!!!!!!!!!//
     
     //!!! same-sign dimuon cross-check !!!//
-    if (leptons.size() == 2) {
+    if (muons.size() == 2) {
         if (
-                leptons[0].Pt() > 20. && leptons[1].Pt() > 10.
-                && leptons[0].Type() == "muon" && leptons[1].Type() == "muon"
-                && leptons[0].Charge() == leptons[1].Charge()
-                && (leptons[0] + leptons[1]).M() > massCut
+                muons[0].Pt() > 20. && muons[1].Pt() > 10.
+                && muons[0].Charge() == muons[1].Charge()
+                && (muons[0] + muons[1]).M() > massCut
            ) {
-            histManager->Fill1DHist(leptons[0].Pt(),
-                    "h1_LeadMuonPt_SS", "lead muon p_{T} test;p_{T};Entries / 4 GeV", 40, 0., 160.);
-            histManager->Fill1DHist(leptons[1].Pt(),
-                    "h1_TrailingMuonPt_SS", "lead muon p_{T} test;p_{T};Entries / 4 GeV", 30, 0., 120.);
+            histManager->Fill1DHist(muons[0].Pt(),
+                    "h1_LeadMuonPt_SS", "lead muon p_{T} test;p_{T};Entries / 4 GeV", 28, 0., 140.);
+            histManager->Fill1DHist(muons[1].Pt(),
+                    "h1_TrailingMuonPt_SS", "lead muon p_{T} test;p_{T};Entries / 4 GeV", 20, 0., 100.);
         }
     }
 
@@ -540,7 +539,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
     //    ++eventCount[5];
     //}
 
-    //return kTRUE;
+    return kTRUE;
 
     /////////////////////
     // Overlap studies //
