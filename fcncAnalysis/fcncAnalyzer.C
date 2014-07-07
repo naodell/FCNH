@@ -538,8 +538,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
     //if (tightMuons.size() >= 2) {
     //    ++eventCount[5];
     //}
-
-    return kTRUE;
+    //return kTRUE;
 
     /////////////////////
     // Overlap studies //
@@ -1753,7 +1752,7 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
     histManager->SetFileNumber(0);
     histManager->SetDirectory("inclusive/" + subdir);
 
-    float ptBins[]  = {10., 40., 45., 50., 75., 150.};
+    float ptBins[]  = {10., 35., 45., 55., 75., 150.};
     float etaBins[] = {0., 0.8, 1.479, 2.5};
 
     unsigned iEta1, iPt1, iEta2, iPt2;
@@ -1774,24 +1773,24 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
         iEta2 = 2;
 
     // Set iPt bins for leading and trailing electrons
-    if (electrons[0].Pt() >= 10. && electrons[0].Pt() < 40.)
+    if (electrons[0].Pt() >= 10. && electrons[0].Pt() < 35.)
         iPt1 = 1;
-    else if (electrons[0].Pt() >= 40. && electrons[0].Pt() < 45.)
+    else if (electrons[0].Pt() >= 35. && electrons[0].Pt() < 45.)
         iPt1 = 2;
-    else if (electrons[0].Pt() >= 45. && electrons[0].Pt() < 50.)
+    else if (electrons[0].Pt() >= 45. && electrons[0].Pt() < 55.)
         iPt1 = 3;
-    else if (electrons[0].Pt() >= 50. && electrons[0].Pt() < 75.)
+    else if (electrons[0].Pt() >= 55. && electrons[0].Pt() < 75.)
         iPt1 = 4;
     else if (electrons[0].Pt() >= 75.)
         iPt1 = 5;
 
-    if (electrons[1].Pt() > 10. && electrons[1].Pt() < 40.)
+    if (electrons[1].Pt() > 10. && electrons[1].Pt() < 35.)
         iPt2 = 1;
-    else if (electrons[1].Pt() >= 40. && electrons[1].Pt() < 45.)
+    else if (electrons[1].Pt() >= 35. && electrons[1].Pt() < 45.)
         iPt2 = 2;
-    else if (electrons[1].Pt() >= 45. && electrons[1].Pt() < 50.)
+    else if (electrons[1].Pt() >= 45. && electrons[1].Pt() < 55.)
         iPt2 = 3;
-    else if (electrons[1].Pt() >= 50. && electrons[1].Pt() < 75.)
+    else if (electrons[1].Pt() >= 55. && electrons[1].Pt() < 75.)
         iPt2 = 4;
     else if (electrons[1].Pt() >= 75)
         iPt2 = 5;
@@ -1805,9 +1804,15 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
         for (unsigned i = 0; i < gElectrons.size(); ++i) {
             for (unsigned j = 0; j < electrons.size(); ++j) {
 
-            if (gElectrons[i].DeltaR(electrons[j]) < 0.1)
-                histManager->Fill2DHist((electrons[0] + electrons[1]).M(), gElectrons[i].Charge()*electrons[j].Charge(), 
-                        "h2_ChargeMisIDVsDielectronMass", ";M_{ee} (GeV);Entries / 10 GeV", 20, 0., 200., 2, -1., 1.);
+                if (gElectrons[i].DeltaR(electrons[j]) < 0.1) {
+                    if (gElectrons[i].Charge()*electrons[j].Charge() == -1) {
+                        histManager->Fill2DHistUnevenBins(electrons[j].Pt(), electrons[j].Eta(), 
+                                "h2_EleQMisIDNumerMC", ";M_{ee} (GeV);Entries / 10 GeV", 5, ptBins, 3, etaBins);
+                    } else if (gElectrons[i].Charge()*electrons[j].Charge() == 1) {
+                        histManager->Fill2DHistUnevenBins(electrons[j].Pt(), electrons[j].Eta(), 
+                                "h2_EleQMisIDDenomMC", ";M_{ee} (GeV);Entries / 10 GeV", 5, ptBins, 3, etaBins);
+                    }
+                }
             }
         }
     }
@@ -1815,9 +1820,9 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
     if (fabs((electrons[0] + electrons[1]).M() - 91.2) < 15) {// Z mass window
         if (electrons[0].Charge() == electrons[1].Charge()) {
             histManager->Fill2DHistUnevenBins(electrons[0].Pt(), electrons[0].Eta(),
-                    "h2_LeadElecQMisIDNumer", "lead e charge misID (numerator);p_{T};#eta", 4, ptBins, 2, etaBins); 
+                    "h2_LeadElecQMisIDNumer", "lead e charge misID (numerator);p_{T};#eta", 5, ptBins, 3, etaBins); 
             histManager->Fill2DHistUnevenBins(electrons[1].Pt(), electrons[1].Eta(),
-                    "h2_TrailingElecQMisIDNumer", "trailing e charge misID (numerator);p_{T};#eta", 4, ptBins, 2, etaBins); 
+                    "h2_TrailingElecQMisIDNumer", "trailing e charge misID (numerator);p_{T};#eta", 5, ptBins, 3, etaBins); 
 
             histManager->Fill2DHist(5*iEta1 + iPt1, 5*iEta2 + iPt2,
                     "h2_DileptonQMisIDNumer", "e charge misID (numerator);e_{leading};e_{trailing}", 15, 0.5, 15.5, 15, 0.5, 15.5);
@@ -1825,9 +1830,9 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
 
         if (electrons[0].Charge() != electrons[1].Charge()) {
             histManager->Fill2DHistUnevenBins(electrons[0].Pt(), electrons[0].Eta(),
-                    "h2_LeadElecQMisIDDenom", "lead e charge misID (denominator);p_{T};#eta", 4, ptBins, 2, etaBins); 
+                    "h2_LeadElecQMisIDDenom", "lead e charge misID (denominator);p_{T};#eta", 5, ptBins, 3, etaBins); 
             histManager->Fill2DHistUnevenBins(electrons[1].Pt(), electrons[1].Eta(),
-                    "h2_TrailingElecQMisIDDenom", "trailing e charge misID (denominator);p_{T};#eta", 4, ptBins, 2, etaBins); 
+                    "h2_TrailingElecQMisIDDenom", "trailing e charge misID (denominator);p_{T};#eta", 5, ptBins, 3, etaBins); 
 
             histManager->Fill2DHist(5*iEta1 + iPt1, 5*iEta2 + iPt2,
                     "h2_DileptonQMisIDDenom", "e charge misID (denominator);e_{leading};e_{trailing}", 15, 0.5, 15.5, 15, 0.5, 15.5);

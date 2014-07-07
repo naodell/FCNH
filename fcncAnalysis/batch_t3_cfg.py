@@ -51,15 +51,15 @@ if period == '2012':
         cfg('muon_2012C', '{0}/DoubleMu_Run2012C'.format(dataDir), 40, 'DATA_MUON muon 2012'),
         cfg('muon_2012D', '{0}/DoubleMu_Run2012D'.format(dataDir), 45, 'DATA_MUON muon 2012'),
 
-        #cfg('electron_2012A', '{0}/DoubleElectron_Run2012A'.format(dataDir), 40, 'DATA_ELECTRON electron 2012'),
-        #cfg('electron_2012B', '{0}/DoubleElectron_Run2012B'.format(dataDir), 40, 'DATA_ELECTRON electron 2012'),
-        #cfg('electron_2012C', '{0}/DoubleElectron_Run2012C'.format(dataDir), 40, 'DATA_ELECTRON electron 2012'),
-        #cfg('electron_2012D', '{0}/DoubleElectron_Run2012D'.format(dataDir), 45, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012A', '{0}/DoubleElectron_Run2012A'.format(dataDir), 40, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012B', '{0}/DoubleElectron_Run2012B'.format(dataDir), 40, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012C', '{0}/DoubleElectron_Run2012C'.format(dataDir), 40, 'DATA_ELECTRON electron 2012'),
+        cfg('electron_2012D', '{0}/DoubleElectron_Run2012D'.format(dataDir), 45, 'DATA_ELECTRON electron 2012'),
 
-        #cfg('muEG_2012A', '{0}/MuEG_Run2012A'.format(dataDir), 40, 'DATA_MUEG muEG 2012'),
-        #cfg('muEG_2012B', '{0}/MuEG_Run2012B'.format(dataDir), 40, 'DATA_MUEG muEG 2012'),
-        #cfg('muEG_2012C', '{0}/MuEG_Run2012C'.format(dataDir), 40, 'DATA_MUEG muEG 2012'),
-        #cfg('muEG_2012D', '{0}/MuEG_Run2012D'.format(dataDir), 45, 'DATA_MUEG muEG 2012')
+        cfg('muEG_2012A', '{0}/MuEG_Run2012A'.format(dataDir), 40, 'DATA_MUEG muEG 2012'),
+        cfg('muEG_2012B', '{0}/MuEG_Run2012B'.format(dataDir), 40, 'DATA_MUEG muEG 2012'),
+        cfg('muEG_2012C', '{0}/MuEG_Run2012C'.format(dataDir), 40, 'DATA_MUEG muEG 2012'),
+        cfg('muEG_2012D', '{0}/MuEG_Run2012D'.format(dataDir), 45, 'DATA_MUEG muEG 2012')
         ])
 
     bg.extend([
@@ -105,6 +105,7 @@ if period == '2012':
 
         cfg('WmWmqq',  '{0}/WmWmqq'.format('/tthome/naodell/storage/ntuples/MC_skimmed'),    10,  'WmWmqq    {0}  2012'.format(mcTrigger)),
         cfg('WpWpqq',  '{0}/WpWpqq'.format('/tthome/naodell/storage/ntuples/MC_skimmed'),    10,  'WpWpqq    {0}  2012'.format(mcTrigger)),
+        cfg('WWDPS',  '{0}/WW_DPS'.format('/tthome/naodell/storage/ntuples/MC_skimmed'),    10,  'WWDPS  {0}  2012'.format(mcTrigger)),
 
 
         #cfg('QCD_20-30_EM',    '{0}/QCD_Pt_20_30_EMEnriched'.format(mcDir),    40,  'QCD_20-30_EM    {0}  2012'.format(mcTrigger)),

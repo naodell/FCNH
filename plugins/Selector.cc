@@ -593,10 +593,10 @@ void Selector::JetSelector(TClonesArray* jets)
             if (thisJet->DeltaR(_selElectrons["tight"][j]) < 0.3) overlap.set(1);
 
         for (int j = 0; j < (int)_selMuons["fakeable"].size(); ++j) 
-            if (thisJet->DeltaR(_selMuons["fakeable"][j]) < 0.3) overlap.set(2);
+            if (thisJet->DeltaR(_selMuons["fakeable"][j]) < 0.4) overlap.set(2);
 
         for (int j = 0; j < (int)_selElectrons["fakeable"].size(); ++j) 
-            if (thisJet->DeltaR(_selElectrons["fakeable"][j]) < 0.3) overlap.set(3);
+            if (thisJet->DeltaR(_selElectrons["fakeable"][j]) < 0.4) overlap.set(3);
 
         // Apply JER corrections; maybe better to do in the analysis code...
         TCJet *corJet = this->JERCorrections(thisJet);
