@@ -728,7 +728,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
         for (unsigned i = 0; i < fakeables.size(); ++i) {
             for (unsigned j = 0; j < leptons.size(); ++j) {
-                if (fakeables[i].DeltaR(leptons[j]) < 0.1) {//&& fakeables[i].Type() != leptons[j].Type()) {
+                if (fakeables[i].DeltaR(leptons[j]) < 0.3) {//&& fakeables[i].Type() != leptons[j].Type()) {
                     fakeables.erase(fakeables.begin() + i);
                     --i;
                     leptonMatched = true;
