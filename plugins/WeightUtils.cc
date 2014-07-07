@@ -429,17 +429,16 @@ float WeightUtils::GetFakeUncertainty(TCPhysObject& fakeable, string controlRegi
 
 float WeightUtils::GetQFlipWeight()
 {
-    float weight = 0.;
-
     // Set iEta bins for leading and trailing electrons
+    float weight = 0.;
     for (unsigned i = 0; i < _leptons.size(); ++i) {
         if (_leptons[i].Type() != "electron") continue;
 
         float electronPt = _leptons[i].Pt();
-        if (_leptons[i].Pt() < 125.)
-            electronPt = _leptons[i].Pt();
-        else
-            electronPt = 125.;
+        //if (_leptons[i].Pt() < 125.)
+        //    electronPt = _leptons[i].Pt();
+        //else
+        //    electronPt = 125.;
 
         if (fabs(_leptons[i].Eta()) < 0.8)
             weight += g_QFlipBB->Eval(electronPt);

@@ -331,7 +331,7 @@ if doPlots:
         for category in catSS:
             ss_plotter = copy.deepcopy(plotter)
             ss_plotter.add_datasets(samples[category], Clear=True)
-            ss_plotter._overlayList = ['DATA']#, 'FCNH']
+            ss_plotter._overlayList = ['DATA']
             #ss_plotter.set_clean_fakes(False)
 
             for i, cut in enumerate(cutList):

@@ -1752,7 +1752,7 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
     histManager->SetFileNumber(0);
     histManager->SetDirectory("inclusive/" + subdir);
 
-    float ptBins[]  = {10., 35., 45., 55., 75., 150.};
+    float ptBins[]  = {10., 30., 45., 55., 75., 150.};
     float etaBins[] = {0., 0.8, 1.479, 2.5};
 
     unsigned iEta1, iPt1, iEta2, iPt2;
