@@ -1121,8 +1121,13 @@ void fcncAnalyzer::DoAICBG(vObj& leptons, TCPhoton& photon, vector<TCJet>& jets,
     //cout << photon.Type() << ", " << category << endl;
 
     Float_t weight = weighter->GetAICWeight(photon, category);
-    evtWeight *= weight;
-    histManager->SetWeight(evtWeight);
+    if (weight > 0.) {
+        evtWeight *= weight;
+        histManager->SetWeight(evtWeight);
+    } else {
+        weight = 1.;
+        histManager->SetWeight(0.);
+    }
     SetEventCategory(lepPlusPhoton);
     SetEventVariables(lepPlusPhoton, jets, bJetsM, *recoMET); 
     AnalysisSelection(lepPlusPhoton, jets, bJetsM, bJetsL, category + "AIC");
@@ -1165,9 +1170,12 @@ void fcncAnalyzer::GetFakeBG(vObj& leptons, vObj& fakeables, vector<TCJet>& jets
             fakeWeight1 = weighter->GetFakeWeight(fakeables[0], fakeType);
         }
 
+
         //cout << fakeWeight1 << ", " << fakeWeight2 << endl;
 
         if (fakeables.size() == 1 && fakeWeight1 > 0) {
+
+            // 2 ss muon hack
             evtWeight *= fakeWeight1;
             DoFakes(leptons, fakeables, jets, bJetsM, bJetsL);
             evtWeight /= fakeWeight1;
@@ -1215,10 +1223,16 @@ void fcncAnalyzer::DoFakes(vObj& leptons, vObj& fakeables, vector<TCJet>& jets, 
                 && leptonsPlusFakes[0].Pt() > leptonPtCut[0] 
                 && leptonsPlusFakes[1].Pt() > leptonPtCut[1]
            ) {
+            if (leptonsPlusFakes[0].Type() == "muon" && leptonsPlusFakes[1].Type() == "muon" && jets.size() >= 2)
+                evtWeight *= 0.9;
+
             if (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON" || suffix == "TEST") 
                 AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, fakeCat + "Fakes");
             else if (doFakeMC)                                                 
                 AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, fakeCat + "Fakes_" + suffix);
+
+            if (leptonsPlusFakes[0].Type() == "muon" && leptonsPlusFakes[1].Type() == "muon" && jets.size() >= 2)
+                evtWeight /= 0.9;
         }
     } else if (leptonsPlusFakes.size() == 3) {
         if (

@@ -131,24 +131,24 @@ samples['ss_inclusive'].append('ZZ4l')
 #samples['ss_inclusive'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
 samples['ss_inclusive'].append('WZJets3LNu')
 samples['ss_inclusive'].append('WWSS')
-#samples['ss_inclusive'].append('Fakes')
+samples['ss_inclusive'].append('Fakes')
 
 ## dielectrons
 samples['ss_ee'].extend(samples['ss_inclusive'])
 samples['ss_ee'].append('QFlips')
-samples['ss_ee'].extend(['eFakes', 'llFakes'])
+#samples['ss_ee'].extend(['eFakes', 'llFakes'])
 
 ## electron+muon
 samples['ss_emu'].extend(samples['ss_inclusive'])
 samples['ss_emu'].append('QFlips')
-samples['ss_emu'].extend(['eFakes', 'muFakes', 'llFakes'])
+#samples['ss_emu'].extend(['eFakes', 'muFakes', 'llFakes'])
 
 ## dimuons
 samples['ss_mumu'].extend(samples['ss_inclusive'])
-samples['ss_mumu'].extend(['muFakes', 'llFakes'])
+#samples['ss_mumu'].extend(['muFakes', 'llFakes'])
 
 ## inclusive
-samples['ss_inclusive'].append('Fakes')
+#samples['ss_inclusive'].append('Fakes')
 samples['ss_inclusive'].append('QFlips')
 
 ## geometric categories

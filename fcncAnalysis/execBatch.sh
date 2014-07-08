@@ -10,6 +10,7 @@ SUFFIX=$3
 SELECTION=$4
 PERIOD=$5
 
+echo ${_CONDOR_SCRATCH_DIR}
 ### Transfer files, prepare directory ###
 source /etc/bashrc prod
 export OSG_APP=/software/tier3/osg
