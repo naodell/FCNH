@@ -289,11 +289,22 @@ if __name__ == '__main__':
             #'LeadElectronMisQ':('LeadElecQMisIDNumer', 'LeadElecQMisIDDenom'),
             #'TrailingElectronMisQ':('TrailingElecQMisIDNumer', 'TrailingElecQMisIDDenom'),
             'DielectronMisQ':('DileptonQMisIDNumer', 'DileptonQMisIDDenom')
+            #'DielectronMisQ':('DileptonQMisIDNumerNoJet', 'DileptonQMisIDDenomNoJet'),
+            #'DielectronMisQ':('DileptonQMisIDNumer1+Jet', 'DileptonQMisIDDenom1+Jet')
             }
 
         ratioMaker.set_ratio_2D(eMisQDict)
-        ratioMaker.charge_flip_fitter('DATA_ELECTRON', nToys = 100)
         #ratioMaker.make_2D_ratios('DATA', doProjections = False)
+
+        #ratioMaker.charge_flip_fitter('DATA_ELECTRON', nToys = 100)
+        ratioMaker.charge_flip_fitter('ZJets_M-50', nToys = 100)
+
+        mcMisQDict = {
+            'EleQMisID_MC':('EleQMisIDNumerMC', 'EleQMisIDDenomMC')
+        }
+
+        ratioMaker.set_ratio_2D(mcMisQDict)
+        ratioMaker.make_2D_ratios('ZJets_M-50', doProjections = False)
 
         ratioMaker.write_outfile()
 
@@ -321,72 +332,75 @@ if __name__ == '__main__':
             'ElectronFake':('EleNumer', 'EleDenom')
         }
 
-        fakeCategories = ['QCD2l', 'ZPlusJet', 'AntiIso3l']
+        #fakeCategories = ['QCD2l', 'ZPlusJet', 'AntiIso3l']
+        fakeCategories = ['ZPlusJet']
 
         for category in fakeCategories:
             print category
             ratioMaker.set_category(category)
 
             bgType ='PROMPT'
+            #bgType =''
 
             ratioMaker.set_ratio_1D(fakeDict1D)
             ratioMaker.make_1D_ratios('DATA', bgType)
 
-            ratioMaker.set_ratio_2D(fakeDict2D)
-            ratioMaker.make_2D_ratios('DATA', bgType, doProjections = True)
+            #ratioMaker.set_ratio_2D(fakeDict2D)
+            #ratioMaker.make_2D_ratios('DATA', bgType, doProjections = True)
 
         ratioMaker.write_outfile()
 
         # Combined fakeCategory rates
         #ratioMaker.combine_fake_rates(fakeCategories)
 
-        fTest = r.TFile('data/fakeRates_TEST.root', 'UPDATE')
-        fTest.mkdir('Combined')
-        fTest.cd('Combined')
+        if False:
+            fTest = r.TFile('data/fakeRates_TEST.root', 'UPDATE')
+            fTest.mkdir('Combined')
+            fTest.cd('Combined')
 
-        #Get 1D histograms
-        histList_1D = ['MuonFakePt', 'MuonFakeEta', 'ElectronFakePt', 'ElectronFakeEta']
-        histList_2D = ['MuonFake', 'ElectronFake']
-        outHists = []
-        for hist in histList_1D:
-            h1_QCD2l        = fTest.GetDirectory('QCD2l').Get('h1_{0}'.format(hist))
-            h1_ZPlusJet     = fTest.GetDirectory('ZPlusJet').Get('h1_{0}'.format(hist))
-            h1_AntiIso3l    = fTest.GetDirectory('AntiIso3l').Get('h1_{0}'.format(hist))
+            #Get 1D histograms
+            histList_1D = ['MuonFakePt', 'MuonFakeEta', 'ElectronFakePt', 'ElectronFakeEta']
+            histList_2D = ['MuonFake', 'ElectronFake']
+            outHists = []
+            for hist in histList_1D:
+                h1_QCD2l        = fTest.GetDirectory('QCD2l').Get('h1_{0}'.format(hist))
+                h1_ZPlusJet     = fTest.GetDirectory('ZPlusJet').Get('h1_{0}'.format(hist))
+                h1_AntiIso3l    = fTest.GetDirectory('AntiIso3l').Get('h1_{0}'.format(hist))
 
-            h1_QCD2l.SetBit(r.TH1.kIsAverage)    
-            h1_ZPlusJet.SetBit(r.TH1.kIsAverage) 
-            h1_AntiIso3l.SetBit(r.TH1.kIsAverage)        
+                h1_QCD2l.SetBit(r.TH1.kIsAverage)    
+                h1_ZPlusJet.SetBit(r.TH1.kIsAverage) 
+                h1_AntiIso3l.SetBit(r.TH1.kIsAverage)        
 
-            h1_combined = r.TH1D('h1_{0}'.format(hist), ';p_{T};#varepsilon', h1_QCD2l.GetNbinsX(), h1_QCD2l.GetXaxis().GetXmin(), h1_QCD2l.GetXaxis().GetXmax())
-            h1_combined.SetBit(r.TH1.kIsAverage)
+                h1_combined = r.TH1D('h1_{0}'.format(hist), ';p_{T};#varepsilon', h1_QCD2l.GetNbinsX(), h1_QCD2l.GetXaxis().GetXmin(), h1_QCD2l.GetXaxis().GetXmax())
+                h1_combined.SetBit(r.TH1.kIsAverage)
 
-            h1_combined.Add(h1_QCD2l)
-            h1_combined.Add(h1_ZPlusJet)
-            h1_combined.Add(h1_AntiIso3l)
+                h1_combined.Add(h1_QCD2l)
+                h1_combined.Add(h1_ZPlusJet)
+                h1_combined.Add(h1_AntiIso3l)
 
-            outHists.append(h1_combined)
+                outHists.append(h1_combined)
 
-        for hist in histList_2D:
-            h2_QCD2l        = fTest.GetDirectory('QCD2l').Get('h2_{0}'.format(hist))
-            h2_ZPlusJet     = fTest.GetDirectory('ZPlusJet').Get('h2_{0}'.format(hist))
-            h2_AntiIso3l    = fTest.GetDirectory('AntiIso3l').Get('h2_{0}'.format(hist))
+            for hist in histList_2D:
+                h2_QCD2l        = fTest.GetDirectory('QCD2l').Get('h2_{0}'.format(hist))
+                h2_ZPlusJet     = fTest.GetDirectory('ZPlusJet').Get('h2_{0}'.format(hist))
+                h2_AntiIso3l    = fTest.GetDirectory('AntiIso3l').Get('h2_{0}'.format(hist))
 
-            h2_QCD2l.SetBit(r.TH1.kIsAverage)    
-            h2_ZPlusJet.SetBit(r.TH1.kIsAverage) 
-            h2_AntiIso3l.SetBit(r.TH1.kIsAverage)        
+                h2_QCD2l.SetBit(r.TH1.kIsAverage)    
+                h2_ZPlusJet.SetBit(r.TH1.kIsAverage) 
+                h2_AntiIso3l.SetBit(r.TH1.kIsAverage)        
 
-            h2_combined = r.TH2D('h2_{0}'.format(hist), ';p_{T};#varepsilon', 
-                             h2_QCD2l.GetNbinsX(), h2_QCD2l.GetXaxis().GetXmin(), h2_QCD2l.GetXaxis().GetXmax(), 
-                             h2_QCD2l.GetNbinsY(), h2_QCD2l.GetYaxis().GetXmin(), h2_QCD2l.GetYaxis().GetXmax())
+                h2_combined = r.TH2D('h2_{0}'.format(hist), ';p_{T};#varepsilon', 
+                                 h2_QCD2l.GetNbinsX(), h2_QCD2l.GetXaxis().GetXmin(), h2_QCD2l.GetXaxis().GetXmax(), 
+                                 h2_QCD2l.GetNbinsY(), h2_QCD2l.GetYaxis().GetXmin(), h2_QCD2l.GetYaxis().GetXmax())
 
-            h2_combined.SetBit(r.TH1.kIsAverage)
+                h2_combined.SetBit(r.TH1.kIsAverage)
 
-            h2_combined.Add(h2_QCD2l)
-            h2_combined.Add(h2_ZPlusJet)
-            h2_combined.Add(h2_AntiIso3l)
+                h2_combined.Add(h2_QCD2l)
+                h2_combined.Add(h2_ZPlusJet)
+                h2_combined.Add(h2_AntiIso3l)
 
-            outHists.append(h2_combined)
+                outHists.append(h2_combined)
 
-        fTest.Write()
-        fTest.Close()
+            fTest.Write()
+            fTest.Close()
 

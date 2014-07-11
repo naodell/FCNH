@@ -25,7 +25,7 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.'])#, '5_BDT'])
+#cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.'])#, '5_BDT'])
 #cutList.extend(['.', '.', '.', 'X_0jet', 'X_1jet'])
 
 crList      = []#'CR_WZ', 'CR_ttbar', 'CR_ZFake']
@@ -35,8 +35,9 @@ LUMIDATA    = 19.712
 
 doPlots     = True
 doLog       = False
-doEff       = False
-doRatio     = True
+doEff       = True
+doDiff      = False
+doRatio     = False
 doNorm      = True
 do1D        = True
 do2D        = True
@@ -63,16 +64,18 @@ samples     = {'all':[], 'inclusive':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[],
                 'ss_inclusive':[], 'ss_ee':[], 'ss_emu':[], 'ss_mumu':[]}
 
 #samples['all'].append('higgs')
-#samples['all'].append('Triboson')
+samples['all'].append('Triboson')
+samples['all'].append('Diboson')
 samples['all'].append('ttV')
-#samples['all'].append('Diboson')
-#samples['all'].append('top')
-#samples['all'].append('ZJets')
+samples['all'].append('top')
+samples['all'].append('ZJets')
+#samples['all'].append('ZZ4l')
+#samples['all'].append('WZJets3LNu')
 #samples['all'].append('WG')
-samples['all'].append('ZZ4l')
-samples['all'].append('WZJets3LNu')
-samples['all'].append('WWSS')
-#samples['all'].append('QCD')
+#samples['all'].append('WWSS')
+samples['all'].append('QCD')
+samples['all'].append('WJetsToLNu')
+samples['all'].append('WbbToLNu')
 #samples['all'].extend(['ZbbToLL', 'WbbToLNu']) #, 'ZGstar'])
 
 #samples['inclusive'].append('higgs')
@@ -125,12 +128,19 @@ samples['3l_mumumu'].extend(samples['3l_inclusive'])
 
 ## same-sign categories
 #samples['ss_inclusive'].append('higgs')
-#samples['ss_inclusive'].append('Triboson')
+#samples['ss_inclusive'].append('Diboson')
+samples['ss_inclusive'].append('Triboson')
 samples['ss_inclusive'].append('ttV')
+#samples['ss_inclusive'].append('WJetsToLNu')
+#samples['ss_inclusive'].append('WbbToLNu')
+#samples['ss_inclusive'].append('ZJets')
+#samples['ss_inclusive'].append('top')
+#samples['ss_inclusive'].append('QCD')
+samples['ss_inclusive'].append('WZJets3LNu')
 samples['ss_inclusive'].append('ZZ4l')
 #samples['ss_inclusive'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
-samples['ss_inclusive'].append('WZJets3LNu')
-samples['ss_inclusive'].append('WWSS')
+#samples['ss_inclusive'].append('WG')
+#samples['ss_inclusive'].append('WWSS')
 samples['ss_inclusive'].append('Fakes')
 
 ## dielectrons
@@ -198,19 +208,29 @@ if doPlots:
     ### plot while giving a key value which is the 
     ### directory that they are located in as a key.
 
-    plotter._directoryList1D            = ['Misc', 'Lepton', 'Lep+Jet', 'Dilepton', 'DileptonOS', 'Trilepton', 'MET', 'Jet', 'GEN', '4l']
+    plotter._directoryList1D            = ['Misc', 'Electron', 'Lepton', 'Lep+Jet', 'Dilepton', 'DileptonOS', 'Trilepton', 'MET', 'Jet', 'GEN', '4l']
     #plotter._directoryList1D            = ['Lepton', 'Lep+Jet', 'Dilepton', 'DileptonOS', 'Trilepton', 'MET', 'Jet', 'GEN', '4l']
     plotter._directoryList2D            = ['2D']
 
     plotter._variableDict['Misc']       = ['PvMult', 'YieldByCut', 'YieldByCutRaw', 'EventWeight', 'TriggerStatus', 'BDT']
 
-    plotter._variableDict['Lepton']     = ['LeptonCharge', 'LeptonFlavor', 
-                                           'Lepton1Pt', 'Lepton2Pt','Lepton3Pt',
-                                           'Lepton1Eta', 'Lepton2Eta', 'Lepton3Eta',
-                                           'Lepton1IsoRel', 'Lepton2IsoRel', 'Lepton3IsoRel', 
-                                           'ElectronPt', 'ElectronEta',
+    plotter._variableDict['Electron']   = [
+                                           'ElectronPt', 'ElectronEta', 
                                            'ElectronDxy', 'ElectronDz',
                                            'ElectronIsoRel', 'ElectronIso',
+                                           'LeadElectronPtBB', 'LeadElectronPtBE', 'LeadElectronPtBT', 
+                                           'LeadElectronPtTB', 'LeadElectronPtTE', 'LeadElectronPtTT', 
+                                           'LeadElectronPtEB', 'LeadElectronPtEE', 'LeadElectronPtET'
+                                           'TrailingElectronPtBB', 'TrailingElectronPtBE', 'TrailingElectronPtBT', 
+                                           'TrailingElectronPtTB', 'TrailingElectronPtTE', 'TrailingElectronPtTT', 
+                                           'TrailingElectronPtEB', 'TrailingElectronPtEE', 'TrailingElectronPtET'
+                                           ] 
+
+    plotter._variableDict['Lepton']     = ['LeptonCharge', 'LeptonFlavor', 
+                                           'Lepton1Pt', 'Lepton2Pt','Lepton3Pt',
+                                           'Lepton1MT', 'Lepton2MT','Lepton3MT',
+                                           'Lepton1Eta', 'Lepton2Eta', 'Lepton3Eta',
+                                           'Lepton1IsoRel', 'Lepton2IsoRel', 'Lepton3IsoRel', 
                                            'MuonPt', 'MuonEta',
                                            'MuonDxy', 'MuonDz', 
                                            'MuonIsoRel', 'MuonIso',
@@ -302,7 +322,7 @@ if doPlots:
             outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
 
         inclusive_plotter.make_save_path(outFile, clean=True)
-        p_plot.append(Process(name = cut[2:] + '/inclusive', target = plotter_wrapper, args=(inclusive_plotter, 'inclusive', inFile, outFile, do1D, do2D, False, doLog, doRatio, False)))
+        p_plot.append(Process(name = cut[2:] + '/inclusive', target = plotter_wrapper, args=(inclusive_plotter, 'inclusive', inFile, outFile, do1D, do2D, False, doLog, doRatio, False, False)))
 
 
     ### 3l selection ###
@@ -324,7 +344,7 @@ if doPlots:
                     outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
 
                 plotter_3l.make_save_path(outFile, clean=True)
-                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(plotter_3l, category, inFile, outFile, do1D, do2D, False, doLog, doRatio, doEff)))
+                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(plotter_3l, category, inFile, outFile, do1D, do2D, False, doLog, doRatio, doEff, doDiff)))
 
     ### ss selection ###
     if doSS:
@@ -346,7 +366,7 @@ if doPlots:
                     outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
 
                 ss_plotter.make_save_path(outFile, clean=True)
-                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(ss_plotter, category, inFile, outFile, do1D, do2D, False, doLog, doRatio, doEff)))
+                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(ss_plotter, category, inFile, outFile, do1D, do2D, False, doLog, doRatio, doEff, doDiff)))
 
                 ### overlay of fake distributions for single and double fakes ###
                 if cut in ['1_preselection', 'X_0jet', 'X_1jet', '3_2jet']:
@@ -361,7 +381,7 @@ if doPlots:
                         outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'fakes_overlay_{0}'.format(cut[2:]))
                     fake_plotter.make_save_path(outFile, clean=True)
 
-                    p_plot.append(Process(name = 'fakes_overlay_{0}/{1}'.format(cut[2:], category), target = plotter_wrapper, args=(fake_plotter, category, inFile, outFile, do1D, False, True, True, False, False)))
+                    p_plot.append(Process(name = 'fakes_overlay_{0}/{1}'.format(cut[2:], category), target = plotter_wrapper, args=(fake_plotter, category, inFile, outFile, do1D, False, True, True, False, False, False)))
 
 
     ### os selection ###
@@ -384,7 +404,7 @@ if doPlots:
             os_plotter.make_save_path(outFile, clean=True)
 
             for category in catOS:
-                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(os_plotter, category, inFile, outFile, do1D, do2D, False, doLog, doRatio, False)))
+                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(os_plotter, category, inFile, outFile, do1D, do2D, False, doLog, doRatio, False, False)))
 
     doLog = False
 
@@ -404,7 +424,7 @@ if doPlots:
         wz_plotter.make_save_path(outFile, clean=True)
 
         for category in cat3l:
-            p_plot.append(Process(name = 'CR_WZ/' + category, target = plotter_wrapper, args=(wz_plotter, category, inFile, outFile, do1D, False, False, doLog, doRatio, False)))
+            p_plot.append(Process(name = 'CR_WZ/' + category, target = plotter_wrapper, args=(wz_plotter, category, inFile, outFile, do1D, False, False, doLog, doRatio, False, False)))
 
     ### ttbar control region
     if 'CR_ttbar' in crList:
@@ -421,7 +441,7 @@ if doPlots:
 
         ttbar_plotter.make_save_path(outFile, clean=True)
 
-        p_plot.append(Process(name = 'CR_ttbar/os_emu', target = plotter_wrapper, args=(ttbar_plotter, 'os_emu', inFile, outFile, do1D, False, False, doLog, doRatio, False)))
+        p_plot.append(Process(name = 'CR_ttbar/os_emu', target = plotter_wrapper, args=(ttbar_plotter, 'os_emu', inFile, outFile, do1D, False, False, doLog, doRatio, False, False)))
 
     doLog = True
 
@@ -441,7 +461,7 @@ if doPlots:
         ZFake_plotter.make_save_path(outFile, clean=True)
 
         for category in cat3l:
-            p_plot.append(Process(name = 'CR_ZFake/' + category, target = plotter_wrapper, args=(ZFake_plotter, category, inFile, outFile, do1D, False, False, doLog, doRatio, False)))
+            p_plot.append(Process(name = 'CR_ZFake/' + category, target = plotter_wrapper, args=(ZFake_plotter, category, inFile, outFile, do1D, False, False, doLog, doRatio, False, False)))
     
     ### low delta eta ss control region
     if 'high_mass_ss' in crList:
@@ -459,7 +479,7 @@ if doPlots:
         hm_plotter.make_save_path(outFile, clean=True)
 
         for category in catSS:
-            p_plot.append(Process(name = 'high_mass_ss/' + category, target = plotter_wrapper, args=(hm_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False)))
+            p_plot.append(Process(name = 'high_mass_ss/' + category, target = plotter_wrapper, args=(hm_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False, False)))
 
     ### low delta eta ss control region
     if 'low_mass_ss' in crList:
@@ -477,7 +497,7 @@ if doPlots:
         lm_plotter.make_save_path(outFile, clean=True)
 
         for category in catSS:
-            p_plot.append(Process(name = 'high_mass_ss/' + category, target = plotter_wrapper, args=(lm_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False)))
+            p_plot.append(Process(name = 'high_mass_ss/' + category, target = plotter_wrapper, args=(lm_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False, False)))
 
     ### low delta eta ss control region
     if 'barrel_leptons' in crList:

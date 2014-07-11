@@ -53,7 +53,7 @@ class WeightUtils: public TObject {
         float   GetTotalWeight();
         float   GetFakeWeight(TCPhysObject&, string);
         float   GetFakeUncertainty(TCPhysObject&, string);
-        float   GetQFlipWeight();
+        float   GetQFlipWeight(unsigned);
         float   GetAICWeight(const TCPhoton&, const string&);
 
         // lepton reco efficiencies

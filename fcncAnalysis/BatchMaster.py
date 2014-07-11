@@ -1,4 +1,4 @@
-import sys, os, subprocess, fileinput, math, tempfile, datetime
+import sys, os, subprocess, fileinput, math, datetime
 
 
 def get_current_time():
