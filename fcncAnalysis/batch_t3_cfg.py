@@ -65,7 +65,7 @@ if period == '2012':
     bg.extend([
         #cfg('ZJetsToTauTau_M-50',      '{0}/DYJetsToLL_M-50'.format(mcDir),            60,  'DYJetsToTauTau      {0}   2012'.format(mcTrigger)),
         cfg('ZJets_M-50',      '{0}/DYJetsToLL_M-50'.format(mcDir),            30,  'ZJets_M-50      {0}   2012'.format(mcTrigger)),
-        #cfg('ZJets_M-10To50',  '{0}/DYJetsToLL_M-10To50filter'.format(mcDir),  20,  'ZJets_M-10To50  {0}   2012'.format(mcTrigger)),
+        cfg('ZJets_M-10To50',  '{0}/DYJetsToLL_M-10To50filter'.format(mcDir),  20,  'ZJets_M-10To50  {0}   2012'.format(mcTrigger)),
         #cfg('WbbToLNu',       '{0}/WbbJetsToLNu'.format(mcDir),               20,  'WbbToLNu        {0}   2012'.format(mcTrigger)),
         #cfg('WjetToLNu',       '{0}/WJetsToLNu'.format(mcDir),                 50,  'WJetsToLNu      {0}   2012'.format(mcTrigger)),
         #cfg('WGStarLNu2Mu',    '{0}/WGstarToLNu2Mu'.format(mcDir),             5,   'WGStarLNu2Mu    {0}   2012'.format(mcTrigger)),
@@ -127,8 +127,8 @@ if period == '2012':
     signal.extend([
         #cfg('FCNC_M125_tHj', mcDir+'/TToFCNHToWWTo2l2nuPlusTop_M125', 1, 'FCNC_M125_t mc 2012'),
         #cfg('FCNC_M125_tbarHj', mcDir+'/TbarToFCNHToWWTo2l2nuPlusTop_M125/', 1, 'FCNC_M125_tbar mc 2012')
-        cfg('FCNC_M125_tHj', mcDir+'/FCNH_M125_t', 1, 'FCNC_M125_t mc 2012'),
-        cfg('FCNC_M125_tbarHj', mcDir+'/FCNH_M125_tbar', 1, 'FCNC_M125_tbar mc 2012')
+        cfg('FCNC_M125_tHj', '{0}/FCNH_semihadronic'.format(mcDir), 1, 'FCNC_M125_t mc 2012'),
+        cfg('FCNC_M125_tbarHj', '{0}/FCNH_semihadronic_Minus'.format(mcDir), 1, 'FCNC_M125_tbar mc 2012')
         ])
 
 

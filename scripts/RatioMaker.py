@@ -295,7 +295,6 @@ if __name__ == '__main__':
 
         ratioMaker.set_ratio_2D(eMisQDict)
         #ratioMaker.make_2D_ratios('DATA', doProjections = False)
-
         #ratioMaker.charge_flip_fitter('DATA_ELECTRON', nToys = 100)
         ratioMaker.charge_flip_fitter('ZJets_M-50', nToys = 100)
 
@@ -304,7 +303,7 @@ if __name__ == '__main__':
         }
 
         ratioMaker.set_ratio_2D(mcMisQDict)
-        ratioMaker.make_2D_ratios('ZJets_M-50', doProjections = False)
+        #ratioMaker.make_2D_ratios('ZJets_M-50', doProjections = False)
 
         ratioMaker.write_outfile()
 
@@ -315,16 +314,17 @@ if __name__ == '__main__':
         outFile = 'data/fakeRates_TEST.root'
 
         ratioMaker = RatioMaker(inFile, outFile, scale = 19.7)
-        #ratioMaker.get_scale_factors([''], corrected = False)
+        #ratioMaker.get_scale_factors(['ZJets'], corrected = False)
+        #ratioMaker.get_scale_factors(['ZJets', 'WJetsToLNu', 'QCD', 'ttbar'], corrected = False)
         ratioMaker.get_scale_factors(['PROMPT'], corrected = False)
 
         fakeDict1D = {
             'MuonFakePt':('MuNumerPt', 'MuDenomPt'),
-            'MuonFakeEta':('MuNumerEta', 'MuDenomEta'),
-            'MuonFakeMet':('MuNumerMet', 'MuDenomMet'),
-            'ElectronFakePt':('EleNumerPt', 'EleDenomPt'),
-            'ElectronFakeEta':('EleNumerEta', 'EleDenomEta'),
-            'ElectronFakeMet':('EleNumerMet', 'EleDenomMet'),
+            #'MuonFakeEta':('MuNumerEta', 'MuDenomEta'),
+            #'MuonFakeMet':('MuNumerMet', 'MuDenomMet'),
+            #'ElectronFakePt':('EleNumerPt', 'EleDenomPt'),
+            #'ElectronFakeEta':('EleNumerEta', 'EleDenomEta'),
+            #'ElectronFakeMet':('EleNumerMet', 'EleDenomMet'),
         }
 
         fakeDict2D = {
@@ -332,8 +332,8 @@ if __name__ == '__main__':
             'ElectronFake':('EleNumer', 'EleDenom')
         }
 
-        #fakeCategories = ['QCD2l', 'ZPlusJet', 'AntiIso3l']
-        fakeCategories = ['ZPlusJet']
+        fakeCategories = ['QCD2l', 'ZPlusJet', 'AntiIso3l']
+        #fakeCategories = ['ZPlusJet', 'MC_truth']
 
         for category in fakeCategories:
             print category
@@ -345,14 +345,12 @@ if __name__ == '__main__':
             ratioMaker.set_ratio_1D(fakeDict1D)
             ratioMaker.make_1D_ratios('DATA', bgType)
 
-            #ratioMaker.set_ratio_2D(fakeDict2D)
-            #ratioMaker.make_2D_ratios('DATA', bgType, doProjections = True)
+            ratioMaker.set_ratio_2D(fakeDict2D)
+            ratioMaker.make_2D_ratios('DATA', bgType, doProjections = True)
 
         ratioMaker.write_outfile()
 
         # Combined fakeCategory rates
-        #ratioMaker.combine_fake_rates(fakeCategories)
-
         if False:
             fTest = r.TFile('data/fakeRates_TEST.root', 'UPDATE')
             fTest.mkdir('Combined')

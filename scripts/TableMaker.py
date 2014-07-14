@@ -99,9 +99,10 @@ class TableMaker(AnalysisTools):
 
             # Calculate total background and signal
             for dataset in self._datasets:
+
                 value = histDict[dataset].GetBinContent(count)
                 error = histDict[dataset].GetBinError(count)
-                eff   = value/histDict[dataset].GetBinContent(1)
+                eff   = 1. #value/histDict[dataset].GetBinContent(1)
 
                 if dataset in ['DATA']:
                     continue
@@ -120,7 +121,7 @@ class TableMaker(AnalysisTools):
                 if column in self._datasets:
                     value = histDict[column].GetBinContent(count)
                     error = histDict[column].GetBinError(count)
-                    eff   = value/histDict[column].GetBinContent(1)
+                    eff   = 1. #value/histDict[column].GetBinContent(1)
 
                 if column in ['FCNH', 'HIGGS', 'SIGNAL'] or column[:4] == 'FCNC':
                     if doErrors:

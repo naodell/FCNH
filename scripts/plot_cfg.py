@@ -35,9 +35,9 @@ LUMIDATA    = 19.712
 
 doPlots     = True
 doLog       = False
-doEff       = True
+doEff       = False
 doDiff      = False
-doRatio     = False
+doRatio     = True
 doNorm      = True
 do1D        = True
 do2D        = True
@@ -46,7 +46,7 @@ doOS        = False
 doSS        = True
 do3l        = True
 
-doYields    = False
+doYields    = True
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive']
@@ -64,18 +64,18 @@ samples     = {'all':[], 'inclusive':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[],
                 'ss_inclusive':[], 'ss_ee':[], 'ss_emu':[], 'ss_mumu':[]}
 
 #samples['all'].append('higgs')
-samples['all'].append('Triboson')
-samples['all'].append('Diboson')
+#samples['all'].append('Triboson')
+#samples['all'].append('Diboson')
 samples['all'].append('ttV')
-samples['all'].append('top')
-samples['all'].append('ZJets')
-#samples['all'].append('ZZ4l')
-#samples['all'].append('WZJets3LNu')
+#samples['all'].append('top')
+#samples['all'].append('ZJets')
+samples['all'].append('ZZ4l')
+samples['all'].append('WZJets3LNu')
 #samples['all'].append('WG')
 #samples['all'].append('WWSS')
-samples['all'].append('QCD')
-samples['all'].append('WJetsToLNu')
-samples['all'].append('WbbToLNu')
+#samples['all'].append('QCD')
+#samples['all'].append('WJetsToLNu')
+#samples['all'].append('WbbToLNu')
 #samples['all'].extend(['ZbbToLL', 'WbbToLNu']) #, 'ZGstar'])
 
 #samples['inclusive'].append('higgs')
@@ -129,15 +129,15 @@ samples['3l_mumumu'].extend(samples['3l_inclusive'])
 ## same-sign categories
 #samples['ss_inclusive'].append('higgs')
 #samples['ss_inclusive'].append('Diboson')
-samples['ss_inclusive'].append('Triboson')
+#samples['ss_inclusive'].append('Triboson')
 samples['ss_inclusive'].append('ttV')
 #samples['ss_inclusive'].append('WJetsToLNu')
 #samples['ss_inclusive'].append('WbbToLNu')
 #samples['ss_inclusive'].append('ZJets')
 #samples['ss_inclusive'].append('top')
 #samples['ss_inclusive'].append('QCD')
-samples['ss_inclusive'].append('WZJets3LNu')
 samples['ss_inclusive'].append('ZZ4l')
+samples['ss_inclusive'].append('WZJets3LNu')
 #samples['ss_inclusive'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
 #samples['ss_inclusive'].append('WG')
 #samples['ss_inclusive'].append('WWSS')
@@ -197,8 +197,8 @@ if doPlots:
     plotter._overlayList.extend(['DATA'])
     #plotter._overlayList.extend(['FCNH'])
 
-    plotter.get_scale_factors()
-    #plotter.get_scale_factors(['FCNH'])
+    #plotter.get_scale_factors()
+    plotter.get_scale_factors(['FCNH'])
 
     ### VARIABLES ###
     ### First specify the directories in which your
@@ -330,7 +330,7 @@ if doPlots:
         for category in cat3l:
             plotter_3l = copy.deepcopy(plotter)
             plotter_3l.add_datasets(samples[category], Clear=True)
-            plotter_3l._overlayList = ['DATA']#, 'FCNH']
+            plotter_3l._overlayList = ['DATA', 'FCNH']
 
             for i, cut in enumerate(cutList):
                 if cut == '.':
@@ -351,7 +351,7 @@ if doPlots:
         for category in catSS:
             ss_plotter = copy.deepcopy(plotter)
             ss_plotter.add_datasets(samples[category], Clear=True)
-            ss_plotter._overlayList = ['DATA']
+            ss_plotter._overlayList = ['DATA', 'FCNH']
             #ss_plotter.set_clean_fakes(False)
 
             for i, cut in enumerate(cutList):
@@ -549,7 +549,7 @@ if doYields:
         #yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
 
-        yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets'] + 6*['.'] + ['0-jet', '1-jet']# + 7*['.'] + ['BDT']
+        yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets']# + 6*['.'] + ['0-jet', '1-jet']
 
         for category in cat3l:
             yieldTable._category = category
@@ -565,9 +565,10 @@ if doYields:
         yieldTable.add_datasets(samples['ss_inclusive'], Clear = True)
         #yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
-        yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET'] + 5*['.'] + ['0-jet', '1-jet']# + 7*['.'] + ['BDT']
+        yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET']# + 5*['.'] + ['0-jet', '1-jet']# + 7*['.'] + ['BDT']
 
         for category in catSS:
+            if category == 'ss_mumu': continue
             yieldTable._category = category
             histDict = yieldTable.get_hist_dict('YieldByCut')
             yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)

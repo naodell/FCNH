@@ -8,8 +8,8 @@ using namespace std;
 //Analysis cuts//
 /////////////////
 
-const bool  doQCDDileptonCR = false;
-const bool  doZPlusJetCR    = false;
+const bool  doQCDDileptonCR = true;
+const bool  doZPlusJetCR    = true;
 const bool  doAntiIso3l     = false;
 const bool  doPureLep       = false;
 const bool  doSameSign      = false;
@@ -72,8 +72,8 @@ void fakeAnalyzer::Begin(TTree* tree)
         triggers.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
         triggers.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v");
     } else if (selection == "muEG") {
-        //triggers.push_back("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
-        //triggers.push_back("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+        triggers.push_back("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+        triggers.push_back("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
     }
     //triggerSelector->AddTriggers(triggers);
 
@@ -104,6 +104,7 @@ void fakeAnalyzer::Begin(TTree* tree)
 
     histManager->AddFile(histoFile);
     histManager->SetFileNumber(0);
+
 
     cout << endl;
 
@@ -715,7 +716,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
                 }
             }
 
-            /*for (unsigned i = 0; i < eleProbes.size(); ++i) {
+            for (unsigned i = 0; i < eleProbes.size(); ++i) {
                 bool matched = false;
                 for (unsigned j = 0; j < realLep.size(); ++j) {
                     if (realLep[j].DeltaR(eleProbes[i]) < 0.3) {
@@ -726,12 +727,14 @@ bool fakeAnalyzer::Process(Long64_t entry)
                     ++nEleProbes;
                     fakeEleProbes.push_back(eleProbes[i]);
                 }
-            }*/
+            }
 
             if (nEleProbes >= 1 || nMuProbes >= 1) {
                 // Probe object is found and event is consistent with AntiIso3l 
                 // control region requirements. Now fill histograms for
                 // parameterizing fake rates by pt and eta.
+                //
+                //cout << nEleProbes << ", " << nMuProbes << endl;
                 
                 if (nMuProbes == 1) {
                     tag = fakeMuProbes[0];
