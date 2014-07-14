@@ -16,7 +16,7 @@ doData      = False
 doBG        = False
 doSignal    = False
 doFakes     = False
-mcTrigger   = 'muon'
+mcTrigger   = 'mc'
 
 # Config from command line #
 
@@ -59,9 +59,9 @@ if period == '2012':
     ])
 
     bg.extend([
-        cfg('ZJets_M-50',      '{0}/DYJetsToLL_M-50'.format(mcDir),            40,  'ZJets_M-50      {0}   2012'.format(mcTrigger)),
-        cfg('ZJets_M-10To50',  '{0}/DYJetsToLL_M-10To50filter'.format(mcDir),  20,  'ZJets_M-10To50  {0}   2012'.format(mcTrigger)),
-        #cfg('WbbToLNu',         '{0}/WbbJetsToLNu'.format(mcDir),               20,  'WbbToLNu        {0}   2012'.format(mcTrigger)),
+        #cfg('ZJets_M-50',      '{0}/DYJetsToLL_M-50'.format(mcDir),            40,  'ZJets_M-50      {0}   2012'.format(mcTrigger)),
+        #cfg('ZJets_M-10To50',  '{0}/DYJetsToLL_M-10To50filter'.format(mcDir),  20,  'ZJets_M-10To50  {0}   2012'.format(mcTrigger)),
+        cfg('WbbToLNu',         '{0}/WbbJetsToLNu'.format(mcDir),               20,  'WbbToLNu        {0}   2012'.format(mcTrigger)),
         cfg('WjetToLNu',        '{0}/WJetsToLNu'.format(mcDir),                 50,  'WJetsToLNu      {0}   2012'.format(mcTrigger)),
         #cfg('WGStarLNu2Mu',    '{0}/WGstarToLNu2Mu'.format(mcDir),             5,   'WGStarLNu2Mu    {0}   2012'.format(mcTrigger)),
         #cfg('WGStarLNu2Tau',   '{0}/WGstarToLNu2Tau'.format(mcDir),            5,   'WGStarLNu2Tau   {0}   2012'.format(mcTrigger)),
@@ -98,7 +98,7 @@ if period == '2012':
         #cfg('QCD_170-250_EM',  '{0}/QCD_Pt_170_250_EMEnriched'.format(mcDir),  40,  'QCD_170-250_EM  {0}  2012'.format(mcTrigger)),
         #cfg('QCD_250-350_EM',  '{0}/QCD_Pt_250_350_EMEnriched'.format(mcDir),  40,  'QCD_250-350_EM  {0}  2012'.format(mcTrigger)),
         #cfg('QCD_350_EM',      '{0}/QCD_Pt_350_EMEnriched'.format(mcDir),      40,  'QCD_350_EM      {0}  2012'.format(mcTrigger)),
-        cfg('QCD_20_MU',       '{0}/QCD_Pt_20_MuEnrichedPt_15'.format(mcDir),  40,  'QCD_20_MU       {0}  2012'.format(mcTrigger)),
+        #cfg('QCD_20_MU',       '{0}/QCD_Pt_20_MuEnrichedPt_15'.format(mcDir),  40,  'QCD_20_MU       {0}  2012'.format(mcTrigger)),
 
         #cfg('QCD_15-30_B+MU',   '{0}/QCD_Pt_15to30_bEnriched_MuEnrichedPt_14'.format(mcDir),   40,  'QCD_15-30_B+MU   {0}  2012'.format(mcTrigger)),
         #cfg('QCD_30-50_B+MU',   '{0}/QCD_Pt_30to50_bEnriched_MuEnrichedPt_14'.format(mcDir),   40,  'QCD_30-50_B+MU   {0}  2012'.format(mcTrigger)),

@@ -45,7 +45,7 @@ if __name__ == '__main__':
     h1_fakeRates['Combined_DATA'].GetYaxis().SetRangeUser(0., 0.5)
 
     for bin in range(h1_fakeRates['Combined_DATA'].GetNbinsX()):
-        h1_fakeRates['Combined_DATA'].SetBinError(bin, math.sqrt(pow(h1_fakeRates['Combined_DATA'].GetBinError(bin), 2) + pow(0.20*h1_fakeRates['Combined_DATA'].GetBinContent(bin), 2)))
+        h1_fakeRates['Combined_DATA'].SetBinError(bin, math.sqrt(pow(h1_fakeRates['Combined_DATA'].GetBinError(bin), 2) + pow(0.25*h1_fakeRates['Combined_DATA'].GetBinContent(bin), 2)))
 
     canvas = r.TCanvas('canvas', 'canvas', 650, 700)
     canvas.SetLeftMargin(0.15)
@@ -60,7 +60,7 @@ if __name__ == '__main__':
     legend.SetLineColor(1)
     legend.SetTextSize(0.03)
 
-    legend.AddEntry(h1_fakeRates['Combined_DATA'], 'Combined (#pm 20% syst)')
+    legend.AddEntry(h1_fakeRates['Combined_DATA'], 'Combined #pm 25% syst')
     legend.AddEntry(h1_fakeRates['QCD2l_DATA'], 'b#bar{b}')
     legend.AddEntry(h1_fakeRates['ZJets_DATA'], 'Z+jet')
     legend.Draw()
@@ -94,7 +94,7 @@ if __name__ == '__main__':
     h1_fakeRates['Combined_ZJets'].GetYaxis().SetRangeUser(0., 0.5)
 
     for bin in range(h1_fakeRates['Combined_ZJets'].GetNbinsX()):
-        h1_fakeRates['Combined_ZJets'].SetBinError(bin, math.sqrt(pow(h1_fakeRates['Combined_ZJets'].GetBinError(bin), 2) + pow(0.20*h1_fakeRates['Combined_ZJets'].GetBinContent(bin), 2)))
+        h1_fakeRates['Combined_ZJets'].SetBinError(bin, math.sqrt(pow(h1_fakeRates['Combined_ZJets'].GetBinError(bin), 2) + pow(0.25*h1_fakeRates['Combined_ZJets'].GetBinContent(bin), 2)))
 
     h1_fakeRates['Combined_ZJets'].Draw('E2')
     h1_fakeRates['ZJets_DATA'].Draw('SAME')
@@ -103,7 +103,7 @@ if __name__ == '__main__':
 
 
     legend.Clear()
-    legend.AddEntry(h1_fakeRates['Combined_ZJets'], 'Combined #pm 30%')
+    legend.AddEntry(h1_fakeRates['Combined_ZJets'], 'Combined #pm 25%')
     legend.AddEntry(h1_fakeRates['ZJets_DATA'], 'Z+jet (Data)')
     legend.AddEntry(h1_fakeRates['ZJets_ZJets'], 'Z+jet (MC)')
     legend.AddEntry(h1_fakeRates['MC_truth_ZJets'], 'Z+jet (MC-truth)')
@@ -145,7 +145,7 @@ if __name__ == '__main__':
     h1_fakeRates['Combined_MC'].GetYaxis().SetTitleOffset(1.5)
 
     for bin in range(h1_fakeRates['Combined_MC'].GetNbinsX()):
-        h1_fakeRates['Combined_MC'].SetBinError(bin, math.sqrt(pow(h1_fakeRates['Combined_MC'].GetBinError(bin), 2) + pow(0.20*h1_fakeRates['Combined_MC'].GetBinContent(bin), 2)))
+        h1_fakeRates['Combined_MC'].SetBinError(bin, math.sqrt(pow(h1_fakeRates['Combined_MC'].GetBinError(bin), 2) + pow(0.25*h1_fakeRates['Combined_MC'].GetBinContent(bin), 2)))
 
     h1_fakeRates['Combined_MC'].Draw('E2')
     h1_fakeRates['MC_truth_QCD'].Draw('SAME')
@@ -155,7 +155,7 @@ if __name__ == '__main__':
 
 
     legend.Clear()
-    legend.AddEntry(h1_fakeRates['Combined_MC'], 'Combined #pm 30%')
+    legend.AddEntry(h1_fakeRates['Combined_MC'], 'Combined #pm 25%')
     legend.AddEntry(h1_fakeRates['MC_truth_QCD'], 'QCD')
     legend.AddEntry(h1_fakeRates['MC_truth_ZJets'], 'Z+jet')
     legend.AddEntry(h1_fakeRates['MC_truth_WJets'], 'W+jet')
@@ -176,12 +176,14 @@ if __name__ == '__main__':
     h1_fakeRates['Combined_DATA'].SetFillStyle(3004)
     h1_fakeRates['Combined_DATA'].SetMarkerColor(r.kBlue)
 
+    h1_fakeRates['Combined_MC'].SetTitle('Data Vs. MC fake rate;p_{T};fake rate')
+
     h1_fakeRates['Combined_MC'].Draw('E2')
     h1_fakeRates['Combined_DATA'].Draw('E2 SAME')
 
     legend.Clear()
-    legend.AddEntry(h1_fakeRates['Combined_MC'], 'Combined MC #pm 20%')
-    legend.AddEntry(h1_fakeRates['Combined_DATA'], 'Combined Data #pm 20%')
+    legend.AddEntry(h1_fakeRates['Combined_MC'], 'Combined MC #pm 25%')
+    legend.AddEntry(h1_fakeRates['Combined_DATA'], 'Combined Data #pm 25%')
     legend.Draw()
 
     canvas.SaveAs('plots/fake_syst_DataVsMC.pdf')

@@ -735,6 +735,9 @@ bool fakeAnalyzer::Process(Long64_t entry)
                 // parameterizing fake rates by pt and eta.
                 //
                 //cout << nEleProbes << ", " << nMuProbes << endl;
+
+                histManager->Fill2DHist(nMuProbes, nEleProbes,
+                        "h2_NumberProbesMC", ";N_{probes};type", 4, -0.5, 3.5, 2, 0., 2.);
                 
                 if (nMuProbes == 1) {
                     tag = fakeMuProbes[0];

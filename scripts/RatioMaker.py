@@ -220,7 +220,7 @@ class RatioMaker(AnalysisTools):
                         prob0[1][binX] = 1./sqrt(probs[1][binX])
 
 
-            ptBins = [25, 37.5, 50., 65., 110.]
+            ptBins = [20, 37.5, 50., 65., 112.5]
             g_ProbBB = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][:nBinsX/3]), \
                                                    array('f', [0.1 for bin in ptBins]), array('f', prob0[1][:nBinsX/3]))
             g_ProbBB.SetName('g_QFlipBB')
@@ -303,7 +303,7 @@ if __name__ == '__main__':
         }
 
         ratioMaker.set_ratio_2D(mcMisQDict)
-        #ratioMaker.make_2D_ratios('ZJets_M-50', doProjections = False)
+        ratioMaker.make_2D_ratios('ZJets_M-50', doProjections = False)
 
         ratioMaker.write_outfile()
 
@@ -314,9 +314,9 @@ if __name__ == '__main__':
         outFile = 'data/fakeRates_TEST.root'
 
         ratioMaker = RatioMaker(inFile, outFile, scale = 19.7)
-        #ratioMaker.get_scale_factors(['ZJets'], corrected = False)
+        ratioMaker.get_scale_factors(['ttbar'], corrected = False)
         #ratioMaker.get_scale_factors(['ZJets', 'WJetsToLNu', 'QCD', 'ttbar'], corrected = False)
-        ratioMaker.get_scale_factors(['PROMPT'], corrected = False)
+        #ratioMaker.get_scale_factors(['PROMPT'], corrected = False)
 
         fakeDict1D = {
             'MuonFakePt':('MuNumerPt', 'MuDenomPt'),
@@ -332,21 +332,21 @@ if __name__ == '__main__':
             'ElectronFake':('EleNumer', 'EleDenom')
         }
 
-        fakeCategories = ['QCD2l', 'ZPlusJet', 'AntiIso3l']
-        #fakeCategories = ['ZPlusJet', 'MC_truth']
+        #fakeCategories = ['QCD2l', 'ZPlusJet', 'AntiIso3l']
+        fakeCategories = ['MC_truth']
 
         for category in fakeCategories:
             print category
             ratioMaker.set_category(category)
 
-            bgType ='PROMPT'
-            #bgType =''
+            #bgType ='PROMPT'
+            bgType =''
 
             ratioMaker.set_ratio_1D(fakeDict1D)
-            ratioMaker.make_1D_ratios('DATA', bgType)
+            ratioMaker.make_1D_ratios('ttbarLep', bgType)
 
             ratioMaker.set_ratio_2D(fakeDict2D)
-            ratioMaker.make_2D_ratios('DATA', bgType, doProjections = True)
+            #ratioMaker.make_2D_ratios('ttbarLep', bgType, doProjections = True)
 
         ratioMaker.write_outfile()
 
