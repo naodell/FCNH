@@ -66,8 +66,8 @@ if period == '2012':
         #cfg('WGStarLNu2Mu',    '{0}/WGstarToLNu2Mu'.format(mcDir),             5,   'WGStarLNu2Mu    {0}   2012'.format(mcTrigger)),
         #cfg('WGStarLNu2Tau',   '{0}/WGstarToLNu2Tau'.format(mcDir),            5,   'WGStarLNu2Tau   {0}   2012'.format(mcTrigger)),
 
-        cfg('ttbarHad',  '{0}/TTJets'.format(mcDir),   30,  'ttbarHad  {0}   2012'.format(mcTrigger)),
-        cfg('ttbarLep',  '{0}/TTJets'.format(mcDir),   30,  'ttbarLep  {0}   2012'.format(mcTrigger)),
+        #cfg('ttbarHad',  '{0}/TTJets'.format(mcDir),   30,  'ttbarHad  {0}   2012'.format(mcTrigger)),
+        #cfg('ttbarLep',  '{0}/TTJets'.format(mcDir),   30,  'ttbarLep  {0}   2012'.format(mcTrigger)),
         #cfg('tbarW',     '{0}/Tbar_tW'.format(mcDir),  10,  'tbarW     {0}   2012'.format(mcTrigger)),
         #cfg('tW',        '{0}/T_tW'.format(mcDir),     10,  'tW        {0}   2012'.format(mcTrigger)),
         #cfg('ttW',       '{0}/TTWJets'.format(mcDir),  5,   'ttW       {0}   2012'.format(mcTrigger)),

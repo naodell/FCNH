@@ -686,15 +686,15 @@ bool fakeAnalyzer::Process(Long64_t entry)
         histManager->SetDirectory("MC_truth/" + suffix);
 
         vObj realLep;
-        for (unsigned i = 0; i < muProbes.size(); ++i) {
-            if (GenProbeMatcher(muProbes[i], gLeptons)) {
+        for (unsigned i = 0; i < muonsNoIso.size(); ++i) {
+            if (GenProbeMatcher(muonsNoIso[i], gLeptons)) {
                 //cout << gLeptons[0].DeltaR(muProbes[i]) << "\t" << gLeptons[1].DeltaR(muProbes[i]) << endl;
-                realLep.push_back(muProbes[i]);
+                realLep.push_back(muonsNoIso[i]);
             }
         }
-        for (unsigned i = 0; i < eleProbes.size(); ++i) {
-            if (GenProbeMatcher(eleProbes[i], gLeptons)) {
-                realLep.push_back(eleProbes[i]);
+        for (unsigned i = 0; i < electronsNoIso.size(); ++i) {
+            if (GenProbeMatcher(electronsNoIso[i], gLeptons)) {
+                realLep.push_back(electronsNoIso[i]);
             }
         }
 
@@ -706,10 +706,11 @@ bool fakeAnalyzer::Process(Long64_t entry)
             for (unsigned i = 0; i < muProbes.size(); ++i) {
                 bool matched = false;
                 for (unsigned j = 0; j < realLep.size(); ++j) {
-                    if (realLep[j].DeltaR(muProbes[i]) < 0.3) {
+                    if (realLep[j].DeltaR(muProbes[i]) < 0.5) {
                         matched = true;
                     }
                 }
+
                 if (!matched) {
                     ++nMuProbes;
                     fakeMuProbes.push_back(muProbes[i]);
@@ -719,10 +720,11 @@ bool fakeAnalyzer::Process(Long64_t entry)
             for (unsigned i = 0; i < eleProbes.size(); ++i) {
                 bool matched = false;
                 for (unsigned j = 0; j < realLep.size(); ++j) {
-                    if (realLep[j].DeltaR(eleProbes[i]) < 0.3) {
+                    if (realLep[j].DeltaR(eleProbes[i]) < 0.5) {
                         matched = true;
                     }
                 }
+
                 if (!matched) {
                     ++nEleProbes;
                     fakeEleProbes.push_back(eleProbes[i]);
@@ -737,7 +739,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
                 //cout << nEleProbes << ", " << nMuProbes << endl;
 
                 histManager->Fill2DHist(nMuProbes, nEleProbes,
-                        "h2_NumberProbesMC", ";N_{probes};type", 4, -0.5, 3.5, 2, 0., 2.);
+                        "h2_NumberProbesMC", ";N_{#mu probes};N_{e probes}", 4, -0.5, 3.5, 4, -0.5, 3.5);
                 
                 if (nMuProbes == 1) {
                     tag = fakeMuProbes[0];

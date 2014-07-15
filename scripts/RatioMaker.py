@@ -220,7 +220,7 @@ class RatioMaker(AnalysisTools):
                         prob0[1][binX] = 1./sqrt(probs[1][binX])
 
 
-            ptBins = [20, 37.5, 50., 65., 112.5]
+            ptBins = [15, 27.5, 42.5, 62.5, 112.5]
             g_ProbBB = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][:nBinsX/3]), \
                                                    array('f', [0.1 for bin in ptBins]), array('f', prob0[1][:nBinsX/3]))
             g_ProbBB.SetName('g_QFlipBB')
@@ -343,7 +343,7 @@ if __name__ == '__main__':
             bgType =''
 
             ratioMaker.set_ratio_1D(fakeDict1D)
-            ratioMaker.make_1D_ratios('ttbarLep', bgType)
+            ratioMaker.make_1D_ratios('ttbarHad', bgType)
 
             ratioMaker.set_ratio_2D(fakeDict2D)
             #ratioMaker.make_2D_ratios('ttbarLep', bgType, doProjections = True)

@@ -25,7 +25,7 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-#cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.'])#, '5_BDT'])
+cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.'])#, '5_BDT'])
 #cutList.extend(['.', '.', '.', 'X_0jet', 'X_1jet'])
 
 crList      = []#'CR_WZ', 'CR_ttbar', 'CR_ZFake']
@@ -540,13 +540,13 @@ if doYields:
 
     if do3l:
         #yieldTable._columnList  = ['Irreducible', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
-        yieldTable._columnList  = samples['3l_inclusive'] + ['BG', 'DATA']#, 'FCNH']#, 'Significance'] 
+        yieldTable._columnList  = samples['3l_inclusive'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau','FCNH']# 'Significance'] 
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
         #yieldTable.add_datasets(['Irreducible', 'Fakes'], Clear = True)
         yieldTable.add_datasets(samples['3l_inclusive'], Clear = True)
-        #yieldTable.add_datasets('FCNH')
+        yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
 
         yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets']# + 6*['.'] + ['0-jet', '1-jet']
@@ -558,18 +558,18 @@ if doYields:
 
     if doSS:
         #yieldTable._columnList  = ['Irreducible', 'Fakes', 'QFlips', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
-        yieldTable._columnList  = samples['ss_inclusive'] + ['BG', 'DATA']#, 'FCNH']#, 'Significance'] 
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
         #yieldTable.add_datasets(['Irreducible', 'Fakes', 'QFlips'], Clear = True)
-        yieldTable.add_datasets(samples['ss_inclusive'], Clear = True)
-        #yieldTable.add_datasets('FCNH')
-        yieldTable.add_datasets('DATA')
         yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET']# + 5*['.'] + ['0-jet', '1-jet']# + 7*['.'] + ['BDT']
 
         for category in catSS:
-            if category == 'ss_mumu': continue
+            yieldTable._columnList  = samples[category] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
+            yieldTable.add_datasets(samples[category], Clear = True)
+            yieldTable.add_datasets('FCNH')
+            yieldTable.add_datasets('DATA')
             yieldTable._category = category
+
             histDict = yieldTable.get_hist_dict('YieldByCut')
             yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
 
