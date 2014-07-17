@@ -35,7 +35,8 @@ doRatio     = False
 ### Samples to be included in stacks ###
 samples = {}
 samples['inclusive']    = ['ZJets', 'ttbar', 'ZZ4l', 'WJetsToLNu', 'WZJets3LNu', 'ttV']
-samples['ZPlusJet']     = ['ggHToZZ4L_M-125', 'ZZ4l', 'WZJets3LNu', 'WZJets2L2Q', 'ZZJets2L2Q', 'ttbar', 'ZJets']
+#samples['ZPlusJet']     = ['ggHToZZ4L_M-125', 'ZZ4l', 'WZJets3LNu', 'WZJets2L2Q', 'ZZJets2L2Q', 'ttbar', 'ZJets']
+samples['ZPlusJet']     = ['ZZ4l', 'WZJets3LNu', 'ZJets']
 samples['QCD2l']        = ['ttbar', 'single top', 'ZJets', 'WJetsToLNu']
 samples['AntiIso3l']    = ['ttbar', 'single top', 'ZJets', 'WJetsToLNu']
 samples['PureLep']      = ['ttbar', 'ZJets', 'WZJets3LNu']
@@ -60,7 +61,7 @@ if doPlots:
     plotter.add_datasets(['PROMPT', 'WZJets2L2Q', 'ZZJets2L2Q'])#, 'ggHToZZ4L_M-125'])
     plotter._overlayList.extend(['DATA'])
 
-    plotter.get_scale_factors(addData = [], corrected = False)
+    plotter.get_scale_factors(addData = ['ZJets'], corrected = False)
 
     plotter._directoryList1D            = ['Muon', 'Electron']
 

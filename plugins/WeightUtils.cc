@@ -476,7 +476,8 @@ float WeightUtils::GetAICWeight(const TCPhoton& photon, const string& type)
 
     aicWeight = g_AIC[type]->Eval(photonPt);
 
-    //cout << type << ": " << photonPt << ", " << aicWeight << endl;
-
-    return aicWeight;
+    if (photon.Type() == "muon")
+        return 0.5*aicWeight;
+    else if (photon.Type() == "electron")
+        return aicWeight;
 }

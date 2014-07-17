@@ -398,6 +398,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
         //Hack to split DYJetsToLL
         if (suffix == "DYJetsToTauTau" && gTaus.size() != 2)
             return kTRUE;
+
     }
 
     if (doGenPrint) {
@@ -907,8 +908,8 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
                 zTagged 
                 && leptons.size() == 3 
                 && bJetsM.size() == 0
-                && jets.size() > 1
-                && METLD > 0.3
+                //&& jets.size() > 1
+                && MET > 50.
            ) {
             MakePlots(leptons, jets, bJetsM, *recoMET, 5);
             SetYields(10);
@@ -932,9 +933,10 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
                 && HT < 200.
                 && MET > 50. && MET < 100.
                 && bJetsM.size() == 0
-           )
+           ) {
             MakePlots(leptons, jets, bJetsM, *recoMET, 6);
-        SetYields(11);
+            SetYields(11);
+        }
 
         // Z+fake control region //
         if (
@@ -1141,7 +1143,6 @@ void fcncAnalyzer::DoAICBG(vObj& leptons, TCPhoton& photon, vector<TCJet>& jets,
 
     Float_t weight = weighter->GetAICWeight(photon, category);
     if (weight > 0.) {
-        evtWeight *= weight;
         histManager->SetWeight(evtWeight);
         SetEventCategory(lepPlusPhoton);
         SetEventVariables(lepPlusPhoton, jets, bJetsM, *recoMET); 

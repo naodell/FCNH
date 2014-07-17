@@ -25,10 +25,10 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.'])#, '5_BDT'])
+cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.'])#, 'CR_WZ', 'CR_SUSY'])#, '5_BDT'])
 #cutList.extend(['.', '.', '.', 'X_0jet', 'X_1jet'])
 
-crList      = []#'CR_WZ', 'CR_ttbar', 'CR_ZFake']
+crList      = []#'CR_WZ', 'CR_SUSY', 'CR_ZFake']
 
 period      = '2012'
 LUMIDATA    = 19.712 
@@ -46,7 +46,7 @@ doOS        = False
 doSS        = True
 do3l        = True
 
-doYields    = True
+doYields    = False
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive']
@@ -64,7 +64,7 @@ samples     = {'all':[], 'inclusive':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[],
                 'ss_inclusive':[], 'ss_ee':[], 'ss_emu':[], 'ss_mumu':[]}
 
 #samples['all'].append('higgs')
-#samples['all'].append('Triboson')
+samples['all'].append('Triboson')
 #samples['all'].append('Diboson')
 samples['all'].append('ttV')
 #samples['all'].append('top')
@@ -87,13 +87,15 @@ samples['inclusive'].append('ZJets')
 
 ## trilepton categories
 #samples['3l_inclusive'].append('higgs')
-#samples['3l_inclusive'].append('Triboson')
+samples['3l_inclusive'].append('Triboson')
 samples['3l_inclusive'].append('ttV')
 samples['3l_inclusive'].append('ZZ4l')
 #samples['3l_inclusive'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
 samples['3l_inclusive'].append('WZJets3LNu')
-samples['3l_inclusive'].append('Fakes')
-samples['3l_inclusive'].append('AIC')
+#samples['3l_inclusive'].append('top')
+#samples['3l_inclusive'].append('ZJets')
+#samples['3l_inclusive'].append('Fakes')
+#samples['3l_inclusive'].append('AIC')
 
 ### eee
 samples['3l_eee'].extend(samples['3l_inclusive'])
@@ -132,10 +134,10 @@ samples['3l_mumumu'].extend(samples['3l_inclusive'])
 #samples['ss_inclusive'].append('Triboson')
 samples['ss_inclusive'].append('ttV')
 #samples['ss_inclusive'].append('WJetsToLNu')
+#samples['ss_inclusive'].append('QCD')
 #samples['ss_inclusive'].append('WbbToLNu')
 #samples['ss_inclusive'].append('ZJets')
-#samples['ss_inclusive'].append('top')
-#samples['ss_inclusive'].append('QCD')
+samples['ss_inclusive'].append('top')
 samples['ss_inclusive'].append('ZZ4l')
 samples['ss_inclusive'].append('WZJets3LNu')
 #samples['ss_inclusive'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
@@ -159,7 +161,7 @@ samples['ss_mumu'].extend(samples['ss_inclusive'])
 
 ## inclusive
 #samples['ss_inclusive'].append('Fakes')
-samples['ss_inclusive'].append('QFlips')
+#samples['ss_inclusive'].append('QFlips')
 
 ## geometric categories
 samples['ss_endcap']    = samples['ss_mumu']

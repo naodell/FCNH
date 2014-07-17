@@ -20,7 +20,7 @@ styleDict['Irreducible']        = (2, r.kBlue, 0, 21, 'Irreducible')
 
 #V+jets
 styleDict['VJets']              = (0, r.kRed, 1, 1, 'V+jets') # Vector boson combination
-styleDict['ZJets']              = (0, r.kRed, 1, 1, 'Z+jets') # Vector boson combination
+styleDict['ZJets']              = (0, r.kRed, 1, 1, 'Z+jets') 
 styleDict['ZJets_M-50']         = (0, r.kRed+1, 1, 1, 'Z+jets (M_{Z/#gamma*} > 50)')
 styleDict['ZJets_M-10To50']     = (0, r.kRed+2, 1, 1, 'Z+jets (M_{Z/#gamma*} < 50)')
 styleDict['ZbbToLL']            = (2, r.kRed-8, 1, 1, 'Z+bb')
@@ -185,7 +185,7 @@ scaleDict['2012']['ZG']                 = 159.12
 scaleDict['2012']['ZZJets2L2Nu']        = 0.365
 scaleDict['2012']['ZZJets2L2Q']         = 1.28
 scaleDict['2012']['ZZJets4L']           = 0.0921
-scaleDict['2012']['WZJets3LNu']         = 1.086 * 1.1#<-- WZ rescaled based on 3 lepton control region
+scaleDict['2012']['WZJets3LNu']         = 1.086 
 scaleDict['2012']['WZJets2L2Q']         = 5.09
 scaleDict['2012']['WWJets2L2Nu']        = 5.995
 
@@ -304,8 +304,8 @@ combineDict['Remove_ss']        = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarLep']#,
 combineDict['Remove_3l']        = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']#, 'ttZ', 'ttW', 'WWW', 'WWZ', 'WZZ', 'ZZZ']
 combineDict['Irreducible']      = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125', 'WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ']#, 'WWG']
 combineDict['PROMPT']           = [
-                                   #'ZJets_M-50', 'ZJets_M-10To50', 'WJetsToLNu', 
-                                   #'ttbarHad', 'ttbarLep', 'tbarW', 'tW', 
+                                   'ZJets_M-50', 'ZJets_M-10To50', 'WJetsToLNu', 
+                                   'ttbarHad', 'ttbarLep', 'tbarW', 'tW', 
                                    'WZJets3LNu', #'WWJets2L2Nu', 'ZZJets2L2Nu', 'WZJets2L2Q', 'ZZJets2L2Q',
                                    'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'
                                    ]
