@@ -1187,7 +1187,6 @@ void fcncAnalyzer::GetFakeBG(vObj& leptons, vObj& fakeables, vector<TCJet>& jets
             fakeWeight1 = weighter->GetFakeWeight(fakeables[0], fakeType);
         }
 
-
         //cout << fakeWeight1 << ", " << fakeWeight2 << endl;
 
         if (fakeables.size() == 1 && fakeWeight1 > 0) {
@@ -1239,7 +1238,7 @@ void fcncAnalyzer::DoFakes(vObj& leptons, vObj& fakeables, vector<TCJet>& jets, 
                 && leptonsPlusFakes[1].Pt() > leptonPtCut[1]
            ) {
             if (leptonsPlusFakes[0].Type() == "muon" && leptonsPlusFakes[1].Type() == "muon" && jets.size() >= 2)
-                evtWeight *= 0.8;
+                evtWeight *= 0.75;
 
             if (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON" || suffix == "TEST") 
                 AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, fakeCat + "Fakes");
@@ -1247,7 +1246,7 @@ void fcncAnalyzer::DoFakes(vObj& leptons, vObj& fakeables, vector<TCJet>& jets, 
                 AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, fakeCat + "Fakes_" + suffix);
 
             if (leptonsPlusFakes[0].Type() == "muon" && leptonsPlusFakes[1].Type() == "muon" && jets.size() >= 2)
-                evtWeight /= 0.8;
+                evtWeight /= 0.75;
         }
     } else if (leptonsPlusFakes.size() == 3) {
         if (
@@ -1910,7 +1909,7 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
                     "h2_LeadElecQMisIDNumer", "lead e charge misID (numerator);p_{T};#eta", 3, ptBins, 2, etaBins); 
             histManager->Fill2DHistUnevenBins(electrons[1].Pt(), fabs(electrons[1].Eta()),
                     "h2_TrailingElecQMisIDNumer", "trailing e charge misID (numerator);p_{T};#eta", 3, ptBins, 2, etaBins); 
-            histManager->Fill2DHist(5*iEta1 + iPt1, 5*iEta2 + iPt2,
+            histManager->Fill2DHist(3*iEta1 + iPt1, 3*iEta2 + iPt2,
                     "h2_DileptonQMisIDNumer", "e charge misID (numerator);e_{leading};e_{trailing}", 6, 0.5, 6.5, 6, 0.5, 6.5);
 
             histManager->Fill1DHist(nJets,
@@ -1930,7 +1929,7 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
                     "h2_LeadElecQMisIDDenom", "lead e charge misID (denominator);p_{T};#eta", 3, ptBins, 2, etaBins); 
             histManager->Fill2DHistUnevenBins(electrons[1].Pt(), fabs(electrons[1].Eta()),
                     "h2_TrailingElecQMisIDDenom", "trailing e charge misID (denominator);p_{T};#eta", 3, ptBins, 2, etaBins); 
-            histManager->Fill2DHist(5*iEta1 + iPt1, 5*iEta2 + iPt2,
+            histManager->Fill2DHist(3*iEta1 + iPt1, 3*iEta2 + iPt2,
                     "h2_DileptonQMisIDDenom", "e charge misID (denominator);e_{leading};e_{trailing}", 6, 0.5, 6.5, 6, 0.5, 6.5);
 
             histManager->Fill1DHist(nJets,

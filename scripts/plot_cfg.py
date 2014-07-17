@@ -46,7 +46,7 @@ doOS        = False
 doSS        = True
 do3l        = True
 
-doYields    = False
+doYields    = True
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive']
@@ -94,8 +94,8 @@ samples['3l_inclusive'].append('ZZ4l')
 samples['3l_inclusive'].append('WZJets3LNu')
 #samples['3l_inclusive'].append('top')
 #samples['3l_inclusive'].append('ZJets')
-#samples['3l_inclusive'].append('Fakes')
-#samples['3l_inclusive'].append('AIC')
+samples['3l_inclusive'].append('Fakes')
+samples['3l_inclusive'].append('AIC')
 
 ### eee
 samples['3l_eee'].extend(samples['3l_inclusive'])
@@ -137,7 +137,7 @@ samples['ss_inclusive'].append('ttV')
 #samples['ss_inclusive'].append('QCD')
 #samples['ss_inclusive'].append('WbbToLNu')
 #samples['ss_inclusive'].append('ZJets')
-samples['ss_inclusive'].append('top')
+#samples['ss_inclusive'].append('top')
 samples['ss_inclusive'].append('ZZ4l')
 samples['ss_inclusive'].append('WZJets3LNu')
 #samples['ss_inclusive'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])

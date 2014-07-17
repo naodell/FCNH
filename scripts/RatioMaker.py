@@ -220,24 +220,24 @@ class RatioMaker(AnalysisTools):
                         prob0[1][binX] = 1./sqrt(probs[1][binX])
 
 
-            ptBins = [15, 27.5, 42.5, 62.5, 112.5]
-            g_ProbBB = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][:nBinsX/3]), \
-                                                   array('f', [0.1 for bin in ptBins]), array('f', prob0[1][:nBinsX/3]))
-            g_ProbBB.SetName('g_QFlipBB')
+            ptBins = [15, 35., 75.]
+            g_ProbBB = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][:nBinsX/2]), \
+                                                   array('f', [0.1 for bin in ptBins]), array('f', prob0[1][:nBinsX/2]))
+            g_ProbBB.SetName('g_{0}_BB'.format(key))
             g_ProbBB.SetTitle('barrel electron charge flips;iPt;#varepsilon')
 
-            g_ProbBE = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][nBinsX/3:2*nBinsX/3]), 
-                                                   array('f', [0.1 for bin in ptBins]), array('f', prob0[1][nBinsX/3:2*nBinsX/3]))
-            g_ProbBE.SetName('g_QFlipBE')
-            g_ProbBE.SetTitle('barrel electron charge flips;iPt;#varepsilon')
+            #g_ProbBE = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][nBinsX/3:2*nBinsX/3]), 
+            #                                       array('f', [0.1 for bin in ptBins]), array('f', prob0[1][nBinsX/3:2*nBinsX/3]))
+            #g_ProbBE.SetName('g_QFlipBE')
+            #g_ProbBE.SetTitle('barrel electron charge flips;iPt;#varepsilon')
 
-            g_ProbEE = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][2*nBinsX/3:]), 
-                                                   array('f', [0.1 for bin in ptBins]), array('f', prob0[1][2*nBinsX/3:]))
-            g_ProbEE.SetName('g_QFlipEE')
+            g_ProbEE = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][nBinsX/2:]), 
+                                                   array('f', [0.1 for bin in ptBins]), array('f', prob0[1][nBinsX/2:]))
+            g_ProbEE.SetName('g_{0}_EE'.format(key))
             g_ProbEE.SetTitle('endcap electron charge flips;iPt;#varepsilon')
 
             self._outFile.GetDirectory(self._category).Add(g_ProbBB)
-            self._outFile.GetDirectory(self._category).Add(g_ProbBE)
+            #self._outFile.GetDirectory(self._category).Add(g_ProbBE)
             self._outFile.GetDirectory(self._category).Add(g_ProbEE)
 
 
@@ -288,14 +288,14 @@ if __name__ == '__main__':
         eMisQDict = {
             #'LeadElectronMisQ':('LeadElecQMisIDNumer', 'LeadElecQMisIDDenom'),
             #'TrailingElectronMisQ':('TrailingElecQMisIDNumer', 'TrailingElecQMisIDDenom'),
-            'DielectronMisQ':('DileptonQMisIDNumer', 'DileptonQMisIDDenom')
-            #'DielectronMisQ':('DileptonQMisIDNumerNoJet', 'DileptonQMisIDDenomNoJet'),
-            #'DielectronMisQ':('DileptonQMisIDNumer1+Jet', 'DileptonQMisIDDenom1+Jet')
+            'DielectronMisQ':('DileptonQMisIDNumer', 'DileptonQMisIDDenom'),
+            'DielectronMisQLowJet':('DileptonQMisIDNumerLowJet', 'DileptonQMisIDDenomLowJet'),
+            'DielectronMisQHighJet':('DileptonQMisIDNumerHighJet', 'DileptonQMisIDDenomHighJet')
             }
 
         ratioMaker.set_ratio_2D(eMisQDict)
         #ratioMaker.make_2D_ratios('DATA', doProjections = False)
-        #ratioMaker.charge_flip_fitter('DATA_ELECTRON', nToys = 100)
+        ratioMaker.charge_flip_fitter('DATA_ELECTRON', nToys = 10)
         #ratioMaker.charge_flip_fitter('ZJets_M-50', nToys = 100)
 
         mcMisQDict = {
@@ -303,7 +303,7 @@ if __name__ == '__main__':
         }
 
         ratioMaker.set_ratio_2D(mcMisQDict)
-        ratioMaker.make_2D_ratios('ZJets_M-10To50', doProjections = False)
+        ratioMaker.make_2D_ratios('ZJets_M-50', doProjections = False)
 
         ratioMaker.write_outfile()
 
