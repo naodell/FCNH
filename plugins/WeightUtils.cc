@@ -68,13 +68,13 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
     // Weights for charge flip background
     TFile* f_misQFile = new TFile("../data/electronQMisID.root", "OPEN");
     h2_DielectronMisQ = (TH2D*)f_misQFile->Get("inclusive/h2_DielectronMisQ");
-    g_QFlipBB_Low   = (TGraph*)f_misQFile->Get("inclusive/g_DielectronMisQLowJet_BB");
-    g_QFlipEE_Low   = (TGraph*)f_misQFile->Get("inclusive/g_DielectronMisQLowJet_EE");
-    g_QFlipBB_High  = (TGraph*)f_misQFile->Get("inclusive/g_DielectronMisQHighJet_BB");
-    g_QFlipEE_High  = (TGraph*)f_misQFile->Get("inclusive/g_DielectronMisQHighJet_EE");
-    //g_QFlipBB = (TGraph*)f_misQFile->Get("inclusive/g_QFlip_BB");
-    //g_QFlipBE = (TGraph*)f_misQFile->Get("inclusive/g_QFlip_BE");
-    //g_QFlipEE = (TGraph*)f_misQFile->Get("inclusive/g_QFlip_EE");
+    //g_QFlipBB_Low   = (TGraph*)f_misQFile->Get("inclusive/g_DielectronMisQLowJet_BB");
+    //g_QFlipEE_Low   = (TGraph*)f_misQFile->Get("inclusive/g_DielectronMisQLowJet_EE");
+    //g_QFlipBB_High  = (TGraph*)f_misQFile->Get("inclusive/g_DielectronMisQHighJet_BB");
+    //g_QFlipEE_High  = (TGraph*)f_misQFile->Get("inclusive/g_DielectronMisQHighJet_EE");
+    g_QFlipBB = (TGraph*)f_misQFile->Get("inclusive/g_DielectronMisQ_BB");
+    g_QFlipBE = (TGraph*)f_misQFile->Get("inclusive/g_DielectronMisQ_BE");
+    g_QFlipEE = (TGraph*)f_misQFile->Get("inclusive/g_DielectronMisQ_EE");
 
     // Weight files for AIC background
     TFile* f_aicFile = new TFile("../data/AIC.root", "OPEN");
@@ -442,23 +442,34 @@ float WeightUtils::GetQFlipWeight(unsigned nJets)
         if (_leptons[i].Type() != "electron") continue;
 
         float electronPt = _leptons[i].Pt();
-        //if (_leptons[i].Pt() < 125.)
-        //    electronPt = _leptons[i].Pt();
-        //else
-        //    electronPt = 125.;
+        if (fabs(_leptons[i].Eta()) < 0.8) {
+            weight += g_QFlipBB->Eval(electronPt);
+        } else if (fabs(_leptons[i].Eta()) >= 0.8 && fabs(_leptons[i].Eta()) < 1.479) {
+            weight += g_QFlipBE->Eval(electronPt);
+        } else if (fabs(_leptons[i].Eta()) >= 1.479)
+            weight += g_QFlipEE->Eval(electronPt);
 
-        if (nJets < 2) {
-            if (fabs(_leptons[i].Eta()) < 1.479)
-                weight += g_QFlipBB_Low->Eval(electronPt);
-            else if (fabs(_leptons[i].Eta()) >= 1.479)
-                weight += g_QFlipEE_Low->Eval(electronPt);
-        } else if (nJets >= 2) {
-            if (fabs(_leptons[i].Eta()) < 1.479)
-                weight += g_QFlipBB_High->Eval(electronPt);
-            else if (fabs(_leptons[i].Eta()) >= 1.479)
-                weight += g_QFlipEE_High->Eval(electronPt);
-        }
+        //if (nJets < 2) {
+        //    if (fabs(_leptons[i].Eta()) < 1.479)
+        //        weight += g_QFlipBB_Low->Eval(electronPt);
+        //    else if (fabs(_leptons[i].Eta()) >= 1.479)
+        //        weight += g_QFlipEE_Low->Eval(electronPt);
+        //} else if (nJets >= 2) {
+        //    if (fabs(_leptons[i].Eta()) < 1.479)
+        //        weight += g_QFlipBB_High->Eval(electronPt);
+        //    else if (fabs(_leptons[i].Eta()) >= 1.479)
+        //        weight += g_QFlipEE_High->Eval(electronPt);
+        //}
     }
+
+    // correction for jet multiplicity
+    float jet_corrections[] = {0.95, 1.05, 1.3};
+    if (nJets == 0)
+        weight *= jet_corrections[0];
+    else if (nJets == 1)
+        weight *= jet_corrections[1];
+    else if (nJets >= 2)
+        weight *= jet_corrections[2];
 
     //cout << weight << endl;
     return weight;
@@ -476,8 +487,5 @@ float WeightUtils::GetAICWeight(const TCPhoton& photon, const string& type)
 
     aicWeight = g_AIC[type]->Eval(photonPt);
 
-    if (photon.Type() == "muon")
-        return 0.5*aicWeight;
-    else if (photon.Type() == "electron")
-        return aicWeight;
+    return aicWeight;
 }

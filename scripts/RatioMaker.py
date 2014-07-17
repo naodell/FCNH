@@ -188,7 +188,11 @@ class RatioMaker(AnalysisTools):
             nBinsX = h2_Eff.GetNbinsX()
             nBinsY = h2_Eff.GetNbinsY()
 
-            prob0 = [[0.5*h2_Eff.GetBinContent(i+1, i+1) for i in range(nBinsX)], [0.5*h2_Eff.GetBinError(i+1, i+1) for i in range(nBinsX)]]
+            ### Fudge for low pt BB bin ###
+            h2_Eff.SetBinContent(1,1,0.0001)
+            h2_Eff.SetBinError(1,1,0.0002)
+
+            prob0 = [[0.5*h2_Eff.GetBinContent(i+1, i+1) for i in range(nBinsX)], [h2_Eff.GetBinError(i+1, i+1) for i in range(nBinsX)]]
 
             for toy in range(nToys):
 
@@ -206,7 +210,6 @@ class RatioMaker(AnalysisTools):
                         if binContentXY != 0:
                             if prob0[0][binY] != 0:
                                 #print binContentXY, prob0[binY][0], errX
-
                                 probs[0][binX] += (binContentXY - prob0[0][binY])/errX
                                 probs[1][binX] += 1./errX
                             if prob0[0][binX] != 0:
@@ -220,24 +223,24 @@ class RatioMaker(AnalysisTools):
                         prob0[1][binX] = 1./sqrt(probs[1][binX])
 
 
-            ptBins = [15, 35., 75.]
-            g_ProbBB = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][:nBinsX/2]), \
-                                                   array('f', [0.1 for bin in ptBins]), array('f', prob0[1][:nBinsX/2]))
+            ptBins = [15, 27.5, 42.5, 75.]
+            g_ProbBB = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][:nBinsX/3]), \
+                                                   array('f', [0.1 for bin in ptBins]), array('f', prob0[1][:nBinsX/3]))
             g_ProbBB.SetName('g_{0}_BB'.format(key))
-            g_ProbBB.SetTitle('barrel electron charge flips;iPt;#varepsilon')
+            g_ProbBB.SetTitle('inner barrel electron charge flips;iPt;#varepsilon')
 
-            #g_ProbBE = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][nBinsX/3:2*nBinsX/3]), 
-            #                                       array('f', [0.1 for bin in ptBins]), array('f', prob0[1][nBinsX/3:2*nBinsX/3]))
-            #g_ProbBE.SetName('g_QFlipBE')
-            #g_ProbBE.SetTitle('barrel electron charge flips;iPt;#varepsilon')
+            g_ProbBE = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][nBinsX/3:2*nBinsX/3]), 
+                                                   array('f', [0.1 for bin in ptBins]), array('f', prob0[1][nBinsX/3:2*nBinsX/3]))
+            g_ProbBE.SetName('g_{0}_BE'.format(key))
+            g_ProbBE.SetTitle('outer barrel electron charge flips;iPt;#varepsilon')
 
-            g_ProbEE = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][nBinsX/2:]), 
-                                                   array('f', [0.1 for bin in ptBins]), array('f', prob0[1][nBinsX/2:]))
+            g_ProbEE = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][2*nBinsX/3:]), 
+                                                   array('f', [0.1 for bin in ptBins]), array('f', prob0[1][2*nBinsX/3:]))
             g_ProbEE.SetName('g_{0}_EE'.format(key))
             g_ProbEE.SetTitle('endcap electron charge flips;iPt;#varepsilon')
 
             self._outFile.GetDirectory(self._category).Add(g_ProbBB)
-            #self._outFile.GetDirectory(self._category).Add(g_ProbBE)
+            self._outFile.GetDirectory(self._category).Add(g_ProbBE)
             self._outFile.GetDirectory(self._category).Add(g_ProbEE)
 
 
@@ -303,7 +306,7 @@ if __name__ == '__main__':
         }
 
         ratioMaker.set_ratio_2D(mcMisQDict)
-        ratioMaker.make_2D_ratios('ZJets_M-50', doProjections = False)
+        #ratioMaker.make_2D_ratios('ZJets_M-50', doProjections = False)
 
         ratioMaker.write_outfile()
 
