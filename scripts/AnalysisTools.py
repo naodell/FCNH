@@ -305,6 +305,6 @@ class AnalysisTools():
 
             error = sqrt(errorSq)
             #print self._category, dataset, entries, error, hist.GetBinError(bin+1)
-            hist.SetBinError(bin, error)
+            hist.SetBinError(bin+1, error)
 
         return hist

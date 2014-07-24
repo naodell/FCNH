@@ -6,7 +6,7 @@ import pickle
 styleDict = {}
 
 # Data
-styleDict['DATA']               = (2, r.kBlack, 0, 21, 'Observed')
+styleDict['DATA']               = (2, r.kBlack, 0, 20, 'Observed')
 styleDict['DATA_MUON']          = (2, r.kBlack, 0, 21, 'Observed (#mu#mu)')
 styleDict['DATA_ELECTRON']      = (2, r.kBlack, 0, 21, 'Observed (ee)')
 styleDict['DATA_MUEG']          = (2, r.kBlack, 0, 21, 'Observed (e#mu)')
@@ -27,7 +27,8 @@ styleDict['ZbbToLL']            = (2, r.kRed-8, 1, 1, 'Z+bb')
 styleDict['ZG']                 = (0, r.kRed-9, 1, 1, 'Z#gamma')
 styleDict['WJetsToLNu']         = (2, r.kAzure-3, 1, 1, 'W+jets')
 styleDict['WbbToLNu']           = (2, r.kAzure-2, 1, 1, 'W+bb')
-styleDict['WG']                 = (0, r.kAzure-1, 1, 1, 'WG*')
+styleDict['WG']                 = (0, r.kAzure-1, 1, 1, 'W#rightarrow l#nu#gamma')
+styleDict['WGstar']             = (0, r.kAzure-1, 1, 1, 'WG*')
 styleDict['WGStarLNu2E']        = (0, r.kAzure, 1, 1, 'WG*#ell#nu2e')
 styleDict['WGStarLNu2Mu']       = (0, r.kAzure, 1, 1, 'WG*#ell#nu2#mu')
 styleDict['WGStarLNu2Tau']      = (0, r.kAzure, 1, 1, 'WG*#ell#nu2#tau')
@@ -115,20 +116,20 @@ styleDict['FCNH']               = (3, r.kRed+3, 0, 20, 'FCNH')
 styleDict['SUM_EFF']            = (2, r.kBlue, 1, 21, 'BG')
 styleDict['SIG_EFF']            = (2, r.kRed, 1, 21, 'Signal')
 styleDict['SIGNIFICANCE']       = (2, r.kGreen, 1, 21, 'Signficance')
-styleDict['RATIO']              = (0, r.kBlack, 3002, 21, 'Ratio')
-styleDict['AIC']                = (2, r.kYellow+2, 1, 20, 'AIC')
-styleDict['eeeAIC']             = (2, r.kYellow+2, 1, 20, 'AIC')
-styleDict['eemuAIC']            = (2, r.kYellow+2, 1, 20, 'AIC')
-styleDict['emumuAIC']           = (2, r.kYellow+2, 1, 20, 'AIC')
-styleDict['mumumuAIC']          = (2, r.kYellow+2, 1, 20, 'AIC')
-styleDict['Fakes']              = (2, r.kBlack, 3001, 20, 'Fakes')
-styleDict['eFakes']             = (2, r.kCyan+2, 3001, 20, 'Fakes e')
+styleDict['RATIO']              = (0, r.kBlack, 3002, 20, 'Ratio')
+styleDict['AIC']                = (2, r.kCyan+2, 1, 20, 'AIC')
+styleDict['eeeAIC']             = (2, r.kCyan+2, 1, 20, 'AIC')
+styleDict['eemuAIC']            = (2, r.kCyan+2, 1, 20, 'AIC')
+styleDict['emumuAIC']           = (2, r.kCyan+2, 1, 20, 'AIC')
+styleDict['mumumuAIC']          = (2, r.kCyan+2, 1, 20, 'AIC')
+styleDict['Fakes']              = (2, r.kRed-7, 1, 20, 'Fakes')
+styleDict['eFakes']             = (2, r.kCyan, 3001, 20, 'Fakes e')
 styleDict['muFakes']            = (2, r.kMagenta+3, 3001, 20, 'Fakes #mu')
 styleDict['eFakese']            = (2, r.kCyan +4, 3001, 1, 'Fakes ee')
 styleDict['eFakesmu']           = (2, r.kViolet-5, 3001, 1, 'Fakes e#mu')
 styleDict['muFakesmu']          = (2, r.kMagenta+4, 3001, 1, 'Fakes #mu#mu')
 styleDict['llFakes']            = (2, r.kViolet+9, 3001, 1, 'Fakes ll')
-styleDict['QFlips']             = (2, r.kBlue+2, 3001, 1, 'QFlips')
+styleDict['QFlips']             = (2, r.kAzure+6, 1, 1, 'QFlips')
 
 ### Set scales
 scaleDict = {'2011':{}, '2012':{}}
@@ -173,7 +174,7 @@ scaleDict['2011']['QFlips']             = 1.
 ### 2012 x-sections
 scaleDict['2012']['WJetsToLNu']         = 36257.2
 scaleDict['2012']['WbbToLNu']           = 39.9 
-scaleDict['2012']['WG']                 = 1000.0
+scaleDict['2012']['WG']                 = 461.6 # Find the right number for this
 scaleDict['2012']['WGStarLNu2E']        = 5.873
 scaleDict['2012']['WGStarLNu2Mu']       = 1.914
 scaleDict['2012']['WGStarLNu2Tau']      = 0.336
@@ -255,8 +256,10 @@ scaleDict['2012']['TTH_M-125']          = .1032
 scaleDict['2012']['FCNC_M125_t']            = 252*1.*0.01*0.215*3*0.324*0.324
 scaleDict['2012']['FCNC_M125_tbar']         = 252*1.*0.01*0.215*3*0.324*0.324
 scaleDict['2012']['FCNC_M125_t_semilep']    = 2*252*1.*0.01*0.215*3*0.676*0.324*0.324
-scaleDict['2012']['FCNC_M125_t_ZZ']         = 2*252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
-scaleDict['2012']['FCNC_M125_t_TauTau']     = 2*252*1.*0.01*0.063*0.324
+scaleDict['2012']['FCNC_ZZ_t']              = 252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
+scaleDict['2012']['FCNC_ZZ_tbar']           = 252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
+scaleDict['2012']['FCNC_TauTau_t']          = 252*1.*0.01*0.063*0.324
+scaleDict['2012']['FCNC_TauTau_tbar']       = 252*1.*0.01*0.063*0.324
 
 scaleDict['2012']['DATA_MUON']          = 1.
 scaleDict['2012']['DATA_ELECTRON']      = 1.
@@ -273,13 +276,13 @@ scaleDict['2012']['llFakes']            = 1.
 scaleDict['2012']['QFlips']             = 1.
 
 combineDict = {}
-combineDict['FCNH']             = ['FCNC_M125_t', 'FCNC_M125_tbar']
+combineDict['FCNH']             = ['FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_ZZ_t', 'FCNC_ZZ_tbar', 'FCNC_TauTau_t', 'FCNC_TauTau_tbar']
 #combineDict['FCNH']             = ['FCNC_M125_t', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau']
 combineDict['DATA']             = ['DATA_MUON', 'DATA_ELECTRON', 'DATA_MUEG']
 
 combineDict['VJets']            = ['ZJets_M-50', 'ZJets_M-10To50', 'WJetsToLNu']
 combineDict['ZJets']            = ['ZJets_M-50', 'ZJets_M-10To50']
-combineDict['WG']               = ['WGStarLNu2Mu', 'WGStarLNu2Tau']#, 'WGStarLNu2E']
+combineDict['WGstar']           = ['WGStarLNu2Mu', 'WGStarLNu2Tau']#, 'WGStarLNu2E']
 combineDict['ttbar']            = ['ttbarHad', 'ttbarLep']
 combineDict['top']              = ['ttbarHad', 'ttbarLep', 'tW', 'tbarW', 't_t-channel', 'tbar_t-channel']
 combineDict['single top']       = ['tW', 'tbarW', 't_t-channel', 'tbar_t-channel']
@@ -302,7 +305,8 @@ combineDict['Fakes']            = ['eFakes', 'muFakes', 'llFakes']
 #combineDict['PROMPT']           = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarHad', 'ttbarLep', 'tbarW', 'tW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'WbbToLNu', 'WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
 combineDict['Remove_ss']        = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarLep']#, 'tW', 'tbarW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'ZZJets2L2Q']
 combineDict['Remove_3l']        = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']#, 'ttZ', 'ttW', 'WWW', 'WWZ', 'WZZ', 'ZZZ']
-combineDict['Irreducible']      = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125', 'WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ']#, 'WWG']
+#combineDict['Irreducible']      = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125', 'WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ']#, 'WWG']
+combineDict['Irreducible']      = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ']#, 'WWG']
 combineDict['PROMPT']           = [
                                    'ZJets_M-50', 'ZJets_M-10To50', 'WJetsToLNu', 
                                    'ttbarHad', 'ttbarLep', 'tbarW', 'tW', 
@@ -338,24 +342,24 @@ systDict    = {'ss_inclusive':{}, 'ss_ee':{}, 'ss_emu':{}, 'ss_mumu':{}, 'ss_bar
 #                                           [lumi,   jes,    MET,   mu_eff, el_eff, qFlips, fakes, pileup]
 # same-sign dileptons systematics
 systDict['ss_inclusive']['Irreducible'] =  [0.026,  0.005,  0.04,  0.014,  0.015,  0.,    0.,    0.01]
-systDict['ss_inclusive']['muFakes']     =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.20,  0.01]
-systDict['ss_inclusive']['eFakes']      =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.20,  0.01]
-systDict['ss_inclusive']['llFakes']     =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.20,  0.01]
-systDict['ss_inclusive']['QFlips']      =  [0.,     0.005,  0.04,  0.014,  0.015,  0.01,  0.,    0.01]
+systDict['ss_inclusive']['muFakes']     =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.10,  0.01]
+systDict['ss_inclusive']['eFakes']      =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.10,  0.01]
+systDict['ss_inclusive']['llFakes']     =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.10,  0.01]
+systDict['ss_inclusive']['QFlips']      =  [0.,     0.005,  0.04,  0.014,  0.015,  0.1,   0.,    0.01]
 systDict['ss_ee']['Irreducible']        =  [0.026,  0.005,  0.04,  0.,     0.015,  0.,    0.,    0.01]
-systDict['ss_ee']['muFakes']            =  [0.,     0.005,  0.04,  0.,     0.015,  0.,    0.,    0.01]
-systDict['ss_ee']['eFakes']             =  [0.,     0.005,  0.04,  0.,     0.015,  0.,    0.20,  0.01]
-systDict['ss_ee']['llFakes']            =  [0.,     0.005,  0.04,  0.,     0.015,  0.,    0.20,  0.01]
-systDict['ss_ee']['QFlips']             =  [0.,     0.005,  0.04,  0.,     0.015,  0.01,  0.,    0.01]
+systDict['ss_ee']['muFakes']            =  [0.,     0.005,  0.00,  0.,     0.015,  0.,    0.,    0.01]
+systDict['ss_ee']['eFakes']             =  [0.,     0.005,  0.00,  0.,     0.015,  0.,    0.10,  0.01]
+systDict['ss_ee']['llFakes']            =  [0.,     0.005,  0.00,  0.,     0.015,  0.,    0.10,  0.01]
+systDict['ss_ee']['QFlips']             =  [0.,     0.005,  0.00,  0.,     0.015,  0.1,   0.,    0.01]
 systDict['ss_emu']['Irreducible']       =  [0.026,  0.005,  0.04,  0.014,  0.015,  0.,    0.,    0.01]
-systDict['ss_emu']['muFakes']           =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.20,  0.01]
-systDict['ss_emu']['eFakes']            =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.20,  0.01]
-systDict['ss_emu']['llFakes']           =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.20,  0.01]
-systDict['ss_emu']['QFlips']            =  [0.,     0.005,  0.04,  0.014,  0.015,  0.01,  0.,    0.01]
+systDict['ss_emu']['muFakes']           =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.10,  0.01]
+systDict['ss_emu']['eFakes']            =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.10,  0.01]
+systDict['ss_emu']['llFakes']           =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.10,  0.01]
+systDict['ss_emu']['QFlips']            =  [0.,     0.005,  0.04,  0.014,  0.015,  0.1,   0.,    0.01]
 systDict['ss_mumu']['Irreducible']      =  [0.026,  0.005,  0.04,  0.014,  0.,     0.,    0.,    0.01]
-systDict['ss_mumu']['muFakes']          =  [0.,     0.005,  0.04,  0.014,  0.,     0.,    0.20,  0.01]
+systDict['ss_mumu']['muFakes']          =  [0.,     0.005,  0.04,  0.014,  0.,     0.,    0.10,  0.01]
 systDict['ss_mumu']['eFakes']           =  [0.,     0.005,  0.04,  0.014,  0.,     0.,    0.,    0.01]
-systDict['ss_mumu']['llFakes']          =  [0.,     0.005,  0.04,  0.014,  0.,     0.,    0.20,  0.01]
+systDict['ss_mumu']['llFakes']          =  [0.,     0.005,  0.04,  0.014,  0.,     0.,    0.10,  0.01]
 
 systDict['ss_barrel']['Irreducible']    =  [0.026,  0.005,  0.04,  0.014,  0.015,  0.,    0.,    0.01]
 systDict['ss_barrel']['muFakes']        =  [0.,     0.005,  0.04,  0.014,  0.015,  0.,    0.10,  0.01]
@@ -376,20 +380,20 @@ systDict['ss_endcap']['QFlips']         =  [0.,     0.005,  0.04,  0.,     0.015
 #                                           [lumi,   jes,    MET,   mu_eff, el_eff, fakes, pileup]
 # trilepton  systematics
 systDict['3l_inclusive']['Irreducible'] =  [0.026,  0.005,  0.04,  0.014,  0.015,  0.,    0.01]
-systDict['3l_inclusive']['muFakes']     =  [0.,     0.005,  0.04,  0.014,  0.015,  0.20,  0.01]
-systDict['3l_inclusive']['eFakes']      =  [0.,     0.005,  0.04,  0.014,  0.015,  0.20,  0.01]
+systDict['3l_inclusive']['muFakes']     =  [0.,     0.005,  0.04,  0.014,  0.015,  0.10,  0.01]
+systDict['3l_inclusive']['eFakes']      =  [0.,     0.005,  0.04,  0.014,  0.015,  0.10,  0.01]
 systDict['3l_inclusive']['llFakes']     =  [0.,     0.005,  0.04,  0.014,  0.015,  0.10,  0.01]
 systDict['3l_eee']['Irreducible']       =  [0.026,  0.005,  0.04,  0.014,  0.015,  0.,    0.01]
 systDict['3l_eee']['muFakes']           =  [0.,     0.005,  0.04,  0.,     0.015,  0.,    0.01]
-systDict['3l_eee']['eFakes']            =  [0.,     0.005,  0.04,  0.,     0.015,  0.20,  0.01]
+systDict['3l_eee']['eFakes']            =  [0.,     0.005,  0.04,  0.,     0.015,  0.10,  0.01]
 systDict['3l_eee']['llFakes']           =  [0.,     0.005,  0.04,  0.,     0.015,  0.10,  0.01]
 systDict['3l_eemu']['Irreducible']      =  [0.026,  0.005,  0.04,  0.014,  0.015,  0.,    0.01]
 systDict['3l_eemu']['muFakes']          =  [0.,     0.005,  0.04,  0.014,  0.015,  0.10,  0.01]
 systDict['3l_eemu']['eFakes']           =  [0.,     0.005,  0.04,  0.014,  0.015,  0.10,  0.01]
 systDict['3l_eemu']['llFakes']          =  [0.,     0.005,  0.04,  0.014,  0.015,  0.10,  0.01]
 systDict['3l_emumu']['Irreducible']     =  [0.026,  0.005,  0.04,  0.014,  0.015,  0.,    0.01]
-systDict['3l_emumu']['muFakes']         =  [0.,     0.005,  0.04,  0.014,  0.015,  0.20,  0.01]
-systDict['3l_emumu']['eFakes']          =  [0.,     0.005,  0.04,  0.014,  0.015,  0.20,  0.01]
+systDict['3l_emumu']['muFakes']         =  [0.,     0.005,  0.04,  0.014,  0.015,  0.10,  0.01]
+systDict['3l_emumu']['eFakes']          =  [0.,     0.005,  0.04,  0.014,  0.015,  0.10,  0.01]
 systDict['3l_emumu']['llFakes']         =  [0.,     0.005,  0.04,  0.014,  0.015,  0.10,  0.01]
 systDict['3l_mumumu']['Irreducible']    =  [0.026,  0.005,  0.04,  0.014,  0.015,  0.,    0.01]
 systDict['3l_mumumu']['muFakes']        =  [0.,     0.005,  0.04,  0.014,  0.,     0.10,  0.01]

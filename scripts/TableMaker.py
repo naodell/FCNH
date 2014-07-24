@@ -23,6 +23,8 @@ class TableMaker(AnalysisTools):
             else:
                 hist =  self.get_hist(variable, data, histType)
 
+            #hist.Print('all')
+
             if hist is None: continue
 
             if histType == '1D':

@@ -194,6 +194,8 @@ class RatioMaker(AnalysisTools):
 
             prob0 = [[0.5*h2_Eff.GetBinContent(i+1, i+1) for i in range(nBinsX)], [h2_Eff.GetBinError(i+1, i+1) for i in range(nBinsX)]]
 
+            #for prob in prob0[0]: print '{0:.3f}'.format(100*prob),
+
             for toy in range(nToys):
 
                 ### Now get possible values of p(i) from p(i) = P(i,j) - p(j) and reiterate
@@ -223,7 +225,7 @@ class RatioMaker(AnalysisTools):
                         prob0[1][binX] = 1./sqrt(probs[1][binX])
 
 
-            ptBins = [15, 27.5, 42.5, 75.]
+            ptBins = [15, 27.5, 42.5, 100.]
             g_ProbBB = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][:nBinsX/3]), \
                                                    array('f', [0.1 for bin in ptBins]), array('f', prob0[1][:nBinsX/3]))
             g_ProbBB.SetName('g_{0}_BB'.format(key))
@@ -299,14 +301,16 @@ if __name__ == '__main__':
         ratioMaker.set_ratio_2D(eMisQDict)
         #ratioMaker.make_2D_ratios('DATA', doProjections = False)
         ratioMaker.charge_flip_fitter('DATA_ELECTRON', nToys = 10)
-        #ratioMaker.charge_flip_fitter('ZJets_M-50', nToys = 100)
+        #ratioMaker.charge_flip_fitter('ZJets', nToys = 100)
 
         mcMisQDict = {
-            'EleQMisID_MC':('EleQMisIDNumerMC', 'EleQMisIDDenomMC')
+            'EleQMisID_MC':('EleQMisIDNumerMC', 'EleQMisIDDenomMC'),
+            'EleQMisIDInZ_MC':('EleQMisIDNumerMCInZ', 'EleQMisIDDenomMCInZ'),
+            'EleQMisIDOutZ_MC':('EleQMisIDNumerMCOutZ', 'EleQMisIDDenomMCOutZ')
         }
 
         ratioMaker.set_ratio_2D(mcMisQDict)
-        #ratioMaker.make_2D_ratios('ZJets_M-50', doProjections = False)
+        #ratioMaker.make_2D_ratios('ZJets', doProjections = False)
 
         ratioMaker.write_outfile()
 

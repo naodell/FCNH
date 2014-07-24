@@ -42,15 +42,17 @@ doNorm      = True
 do1D        = True
 do2D        = True
 
+doInclusive = False
 doOS        = False
 doSS        = True
-do3l        = True
+do3l        = False
 
-doYields    = True
+doYields    = False
 
 ### Categories to be plotted ###
-catSS       = ['ss_inclusive']
-catSS.extend(['ss_mumu', 'ss_ee', 'ss_emu'])
+catSS       = ['ss_ee']
+#catSS       = ['ss_inclusive']
+#catSS.extend(['ss_mumu', 'ss_ee', 'ss_emu'])
 #catSS.extend(['ss_endcap', 'ss_mixed', 'ss_barrel'])
 catOS       = ['os_inclusive']
 catOS.extend(['os_mumu', 'os_ee', 'os_emu']) 
@@ -71,7 +73,7 @@ samples['all'].append('ttV')
 #samples['all'].append('ZJets')
 samples['all'].append('ZZ4l')
 samples['all'].append('WZJets3LNu')
-#samples['all'].append('WG')
+samples['all'].append('WG')
 #samples['all'].append('WWSS')
 #samples['all'].append('QCD')
 #samples['all'].append('WJetsToLNu')
@@ -117,50 +119,45 @@ samples['3l_mumumu'].extend(samples['3l_inclusive'])
 #samples['3l_mumumu'].extend(['muFakes', 'llFakes'])
 #samples['3l_mumumu'].append('mumumuAIC')
 
-## inclusive
+## 3l inclusive
 #samples['3l_inclusive'].append('Fakes')
 #samples['3l_inclusive'].append('AIC')
 
-#samples['3l'].append('top')
-#samples['3l'].append('ZJets')
-#samples['3l'].append('Diboson')
-#samples['3l'].append('ZGstar')
-#samples['3l'].append('WGStar')
-#samples['3l'].extend(['WGStarLNu2E', 'WGStarLNu2Mu', 'WGStarLNu2Tau'])
 
 ## same-sign categories
 #samples['ss_inclusive'].append('higgs')
 #samples['ss_inclusive'].append('Diboson')
 #samples['ss_inclusive'].append('Triboson')
+#samples['ss_inclusive'].append('WWSS')
 samples['ss_inclusive'].append('ttV')
+samples['ss_inclusive'].append('ZZ4l')
+samples['ss_inclusive'].append('WZJets3LNu')
+samples['ss_inclusive'].append('WG')
+#samples['ss_inclusive'].append('Fakes')
+
 #samples['ss_inclusive'].append('WJetsToLNu')
 #samples['ss_inclusive'].append('QCD')
 #samples['ss_inclusive'].append('WbbToLNu')
 #samples['ss_inclusive'].append('ZJets')
 #samples['ss_inclusive'].append('top')
-samples['ss_inclusive'].append('ZZ4l')
-samples['ss_inclusive'].append('WZJets3LNu')
-#samples['ss_inclusive'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
 #samples['ss_inclusive'].append('WG')
-#samples['ss_inclusive'].append('WWSS')
-samples['ss_inclusive'].append('Fakes')
 
 ## dielectrons
 samples['ss_ee'].extend(samples['ss_inclusive'])
+samples['ss_ee'].extend(['eFakes', 'llFakes'])
 samples['ss_ee'].append('QFlips')
-#samples['ss_ee'].extend(['eFakes', 'llFakes'])
 
 ## electron+muon
 samples['ss_emu'].extend(samples['ss_inclusive'])
 samples['ss_emu'].append('QFlips')
-#samples['ss_emu'].extend(['eFakes', 'muFakes', 'llFakes'])
+samples['ss_emu'].extend(['eFakes', 'muFakes', 'llFakes'])
 
 ## dimuons
 samples['ss_mumu'].extend(samples['ss_inclusive'])
-#samples['ss_mumu'].extend(['muFakes', 'llFakes'])
+samples['ss_mumu'].extend(['muFakes', 'llFakes'])
 
 ## inclusive
-#samples['ss_inclusive'].append('Fakes')
+samples['ss_inclusive'].append('Fakes')
 samples['ss_inclusive'].append('QFlips')
 
 ## geometric categories
@@ -218,6 +215,7 @@ if doPlots:
 
     plotter._variableDict['Electron']   = [
                                            'ElectronPt', 'ElectronEta', 
+                                           'LeadElectronEta', 'TrailingElectronEta',
                                            'ElectronDxy', 'ElectronDz',
                                            'ElectronIsoRel', 'ElectronIso',
                                            'LeadElectronPtBB', 'LeadElectronPtBE', 'LeadElectronPtBT', 
@@ -242,7 +240,7 @@ if doPlots:
                                            'LeptonMult', 'OverlapEleMu', 'fakeableOverlapMult']
                                            #'Lepton1Phi', 'Lepton2Phi', 'Lepton3Phi']
 
-    plotter._variableDict['Dilepton']   = ['DileptonZMass21', 'DileptonMass21', 'DileptonTransMass21', 'DileptonQt21', 'DileptonBalance21',
+    plotter._variableDict['Dilepton']   = ['DileptonHiggsMass21', 'DileptonZMass21', 'DileptonMass21', 'DileptonTransMass21', 'DileptonQt21', 'DileptonBalance21',
                                            'DileptonDeltaPhi21', 'DileptonDeltaEta21', 'DileptonDeltaR21', 'DileptonDeltaPt21']
                                            #'DileptonMass31', 'DileptonTransMass31', 'DileptonQt31', 
                                            #'DileptonDeltaPhi31', 'DileptonDeltaEta31', 'DileptonDeltaR31', 'DileptonDeltaPt31',
@@ -308,23 +306,24 @@ if doPlots:
 
     ### inclusive ###
 
-    inclusive_plotter = copy.deepcopy(plotter)
-    inclusive_plotter.add_datasets(samples['inclusive'], Clear=True)
-    inclusive_plotter._overlayList = ['DATA'] # overlaySamples
+    if doInclusive:
+        inclusive_plotter = copy.deepcopy(plotter)
+        inclusive_plotter.add_datasets(samples['inclusive'], Clear=True)
+        inclusive_plotter._overlayList = ['DATA'] # overlaySamples
 
-    for i, cut in enumerate(cutList):
-        if cut == '.':
-            continue
+        for i, cut in enumerate(cutList):
+            if cut == '.':
+                continue
 
-        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
+            inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
 
-        if doLog:
-            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, cut)
-        else:
-            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
+            if doLog:
+                outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, cut)
+            else:
+                outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
 
-        inclusive_plotter.make_save_path(outFile, clean=True)
-        p_plot.append(Process(name = cut[2:] + '/inclusive', target = plotter_wrapper, args=(inclusive_plotter, 'inclusive', inFile, outFile, do1D, do2D, False, doLog, doRatio, False, False)))
+            inclusive_plotter.make_save_path(outFile, clean=True)
+            p_plot.append(Process(name = cut[2:] + '/inclusive', target = plotter_wrapper, args=(inclusive_plotter, 'inclusive', inFile, outFile, do1D, do2D, False, doLog, doRatio, False, False)))
 
 
     ### 3l selection ###
@@ -537,12 +536,12 @@ if doYields:
     yieldTable.add_datasets(samples['all'], Clear = True)
 
     if not doPlots:
-        yieldTable.get_scale_factors()
-        #yieldTable.get_scale_factors(['FCNH'])
+        #yieldTable.get_scale_factors()
+        yieldTable.get_scale_factors(['FCNH'])
 
     if do3l:
         #yieldTable._columnList  = ['Irreducible', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
-        yieldTable._columnList  = samples['3l_inclusive'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
+        yieldTable._columnList  = samples['3l_inclusive'] + ['BG', 'DATA']#, 'FCNH', 'Significance'] 
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau','FCNH']# 'Significance'] 
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
@@ -566,7 +565,16 @@ if doYields:
         yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET']# + 5*['.'] + ['0-jet', '1-jet']# + 7*['.'] + ['BDT']
 
         for category in catSS:
-            yieldTable._columnList  = samples[category] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
+
+            if category == 'ss_mumu':
+                #yieldTable.add_datasets(['Irreducible', 'Fakes', 'FCNH'], Clear = True)
+                #yieldTable._columnList  = ['Irreducible', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
+                yieldTable._columnList  = samples[category] + ['BG', 'DATA']#, 'FCNH', 'Significance'] 
+            else:
+                #yieldTable.add_datasets(['Irreducible', 'Fakes', 'QFlips'], Clear = True)
+                #yieldTable._columnList  = ['Irreducible', 'Fakes', 'QFlips', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
+                yieldTable._columnList  = samples[category] + ['BG', 'DATA']#, 'FCNH']#, 'Significance'] 
+
             yieldTable.add_datasets(samples[category], Clear = True)
             yieldTable.add_datasets('FCNH')
             yieldTable.add_datasets('DATA')

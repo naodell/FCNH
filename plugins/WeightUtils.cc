@@ -337,7 +337,7 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
     }
 
     if (fakeable.Type() == "muon") {
-        
+
         float fakeablePt = fakeable.Pt();
         if (fakeable.Pt() < 35) 
             fakeablePt = fakeable.Pt();
@@ -388,88 +388,131 @@ float WeightUtils::GetFakeUncertainty(TCPhysObject& fakeable, string controlRegi
     unsigned  nPtBins = 5;
     float     ptBins[] = {10., 15., 20., 25., 30., 35.};//, 40., 45., 50.}; 
 
-    if (fakeable.Pt() > ptBins[nPtBins]) {
-        iPt = nPtBins;
-    } else {
-        for (unsigned j = 0; j < nPtBins; ++j) {
-            if (fakeable.Pt() > ptBins[j] && fakeable.Pt() < ptBins[j + 1]) {
-                iPt = j+1;
-                break;
-            }
+if (fakeable.Pt() > ptBins[nPtBins]) {
+    iPt = nPtBins;
+} else {
+    for (unsigned j = 0; j < nPtBins; ++j) {
+        if (fakeable.Pt() > ptBins[j] && fakeable.Pt() < ptBins[j + 1]) {
+            iPt = j+1;
+            break;
         }
     }
-
-    float fakeablePt;
-    if (fakeable.Type() == "muon") {
-        
-        fakeablePt = fakeable.Pt();
-        if (fakeable.Pt() < 35)
-            fakeablePt = fakeable.Pt();
-        else
-            fakeablePt = 35;
-
-        if (fabs(fakeable.Eta()) < 1.5) {
-            fakeError = g_MuonFakesPtB[controlRegion]->GetErrorY(iPt);
-        } else if (fabs(fakeable.Eta()) >= 1.5) {
-            fakeError = g_MuonFakesPtE[controlRegion]->GetErrorY(iPt);
-        }
-    } else if (fakeable.Type() == "electron") {
-
-        fakeablePt = fakeable.Pt();
-        if (fakeable.Pt() < 35)
-            fakeablePt = fakeable.Pt();
-        else
-            fakeablePt = 35;
-
-
-        if (fabs(fakeable.Eta()) < 0.8) {
-            fakeError = g_ElectronFakesPtB[controlRegion]->GetErrorY(iPt);
-        } else if (fabs(fakeable.Eta()) >= 0.8 && fabs(fakeable.Eta()) < 1.479) {
-            fakeError = g_ElectronFakesPtG[controlRegion]->GetErrorY(iPt);
-        } else if (fabs(fakeable.Eta()) >= 1.479) {
-            fakeError = g_ElectronFakesPtE[controlRegion]->GetErrorY(iPt);
-        }
-    }
-
-    return fakeError;
 }
 
-float WeightUtils::GetQFlipWeight(unsigned nJets)
+float fakeablePt;
+if (fakeable.Type() == "muon") {
+
+    fakeablePt = fakeable.Pt();
+    if (fakeable.Pt() < 35)
+        fakeablePt = fakeable.Pt();
+    else
+        fakeablePt = 35;
+
+    if (fabs(fakeable.Eta()) < 1.5) {
+        fakeError = g_MuonFakesPtB[controlRegion]->GetErrorY(iPt);
+    } else if (fabs(fakeable.Eta()) >= 1.5) {
+        fakeError = g_MuonFakesPtE[controlRegion]->GetErrorY(iPt);
+    }
+} else if (fakeable.Type() == "electron") {
+
+    fakeablePt = fakeable.Pt();
+    if (fakeable.Pt() < 35)
+        fakeablePt = fakeable.Pt();
+    else
+        fakeablePt = 35;
+
+
+    if (fabs(fakeable.Eta()) < 0.8) {
+        fakeError = g_ElectronFakesPtB[controlRegion]->GetErrorY(iPt);
+    } else if (fabs(fakeable.Eta()) >= 0.8 && fabs(fakeable.Eta()) < 1.479) {
+        fakeError = g_ElectronFakesPtG[controlRegion]->GetErrorY(iPt);
+    } else if (fabs(fakeable.Eta()) >= 1.479) {
+        fakeError = g_ElectronFakesPtE[controlRegion]->GetErrorY(iPt);
+    }
+}
+
+return fakeError;
+}
+
+float WeightUtils::GetQFlipWeight(unsigned nJets, string weightType)
 {
     // Set iEta bins for leading and trailing electrons
     float weight = 0.;
-    for (unsigned i = 0; i < _leptons.size(); ++i) {
-        if (_leptons[i].Type() != "electron") continue;
 
-        float electronPt = _leptons[i].Pt();
-        if (fabs(_leptons[i].Eta()) < 0.8) {
-            weight += g_QFlipBB->Eval(electronPt);
-        } else if (fabs(_leptons[i].Eta()) >= 0.8 && fabs(_leptons[i].Eta()) < 1.479) {
-            weight += g_QFlipBE->Eval(electronPt);
-        } else if (fabs(_leptons[i].Eta()) >= 1.479)
-            weight += g_QFlipEE->Eval(electronPt);
+    if (weightType == "2D") {
+        unsigned iEta1, iPt1, iEta2, iPt2;
+        // Set iEta bins for leading and trailing _leptons
+        if (fabs(_leptons[0].Eta()) < 0.8)
+            iEta1 = 0;
+        else if (fabs(_leptons[0].Eta()) >= 0.8 && fabs(_leptons[0].Eta()) < 1.479)
+            iEta1 = 1;
+        else if (fabs(_leptons[0].Eta()) >= 1.479 && fabs(_leptons[0].Eta()) < 2.1)
+            iEta1 = 2;
 
-        //if (nJets < 2) {
-        //    if (fabs(_leptons[i].Eta()) < 1.479)
-        //        weight += g_QFlipBB_Low->Eval(electronPt);
-        //    else if (fabs(_leptons[i].Eta()) >= 1.479)
-        //        weight += g_QFlipEE_Low->Eval(electronPt);
-        //} else if (nJets >= 2) {
-        //    if (fabs(_leptons[i].Eta()) < 1.479)
-        //        weight += g_QFlipBB_High->Eval(electronPt);
-        //    else if (fabs(_leptons[i].Eta()) >= 1.479)
-        //        weight += g_QFlipEE_High->Eval(electronPt);
-        //}
+        if (fabs(_leptons[1].Eta()) < 0.8)
+            iEta2 = 0;
+        else if (fabs(_leptons[1].Eta()) >= 0.8 && fabs(_leptons[1].Eta()) < 1.479)
+            iEta2 = 1;
+        else if (fabs(_leptons[1].Eta()) >= 1.479 && fabs(_leptons[1].Eta()) < 2.1)
+            iEta2 = 2;
+
+        // Set iPt bins for leading and trailing _leptons
+        if (_leptons[0].Pt() >= 10. && _leptons[0].Pt() < 25.)
+            iPt1 = 1;
+        else if (_leptons[0].Pt() >= 25. && _leptons[0].Pt() < 40.)
+            iPt1 = 2;
+        else if (_leptons[0].Pt() >= 40. && _leptons[0].Pt() < 60.)
+            iPt1 = 3;
+        else if (_leptons[0].Pt() >= 60.)
+            iPt1 = 4;
+
+        if (_leptons[1].Pt() >= 10. && _leptons[1].Pt() < 25.)
+            iPt2 = 1;
+        else if (_leptons[1].Pt() >= 25. && _leptons[1].Pt() < 40.)
+            iPt2 = 2;
+        else if (_leptons[1].Pt() >= 40. && _leptons[1].Pt() < 60.)
+            iPt2 = 3;
+        else if (_leptons[1].Pt() >= 60.)
+            iPt2 = 4;
+
+        weight = h2_DielectronMisQ->GetBinContent(4*iEta1 + iPt1, 4*iEta2 + iPt2); 
+
+    } else if (weightType == "fit") {
+        for (unsigned i = 0; i < _leptons.size(); ++i) {
+            if (_leptons[i].Type() != "electron") continue;
+
+            float electronPt = _leptons[i].Pt();
+            if (fabs(_leptons[i].Eta()) < 0.8) {
+                weight += g_QFlipBB->Eval(electronPt);
+            } else if (fabs(_leptons[i].Eta()) >= 0.8 && fabs(_leptons[i].Eta()) < 1.479) {
+                weight += g_QFlipBE->Eval(electronPt);
+            } else if (fabs(_leptons[i].Eta()) >= 1.479)
+                weight += g_QFlipEE->Eval(electronPt);
+
+            //if (nJets < 2) {
+            //    if (fabs(_leptons[i].Eta()) < 1.479)
+            //        weight += g_QFlipBB_Low->Eval(electronPt);
+            //    else if (fabs(_leptons[i].Eta()) >= 1.479)
+            //        weight += g_QFlipEE_Low->Eval(electronPt);
+            //} else if (nJets >= 2) {
+            //    if (fabs(_leptons[i].Eta()) < 1.479)
+            //        weight += g_QFlipBB_High->Eval(electronPt);
+            //    else if (fabs(_leptons[i].Eta()) >= 1.479)
+            //        weight += g_QFlipEE_High->Eval(electronPt);
+            //}
+        }
+
+        // correction for jet multiplicity
+        float jet_corrections[] = {0.93, 1.2, 1.5, 1.6};
+        if (nJets == 0)
+            weight *= jet_corrections[0];
+        else if (nJets == 1)
+            weight *= jet_corrections[1];
+        else if (nJets == 2)
+            weight *= jet_corrections[2];
+        else if (nJets >= 3)
+            weight *= jet_corrections[2];
     }
-
-    // correction for jet multiplicity
-    float jet_corrections[] = {0.95, 1.05, 1.3};
-    if (nJets == 0)
-        weight *= jet_corrections[0];
-    else if (nJets == 1)
-        weight *= jet_corrections[1];
-    else if (nJets >= 2)
-        weight *= jet_corrections[2];
 
     //cout << weight << endl;
     return weight;

@@ -221,13 +221,16 @@ class PlotProducer(AnalysisTools):
 
         nBins = hist1.GetNbinsX()
         xAxisName = hist1.GetXaxis().GetTitle()
-        hRatio = r.TH1D('hRatio', ';{0};Data/BG'.format(xAxisName), nBins, hist1.GetBinLowEdge(1), hist1.GetBinLowEdge(nBins + 1))
-        hRatio.Divide(hist1, hist2)
+        hRatio = hist1.Clone()
+        hRatio.Divide(hist2)
+
+        #hRatio = r.TH1D('hRatio', ';{0};Data/BG'.format(xAxisName), nBins, hist1.GetBinLowEdge(1), hist1.GetBinLowEdge(nBins + 1))
+        #hRatio.Divide(hist1, hist2)
 
         set_hist_style(hRatio, 'RATIO', self._styleDict)
         prep_hist(hRatio, (0.5, 2.))
 
-        ### a fudge to get labels for category hists
+        ### a fudge to get labels for category hists ###
         if hist1.GetName() in ['h1_LeptonFlavor', 'h1_LeptonCharge']:
             hRatio.GetXaxis().SetLabelSize(0.15);
             for i in range(nBins):
@@ -617,6 +620,13 @@ class PlotProducer(AnalysisTools):
                 else:
                     continue
 
+                ### Hack for flavor histograms ###
+                if var == 'LeptonFlavor':
+                    if self._category[:2] == 'ss':
+                        stacks[var].GetXaxis().SetRange(1, 4)
+                    if self._category[:2] == '3l':
+                        stacks[var].GetXaxis().SetRange(5, 12)
+
                 if not logScale or not doRatio:
 
                     if var == 'HT':
@@ -666,6 +676,13 @@ class PlotProducer(AnalysisTools):
                     pad2.cd()
                     hRatio = self.get_ratio(hists[var][0][0], sums[var])
                     hRatio.Draw("E2")
+
+                    ### Hack for flavor histograms ###
+                    if var == 'LeptonFlavor':
+                        if self._category[:2] == 'ss':
+                            hRatio.GetXaxis().SetRange(1, 4)
+                        if self._category[:2] == '3l':
+                            hRatio.GetXaxis().SetRange(5, 12)
 
                 elif doEff and not doRatio:
                     pad2.cd()
