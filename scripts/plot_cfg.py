@@ -37,7 +37,7 @@ doPlots     = True
 doLog       = False
 doEff       = False
 doDiff      = False
-doRatio     = True
+doRatio     = False
 doNorm      = True
 do1D        = True
 do2D        = True
@@ -65,15 +65,15 @@ samples     = {'all':[], 'inclusive':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[],
                 '3l_inclusive':[], '3l_eee':[], '3l_eemu':[], '3l_emumu':[], '3l_mumumu':[], 
                 'ss_inclusive':[], 'ss_ee':[], 'ss_emu':[], 'ss_mumu':[]}
 
-#samples['all'].append('higgs')
-samples['all'].append('Triboson')
-#samples['all'].append('Diboson')
-samples['all'].append('ttV')
-#samples['all'].append('top')
 #samples['all'].append('ZJets')
-samples['all'].append('ZZ4l')
-samples['all'].append('WZJets3LNu')
-samples['all'].append('WG')
+#samples['all'].append('top')
+#samples['all'].append('Diboson')
+#samples['all'].append('WZJets3LNu')
+#samples['all'].append('ttV')
+#samples['all'].append('ZZ4l')
+#samples['all'].append('Triboson')
+#samples['all'].append('higgs')
+#samples['all'].append('WG')
 #samples['all'].append('WWSS')
 #samples['all'].append('QCD')
 #samples['all'].append('WJetsToLNu')
@@ -129,11 +129,11 @@ samples['3l_mumumu'].extend(samples['3l_inclusive'])
 #samples['ss_inclusive'].append('Diboson')
 #samples['ss_inclusive'].append('Triboson')
 #samples['ss_inclusive'].append('WWSS')
-samples['ss_inclusive'].append('ttV')
-samples['ss_inclusive'].append('ZZ4l')
-samples['ss_inclusive'].append('WZJets3LNu')
-samples['ss_inclusive'].append('WG')
-#samples['ss_inclusive'].append('Fakes')
+#samples['ss_inclusive'].append('ttV')
+#samples['ss_inclusive'].append('ZZ4l')
+#samples['ss_inclusive'].append('WZJets3LNu')
+#samples['ss_inclusive'].append('WG')
+samples['ss_inclusive'].append('Fakes')
 
 #samples['ss_inclusive'].append('WJetsToLNu')
 #samples['ss_inclusive'].append('QCD')
@@ -144,20 +144,20 @@ samples['ss_inclusive'].append('WG')
 
 ## dielectrons
 samples['ss_ee'].extend(samples['ss_inclusive'])
-samples['ss_ee'].extend(['eFakes', 'llFakes'])
+#samples['ss_ee'].extend(['eFakes', 'llFakes'])
 samples['ss_ee'].append('QFlips')
 
 ## electron+muon
 samples['ss_emu'].extend(samples['ss_inclusive'])
+#samples['ss_emu'].extend(['eFakes', 'muFakes', 'llFakes'])
 samples['ss_emu'].append('QFlips')
-samples['ss_emu'].extend(['eFakes', 'muFakes', 'llFakes'])
 
 ## dimuons
 samples['ss_mumu'].extend(samples['ss_inclusive'])
-samples['ss_mumu'].extend(['muFakes', 'llFakes'])
+#samples['ss_mumu'].extend(['muFakes', 'llFakes'])
 
 ## inclusive
-samples['ss_inclusive'].append('Fakes')
+#samples['ss_inclusive'].append('Fakes')
 samples['ss_inclusive'].append('QFlips')
 
 ## geometric categories
@@ -207,6 +207,7 @@ if doPlots:
     ### plot while giving a key value which is the 
     ### directory that they are located in as a key.
 
+    #plotter._directoryList1D            = ['Electron']
     plotter._directoryList1D            = ['Misc', 'Electron', 'Lepton', 'Lep+Jet', 'Dilepton', 'DileptonOS', 'Trilepton', 'MET', 'Jet', 'GEN', '4l']
     #plotter._directoryList1D            = ['Lepton', 'Lep+Jet', 'Dilepton', 'DileptonOS', 'Trilepton', 'MET', 'Jet', 'GEN', '4l']
     plotter._directoryList2D            = ['2D']
@@ -220,7 +221,7 @@ if doPlots:
                                            'ElectronIsoRel', 'ElectronIso',
                                            'LeadElectronPtBB', 'LeadElectronPtBE', 'LeadElectronPtBT', 
                                            'LeadElectronPtTB', 'LeadElectronPtTE', 'LeadElectronPtTT', 
-                                           'LeadElectronPtEB', 'LeadElectronPtEE', 'LeadElectronPtET'
+                                           'LeadElectronPtEB', 'LeadElectronPtEE', 'LeadElectronPtET',
                                            'TrailingElectronPtBB', 'TrailingElectronPtBE', 'TrailingElectronPtBT', 
                                            'TrailingElectronPtTB', 'TrailingElectronPtTE', 'TrailingElectronPtTT', 
                                            'TrailingElectronPtEB', 'TrailingElectronPtEE', 'TrailingElectronPtET'
@@ -370,19 +371,19 @@ if doPlots:
                 p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(ss_plotter, category, inFile, outFile, do1D, do2D, False, doLog, doRatio, doEff, doDiff)))
 
                 ### overlay of fake distributions for single and double fakes ###
-                if cut in ['1_preselection', 'X_0jet', 'X_1jet', '3_2jet']:
-                    fake_plotter = copy.deepcopy(plotter)
-                    fake_plotter._overlayList = ['llFakes', 'muFakes']
-                    fake_plotter.draw_normalized(True)
+                #if cut in ['1_preselection', 'X_0jet', 'X_1jet', '3_2jet']:
+                #    fake_plotter = copy.deepcopy(plotter)
+                #    fake_plotter._overlayList = ['llFakes', 'muFakes']
+                #    fake_plotter.draw_normalized(True)
 
-                    inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, i+1, period, batch)
-                    if doLog:
-                        outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix,  'fakes_overlay_{0}'.format(cut[2:]))
-                    else:
-                        outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'fakes_overlay_{0}'.format(cut[2:]))
-                    fake_plotter.make_save_path(outFile, clean=True)
+                #    inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, i+1, period, batch)
+                #    if doLog:
+                #        outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix,  'fakes_overlay_{0}'.format(cut[2:]))
+                #    else:
+                #        outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'fakes_overlay_{0}'.format(cut[2:]))
+                #    fake_plotter.make_save_path(outFile, clean=True)
 
-                    p_plot.append(Process(name = 'fakes_overlay_{0}/{1}'.format(cut[2:], category), target = plotter_wrapper, args=(fake_plotter, category, inFile, outFile, do1D, False, True, True, False, False, False)))
+                #    p_plot.append(Process(name = 'fakes_overlay_{0}/{1}'.format(cut[2:], category), target = plotter_wrapper, args=(fake_plotter, category, inFile, outFile, do1D, False, True, True, False, False, False)))
 
 
     ### os selection ###

@@ -225,7 +225,7 @@ class RatioMaker(AnalysisTools):
                         prob0[1][binX] = 1./sqrt(probs[1][binX])
 
 
-            ptBins = [15, 27.5, 42.5, 100.]
+            ptBins = [20., 45., 105.]
             g_ProbBB = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', prob0[0][:nBinsX/3]), \
                                                    array('f', [0.1 for bin in ptBins]), array('f', prob0[1][:nBinsX/3]))
             g_ProbBB.SetName('g_{0}_BB'.format(key))

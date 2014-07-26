@@ -65,8 +65,8 @@ if period == '2012':
 
     bg.extend([
         #cfg('ZJetsToTauTau_M-50',      '{0}/DYJetsToLL_M-50'.format(mcDir),            60,  'DYJetsToTauTau      {0}   2012'.format(mcTrigger)),
-        #cfg('ZJets_M-50',      '{0}/DYJetsToLL_M-50'.format(mcDir),            30,  'ZJets_M-50      {0}   2012'.format(mcTrigger)),
-        #cfg('ZJets_M-10To50',  '{0}/DYJetsToLL_M-10To50filter'.format(mcDir),  20,  'ZJets_M-10To50  {0}   2012'.format(mcTrigger)),
+        cfg('ZJets_M-50',      '{0}/DYJetsToLL_M-50'.format(mcDir),            30,  'ZJets_M-50      {0}   2012'.format(mcTrigger)),
+        cfg('ZJets_M-10To50',  '{0}/DYJetsToLL_M-10To50filter'.format(mcDir),  20,  'ZJets_M-10To50  {0}   2012'.format(mcTrigger)),
         #cfg('WbbToLNu',       '{0}/WbbJetsToLNu'.format(mcDir),               20,  'WbbToLNu        {0}   2012'.format(mcTrigger)),
         #cfg('WjetToLNu',       '{0}/WJetsToLNu'.format(mcDir),                 50,  'WJetsToLNu      {0}   2012'.format(mcTrigger)),
         #cfg('WGStarLNu2Mu',    '{0}/WGstarToLNu2Mu'.format(mcDir),             5,   'WGStarLNu2Mu    {0}   2012'.format(mcTrigger)),
@@ -75,7 +75,7 @@ if period == '2012':
         #cfg('WGStarLNu2E', mcDir+'/WGstarToLNu2E', 5, 'WGStarLNu2E muon 2012'),
         #cfg('ZbbToLL', mcDir+'/ZbbToLL', 20, 'ZbbToLL muon 2012'),
         #cfg('ZG', mcDir+'/ZGToLLG', 10, 'ZG muon 2012'),
-        cfg('WG', '{0}/WGToLNuG'.format('/tthome/naodell/storage/ntuples/MC_skimmed'), 10, 'WG {0} 2012'.format(mcTrigger)),
+        #cfg('WG', '{0}/WGToLNuG'.format('/tthome/naodell/storage/ntuples/MC_skimmed'), 10, 'WG {0} 2012'.format(mcTrigger)),
 
         #cfg('ttbarHad',        '{0}/TTJets'.format(mcDir),   30,  'ttbarHad        {0}  2012'.format(mcTrigger)),
         #cfg('ttbarLep',        '{0}/TTJets'.format(mcDir),   30,  'ttbarLep        {0}  2012'.format(mcTrigger)),

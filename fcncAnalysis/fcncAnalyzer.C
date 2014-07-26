@@ -22,6 +22,15 @@ bool doFakes    = true;
 bool doFakeMC   = false;
 bool doAIC      = true;
 
+////////////////////////////////
+// Bins for uneven histograms //
+////////////////////////////////
+
+unsigned nPtBins        = 3;
+unsigned nEtaBins       = 3;
+//float elePtBins[]       = {10., 25., 40., 60., 150.};
+float elePtBins[]       = {10., 30., 60., 150.};
+float eleEtaBins[]      = {0., 0.8, 1.479, 2.1};
 
 /////////////////
 //Analysis cuts//
@@ -794,8 +803,8 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
         if (!lowMassResonance && fakeables.size() > 0) {
 
-            if (matchedFakeables.size() > 0) 
-                cout << matchedFakeables.size() << endl;
+            //if (matchedFakeables.size() > 0) 
+            //cout << leptons.size() << ", " << fakeables.size() << ", " << matchedFakeables.size() << endl;
 
             histManager->SetFileNumber(0);
             histManager->SetDirectory("inclusive/" + subdir);
@@ -1331,7 +1340,7 @@ void fcncAnalyzer::MakePlots(vObj& leptons, vector<TCJet>& jets, vector<TCJet>& 
 
         histManager->SetWeight(1);
         histManager->Fill1DHist(primaryVtx->GetSize(),
-                "h1_PvMultUnweighted", "Multiplicity of PVs", 51, -0.5, 50.);
+                "h1_PvMultUnweighted", "Multiplicity of PVs", 51, -0.5, 50.5);
         histManager->SetWeight(evtWeight);
     }
 }
@@ -1339,9 +1348,7 @@ void fcncAnalyzer::MakePlots(vObj& leptons, vector<TCJet>& jets, vector<TCJet>& 
 void fcncAnalyzer::ElectronPlots(vObj& leptons) 
 {
     
-    float ptBins[]  = {10., 25., 40., 60., 150.};
     float etaBins[] = {-2.1, -1.479, -0.8, 0., 0.8, 1.479, 2.1};
-
     if (fabs((leptons[0] + leptons[1]).M() - 91.2) < 15) {
         histManager->Fill1DHistUnevenBins(leptons[0].Eta(),
                 "h1_LeadElectronEta", "#eta lead electron;#eta;Entries", 6, etaBins);
@@ -1351,49 +1358,57 @@ void fcncAnalyzer::ElectronPlots(vObj& leptons)
         // Eta bins of electron Pt for QFlip investigation
         if (fabs(leptons[0].Eta()) < 0.8 && fabs(leptons[1].Eta()) < 0.8) {
             histManager->Fill1DHistUnevenBins(leptons[0].Pt(),
-                    "h1_LeadElectronPtBB", "p_{T} Electron Barrel-Barrel;p_{T,e} (GeV);Entries / 5 GeV", 4, ptBins);
+                    "h1_LeadElectronPtBB", "p_{T} Electron Barrel-Barrel;p_{T,e} (GeV);Entries", nPtBins, elePtBins);
             histManager->Fill1DHistUnevenBins(leptons[1].Pt(),
-                    "h1_TrailingElectronPtBB", "p_{T} Electron Barrel-Barrel;p_{T,e} (GeV);Entries / 5 GeV", 4, ptBins);
+                    "h1_TrailingElectronPtBB", "p_{T} Electron Barrel-Barrel;p_{T,e} (GeV);Entries", nPtBins, elePtBins);
+
         } else if (fabs(leptons[0].Eta()) < 0.8 && fabs(leptons[1].Eta()) >= 0.8 && fabs(leptons[1].Eta()) < 1.479) {
             histManager->Fill1DHistUnevenBins(leptons[0].Pt(),
-                    "h1_LeadElectronPtBT", "p_{T} Electron Barrel-Transition;p_{T,e} (GeV);Entries / 5 GeV", 4, ptBins);
+                    "h1_LeadElectronPtBT", "p_{T} Electron Barrel-Transition;p_{T,e} (GeV);Entries", nPtBins, elePtBins);
             histManager->Fill1DHistUnevenBins(leptons[1].Pt(),
-                    "h1_TrailingElectronPtBT", "p_{T} Electron Barrel-Transition;p_{T,e} (GeV);Entries / 5 GeV", 4, ptBins);
+                    "h1_TrailingElectronPtBT", "p_{T} Electron Barrel-Transition;p_{T,e} (GeV);Entries", nPtBins, elePtBins);
+
         } else if (fabs(leptons[0].Eta()) < 0.8 && fabs(leptons[1].Eta()) >= 1.479) {
             histManager->Fill1DHistUnevenBins(leptons[0].Pt(),
-                    "h1_LeadElectronPtBE", "p_{T} Electron Barrel-Endcap;p_{T,e} (GeV);Entries / 5 GeV", 4, ptBins);
+                    "h1_LeadElectronPtBE", "p_{T} Electron Barrel-Endcap;p_{T,e} (GeV);Entries", nPtBins, elePtBins);
             histManager->Fill1DHistUnevenBins(leptons[1].Pt(),
-                    "h1_TrailingElectronPtBE", "p_{T} Electron Barrel-Endcap;p_{T,e} (GeV);Entries / 5 GeV", 4, ptBins);
+                    "h1_TrailingElectronPtBE", "p_{T} Electron Barrel-Endcap;p_{T,e} (GeV);Entries", nPtBins, elePtBins);
+
         } else if (fabs(leptons[1].Eta()) < 0.8 && fabs(leptons[0].Eta()) >= 0.8 && fabs(leptons[0].Eta()) < 1.479) {
             histManager->Fill1DHistUnevenBins(leptons[0].Pt(),
-                    "h1_LeadElectronPtTB", "p_{T} Electron Transition-Barrel;p_{T,e} (GeV);Entries / 5 GeV", 4, ptBins);
+                    "h1_LeadElectronPtTB", "p_{T} Electron Transition-Barrel;p_{T,e} (GeV);Entries", nPtBins, elePtBins);
             histManager->Fill1DHistUnevenBins(leptons[1].Pt(),
-                    "h1_TrailingElectronPtTB", "p_{T} Electron Transition-Barrel;p_{T,e} (GeV);Entries / 5 GeV", 4, ptBins);
+                    "h1_TrailingElectronPtTB", "p_{T} Electron Transition-Barrel;p_{T,e} (GeV);Entries", nPtBins, elePtBins);
+
         } else if (fabs(leptons[0].Eta()) >= 0.8 && fabs(leptons[0].Eta()) < 1.479 && fabs(leptons[1].Eta()) >= 0.8 && fabs(leptons[1].Eta()) < 1.479) {
             histManager->Fill1DHistUnevenBins(leptons[0].Pt(),
-                    "h1_LeadElectronPtTT", "p_{T} Electron Transition-Transition;p_{T,e} (GeV);Entries / 5 GeV", 4, ptBins);
+                    "h1_LeadElectronPtTT", "p_{T} Electron Transition-Transition;p_{T,e} (GeV);Entries", nPtBins, elePtBins);
             histManager->Fill1DHistUnevenBins(leptons[1].Pt(),
-                    "h1_TrailingElectronPtTT", "p_{T} Electron Transition-Transition;p_{T,e} (GeV);Entries / 5 GeV", 4, ptBins);
+                    "h1_TrailingElectronPtTT", "p_{T} Electron Transition-Transition;p_{T,e} (GeV);Entries", nPtBins, elePtBins);
+
         } else if (fabs(leptons[0].Eta()) >= 0.8 && fabs(leptons[0].Eta()) < 1.479 && fabs(leptons[1].Eta()) >= 1.479) {
             histManager->Fill1DHistUnevenBins(leptons[0].Pt(),
-                    "h1_LeadElectronPtTE", "p_{T} Electron Transition-Endcap;p_{T,e} (GeV);Entries / 5 GeV", 4, ptBins);
+                    "h1_LeadElectronPtTE", "p_{T} Electron Transition-Endcap;p_{T,e} (GeV);Entries", nPtBins, elePtBins);
             histManager->Fill1DHistUnevenBins(leptons[1].Pt(),
-                    "h1_TrailingElectronPtTE", "p_{T} Electron Transition-Endcap;p_{T,e} (GeV);Entries / 5 GeV", 4, ptBins);
+                    "h1_TrailingElectronPtTE", "p_{T} Electron Transition-Endcap;p_{T,e} (GeV);Entries", nPtBins, elePtBins);
+
         } else if (fabs(leptons[0].Eta()) >= 1.479 && fabs(leptons[1].Eta()) < 0.8) {
             histManager->Fill1DHistUnevenBins(leptons[0].Pt(),
-                    "h1_LeadElectronPtEB", "p_{T} Electron Endcap-Barrel;p_{T,e} (GeV);Entries / 5 GeV", 4, ptBins);
+                    "h1_LeadElectronPtEB", "p_{T} Electron Endcap-Barrel;p_{T,e} (GeV);Entries", nPtBins, elePtBins);
             histManager->Fill1DHistUnevenBins(leptons[1].Pt(),
-                    "h1_TrailingElectronPtEB", "p_{T} Electron Endcap-Barrel;p_{T,e} (GeV);Entries / 5 GeV", 4, ptBins);
-        } else if (fabs(leptons[0].Eta()) >= 1.479 && fabs(leptons[1].Eta()) <= 0.8 && fabs(leptons[1].Eta()) < 1.479) {
+                    "h1_TrailingElectronPtEB", "p_{T} Electron Endcap-Barrel;p_{T,e} (GeV);Entries", nPtBins, elePtBins);
+
+        } else if (fabs(leptons[0].Eta()) >= 1.479 && fabs(leptons[1].Eta()) >= 0.8 && fabs(leptons[1].Eta()) < 1.479) {
             histManager->Fill1DHistUnevenBins(leptons[0].Pt(),
-                    "h1_LeadElectronPtET", "p_{T} Electron Endcap-Transition;p_{T,e} (GeV);Entries / 5 GeV", 4, ptBins);
+                    "h1_LeadElectronPtET", "p_{T} Electron Endcap-Transition;p_{T,e} (GeV);Entries", nPtBins, elePtBins);
             histManager->Fill1DHistUnevenBins(leptons[1].Pt(),
-                    "h1_TrailingElectronPtET", "p_{T} Electron Endcap-Transition;p_{T,e} (GeV);Entries / 5 GeV", 4, ptBins);
+                    "h1_TrailingElectronPtET", "p_{T} Electron Endcap-Transition;p_{T,e} (GeV);Entries", nPtBins, elePtBins);
+
         } else if (fabs(leptons[0].Eta()) >= 1.479 && fabs(leptons[1].Eta()) >= 1.479) {
             histManager->Fill1DHistUnevenBins(leptons[0].Pt(),
-                    "h1_LeadElectronPtEE", "p_{T} Electron Endcap-Endcap;p_{T,e} (GeV);Entries / 5 GeV", 4, ptBins);
+                    "h1_LeadElectronPtEE", "p_{T} Electron Endcap-Endcap;p_{T,e} (GeV);Entries", nPtBins, elePtBins);
             histManager->Fill1DHistUnevenBins(leptons[1].Pt(),
-                    "h1_TrailingElectronPtEE", "p_{T} Electron Endcap-Endcap;p_{T,e} (GeV);Entries / 5 GeV", 4, ptBins);
+                    "h1_TrailingElectronPtEE", "p_{T} Electron Endcap-Endcap;p_{T,e} (GeV);Entries", nPtBins, elePtBins);
         }
     }
 }
@@ -1862,9 +1877,6 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
     histManager->SetFileNumber(0);
     histManager->SetDirectory("inclusive/" + subdir);
 
-    float ptBins[]  = {10., 25., 40., 60., 150.};
-    float etaBins[] = {0., 0.8, 1.479, 2.1};
-
     // Set iEta bins for leading and trailing electrons
     unsigned iEta1, iEta2;
     if (fabs(electrons[0].Eta()) < 0.8)
@@ -1887,25 +1899,21 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
 
     // Set iPt bins for leading and trailing electrons
     unsigned iPt1, iPt2;
-    if (electrons[0].Pt() >= 10. && electrons[0].Pt() < 25.)
+    if (electrons[0].Pt() >= 10. && electrons[0].Pt() < 30.)
         iPt1 = 1;
-    else if (electrons[0].Pt() >= 25. && electrons[0].Pt() < 40.)
+    else if (electrons[0].Pt() >= 30. && electrons[0].Pt() < 60.)
         iPt1 = 2;
-    else if (electrons[0].Pt() >= 40. && electrons[0].Pt() < 60.)
-        iPt1 = 3;
     else if (electrons[0].Pt() >= 60. && electrons[0].Pt() < 150.)
-        iPt1 = 4;
+        iPt1 = 3;
     else 
         return;
 
-    if (electrons[1].Pt() >= 10. && electrons[1].Pt() < 25.)
+    if (electrons[1].Pt() >= 10. && electrons[1].Pt() < 30.)
         iPt2 = 1;
-    else if (electrons[1].Pt() >= 25. && electrons[1].Pt() < 40.)
+    else if (electrons[1].Pt() >= 25. && electrons[1].Pt() < 60.)
         iPt2 = 2;
-    else if (electrons[1].Pt() >= 40. && electrons[1].Pt() < 60.)
-        iPt2 = 3;
     else if (electrons[1].Pt() >= 60. && electrons[1].Pt() < 150.)
-        iPt2 = 4;
+        iPt2 = 3;
     else
         return;
 
@@ -1921,28 +1929,29 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
                 if (gElectrons[i].DeltaR(electrons[j]) < 0.5) {
                     if (gElectrons[i].Charge()*electrons[j].Charge() == -1) {
                         histManager->Fill2DHistUnevenBins(electrons[j].Pt(), fabs(electrons[j].Eta()), 
-                                "h2_EleQMisIDNumerMC", ";M_{ee} (GeV);Entries / 10 GeV", 4, ptBins, 3, etaBins);
+                                "h2_EleQMisIDNumerMC", ";M_{ee} (GeV);Entries / 10 GeV", nPtBins, elePtBins, nEtaBins, eleEtaBins);
 
                         if (fabs((electrons[0] + electrons[1]).M() - 91.2) < 15) {// Z mass window
                             histManager->Fill2DHistUnevenBins(electrons[j].Pt(), fabs(electrons[j].Eta()), 
-                                    "h2_EleQMisIDNumerMCInZ", ";M_{ee} (GeV);Entries / 10 GeV", 4, ptBins, 3, etaBins);
+                                    "h2_EleQMisIDNumerMCInZ", ";M_{ee} (GeV);Entries / 10 GeV", nPtBins, elePtBins, nEtaBins, eleEtaBins);
                         } else {
                             histManager->Fill2DHistUnevenBins(electrons[j].Pt(), fabs(electrons[j].Eta()), 
-                                    "h2_EleQMisIDNumerMCOutZ", ";M_{ee} (GeV);Entries / 10 GeV", 4, ptBins, 3, etaBins);
+                                    "h2_EleQMisIDNumerMCOutZ", ";M_{ee} (GeV);Entries / 10 GeV", nPtBins, elePtBins, nEtaBins, eleEtaBins);
                         }
 
                         histManager->Fill1DHist(nJets,
                                 "h1_EleQMisIDNumerJetsMC", "N_{jets};N_{jets};Entries", 5, -0.5, 4.5);
+
                     } else if (gElectrons[i].Charge()*electrons[j].Charge() == 1) {
                         histManager->Fill2DHistUnevenBins(electrons[j].Pt(), fabs(electrons[j].Eta()), 
-                                "h2_EleQMisIDDenomMC", ";M_{ee} (GeV);Entries / 10 GeV", 4, ptBins, 3, etaBins);
+                                "h2_EleQMisIDDenomMC", ";M_{ee} (GeV);Entries / 10 GeV", nPtBins, elePtBins, nEtaBins, eleEtaBins);
 
                         if (fabs((electrons[0] + electrons[1]).M() - 91.2) < 15) {// Z mass window
                             histManager->Fill2DHistUnevenBins(electrons[j].Pt(), fabs(electrons[j].Eta()), 
-                                    "h2_EleQMisIDDenomMCInZ", ";M_{ee} (GeV);Entries / 10 GeV", 4, ptBins, 3, etaBins);
+                                    "h2_EleQMisIDDenomMCInZ", ";M_{ee} (GeV);Entries / 10 GeV", nPtBins, elePtBins, nEtaBins, eleEtaBins);
                         } else {
                             histManager->Fill2DHistUnevenBins(electrons[j].Pt(), fabs(electrons[j].Eta()), 
-                                    "h2_EleQMisIDDenomMCOutZ", ";M_{ee} (GeV);Entries / 10 GeV", 4, ptBins, 3, etaBins);
+                                    "h2_EleQMisIDDenomMCOutZ", ";M_{ee} (GeV);Entries / 10 GeV", nPtBins, elePtBins, nEtaBins, eleEtaBins);
                         }
                         histManager->Fill1DHist(nJets,
                                 "h1_EleQMisIDDenomJetsMC", "N_{jets};N_{jets};Entries", 5, -0.5, 4.5);
@@ -1955,39 +1964,39 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
     if (fabs((electrons[0] + electrons[1]).M() - 91.2) < 15) {// Z mass window
         if (electrons[0].Charge() == electrons[1].Charge()) {
             histManager->Fill2DHistUnevenBins(electrons[0].Pt(), fabs(electrons[0].Eta()),
-                    "h2_LeadElecQMisIDNumer", "lead e charge misID (numerator);p_{T};#eta", 4, ptBins, 3, etaBins); 
+                    "h2_LeadElecQMisIDNumer", "lead e charge misID (numerator);p_{T};#eta", nPtBins, elePtBins, nEtaBins, eleEtaBins); 
             histManager->Fill2DHistUnevenBins(electrons[1].Pt(), fabs(electrons[1].Eta()),
-                    "h2_TrailingElecQMisIDNumer", "trailing e charge misID (numerator);p_{T};#eta", 4, ptBins, 3, etaBins); 
+                    "h2_TrailingElecQMisIDNumer", "trailing e charge misID (numerator);p_{T};#eta", nPtBins, elePtBins, nEtaBins, eleEtaBins); 
             histManager->Fill1DHist(nJets,
                     "h1_EleQMisIDNumerJets", "N_{jets};N_{jets};Entries", 5, -0.5, 4.5);
 
-            histManager->Fill2DHist(4*iEta1 + iPt1, 4*iEta2 + iPt2,
-                    "h2_DileptonQMisIDNumer", "e charge misID (numerator);e_{leading};e_{trailing}", 12, 0.5, 12.5, 12, 0.5, 12.5);
+            histManager->Fill2DHist(nPtBins*iEta1 + iPt1, nPtBins*iEta2 + iPt2,
+                    "h2_DileptonQMisIDNumer", "e charge misID (numerator);e_{leading};e_{trailing}", 9, 0.5, 9.5, 9, 0.5, 9.5);
             if (nJets <= 1) {
-                histManager->Fill2DHist(4*iEta1 + iPt1, 4*iEta2 + iPt2,
-                        "h2_DileptonQMisIDNumerLowJet", "e charge misID (numerator);e_{leading};e_{trailing}", 12, 0.5, 12.5, 12, 0.5, 12.5);
+                histManager->Fill2DHist(nPtBins*iEta1 + iPt1, nPtBins*iEta2 + iPt2,
+                        "h2_DileptonQMisIDNumerLowJet", "e charge misID (numerator);e_{leading};e_{trailing}", 9, 0.5, 9.5, 9, 0.5, 9.5);
             } else if (nJets > 1) {
-                histManager->Fill2DHist(4*iEta1 + iPt1, 4*iEta2 + iPt2,
-                        "h2_DileptonQMisIDNumerHighJet", "e charge misID (numerator);e_{leading};e_{trailing}", 12, 0.5, 12.5, 12, 0.5, 12.5);
+                histManager->Fill2DHist(nPtBins*iEta1 + iPt1, nPtBins*iEta2 + iPt2,
+                        "h2_DileptonQMisIDNumerHighJet", "e charge misID (numerator);e_{leading};e_{trailing}", 9, 0.5, 9.5, 9, 0.5, 9.5);
             }
         }
 
         if (electrons[0].Charge() != electrons[1].Charge()) {
             histManager->Fill2DHistUnevenBins(electrons[0].Pt(), fabs(electrons[0].Eta()),
-                    "h2_LeadElecQMisIDDenom", "lead e charge misID (denominator);p_{T};#eta", 4, ptBins, 3, etaBins); 
+                    "h2_LeadElecQMisIDDenom", "lead e charge misID (denominator);p_{T};#eta", nPtBins, elePtBins, nEtaBins, eleEtaBins); 
             histManager->Fill2DHistUnevenBins(electrons[1].Pt(), fabs(electrons[1].Eta()),
-                    "h2_TrailingElecQMisIDDenom", "trailing e charge misID (denominator);p_{T};#eta", 4, ptBins, 3, etaBins); 
+                    "h2_TrailingElecQMisIDDenom", "trailing e charge misID (denominator);p_{T};#eta", nPtBins, elePtBins, nEtaBins, eleEtaBins); 
             histManager->Fill1DHist(nJets,
                     "h1_EleQMisIDDenomJets", "N_{jets};N_{jets};Entries", 5, -0.5, 4.5);
 
-            histManager->Fill2DHist(4*iEta1 + iPt1, 4*iEta2 + iPt2,
-                    "h2_DileptonQMisIDDenom", "e charge misID (denominator);e_{leading};e_{trailing}", 12, 0.5, 12.5, 12, 0.5, 12.5);
+            histManager->Fill2DHist(nPtBins*iEta1 + iPt1, nPtBins*iEta2 + iPt2,
+                    "h2_DileptonQMisIDDenom", "e charge misID (denominator);e_{leading};e_{trailing}", 9, 0.5, 9.5, 9, 0.5, 9.5);
             if (nJets <= 1) {
-                histManager->Fill2DHist(4*iEta1 + iPt1, 4*iEta2 + iPt2,
-                        "h2_DileptonQMisIDDenomLowJet", "e charge misID (numerator);e_{leading};e_{trailing}", 12, 0.5, 12.5, 12, 0.5, 12.5);
+                histManager->Fill2DHist(nPtBins*iEta1 + iPt1, nPtBins*iEta2 + iPt2,
+                        "h2_DileptonQMisIDDenomLowJet", "e charge misID (numerator);e_{leading};e_{trailing}", 9, 0.5, 9.5, 9, 0.5, 9.5);
             } else if (nJets > 1) {
-                histManager->Fill2DHist(4*iEta1 + iPt1, 4*iEta2 + iPt2,
-                        "h2_DileptonQMisIDDenomHighJet", "e charge misID (numerator);e_{leading};e_{trailing}", 12, 0.5, 12.5, 12, 0.5, 12.5);
+                histManager->Fill2DHist(nPtBins*iEta1 + iPt1, nPtBins*iEta2 + iPt2,
+                        "h2_DileptonQMisIDDenomHighJet", "e charge misID (numerator);e_{leading};e_{trailing}", 9, 0.5, 9.5, 9, 0.5, 9.5);
             }
         }
     } 

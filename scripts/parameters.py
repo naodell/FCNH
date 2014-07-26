@@ -122,14 +122,14 @@ styleDict['eeeAIC']             = (2, r.kCyan+2, 1, 20, 'AIC')
 styleDict['eemuAIC']            = (2, r.kCyan+2, 1, 20, 'AIC')
 styleDict['emumuAIC']           = (2, r.kCyan+2, 1, 20, 'AIC')
 styleDict['mumumuAIC']          = (2, r.kCyan+2, 1, 20, 'AIC')
-styleDict['Fakes']              = (2, r.kRed-7, 1, 20, 'Fakes')
+styleDict['Fakes']              = (2, r.kRed-3, 1, 20, 'Fakes')
 styleDict['eFakes']             = (2, r.kCyan, 3001, 20, 'Fakes e')
 styleDict['muFakes']            = (2, r.kMagenta+3, 3001, 20, 'Fakes #mu')
 styleDict['eFakese']            = (2, r.kCyan +4, 3001, 1, 'Fakes ee')
 styleDict['eFakesmu']           = (2, r.kViolet-5, 3001, 1, 'Fakes e#mu')
 styleDict['muFakesmu']          = (2, r.kMagenta+4, 3001, 1, 'Fakes #mu#mu')
 styleDict['llFakes']            = (2, r.kViolet+9, 3001, 1, 'Fakes ll')
-styleDict['QFlips']             = (2, r.kAzure+6, 1, 1, 'QFlips')
+styleDict['QFlips']             = (2, r.kAzure+2, 1, 1, 'QFlips')
 
 ### Set scales
 scaleDict = {'2011':{}, '2012':{}}
@@ -253,27 +253,27 @@ scaleDict['2012']['TTH_M-125']          = .1032
 #scaleDict['GJets_300to470']     = 1/1391.1
 #scaleDict['GJets_470to800']     = 1/15812.2
 
-scaleDict['2012']['FCNC_M125_t']            = 252*1.*0.01*0.215*3*0.324*0.324
-scaleDict['2012']['FCNC_M125_tbar']         = 252*1.*0.01*0.215*3*0.324*0.324
-scaleDict['2012']['FCNC_M125_t_semilep']    = 2*252*1.*0.01*0.215*3*0.676*0.324*0.324
-scaleDict['2012']['FCNC_ZZ_t']              = 252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
-scaleDict['2012']['FCNC_ZZ_tbar']           = 252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
-scaleDict['2012']['FCNC_TauTau_t']          = 252*1.*0.01*0.063*0.324
-scaleDict['2012']['FCNC_TauTau_tbar']       = 252*1.*0.01*0.063*0.324
+scaleDict['2012']['FCNC_M125_t']            = 5*252*1.*0.01*0.215*3*0.324*0.324
+scaleDict['2012']['FCNC_M125_tbar']         = 5*252*1.*0.01*0.215*3*0.324*0.324
+scaleDict['2012']['FCNC_M125_t_semilep']    = 5*2*252*1.*0.01*0.215*3*0.676*0.324*0.324
+scaleDict['2012']['FCNC_ZZ_t']              = 5*252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
+scaleDict['2012']['FCNC_ZZ_tbar']           = 5*252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
+scaleDict['2012']['FCNC_TauTau_t']          = 5*252*1.*0.01*0.063*0.324
+scaleDict['2012']['FCNC_TauTau_tbar']       = 5*252*1.*0.01*0.063*0.324
 
 scaleDict['2012']['DATA_MUON']          = 1.
 scaleDict['2012']['DATA_ELECTRON']      = 1.
 scaleDict['2012']['DATA_MUEG']          = 1.
 scaleDict['2012']['AIC']                = 1.
-scaleDict['2012']['eeeAIC']             = 1.
-scaleDict['2012']['eemuAIC']            = 1.
-scaleDict['2012']['emumuAIC']           = 1.
-scaleDict['2012']['mumumuAIC']          = 1.
+scaleDict['2012']['eeeAIC']             = 1.5
+scaleDict['2012']['eemuAIC']            = 1.5
+scaleDict['2012']['emumuAIC']           = 1.5
+scaleDict['2012']['mumumuAIC']          = 1.5
 scaleDict['2012']['Fakes']              = 1.
 scaleDict['2012']['eFakes']             = 1.
 scaleDict['2012']['muFakes']            = 1.
 scaleDict['2012']['llFakes']            = 1.  
-scaleDict['2012']['QFlips']             = 1.
+scaleDict['2012']['QFlips']             = 0.95
 
 combineDict = {}
 combineDict['FCNH']             = ['FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_ZZ_t', 'FCNC_ZZ_tbar', 'FCNC_TauTau_t', 'FCNC_TauTau_tbar']

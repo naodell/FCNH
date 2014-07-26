@@ -577,8 +577,8 @@ class PlotProducer(AnalysisTools):
         else:
             pad1 = r.TPad('pad1', '', 0.06, 0.02, 0.89, 0.98, 0)
             pad1.Draw()
-            pad1.SetGridx()
-            pad1.SetGridy()
+            #pad1.SetGridx()
+            #pad1.SetGridy()
 
         if logScale:
             pad1.SetLogy()
