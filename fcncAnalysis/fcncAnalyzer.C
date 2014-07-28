@@ -1903,7 +1903,7 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
         iPt1 = 1;
     else if (electrons[0].Pt() >= 30. && electrons[0].Pt() < 60.)
         iPt1 = 2;
-    else if (electrons[0].Pt() >= 60. && electrons[0].Pt() < 150.)
+    else if (electrons[0].Pt() >= 60.)
         iPt1 = 3;
     else 
         return;
@@ -1912,7 +1912,7 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
         iPt2 = 1;
     else if (electrons[1].Pt() >= 25. && electrons[1].Pt() < 60.)
         iPt2 = 2;
-    else if (electrons[1].Pt() >= 60. && electrons[1].Pt() < 150.)
+    else if (electrons[1].Pt() >= 60.)
         iPt2 = 3;
     else
         return;

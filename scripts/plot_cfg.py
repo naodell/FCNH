@@ -25,7 +25,7 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.'])#, 'CR_WZ', 'CR_SUSY'])#, '5_BDT'])
+#cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.'])#, 'CR_WZ', 'CR_SUSY'])#, '5_BDT'])
 #cutList.extend(['.', '.', '.', 'X_0jet', 'X_1jet'])
 
 crList      = []#'CR_WZ', 'CR_SUSY', 'CR_ZFake']
@@ -37,7 +37,7 @@ doPlots     = True
 doLog       = False
 doEff       = False
 doDiff      = False
-doRatio     = False
+doRatio     = True
 doNorm      = True
 do1D        = True
 do2D        = True
