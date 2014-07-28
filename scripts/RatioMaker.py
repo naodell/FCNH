@@ -198,35 +198,35 @@ class RatioMaker(AnalysisTools):
             #print ''
             probs = prob0[:]
 
-            #for toy in range(nToys):
-            #    probs = [[0. for i in range(nBinsX)], [0. for i in range(nBinsX)]]
-            #    for binX in range(nBinsX):
-            #        for binY in range(nBinsY):
-            #            #if binX == binY: continue
+            for toy in range(nToys):
+                probs = [[0. for i in range(nBinsX)], [0. for i in range(nBinsX)]]
+                for binX in range(nBinsX):
+                    for binY in range(nBinsY):
+                        #if binX == binY: continue
 
-            #            binContentXY    = h2_Eff.GetBinContent(binX+1, binY+1) 
-            #            binErrorXY      = h2_Eff.GetBinError(binX+1, binY+1) 
-            #            errX            = binErrorXY*binErrorXY + prob0[1][binY]*prob0[1][binY]
-            #            errY            = binErrorXY*binErrorXY + prob0[1][binX]*prob0[1][binX]
-            #            if binContentXY != 0:
-            #                if prob0[0][binY] != 0:
-            #                    #print binContentXY, probs[binY][0], errX
-            #                    probs[0][binX] += (binContentXY - prob0[0][binY])#/errX
-            #                    probs[1][binX] += 1.#/errX
-            #                if prob0[0][binX] != 0:
-            #                    probs[0][binY] += (binContentXY - prob0[0][binX])#/errY
-            #                    probs[1][binY] += 1.#/errY
+                        binContentXY    = h2_Eff.GetBinContent(binX+1, binY+1) 
+                        binErrorXY      = h2_Eff.GetBinError(binX+1, binY+1) 
+                        errX            = binErrorXY*binErrorXY + prob0[1][binY]*prob0[1][binY]
+                        errY            = binErrorXY*binErrorXY + prob0[1][binX]*prob0[1][binX]
+                        if binContentXY != 0:
+                            if prob0[0][binY] != 0:
+                                #print binContentXY, probs[binY][0], errX
+                                probs[0][binX] += (binContentXY - prob0[0][binY])#/errX
+                                probs[1][binX] += 1.#/errX
+                            if prob0[0][binX] != 0:
+                                probs[0][binY] += (binContentXY - prob0[0][binX])#/errY
+                                probs[1][binY] += 1.#/errY
 
-            #    for binX in range(nBinsX):
-            #        #print probs[binX], probs[0][binX]/nBinsX
-            #        if probs[1][binX] != 0:
-            #            probs[0][binX] = probs[0][binX]/probs[1][binX]
-            #            probs[1][binX] = 1./sqrt(probs[1][binX])
+                for binX in range(nBinsX):
+                    #print probs[binX], probs[0][binX]/nBinsX
+                    if probs[1][binX] != 0:
+                        probs[0][binX] = probs[0][binX]/probs[1][binX]
+                        probs[1][binX] = 1./sqrt(probs[1][binX])
 
-            #    prob0 = probs[:]
+                prob0 = probs[:]
 
-            #    for prob in probs[0]: print '{0:.3f}'.format(100*prob),
-            #    print ''
+                for prob in probs[0]: print '{0:.3f}'.format(100*prob),
+                print ''
 
             ptBins = [20., 45., 105.]
             g_ProbBB = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', probs[0][:nBinsX/3]), \

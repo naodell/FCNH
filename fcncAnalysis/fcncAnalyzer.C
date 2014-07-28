@@ -42,8 +42,8 @@ const float   muPtCut[]         = {10., 3.};
 const float   elePtCut[]        = {10., 7.};
 const float   phoPtCut[]        = {10., 10.};
 const float   leptonPtCut[]     = {20., 10.};
-const float   metCut[]          = {30., 0.};
-const float   htCut[]           = {13., 14.};
+const float   metCut[]          = {50., 0.};
+const float   htCut[]           = {100., 0.};
 const float   massCut           = 30.;
 const float   bJetVeto          = 1e9;
 
@@ -1110,13 +1110,13 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
         }
     }
 
-    //!! MET cut !!//
+    //!! MET and HT cut !!//
     if (leptons.size() == 2){
         if (leptons[0].Charge() == leptons[1].Charge()) 
-            if (recoMET->Mod() < metCut[0])
+            if (recoMET->Mod() < metCut[0] && HT < htCut[0])
                 return true;
     } else if (leptons.size() == 3) {
-        if (recoMET->Mod() < metCut[1]) 
+        if (recoMET->Mod() < metCut[1] && HT < htCut[1]) 
             return true;
     }
     MakePlots(leptons, jets, bJetsM, *recoMET, 3);
@@ -1640,13 +1640,13 @@ void fcncAnalyzer::LeptonPlots(vObj& leptons, vector<TCJet>& jets, vector<TCJet>
 
     if (jets.size() > 0) {
         histManager->Fill1DHist(HT,
-                "h1_HT", "HT;HT;Entries / 20 GeV", 75, 0., 1500.);
+                "h1_HT", "HT;HT;Entries / 20 GeV", 30, 0., 600.);
         histManager->Fill1DHist(sqrt(HT),
                 "h1_sqrtHT", "HT;HT;Entries / bin", 80, 0., 40.);
     }
 
     histManager->Fill1DHist(HTs + MET,
-            "h1_HTs", "HT_{s};HT_{s};Entries / 10 GeV", 100, 0., 2000.);
+            "h1_HTs", "HT_{s};HT_{s};Entries / 10 GeV", 40, 0., 800.);
     histManager->Fill1DHist(MHT/HTs,
             "h1_MHTOverHTs", "MHT/HT_{s};MHT/HT_{s};Entries / bin", 50, 0., 1.); 
     histManager->Fill1DHist(MHT,
@@ -1731,7 +1731,7 @@ void fcncAnalyzer::JetPlots(vector<TCJet>& jets, vector<TCJet>& bJets)
         histManager->Fill1DHist(jets[i].BDiscriminatorMap("CSV"),
                 "h1_Jet" + index + "BDiscr", "jet " + index + " b-discriminator;CSV (jet " + index + ");Entries / 0.1", 46, -4., 0.6);
         histManager->Fill1DHist(jets[i].Pt(),
-                "h1_Jet" + index + "Pt", "p_{T} of jet" + index + ";p_{T}^{j" + index + "};Entries / 10 GeV", 59, 10., 600.);
+                "h1_Jet" + index + "Pt", "p_{T} of jet" + index + ";p_{T}^{j" + index + "};Entries / 10 GeV", 29, 10., 300.);
         histManager->Fill1DHist(jets[i].Eta(),
                 "h1_Jet" + index + "Eta", "#eta of jet" + index + ";#eta^{j" + index + "};Entries / bin", 100, -5., 5.);
         histManager->Fill1DHist(jets[i].Phi(),

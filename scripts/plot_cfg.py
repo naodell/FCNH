@@ -65,27 +65,27 @@ samples     = {'all':[], 'inclusive':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[],
                 '3l_inclusive':[], '3l_eee':[], '3l_eemu':[], '3l_emumu':[], '3l_mumumu':[], 
                 'ss_inclusive':[], 'ss_ee':[], 'ss_emu':[], 'ss_mumu':[]}
 
+samples['all'].append('WZJets3LNu')
+samples['all'].append('ttV')
+samples['all'].append('ZZ4l')
+samples['all'].append('Triboson')
+#samples['all'].append('higgs')
+
 #samples['all'].append('ZJets')
+#samples['all'].append('WJetsToLNu')
+#samples['all'].append('WbbToLNu')
 #samples['all'].append('top')
 #samples['all'].append('Diboson')
-#samples['all'].append('WZJets3LNu')
-#samples['all'].append('ttV')
-#samples['all'].append('ZZ4l')
-#samples['all'].append('Triboson')
-#samples['all'].append('higgs')
 #samples['all'].append('WG')
 #samples['all'].append('WWSS')
 #samples['all'].append('QCD')
-#samples['all'].append('WJetsToLNu')
-#samples['all'].append('WbbToLNu')
-#samples['all'].extend(['ZbbToLL', 'WbbToLNu']) #, 'ZGstar'])
 
 #samples['inclusive'].append('higgs')
 #samples['inclusive'].append('Triboson')
-samples['inclusive'].append('ttV')
-samples['inclusive'].append('Diboson')
-samples['inclusive'].append('top')
-samples['inclusive'].append('ZJets')
+#samples['inclusive'].append('ttV')
+#samples['inclusive'].append('Diboson')
+#samples['inclusive'].append('top')
+#samples['inclusive'].append('ZJets')
 
 ## trilepton categories
 #samples['3l_inclusive'].append('higgs')
@@ -197,7 +197,7 @@ if doPlots:
     #plotter._overlayList.extend(['FCNH'])
 
     #plotter.get_scale_factors()
-    plotter.get_scale_factors(['FCNH'])
+    #plotter.get_scale_factors(['FCNH'])
 
     ### VARIABLES ###
     ### First specify the directories in which your
@@ -542,7 +542,7 @@ if doYields:
 
     if do3l:
         #yieldTable._columnList  = ['Irreducible', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
-        yieldTable._columnList  = samples['3l_inclusive'] + ['BG', 'DATA']#, 'FCNH', 'Significance'] 
+        yieldTable._columnList  = samples['3l_inclusive'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau','FCNH']# 'Significance'] 
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
@@ -567,14 +567,9 @@ if doYields:
 
         for category in catSS:
 
-            if category == 'ss_mumu':
-                #yieldTable.add_datasets(['Irreducible', 'Fakes', 'FCNH'], Clear = True)
-                #yieldTable._columnList  = ['Irreducible', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
-                yieldTable._columnList  = samples[category] + ['BG', 'DATA']#, 'FCNH', 'Significance'] 
-            else:
-                #yieldTable.add_datasets(['Irreducible', 'Fakes', 'QFlips'], Clear = True)
-                #yieldTable._columnList  = ['Irreducible', 'Fakes', 'QFlips', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
-                yieldTable._columnList  = samples[category] + ['BG', 'DATA']#, 'FCNH']#, 'Significance'] 
+            #yieldTable.add_datasets(['Irreducible', 'Fakes', 'FCNH'], Clear = True)
+            #yieldTable._columnList  = ['Irreducible', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
+            yieldTable._columnList  = samples[category] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
             yieldTable.add_datasets(samples[category], Clear = True)
             yieldTable.add_datasets('FCNH')
