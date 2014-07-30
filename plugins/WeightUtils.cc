@@ -509,15 +509,15 @@ float WeightUtils::GetQFlipWeight(unsigned nJets, string weightType)
         }
 
         // correction for jet multiplicity
-        //float jet_corrections[] = {1., 1.3, 1.6, 1.8};
-        //if (nJets == 0)
-        //    weight *= jet_corrections[0];
+        float jet_corrections[] = {1., 1.3};//, 1.6, 1.8};
+        if (nJets == 0)
+            weight *= jet_corrections[0];
         //else if (nJets == 1)
         //    weight *= jet_corrections[1];
         //else if (nJets == 2)
         //    weight *= jet_corrections[2];
-        //else if (nJets >= 3)
-        //    weight *= jet_corrections[2];
+        else if (nJets >= 1)
+            weight *= jet_corrections[1];
     }
 
     //cout << weight << endl;

@@ -130,7 +130,7 @@ samples['ss_inclusive'].append('Triboson')
 samples['ss_inclusive'].append('ttV')
 samples['ss_inclusive'].append('ZZ4l')
 samples['ss_inclusive'].append('WZJets3LNu')
-samples['ss_inclusive'].append('Fakes')
+#samples['ss_inclusive'].append('Fakes')
 
 #samples['ss_inclusive'].append('WWSS')
 #samples['ss_inclusive'].append('WJetsToLNu')
@@ -143,7 +143,7 @@ samples['ss_inclusive'].append('Fakes')
 
 ## dielectrons
 samples['ss_ee'].extend(samples['ss_inclusive'])
-#samples['ss_ee'].extend(['eFakes', 'llFakes'])
+samples['ss_ee'].extend(['eFakes', 'llFakes'])
 samples['ss_ee'].append('QFlips')
 
 ## electron+muon

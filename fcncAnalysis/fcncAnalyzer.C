@@ -1182,7 +1182,7 @@ void fcncAnalyzer::GetFakeBG(vObj& leptons, vObj& fakeables, vector<TCJet>& jets
        ) {
 
         if (leptons.size() == 2)
-            if (leptons[0].Charge() == leptons[1].Charge())
+            if ((leptons[0].Type() == "muon" || leptons[1].Type() == "muon") && leptons[0].Charge() == leptons[1].Charge()) // Assume electron charge not well estimated for fakes
                 return;
 
         string fakeType;
@@ -1218,7 +1218,7 @@ void fcncAnalyzer::GetFakeBG(vObj& leptons, vObj& fakeables, vector<TCJet>& jets
                 DoFakes(leptons, fakeables, jets, bJetsM, bJetsL);
                 evtWeight /= (fakeWeight1*fakeWeight2);
 
-            } /*else if (leptons.size() == 1 && fakeWeight1 > 0 && fakeWeight2 >= 0) {
+            } else if (leptons.size() == 1 && fakeWeight1 > 0 && fakeWeight2 >= 0) {
                 evtWeight *= fakeWeight1*(1 - fakeWeight2)/2.;
                 vObj fakeable1;
                 fakeable1.push_back(fakeables[0]);
@@ -1231,7 +1231,7 @@ void fcncAnalyzer::GetFakeBG(vObj& leptons, vObj& fakeables, vector<TCJet>& jets
                 evtWeight *= fakeWeight2*(1 - fakeWeight1);
                 DoFakes(leptons, fakeable2, jets, bJetsM, bJetsL);
                 evtWeight /= (2*fakeWeight2*(1 - fakeWeight1));
-                }*/
+                }
         }
     }
 }
