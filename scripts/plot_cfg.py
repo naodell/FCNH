@@ -45,14 +45,14 @@ do2D        = True
 doInclusive = False
 doOS        = False
 doSS        = True
-do3l        = True
+do3l        = False
 
-doYields    = True
+doYields    = False
 
 ### Categories to be plotted ###
-#catSS       = ['ss_ee']
-catSS       = ['ss_inclusive']
-catSS.extend(['ss_mumu', 'ss_ee', 'ss_emu'])
+catSS       = ['ss_ee']
+#catSS       = ['ss_inclusive']
+#catSS.extend(['ss_mumu', 'ss_ee', 'ss_emu'])
 #catSS.extend(['ss_endcap', 'ss_mixed', 'ss_barrel'])
 catOS       = ['os_inclusive']
 catOS.extend(['os_mumu', 'os_ee', 'os_emu']) 
