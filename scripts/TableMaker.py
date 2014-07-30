@@ -54,7 +54,7 @@ class TableMaker(AnalysisTools):
 
         elif self._delimiter == '&':
 
-            self._outFile.write('\n\n\\begin{table}\n\t\\centering \n\t\\begin{tabular}{| l |' + len(self._columnList)*'| c ' + '|}\n')
+            self._outFile.write('\n\n\\begin{table}\n\t\\ \\resizebox{\\linewidth}{!}{\\centering \n\t\\begin{tabular}{| l |' + len(self._columnList)*'| c ' + '|}\n')
             self._outFile.write('\t\hline \n\t')
 
             for data in self._columnList:
@@ -164,7 +164,7 @@ class TableMaker(AnalysisTools):
                 self._outFile.write(' \\\\ \n')
 
         if self._delimiter == '&':
-            self._outFile.write('\t\\hline \n\t\\end{tabular} \n')
+            self._outFile.write('\t\\hline \n\t\\end{tabular}} \n')
 
             caption = '\t\\caption{' + self._category + '} \n'
             self._outFile.write(caption.replace('_', ' '))

@@ -183,20 +183,17 @@ class RatioMaker(AnalysisTools):
             h2_Eff.Divide(h2_Numer, h2_Denom, 1., 1., 'B')
             self._hists.append(h2_Eff)
 
-            ### Guess at values of p(i) from diagonal bins, i.e., p(i) = 0.5*P(i,j)
+            ### Hack for lowest pt barrel-barrel bin ###
+            h2_Eff.SetBinContent(1,1,0.0001)
+            h2_Eff.SetBinError(1,1,0.0001)
 
+            ### Guess at values of p(i) from diagonal bins, i.e., p(i) = 0.5*P(i,j)
             nBinsX = h2_Eff.GetNbinsX()
             nBinsY = h2_Eff.GetNbinsY()
-
             prob0 = [[0.5*h2_Eff.GetBinContent(i+1, i+1) for i in range(nBinsX)], [h2_Eff.GetBinError(i+1, i+1) for i in range(nBinsX)]]
 
-            ### Hack for lowest pt barrel-barrel bin ###
-            prob0[0][0] = 0.0001
-            prob0[1][0] = 0.0001
-
             #for prob in prob0[0]: print '{0:.3f}'.format(100*prob),
-            #print ''
-            probs = prob0[:]
+            #print '\n'
 
             for toy in range(nToys):
                 probs = [[0. for i in range(nBinsX)], [0. for i in range(nBinsX)]]
@@ -208,14 +205,22 @@ class RatioMaker(AnalysisTools):
                         binErrorXY      = h2_Eff.GetBinError(binX+1, binY+1) 
                         errX            = binErrorXY*binErrorXY + prob0[1][binY]*prob0[1][binY]
                         errY            = binErrorXY*binErrorXY + prob0[1][binX]*prob0[1][binX]
+
                         if binContentXY != 0:
                             if prob0[0][binY] != 0:
-                                #print binContentXY, probs[binY][0], errX
-                                probs[0][binX] += (binContentXY - prob0[0][binY])#/errX
-                                probs[1][binX] += 1.#/errX
-                            if prob0[0][binX] != 0:
-                                probs[0][binY] += (binContentXY - prob0[0][binX])#/errY
-                                probs[1][binY] += 1.#/errY
+                                probs[0][binX] += (binContentXY - prob0[0][binY])/errX
+                                probs[1][binX] += 1./errX
+                            if prob0[0][binX] != 0 and binX != binY:
+                                probs[0][binY] += (binContentXY - prob0[0][binX])/errY
+                                probs[1][binY] += 1./errY
+                        else:
+                            continue
+
+                        #if binX == 0: 
+                        #    print (binX+1, binY+1), '{0:.3f} {1:.3f}'.format(100*probs[0][binX]/probs[1][binX], 100*probs[0][binY]/probs[1][binY])
+                        #if binY == 0: 
+                        #    print (binX+1, binY+1), '{0:.3f} {1:.3f}'.format(100*probs[0][binX]/probs[1][binX], 100*probs[0][binY]/probs[1][binY])
+                        
 
                 for binX in range(nBinsX):
                     #print probs[binX], probs[0][binX]/nBinsX
@@ -225,8 +230,8 @@ class RatioMaker(AnalysisTools):
 
                 prob0 = probs[:]
 
-                for prob in probs[0]: print '{0:.3f}'.format(100*prob),
-                print ''
+                #for prob in probs[0]: print '{0:.3f}'.format(100*prob),
+                #print ''
 
             ptBins = [20., 45., 105.]
             g_ProbBB = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', probs[0][:nBinsX/3]), \
@@ -297,13 +302,13 @@ if __name__ == '__main__':
             #'LeadElectronMisQ':('LeadElecQMisIDNumer', 'LeadElecQMisIDDenom'),
             #'TrailingElectronMisQ':('TrailingElecQMisIDNumer', 'TrailingElecQMisIDDenom'),
             'DielectronMisQ':('DileptonQMisIDNumer', 'DileptonQMisIDDenom'),
-            #'DielectronMisQLowJet':('DileptonQMisIDNumerLowJet', 'DileptonQMisIDDenomLowJet'),
-            #'DielectronMisQHighJet':('DileptonQMisIDNumerHighJet', 'DileptonQMisIDDenomHighJet')
+            'DielectronMisQLowJet':('DileptonQMisIDNumerLowJet', 'DileptonQMisIDDenomLowJet'),
+            'DielectronMisQHighJet':('DileptonQMisIDNumerHighJet', 'DileptonQMisIDDenomHighJet')
             }
 
         ratioMaker.set_ratio_2D(eMisQDict)
         #ratioMaker.make_2D_ratios('DATA_ELECTRON', doProjections = False)
-        ratioMaker.charge_flip_fitter('DATA_ELECTRON', nToys = 10)
+        ratioMaker.charge_flip_fitter('DATA_ELECTRON', nToys = 5)
         #ratioMaker.charge_flip_fitter('ZJets', nToys = 100)
 
         mcMisQDict = {

@@ -45,14 +45,14 @@ do2D        = True
 doInclusive = False
 doOS        = False
 doSS        = True
-do3l        = False
+do3l        = True
 
-doYields    = False
+doYields    = True
 
 ### Categories to be plotted ###
-catSS       = ['ss_ee']
-#catSS       = ['ss_inclusive']
-#catSS.extend(['ss_mumu', 'ss_ee', 'ss_emu'])
+#catSS       = ['ss_ee']
+catSS       = ['ss_inclusive']
+catSS.extend(['ss_mumu', 'ss_ee', 'ss_emu'])
 #catSS.extend(['ss_endcap', 'ss_mixed', 'ss_barrel'])
 catOS       = ['os_inclusive']
 catOS.extend(['os_mumu', 'os_ee', 'os_emu']) 
@@ -81,11 +81,11 @@ samples['all'].append('Triboson')
 #samples['all'].append('QCD')
 
 #samples['inclusive'].append('higgs')
-#samples['inclusive'].append('Triboson')
-#samples['inclusive'].append('ttV')
-#samples['inclusive'].append('Diboson')
-#samples['inclusive'].append('top')
-#samples['inclusive'].append('ZJets')
+samples['inclusive'].append('Triboson')
+samples['inclusive'].append('ttV')
+samples['inclusive'].append('Diboson')
+samples['inclusive'].append('top')
+samples['inclusive'].append('ZJets')
 
 ## trilepton categories
 #samples['3l_inclusive'].append('higgs')
@@ -126,21 +126,20 @@ samples['3l_mumumu'].extend(samples['3l_inclusive'])
 
 ## same-sign categories
 #samples['ss_inclusive'].append('higgs')
-#samples['ss_inclusive'].append('Diboson')
-#samples['ss_inclusive'].append('Triboson')
-#samples['ss_inclusive'].append('WWSS')
-#samples['ss_inclusive'].append('ttV')
-#samples['ss_inclusive'].append('ZZ4l')
-#samples['ss_inclusive'].append('WZJets3LNu')
-#samples['ss_inclusive'].append('WG')
+samples['ss_inclusive'].append('Triboson')
+samples['ss_inclusive'].append('ttV')
+samples['ss_inclusive'].append('ZZ4l')
+samples['ss_inclusive'].append('WZJets3LNu')
 samples['ss_inclusive'].append('Fakes')
 
+#samples['ss_inclusive'].append('WWSS')
 #samples['ss_inclusive'].append('WJetsToLNu')
 #samples['ss_inclusive'].append('QCD')
 #samples['ss_inclusive'].append('WbbToLNu')
-#samples['ss_inclusive'].append('ZJets')
-#samples['ss_inclusive'].append('top')
 #samples['ss_inclusive'].append('WG')
+#samples['ss_inclusive'].append('top')
+#samples['ss_inclusive'].append('Diboson')
+#samples['ss_inclusive'].append('ZJets')
 
 ## dielectrons
 samples['ss_ee'].extend(samples['ss_inclusive'])
@@ -197,7 +196,7 @@ if doPlots:
     #plotter._overlayList.extend(['FCNH'])
 
     #plotter.get_scale_factors()
-    #plotter.get_scale_factors(['FCNH'])
+    plotter.get_scale_factors(['FCNH'])
 
     ### VARIABLES ###
     ### First specify the directories in which your

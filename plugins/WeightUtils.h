@@ -89,7 +89,7 @@ class WeightUtils: public TObject {
         TH2D    *h2_EleMVASF;
         TH2D    *h2_DielectronMisQ;
 
-        TGraph  *g_QFlipBB_Low, *g_QFlipEE_Low, *g_QFlipBB_High, *g_QFlipEE_High;
+        TGraph  *g_QFlipBB_Low, *g_QFlipBE_Low, *g_QFlipEE_Low, *g_QFlipBB_High, *g_QFlipBE_High, *g_QFlipEE_High;
         TGraph  *g_QFlipBB, *g_QFlipBE, *g_QFlipEE;
         map<string, TGraph*>  g_AIC;
 
