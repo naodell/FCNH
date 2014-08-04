@@ -354,8 +354,6 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
             fakeRate  = h2_MuonFakes[controlRegion]->GetBinContent(iPt, 2);
         }
 
-        if (iPt == 5) fakeRate *= 1.1;
-
     } else if (fakeable.Type() == "electron") {
 
         float fakeablePt = fakeable.Pt();
@@ -388,52 +386,52 @@ float WeightUtils::GetFakeUncertainty(TCPhysObject& fakeable, string controlRegi
     float fakeError   = 0.;
     unsigned iPt = 0;
     unsigned  nPtBins = 5;
-    float     ptBins[] = {10., 15., 20., 25., 30., 35.};//, 40., 45., 50.}; 
+    float     ptBins[] = {10., 15., 20., 25., 30., 35.}; 
 
-if (fakeable.Pt() > ptBins[nPtBins]) {
-    iPt = nPtBins;
-} else {
-    for (unsigned j = 0; j < nPtBins; ++j) {
-        if (fakeable.Pt() > ptBins[j] && fakeable.Pt() < ptBins[j + 1]) {
-            iPt = j+1;
-            break;
+    if (fakeable.Pt() > ptBins[nPtBins]) {
+        iPt = nPtBins;
+    } else {
+        for (unsigned j = 0; j < nPtBins; ++j) {
+            if (fakeable.Pt() > ptBins[j] && fakeable.Pt() < ptBins[j + 1]) {
+                iPt = j+1;
+                break;
+            }
         }
     }
-}
 
-float fakeablePt;
-if (fakeable.Type() == "muon") {
+    float fakeablePt;
+    if (fakeable.Type() == "muon") {
 
-    fakeablePt = fakeable.Pt();
-    if (fakeable.Pt() < 35)
         fakeablePt = fakeable.Pt();
-    else
-        fakeablePt = 35;
+        if (fakeable.Pt() < 35)
+            fakeablePt = fakeable.Pt();
+        else
+            fakeablePt = 35;
 
-    if (fabs(fakeable.Eta()) < 1.5) {
-        fakeError = g_MuonFakesPtB[controlRegion]->GetErrorY(iPt);
-    } else if (fabs(fakeable.Eta()) >= 1.5) {
-        fakeError = g_MuonFakesPtE[controlRegion]->GetErrorY(iPt);
-    }
-} else if (fakeable.Type() == "electron") {
+        if (fabs(fakeable.Eta()) < 1.5) {
+            fakeError = g_MuonFakesPtB[controlRegion]->GetErrorY(iPt);
+        } else if (fabs(fakeable.Eta()) >= 1.5) {
+            fakeError = g_MuonFakesPtE[controlRegion]->GetErrorY(iPt);
+        }
+    } else if (fakeable.Type() == "electron") {
 
-    fakeablePt = fakeable.Pt();
-    if (fakeable.Pt() < 35)
         fakeablePt = fakeable.Pt();
-    else
-        fakeablePt = 35;
+        if (fakeable.Pt() < 35)
+            fakeablePt = fakeable.Pt();
+        else
+            fakeablePt = 35;
 
 
-    if (fabs(fakeable.Eta()) < 0.8) {
-        fakeError = g_ElectronFakesPtB[controlRegion]->GetErrorY(iPt);
-    } else if (fabs(fakeable.Eta()) >= 0.8 && fabs(fakeable.Eta()) < 1.479) {
-        fakeError = g_ElectronFakesPtG[controlRegion]->GetErrorY(iPt);
-    } else if (fabs(fakeable.Eta()) >= 1.479) {
-        fakeError = g_ElectronFakesPtE[controlRegion]->GetErrorY(iPt);
+        if (fabs(fakeable.Eta()) < 0.8) {
+            fakeError = g_ElectronFakesPtB[controlRegion]->GetErrorY(iPt);
+        } else if (fabs(fakeable.Eta()) >= 0.8 && fabs(fakeable.Eta()) < 1.479) {
+            fakeError = g_ElectronFakesPtG[controlRegion]->GetErrorY(iPt);
+        } else if (fabs(fakeable.Eta()) >= 1.479) {
+            fakeError = g_ElectronFakesPtE[controlRegion]->GetErrorY(iPt);
+        }
     }
-}
 
-return fakeError;
+    return fakeError;
 }
 
 float WeightUtils::GetQFlipWeight(unsigned nJets, string weightType)
@@ -509,7 +507,7 @@ float WeightUtils::GetQFlipWeight(unsigned nJets, string weightType)
         }
 
         // correction for jet multiplicity
-        float jet_corrections[] = {1., 1.3};//, 1.6, 1.8};
+        float jet_corrections[] = {1., 1.2};//, 1.6, 1.8};
         if (nJets == 0)
             weight *= jet_corrections[0];
         //else if (nJets == 1)
@@ -518,10 +516,10 @@ float WeightUtils::GetQFlipWeight(unsigned nJets, string weightType)
         //    weight *= jet_corrections[2];
         else if (nJets >= 1)
             weight *= jet_corrections[1];
-    }
+}
 
-    //cout << weight << endl;
-    return weight;
+//cout << weight << endl;
+return weight;
 }
 
 float WeightUtils::GetAICWeight(const TCPhoton& photon, const string& type)

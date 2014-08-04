@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-import subprocess, shlex, time, pickle, math
+import subprocess, shlex, time, pickle, math, sys
 from array import array
 import ROOT as r
 
@@ -9,21 +9,27 @@ seed = int(str(time.time())[6:10])
 Carries out a random grid search to optimize rectangular cuts in 2D plane.
 '''
 
+if len(sys.argv) > 0:
+    batch   = sys.argv[1]
+else:
+    print 'A batch and ratio type must be specified.  Otherwise, do some hacking so this thing knows about your inputs.'
+    exit()
+
 nToys   = 5000
 
 bgList  = []
-bgList.extend(['ZJets', 'ZJets_M-10To50', 'WJets']) # V+jets
-bgList.extend(['WWJets2L2Nu', 'ZZJets2L2Nu', 'ZZJets2L2Q', 'WZJets2L2Q']) # Diboson to 2l + X
+bgList.extend(['muFakes', 'eFakes', 'llFakes']) # Fakes
+bgList.extend(['QFlips']) # electron charge misID
 bgList.extend(['WZJets3LNu']) # WZ to 3l+nu
 bgList.extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']) # ZZ to 4l
-bgList.extend(['tW', 'ttbar', 'ttZ', 'ttW']) # Top
+bgList.extend(['ttZ', 'ttW', 'ttG']) # Top
 
-sigList = ['FCNC_M125']
+sigList = ['FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_ZZ_t', 'FCNC_ZZ_tbar', 'FCNC_TauTau_t', 'FCNC_TauTau_tbar']
 
-varList = ['metVsHt', 'TrileptonMVsDileptonMOS']
-catList = ['3l_inclusive']
+varList = ['metVsHt']#, 'TrileptonMVsDileptonMOS']
+catList = ['ss_inclusive']#, 'ss_inclusive']
 
-hFile = r.TFile('histos/fcncHistograms_cut1.root', 'OPEN')
+hFile = r.TFile('fcncAnalysis/combined_histos/fcnh_cut3_2012_{0}.root'.format(batch), 'OPEN')
 
 canvas = r.TCanvas('canvas', 'canvas', 800, 600)
 canvas.SetGridx()
@@ -82,37 +88,57 @@ for var in varList:
     maxSig      = [0, 0, 0]
     maxSigCuts  = [0, 0]
 
-    for i in range(nToys):
+    maxEffRatio = [0, 0, 0]
+    maxEffCuts  = [0, 0]
 
-        rArrayX = sorted([rndNum.Rndm(), rndNum.Rndm()])
-        rArrayY = sorted([rndNum.Rndm(), rndNum.Rndm()])
+    xCutHigh = xDiv
+    yCutHigh = yDiv
+    count = 0
+    #for xCutLow in range(1,xDiv):
+    for xCutLow in range(1,xDiv):
+        for yCutLow in range(1,yDiv):
 
-        xCutLow    = int(math.floor(xDiv*rArrayX[0])) 
-        #xCutHigh   = xDiv
-        xCutHigh   = int(math.floor(xDiv*rArrayX[1]))
-        yCutLow    = int(math.floor(yDiv*rArrayY[0]))
-        #yCutHigh   = yDiv
-        yCutHigh   = int(math.floor(yDiv*rArrayY[1]))
+            numSig  = sumSig.Integral(xCutLow, xCutHigh, yCutLow, yCutHigh)
+            denSig  = sumSig.Integral()
+            numBG   = sumBG.Integral(xCutLow, xCutHigh, yCutLow, yCutHigh)
+            denBG   = sumBG.Integral()
 
-        effSig.append(sumSig.Integral(xCutLow, xCutHigh, yCutLow, yCutHigh)/sumSig.Integral()) 
-        effBG.append(sumBG.Integral(xCutLow, xCutHigh, yCutLow, yCutHigh)/sumBG.Integral()) 
+            effSig.append(numSig/denSig) 
+            effBG.append(numBG/denBG) 
 
-        if effSig[i] != 0 or effBG[i] != 0:
-            significance = effSig[i]/math.sqrt(effSig[i] + effBG[i])
+            #print (xCutLow, xCutHigh), (yCutLow, yCutHigh), (numSig, denSig), (numBG, denBG), significance, numSig*denBG/(denSig*numBG)
+            if numSig != 0 or numBG != 0:
+                significance = numSig/math.sqrt(numSig + numBG)
+                if significance > maxSig[0]:
+                    maxSig      = [significance, effSig[count], effBG[count]]
+                    maxSigCuts  = [xHigh*(xCutLow/float(xDiv)), xHigh*(xCutHigh/float(xDiv)), yHigh*(yCutLow/float(yDiv)), yHigh*(yCutHigh/float(yDiv))]
 
-            if significance > maxSig[0]:
-                maxSig      = [significance, effSig[i], effBG[i]]
-                maxSigCuts  = [xHigh*(xCutLow/float(xDiv)), xHigh*(xCutHigh/float(xDiv)), yHigh*(yCutLow/float(yDiv)), yHigh*(yCutHigh/float(yDiv))]
+                effRatio = numSig/denSig - numBG/denBG                
+                print effRatio, xCutLow, yCutLow
+                if effRatio > maxEffRatio[0]:
+                    maxEffRatio = [effRatio, effSig[count], effBG[count]]
+                    maxEffCuts  = [xHigh*(xCutLow/float(xDiv)), xHigh*(xCutHigh/float(xDiv)), yHigh*(yCutLow/float(yDiv)), yHigh*(yCutHigh/float(yDiv))]
 
-                print maxSig, maxSigCuts
+            count += 1
 
-    #print maxSig, maxSigCuts
+    print maxSig, maxSigCuts
+    print maxEffRatio, maxEffCuts
+
+    sumSig.Draw('colz')
+    canvas.SaveAs('plots/sumSig_' + var + '_test.png')
+    sumBG.Draw('colz')
+    canvas.SaveAs('plots/sumBG_' + var + '_test.png')
+
+    line  = r.TLine(0., 0., 1.1, 1.1)
+    line.SetLineColor(r.kRed)
+    line.SetLineWidth(2)
 
     g_eff = r.TGraph(len(effSig), array('d', effBG), array('d', effSig))
     g_eff.SetTitle(var + ' ROC;#varepsilon_{BG};#varepsilon_{signal}')
     g_eff.SetMarkerStyle(21)
     g_eff.SetMarkerColor(r.kBlue)
     g_eff.Draw('AP')
+    line.Draw('same')
 
-    canvas.SaveAs('../plots/TEST/eff_' + var + 'test.png')
+    canvas.SaveAs('plots/eff_' + var + '_test.png')
 

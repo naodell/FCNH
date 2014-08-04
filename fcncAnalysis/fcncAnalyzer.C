@@ -42,8 +42,8 @@ const float   muPtCut[]         = {10., 3.};
 const float   elePtCut[]        = {10., 7.};
 const float   phoPtCut[]        = {10., 10.};
 const float   leptonPtCut[]     = {20., 10.};
-const float   metCut[]          = {50., 0.};
-const float   htCut[]           = {100., 0.};
+const float   metCut[]          = {40., 30.};
+const float   htCut[]           = {140., 0.};
 const float   massCut           = 30.;
 const float   bJetVeto          = 1e9;
 
@@ -169,7 +169,7 @@ void fcncAnalyzer::Begin(TTree* tree)
         treeSS->Branch("jets",&selJets, 6400, 0);
         treeSS->Branch("leptons",&selLeptons, 6400, 0);
 
-        if (doQFlips && (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "TEST")) {
+        if (doQFlips && (suffix == "TEST" || suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "TEST")) {
             treeQFlips = new TTree("treeSS_QFlips", "Tree for same-sign cut MVA");
             treeQFlips->Branch("evtWeight", &evtWeight, "evtWeight/F");
             treeQFlips->Branch("flavorCat", &flavorCat, "flavorCat/I");
@@ -184,7 +184,7 @@ void fcncAnalyzer::Begin(TTree* tree)
             treeQFlips->Branch("dileptonDR", &dileptonDROS, "dileptonDR/F");
         }
 
-        if (doFakes && (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON")) {
+        if (doFakes && (suffix == "TEST" || suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON")) {
             treeFakes3l = new TTree("tree3l_Fakes", "Tree for 3l cut MVA");
             treeFakes3l->Branch("evtWeight", &evtWeight, "evtWeight/F");
             treeFakes3l->Branch("flavorCat", &flavorCat, "flavorCat/I");
@@ -972,10 +972,10 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
         // Fill MVA trees //
         SetVarsMVA(leptons, bJetsM, jets);
         if (doMVATree) {
-            if (histDir.substr(0, 5) == "Fakes" && isRealData && doFakes) {
-                //cout << jetMult << endl;
+            if (histDir.find("Fakes") != string::npos && isRealData && doFakes) {
                 treeFakes3l->Fill();
-            } else {
+            } else if (histDir.find("AIC") != string::npos) {
+                cout << histDir << endl;
                 tree3l->Fill();
             }
         }
@@ -983,12 +983,14 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
         // Fill MVA trees //
         SetVarsMVA(leptons, bJetsM, jets);
         if (doMVATree) {
-            if (histDir.substr(0, 5) == "Fakes" && isRealData && doFakes)
+            if (histDir.find("Fakes") != string::npos && isRealData && doFakes) {
                 treeFakesSS->Fill();
-            else if (histDir == "QFlips" && isRealData && doQFlips)
+            } else if (histDir == "QFlips" && isRealData && doQFlips) {
                 treeQFlips->Fill();
-            else
+            } else {
+                cout << histDir << endl;
                 treeSS->Fill();
+            }
         }
     }
 
@@ -1113,7 +1115,7 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
     //!! MET and HT cut !!//
     if (leptons.size() == 2){
         if (leptons[0].Charge() == leptons[1].Charge()) 
-            if (recoMET->Mod() < metCut[0] && HT < htCut[0])
+            if ((recoMET->Mod() < metCut[0] && HT < htCut[0]) || recoMET->Mod() < 30.)
                 return true;
     } else if (leptons.size() == 3) {
         if (recoMET->Mod() < metCut[1] && HT < htCut[1]) 
@@ -1263,6 +1265,7 @@ void fcncAnalyzer::DoFakes(vObj& leptons, vObj& fakeables, vector<TCJet>& jets, 
             else if (doFakeMC)                                                 
                 AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, fakeCat + "Fakes_" + suffix);
 
+            // Fudge for high jet muon fakes
             if (leptonsPlusFakes[0].Type() == "muon" && leptonsPlusFakes[1].Type() == "muon" && jets.size() >= 2)
                 evtWeight /= 0.75;
         }
@@ -1659,7 +1662,7 @@ void fcncAnalyzer::LeptonPlots(vObj& leptons, vector<TCJet>& jets, vector<TCJet>
     histManager->Fill2DHist(HT, MET,
             "h2_metVsHt", "MET vs HT;HT;MET", 50, 0., 1000., 35, 0., 350.); 
     histManager->Fill2DHist(HTs, MET,
-            "h2_metVsHts", "MET vs HTs;HTs;MET", 50, 0., 1000., 35, 0., 350.); 
+            "h2_metVsHts", "MET vs HTs;HTs;MET", 25, 0., 500., 15, 0., 150.); 
     histManager->Fill2DHist(sqrt(HT), MET,
             "h2_metVsSqrtHt", "MET vs #sqrt{HT};#sqrt{HT};MET", 50, 0., 40., 35, 0., 350.); 
 }
@@ -1733,7 +1736,7 @@ void fcncAnalyzer::JetPlots(vector<TCJet>& jets, vector<TCJet>& bJets)
         histManager->Fill1DHist(jets[i].Pt(),
                 "h1_Jet" + index + "Pt", "p_{T} of jet" + index + ";p_{T}^{j" + index + "};Entries / 10 GeV", 29, 10., 300.);
         histManager->Fill1DHist(jets[i].Eta(),
-                "h1_Jet" + index + "Eta", "#eta of jet" + index + ";#eta^{j" + index + "};Entries / bin", 100, -5., 5.);
+                "h1_Jet" + index + "Eta", "#eta of jet" + index + ";#eta^{j" + index + "};Entries / bin", 25, -2.5, 2.5);
         histManager->Fill1DHist(jets[i].Phi(),
                 "h1_Jet" + index + "Phi", "#phi of jet" + index + ";#phi^{j" + index + "};Entries / bin", 36, -TMath::Pi(), TMath::Pi());
 

@@ -270,10 +270,10 @@ scaleDict['2012']['eemuAIC']            = 1.
 scaleDict['2012']['emumuAIC']           = 1.
 scaleDict['2012']['mumumuAIC']          = 1.
 scaleDict['2012']['Fakes']              = 1.
-scaleDict['2012']['eFakes']             = 2.
+scaleDict['2012']['eFakes']             = 1.
 scaleDict['2012']['muFakes']            = 1.
-scaleDict['2012']['llFakes']            = 1.  
-scaleDict['2012']['QFlips']             = 1.1
+scaleDict['2012']['llFakes']            = 1. 
+scaleDict['2012']['QFlips']             = 1.
 
 combineDict = {}
 combineDict['FCNH']             = ['FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_ZZ_t', 'FCNC_ZZ_tbar', 'FCNC_TauTau_t', 'FCNC_TauTau_tbar']
