@@ -13,7 +13,7 @@ const bool      doGenPrint  = false;
 
 // MVA switches
 const bool      doMVACut    = true;
-const bool      doMVATree   = false;
+const bool      doMVATree   = true;
 
 // Data-driven BG estimation switches
 bool doCR       = true;
@@ -182,6 +182,8 @@ void fcncAnalyzer::Begin(TTree* tree)
             treeQFlips->Branch("bJetMult", &bJetMult, "bJetMult/I");
             treeQFlips->Branch("dileptonMass", &dileptonMassOS, "dileptonMass/F");
             treeQFlips->Branch("dileptonDR", &dileptonDROS, "dileptonDR/F");
+            treeQFlips->Branch("jets",&selJets, 6400, 0);
+            treeQFlips->Branch("leptons",&selLeptons, 6400, 0);
         }
 
         if (doFakes && (suffix == "TEST" || suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON")) {
@@ -198,6 +200,8 @@ void fcncAnalyzer::Begin(TTree* tree)
             treeFakes3l->Branch("trileptonMass", &trileptonMass, "trileptonMass/F");
             treeFakes3l->Branch("dileptonMassOS", &dileptonMassOS, "dileptonMassOS/F");
             treeFakes3l->Branch("dileptonDROS", &dileptonDROS, "dileptonDROS/F");
+            treeFakes3l->Branch("jets",&selJets, 6400, 0);
+            treeFakes3l->Branch("leptons",&selLeptons, 6400, 0);
 
             treeFakesSS = new TTree("treeSS_Fakes", "Tree for same-sign cut MVA");
             treeFakesSS->Branch("evtWeight", &evtWeight, "evtWeight/F");
@@ -211,6 +215,8 @@ void fcncAnalyzer::Begin(TTree* tree)
             treeFakesSS->Branch("bJetMult", &bJetMult, "bJetMult/I");
             treeFakesSS->Branch("dileptonMass", &dileptonMassOS, "dileptonMass/F");
             treeFakesSS->Branch("dileptonDR", &dileptonDROS, "dileptonDR/F");
+            treeFakesSS->Branch("jets",&selJets, 6400, 0);
+            treeFakesSS->Branch("leptons",&selLeptons, 6400, 0);
         }
     }
 
@@ -988,7 +994,6 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
             } else if (histDir == "QFlips" && isRealData && doQFlips) {
                 treeQFlips->Fill();
             } else {
-                cout << histDir << endl;
                 treeSS->Fill();
             }
         }
@@ -1114,9 +1119,8 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
 
     //!! MET and HT cut !!//
     if (leptons.size() == 2){
-        if (leptons[0].Charge() == leptons[1].Charge()) 
-            if ((recoMET->Mod() < metCut[0] && HT < htCut[0]) || recoMET->Mod() < 30.)
-                return true;
+        if ((recoMET->Mod() < metCut[0] && HT < htCut[0]) || recoMET->Mod() < 30.)
+            return true;
     } else if (leptons.size() == 3) {
         if (recoMET->Mod() < metCut[1] && HT < htCut[1]) 
             return true;

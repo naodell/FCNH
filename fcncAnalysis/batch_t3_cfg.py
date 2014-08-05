@@ -60,7 +60,7 @@ if period == '2012':
         cfg('muEG_2012A', '{0}/MuEG_Run2012A'.format(dataDir), 40, 'DATA_MUEG muEG 2012'),
         cfg('muEG_2012B', '{0}/MuEG_Run2012B'.format(dataDir), 40, 'DATA_MUEG muEG 2012'),
         cfg('muEG_2012C', '{0}/MuEG_Run2012C'.format(dataDir), 40, 'DATA_MUEG muEG 2012'),
-        cfg('muEG_2012D', '{0}/MuEG_Run2012D'.format(dataDir), 45, 'DATA_MUEG muEG 2012')
+        #cfg('muEG_2012D', '{0}/MuEG_Run2012D'.format(dataDir), 45, 'DATA_MUEG muEG 2012')
         ])
 
     bg.extend([
