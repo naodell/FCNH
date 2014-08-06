@@ -13,7 +13,7 @@ const bool      doGenPrint  = false;
 
 // MVA switches
 const bool      doMVACut    = true;
-const bool      doMVATree   = true;
+const bool      doMVATree   = false;
 
 // Data-driven BG estimation switches
 bool doCR       = true;
@@ -1012,13 +1012,15 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
             leptons.size() == 2 
             && leptons[0].Charge() == leptons[1].Charge()
             && leptons[0].Type() == "electron" && leptons[1].Type() == "electron"
-            && (fabs(leptons[0].Eta()) > 2.1 || fabs(leptons[1].Eta()) > 2.1)
-       ) 
-        return true;
+       ) {
+            if (fabs(leptons[0].Eta()) > 2.1 || fabs(leptons[1].Eta()) > 2.1) 
+                return true;
+            //if (fabs((leptons[0] + leptons[1]).M() - 91.2) > 15)
+            //    return true;
+    }
 
 
     // Preselection Plots
-
     MakePlots(leptons, jets, bJetsM, *recoMET, 0);
     SetYields(5);
 

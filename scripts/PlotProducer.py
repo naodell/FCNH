@@ -223,6 +223,7 @@ class PlotProducer(AnalysisTools):
         xAxisName = hist1.GetXaxis().GetTitle()
         hRatio = hist1.Clone()
         hRatio.Divide(hist2)
+        hRatio.GetYaxis().SetTitle('Data/BG')
 
         #hRatio = r.TH1D('hRatio', ';{0};Data/BG'.format(xAxisName), nBins, hist1.GetBinLowEdge(1), hist1.GetBinLowEdge(nBins + 1))
         #hRatio.Divide(hist1, hist2)
