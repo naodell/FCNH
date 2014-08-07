@@ -1919,7 +1919,7 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
 
     if (electrons[1].Pt() >= 10. && electrons[1].Pt() < 30.)
         iPt2 = 1;
-    else if (electrons[1].Pt() >= 25. && electrons[1].Pt() < 60.)
+    else if (electrons[1].Pt() >= 30. && electrons[1].Pt() < 60.)
         iPt2 = 2;
     else if (electrons[1].Pt() >= 60.)
         iPt2 = 3;

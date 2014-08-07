@@ -9,25 +9,31 @@ seed = int(str(time.time())[6:10])
 Carries out a random grid search to optimize rectangular cuts in 2D plane.
 '''
 
+class yields():
+    def __init(self, category):
+        self._category  = ''
+        self._samples   = []
+        self._yields    = []
+
+#def card_producer(yields):
+    # 
+
 if len(sys.argv) > 0:
     batch   = sys.argv[1]
 else:
     print 'A batch and ratio type must be specified.  Otherwise, do some hacking so this thing knows about your inputs.'
     exit()
 
-nToys   = 5000
+categories  = ['ee', 'emu', 'mumu']
+datasets    = ['fcnh', 'irr', 'Fakes', 'QFlips']
 
-bgList  = []
-bgList.extend(['muFakes', 'eFakes', 'llFakes']) # Fakes
-bgList.extend(['QFlips']) # electron charge misID
-bgList.extend(['WZJets3LNu']) # WZ to 3l+nu
-bgList.extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']) # ZZ to 4l
-bgList.extend(['ttZ', 'ttW', 'ttG']) # Top
+dataDict = {}
+dataDict['Fakes']     = ['muFakes', 'eFakes', 'llFakes'] # Fakes
+dataDict['QFlips']    = ['QFlips'] # electron charge misID
+dataDict['irr']       = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG']) # Irreducible backgrounds
+dataDict['fcnh']      = ['FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_ZZ_t', 'FCNC_ZZ_tbar', 'FCNC_TauTau_t', 'FCNC_TauTau_tbar'] # signal
 
-sigList = ['FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_ZZ_t', 'FCNC_ZZ_tbar', 'FCNC_TauTau_t', 'FCNC_TauTau_tbar']
-
-varList = ['metVsHt']#, 'TrileptonMVsDileptonMOS']
-catList = ['ss_inclusive']#, 'ss_inclusive']
+varList = ['metVsHt']
 
 hFile = r.TFile('fcncAnalysis/combined_histos/fcnh_cut3_2012_{0}.root'.format(batch), 'OPEN')
 
@@ -39,38 +45,27 @@ canvas.SetGridy()
 paramFile = open('scripts/fcncParams.pkl', 'rb')
 scales    = pickle.load(paramFile)
 
-for var in varList:
+for category in categories:
 
-    # Get signal histograms
-    sumSig = r.TH2D()
-    for i,sample in enumerate(sigList):
-        hist = hFile.GetDirectory(catList[0] + '/' + sample).Get('h2_' + var)
+    # Get histograms for different samples 
+    histDict = {}
+    for dataset in datasets:
+        histDict[dataset] = []
 
-        if not hist:
-            continue
+        sumBG = r.TH2D()
+        for i,sample in enumerate(dataDict[dataset]):
+            hist = hFile.GetDirectory(category + '/' + sample).Get('h2_' + var)
 
-        hist.Scale(scales['2012'][sample])
+            if not hist:
+                continue
 
-        if i is 0:
-            sumSig = hist
-        else:
-            sumSig.Add(hist)
+            #print sample
+            hist.Scale(scales['2012'][sample])
 
-    # Get background sums
-    sumBG = r.TH2D()
-    for i,sample in enumerate(bgList):
-        hist = hFile.GetDirectory(catList[0] + '/' + sample).Get('h2_' + var)
-
-        if not hist:
-            continue
-
-        #print sample
-        hist.Scale(scales['2012'][sample])
-
-        if i is 0:
-            sumBG = hist
-        else:
-            sumBG.Add(hist)
+            if i is 0:
+                sumBG = hist
+            else:
+                sumBG.Add(hist)
 
     xLow    = sumBG.GetXaxis().GetXmin() 
     xHigh   = sumBG.GetXaxis().GetXmax() 
