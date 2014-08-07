@@ -1908,18 +1908,18 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
 
     // Set iPt bins for leading and trailing electrons
     unsigned iPt1, iPt2;
-    if (electrons[0].Pt() >= 10. && electrons[0].Pt() < 30.)
+    if (electrons[0].Pt() >= 10. && electrons[0].Pt() < 35.)
         iPt1 = 1;
-    else if (electrons[0].Pt() >= 30. && electrons[0].Pt() < 60.)
+    else if (electrons[0].Pt() >= 35. && electrons[0].Pt() < 60.)
         iPt1 = 2;
     else if (electrons[0].Pt() >= 60.)
         iPt1 = 3;
     else 
         return;
 
-    if (electrons[1].Pt() >= 10. && electrons[1].Pt() < 30.)
+    if (electrons[1].Pt() >= 10. && electrons[1].Pt() < 35.)
         iPt2 = 1;
-    else if (electrons[1].Pt() >= 30. && electrons[1].Pt() < 60.)
+    else if (electrons[1].Pt() >= 35. && electrons[1].Pt() < 60.)
         iPt2 = 2;
     else if (electrons[1].Pt() >= 60.)
         iPt2 = 3;

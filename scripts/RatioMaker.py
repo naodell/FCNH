@@ -184,7 +184,7 @@ class RatioMaker(AnalysisTools):
             self._hists.append(h2_Eff)
 
             ### Hack for lowest pt barrel-barrel bin ###
-            h2_Eff.SetBinContent(1,1,0.0002)
+            h2_Eff.SetBinContent(1,1,0.0001)
             h2_Eff.SetBinError(1,1,0.0001)
 
             ### Guess at values of p(i) from diagonal bins, i.e., p(i) = 0.5*P(i,j)
