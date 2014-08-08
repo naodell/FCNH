@@ -948,9 +948,11 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
         // multilepton SUSY cross-check (
         if (
                 leptons.size() == 3
+                && ossfTagged
+                && (lep1 + lep2).M() < 75.
                 && HT < 200.
                 && MET > 50. && MET < 100.
-                && bJetsM.size() == 0
+                && bJetsM.size() >= 1
            ) {
             MakePlots(leptons, jets, bJetsM, *recoMET, 6);
             SetYields(11);
@@ -1908,18 +1910,18 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
 
     // Set iPt bins for leading and trailing electrons
     unsigned iPt1, iPt2;
-    if (electrons[0].Pt() >= 10. && electrons[0].Pt() < 35.)
+    if (electrons[0].Pt() >= 10. && electrons[0].Pt() < 30.)
         iPt1 = 1;
-    else if (electrons[0].Pt() >= 35. && electrons[0].Pt() < 60.)
+    else if (electrons[0].Pt() >= 30. && electrons[0].Pt() < 60.)
         iPt1 = 2;
     else if (electrons[0].Pt() >= 60.)
         iPt1 = 3;
     else 
         return;
 
-    if (electrons[1].Pt() >= 10. && electrons[1].Pt() < 35.)
+    if (electrons[1].Pt() >= 10. && electrons[1].Pt() < 30.)
         iPt2 = 1;
-    else if (electrons[1].Pt() >= 35. && electrons[1].Pt() < 60.)
+    else if (electrons[1].Pt() >= 30. && electrons[1].Pt() < 60.)
         iPt2 = 2;
     else if (electrons[1].Pt() >= 60.)
         iPt2 = 3;
