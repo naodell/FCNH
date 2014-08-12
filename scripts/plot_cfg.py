@@ -25,7 +25,7 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-cutList.extend(['2_Z_veto', '3_2jet', '4_MET'], '.', 'CR_WZ', 'CR_SUSY'])#, '5_BDT'])
+#cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.', 'CR_WZ'])#, 'CR_SUSY'])#, '5_BDT'])
 #cutList.extend(['.', '.', '.', 'X_0jet', 'X_1jet'])
 
 crList      = []#'CR_WZ', 'CR_SUSY', 'CR_ZFake']
@@ -45,9 +45,9 @@ do2D        = True
 doInclusive = False
 doOS        = False
 doSS        = True
-do3l        = True
+do3l        = False
 
-doYields    = True
+doYields    = False
 
 ### Categories to be plotted ###
 #catSS       = ['ss_ee']
@@ -562,7 +562,8 @@ if doYields:
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
         #yieldTable.add_datasets(['Irreducible', 'Fakes', 'QFlips'], Clear = True)
-        yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET']# + 5*['.'] + ['0-jet', '1-jet']# + 7*['.'] + ['BDT']
+        #yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET']# + 5*['.'] + ['0-jet', '1-jet']# + 7*['.'] + ['BDT']
+        yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET', '.', 'WZ', 'SUSY']
 
         for category in catSS:
 

@@ -30,6 +30,7 @@ class HistManager : public TObject {
         virtual string  str(int i) {return static_cast<ostringstream*>( &(ostringstream() << i) )->str();}
 
         void SetWeight(float);
+        void SetWeight(float, float);
         void SetWeightError(float);
         void SetFileNumber(unsigned);
         void SetDirectory(string);

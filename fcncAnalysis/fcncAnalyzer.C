@@ -948,8 +948,8 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
         // multilepton SUSY cross-check (
         if (
                 leptons.size() == 3
-                && ossfTagged
-                && (lep1 + lep2).M() < 75.
+                //&& ossfTagged
+                //&& (lep1 + lep2).M() < 75.
                 && HT < 200.
                 && MET > 50. && MET < 100.
                 && bJetsM.size() >= 1
@@ -1123,7 +1123,8 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
 
     //!! MET and HT cut !!//
     if (leptons.size() == 2){
-        if ((recoMET->Mod() < metCut[0] && HT < htCut[0]) || recoMET->Mod() < 30.)
+        //if ((recoMET->Mod() < metCut[0] && HT < htCut[0]) || recoMET->Mod() < 30.)
+        if (recoMET->Mod() < metCut[0] || HT < htCut[0])
             return true;
     } else if (leptons.size() == 3) {
         if (recoMET->Mod() < metCut[1] && HT < htCut[1]) 

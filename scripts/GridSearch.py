@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-import subprocess, shlex, time, pickle, math, sys
+import subprocess, shlex, time, math, sys, os, pickle
 from array import array
 import ROOT as r
 
@@ -9,131 +9,124 @@ seed = int(str(time.time())[6:10])
 Carries out a random grid search to optimize rectangular cuts in 2D plane.
 '''
 
-class yields():
-    def __init(self, category):
+class CatData():
+    def __init__(self, category, samples):
         self._category  = ''
-        self._samples   = []
-        self._yields    = []
+        self._samples   = samples
+        self._yields    = dict(zip(self._samples, len(self._samples)*[0.]))
 
-#def card_producer(yields):
-    # 
+    def add_data(self, sample, sampleYield):
+        self._yields[sample] = sampleYield
 
-if len(sys.argv) > 0:
-    batch   = sys.argv[1]
-else:
-    print 'A batch and ratio type must be specified.  Otherwise, do some hacking so this thing knows about your inputs.'
-    exit()
 
-categories  = ['ee', 'emu', 'mumu']
-datasets    = ['fcnh', 'irr', 'Fakes', 'QFlips']
+def card_producer(yields, categories, outFile):
+     
+    nChannels   = 1
 
-dataDict = {}
-dataDict['Fakes']     = ['muFakes', 'eFakes', 'llFakes'] # Fakes
-dataDict['QFlips']    = ['QFlips'] # electron charge misID
-dataDict['irr']       = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG']) # Irreducible backgrounds
-dataDict['fcnh']      = ['FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_ZZ_t', 'FCNC_ZZ_tbar', 'FCNC_TauTau_t', 'FCNC_TauTau_tbar'] # signal
+    ### Need to set observed to nBG ###
 
-varList = ['metVsHt']
+    outFile.write('imax {0}  number of channels'.format(nChannels))
+    outFile.write('jmax *  number of backgrounds (\'*\' = automatic)')
+    outFile.write('kmax *  number of nuisance parameters (sources of systematical uncertainties)')
+    outFile.write('------------')
+    outFile.write('bin             {0}'.format(categories))
+    outFile.write('observation     {0}'.format(nObs))
+    outFile.write('------------')
+    outFile.write('bin             {0}'.format(categories))
+    outFile.write('process         {0}'.format(backgrounds*nCats))
+    outFile.write('process         {0}'.format('0.\t'*nCats))
+    outFile.write('rate            {0}'.format(nBG))
+    outFile.write('------------')
 
-hFile = r.TFile('fcncAnalysis/combined_histos/fcnh_cut3_2012_{0}.root'.format(batch), 'OPEN')
+    #lumi    lnN     1.026    1.026  --      --      1.026    1.026  --      --      1.026   1.026   --      --      # 2.6% lumi uncertainty, affects signal and MC-driven background
+    #jes     lnN     1.005   1.005   --      --      1.005   1.005   --      --      1.005   1.005   --      --      # 0.5% JES uncertainty (verify this)
+    #MET     lnN     1.04    1.04    --      --      1.04    1.04    --      --      1.04    1.04    --      --      # 1% MET resolution uncertainty (verify this)
+    #WZ      lnN     --      1.01    --      --      --      1.01    --      --      --      1.01    --      --      # 1% error on irreducible background from WZ contribution
+    #ttbar   lnN     1.01    --      --      --      1.01    --      --      --      1.01    --      --      --      # 1% uncertainty on ttbar simulation
+    #mu_eff  lnN     1.014   1.014   --      --      1.014   1.014   --      --      1.014   1.014   --      --      # 5% uncertainty on efficiencies (correlated just for simplicity)
+    #el_eff  lnN     1.008   1.008   --      --      1.008   1.008   --      --      1.008   1.008   --      --      # 5% uncertainty on efficiencies (correlated just for simplicity)
+    #qFlips  lnN     --      --      --      1.20     --      --      --      1.20     --      --      --      --    # 1% uncertainty charge flips
+    #fakes   lnN     --      --      1.20     --      --      --      1.20     --      --      --      1.20    --    # 5% flat uncertainty on fake rate estimation
+    #pileup  lnN     1.01    1.01    --      --      1.01    1.01    --      --      1.01    1.01    --      --      # 1% pileup uncertainty
 
-canvas = r.TCanvas('canvas', 'canvas', 800, 600)
-canvas.SetGridx()
-canvas.SetGridy()
 
-# Scale factors
-paramFile = open('scripts/fcncParams.pkl', 'rb')
-scales    = pickle.load(paramFile)
+if __name__ == '__main__':
+    if len(sys.argv) > 0:
+        batch   = sys.argv[1]
+    else:
+        print 'A batch and ratio type must be specified.  Otherwise, do some hacking so this thing knows about your inputs.'
+        exit()
 
-for category in categories:
+    categories  = ['ss_ee', 'ss_emu', 'ss_mumu']
+    datasets    = ['obs', 'fcnh', 'irr']#, 'Fakes', 'QFlips']
+    yields  = {}
 
-    # Get histograms for different samples 
-    histDict = {}
-    for dataset in datasets:
-        histDict[dataset] = []
+    dataDict = {}
+    dataDict['obs']     = ['DATA_ELECTRON', 'DATA_MUON', 'DATA_MUEG'] # Observed
+    dataDict['fcnh']    = ['FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_ZZ_t', 'FCNC_ZZ_tbar', 'FCNC_TauTau_t', 'FCNC_TauTau_tbar'] # signal
+    dataDict['irr']     = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG'] # Irreducible backgrounds
+    dataDict['Fakes']   = ['muFakes', 'eFakes', 'llFakes'] # Fakes
+    dataDict['QFlips']  = ['QFlips'] # electron charge misID
 
-        sumBG = r.TH2D()
-        for i,sample in enumerate(dataDict[dataset]):
-            hist = hFile.GetDirectory(category + '/' + sample).Get('h2_' + var)
+    variable = 'metVsHt'
 
-            if not hist:
-                continue
+    # input file
+    hFile = r.TFile('fcncAnalysis/combined_histos/fcnh_cut3_2012_{0}.root'.format(batch), 'OPEN')
+    # Scale factors
+    paramFile = open('scripts/fcncParams.pkl', 'rb')
+    scales    = pickle.load(paramFile)
 
-            #print sample
-            hist.Scale(scales['2012'][sample])
+    for category in categories:
+        # Get histograms for different samples 
+        histDict = {}
+        sumBG = dict(zip(datasets, len(datasets)*[]))
+        for dataset in datasets:
+            histDict[dataset] = []
 
-            if i is 0:
-                sumBG = hist
-            else:
-                sumBG.Add(hist)
+            sumBG[dataset] = r.TH2D()
+            for i,sample in enumerate(dataDict[dataset]):
+                #print category, sample, variable
+                hist = hFile.GetDirectory(category + '/' + sample).Get('h2_' + variable)
 
-    xLow    = sumBG.GetXaxis().GetXmin() 
-    xHigh   = sumBG.GetXaxis().GetXmax() 
-    yLow    = sumBG.GetYaxis().GetXmin() 
-    yHigh   = sumBG.GetYaxis().GetXmax() 
+                if not hist:
+                    continue
 
-    xDiv    = sumBG.GetNbinsX()
-    yDiv    = sumBG.GetNbinsY()
+                #print sample
+                hist.Scale(scales['2012'][sample])
 
-    #print 'Using random seed {}'.format(seed)
-    rndNum = r.TRandom3(seed)
-    effSig  = []
-    effBG   = []
+                if i is 0:
+                    sumBG[dataset] = hist
+                else:
+                    sumBG[dataset].Add(hist)
 
-    maxSig      = [0, 0, 0]
-    maxSigCuts  = [0, 0]
+        xLow    = sumBG[datasets[0]].GetXaxis().GetXmin() 
+        xHigh   = sumBG[datasets[0]].GetXaxis().GetXmax() 
+        yLow    = sumBG[datasets[0]].GetYaxis().GetXmin() 
+        yHigh   = sumBG[datasets[0]].GetYaxis().GetXmax() 
+        xBins   = sumBG[datasets[0]].GetNbinsX()
+        yBins   = sumBG[datasets[0]].GetNbinsY()
 
-    maxEffRatio = [0, 0, 0]
-    maxEffCuts  = [0, 0]
+        xBinning = (xHigh - xLow)/xBins
+        yBinning = (yHigh - yLow)/yBins
+        xCutHigh = xBins
+        yCutHigh = yBins
 
-    xCutHigh = xDiv
-    yCutHigh = yDiv
-    count = 0
-    #for xCutLow in range(1,xDiv):
-    for xCutLow in range(1,xDiv):
-        for yCutLow in range(1,yDiv):
+        for xCutLow in range(1, int(math.ceil(xBins/2.))):
+            for yCutLow in range(1,int(math.ceil(yBins/2.))):
+                cut = '{0:d}-{1:d}_{2:d}-{3:d}'.format(int(xCutLow*xBinning), int(xCutHigh*xBinning), int(yCutLow*yBinning), int(yCutHigh*yBinning))
 
-            numSig  = sumSig.Integral(xCutLow, xCutHigh, yCutLow, yCutHigh)
-            denSig  = sumSig.Integral()
-            numBG   = sumBG.Integral(xCutLow, xCutHigh, yCutLow, yCutHigh)
-            denBG   = sumBG.Integral()
+                if cut in yields.keys():
+                    yields[cut][category] = CatData(category, datasets)
+                else:
+                    yields[cut] = {category:CatData(category, datasets)}
 
-            effSig.append(numSig/denSig) 
-            effBG.append(numBG/denBG) 
+                for dataset in datasets:
+                    numEvents = sumBG[dataset].Integral(xCutLow, xBins, yCutLow, yBins)
+                    yields[cut][category].add_data(dataset, numEvents)
 
-            #print (xCutLow, xCutHigh), (yCutLow, yCutHigh), (numSig, denSig), (numBG, denBG), significance, numSig*denBG/(denSig*numBG)
-            if numSig != 0 or numBG != 0:
-                significance = numSig/math.sqrt(numSig + numBG)
-                if significance > maxSig[0]:
-                    maxSig      = [significance, effSig[count], effBG[count]]
-                    maxSigCuts  = [xHigh*(xCutLow/float(xDiv)), xHigh*(xCutHigh/float(xDiv)), yHigh*(yCutLow/float(yDiv)), yHigh*(yCutHigh/float(yDiv))]
+    print yields['480-1000_170-350']['ss_ee']._yields
 
-                effRatio = numSig/denSig - numBG/denBG                
-                print effRatio, xCutLow, yCutLow
-                if effRatio > maxEffRatio[0]:
-                    maxEffRatio = [effRatio, effSig[count], effBG[count]]
-                    maxEffCuts  = [xHigh*(xCutLow/float(xDiv)), xHigh*(xCutHigh/float(xDiv)), yHigh*(yCutLow/float(yDiv)), yHigh*(yCutHigh/float(yDiv))]
-
-            count += 1
-
-    print maxSig, maxSigCuts
-    print maxEffRatio, maxEffCuts
-
-    sumSig.Draw('colz')
-    canvas.SaveAs('plots/sumSig_' + var + '_test.png')
-    sumBG.Draw('colz')
-    canvas.SaveAs('plots/sumBG_' + var + '_test.png')
-
-    line  = r.TLine(0., 0., 1.1, 1.1)
-    line.SetLineColor(r.kRed)
-    line.SetLineWidth(2)
-
-    g_eff = r.TGraph(len(effSig), array('d', effBG), array('d', effSig))
-    g_eff.SetTitle(var + ' ROC;#varepsilon_{BG};#varepsilon_{signal}')
-    g_eff.SetMarkerStyle(21)
-    g_eff.SetMarkerColor(r.kBlue)
-    g_eff.Draw('AP')
-    line.Draw('same')
-
-    canvas.SaveAs('plots/eff_' + var + '_test.png')
+    #for i in range(nCuts):
+    #    dataCard = open('test.txt', 'w')
+    #    card_producer(yields, categories, dataCard)
 

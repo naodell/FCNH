@@ -433,8 +433,8 @@ void Selector::ElectronSelector(TClonesArray* electrons)
                 || fabs(thisElec->Eta()) > 2.5 
                 || !thisElec->PassConversionVeto() 
                 || fabs(thisElec->Dz(_selVertices[0])) > 0.05 
-                //|| fabs(thisElec->Dxy(_selVertices[0])) > 0.005
-                || fabs(thisElec->Dxy(_selVertices[0])) > 0.015
+                || fabs(thisElec->Dxy(_selVertices[0])) > 0.005
+                //|| fabs(thisElec->Dxy(_selVertices[0])) > 0.015
            ) continue;
 
         float pfPhoIso_corr = ElectronPhoIsoHack(*thisElec);
@@ -602,7 +602,7 @@ void Selector::JetSelector(TClonesArray* jets)
         // Apply JER corrections; maybe better to do in the analysis code...
         TCJet *corJet = this->JERCorrections(thisJet);
 
-        if (fabs(corJet->Eta()) < 2.4) {
+        if (fabs(corJet->Eta()) < 2.5) {
             if (
                     corJet->Pt() > _jetPtCuts[0]
                     && corJet->NumConstit()  > 1

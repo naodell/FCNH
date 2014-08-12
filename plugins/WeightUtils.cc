@@ -481,7 +481,8 @@ float WeightUtils::GetQFlipWeight(unsigned nJets, string weightType)
         for (unsigned i = 0; i < _leptons.size(); ++i) {
             if (_leptons[i].Type() != "electron") continue;
 
-            float electronPt = _leptons[i].Pt();
+            float electronPt    = _leptons[i].Pt();
+            float electronEta   = _leptons[i].Eta();
             //if (fabs(_leptons[i].Eta()) < 0.8) {
             //    weight += g_QFlipBB->Eval(electronPt);
             //} else if (fabs(_leptons[i].Eta()) >= 0.8 && fabs(_leptons[i].Eta()) < 1.479) {
@@ -492,34 +493,36 @@ float WeightUtils::GetQFlipWeight(unsigned nJets, string weightType)
             if (nJets < 2) {
                 if (fabs(_leptons[i].Eta()) < 0.8)
                     weight += g_QFlipBB_Low->Eval(electronPt);
-                else if (fabs(_leptons[i].Eta()) >= 0.8 && fabs(_leptons[i].Eta()) < 1.479)
+                else if (fabs(electronEta) >= 0.8 && fabs(electronEta) < 1.479)
                     weight += g_QFlipBE_Low->Eval(electronPt);
-                else if (fabs(_leptons[i].Eta()) >= 1.479)
+                else if (fabs(electronEta) >= 1.479)
                     weight += g_QFlipEE_Low->Eval(electronPt);
             } else if (nJets >= 2) {
-                if (fabs(_leptons[i].Eta()) < 0.8)
+                if (fabs(electronEta) < 0.8)
                     weight += g_QFlipBB_High->Eval(electronPt);
-                else if (fabs(_leptons[i].Eta()) >= 0.8 && fabs(_leptons[i].Eta()) < 1.479)
+                else if (fabs(electronEta) >= 0.8 && fabs(electronEta) < 1.479)
                     weight += g_QFlipBE_High->Eval(electronPt);
-                else if (fabs(_leptons[i].Eta()) >= 1.479)
+                else if (fabs(electronEta) >= 1.479)
                     weight += g_QFlipEE_High->Eval(electronPt);
             }
+            if (i == 0 && electronPt < 25.) weight *= 0.5;
         }
 
+        // correction for low pt-bins
+        
+    
+
+
         // correction for jet multiplicity
-        float jet_corrections[] = {1., 1.2};//, 1.6, 1.8};
+        float jet_corrections[] = {1., 1.2};
         if (nJets == 0)
             weight *= jet_corrections[0];
-        //else if (nJets == 1)
-        //    weight *= jet_corrections[1];
-        //else if (nJets == 2)
-        //    weight *= jet_corrections[2];
         else if (nJets >= 1)
             weight *= jet_corrections[1];
-}
+    }
 
-//cout << weight << endl;
-return weight;
+    //cout << weight << endl;
+    return weight;
 }
 
 float WeightUtils::GetAICWeight(const TCPhoton& photon, const string& type)

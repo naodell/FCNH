@@ -18,6 +18,12 @@ void HistManager::SetWeight(float w)
     _evtWeight = w;
 }
 
+void HistManager::SetWeight(float w, float e)
+{ 
+    _evtWeight = w;
+    _weightErr = e;
+}
+
 void HistManager::SetWeightError(float e)
 { 
     _weightErr = e;

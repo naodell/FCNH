@@ -233,7 +233,8 @@ class RatioMaker(AnalysisTools):
                 #for prob in probs[0]: print '{0:.3f}'.format(100*prob),
                 #print ''
 
-            ptBins = [20., 45., 105.]
+            ### Set datapoints to bin centers, should possibly be done in smarter way 
+            ptBins = [25., 50., 105.]
             g_ProbBB = r.TGraphErrors(len(ptBins), array('f', ptBins),  array('f', probs[0][:nBinsX/3]), \
                                                    array('f', [0.1 for bin in ptBins]), array('f', probs[1][:nBinsX/3]))
             g_ProbBB.SetName('g_{0}_BB'.format(key))
