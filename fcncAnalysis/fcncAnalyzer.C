@@ -42,8 +42,8 @@ const float   muPtCut[]         = {10., 3.};
 const float   elePtCut[]        = {10., 7.};
 const float   phoPtCut[]        = {10., 10.};
 const float   leptonPtCut[]     = {20., 10.};
-const float   metCut[]          = {40., 30.};
-const float   htCut[]           = {140., 0.};
+const float   metCut[]          = {60., 30.};
+const float   htCut[]           = {100., 0.};
 const float   massCut           = 30.;
 const float   bJetVeto          = 1e9;
 
@@ -1266,17 +1266,25 @@ void fcncAnalyzer::DoFakes(vObj& leptons, vObj& fakeables, vector<TCJet>& jets, 
                 && leptonsPlusFakes[0].Pt() > leptonPtCut[0] 
                 && leptonsPlusFakes[1].Pt() > leptonPtCut[1]
            ) {
+
+            // Correction for high jet muon fakes
             if (leptonsPlusFakes[0].Type() == "muon" && leptonsPlusFakes[1].Type() == "muon" && jets.size() >= 2)
                 evtWeight *= 0.75;
+            // Correction for same-sign electron fakes
+            if (leptonsPlusFakes[0].Type() == "electron" && leptonsPlusFakes[1].Type() == "electron")
+                evtWeight *= 2.;
 
             if (suffix == "DATA_ELECTRON" || suffix == "DATA_MUEG" || suffix == "DATA_MUON" || suffix == "TEST") 
                 AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, fakeCat + "Fakes");
             else if (doFakeMC)                                                 
                 AnalysisSelection(leptonsPlusFakes, jets, bJetsM, bJetsL, fakeCat + "Fakes_" + suffix);
 
-            // Fudge for high jet muon fakes
+            // Correction for high jet muon fakes
             if (leptonsPlusFakes[0].Type() == "muon" && leptonsPlusFakes[1].Type() == "muon" && jets.size() >= 2)
                 evtWeight /= 0.75;
+            // Correction for same-sign electron fakes
+            if (leptonsPlusFakes[0].Type() == "electron" && leptonsPlusFakes[1].Type() == "electron")
+                evtWeight /= 2.;
         }
     } else if (leptonsPlusFakes.size() == 3) {
         if (
@@ -1669,11 +1677,13 @@ void fcncAnalyzer::LeptonPlots(vObj& leptons, vector<TCJet>& jets, vector<TCJet>
             "h1_METLD", "METLD;METLD;Entries / bin", 50, 0., 1.); 
 
     histManager->Fill2DHist(HT, MET,
-            "h2_metVsHt", "MET vs HT;HT;MET", 50, 0., 1000., 35, 0., 350.); 
+            "h2_MetVsHT", "MET vs HT;HT;MET", 50, 0., 1000., 35, 0., 350.); 
+    histManager->Fill2DHist(HT, MET,
+            "h2_MetVsHT_zoom", "MET vs HT;HT;MET", 44, 80., 300., 22, 40., 150.); 
     histManager->Fill2DHist(HTs, MET,
-            "h2_metVsHts", "MET vs HTs;HTs;MET", 25, 0., 500., 15, 0., 150.); 
+            "h2_MetVsHts", "MET vs HTs;HTs;MET", 25, 0., 500., 15, 0., 150.); 
     histManager->Fill2DHist(sqrt(HT), MET,
-            "h2_metVsSqrtHt", "MET vs #sqrt{HT};#sqrt{HT};MET", 50, 0., 40., 35, 0., 350.); 
+            "h2_MetVsSqrtHt", "MET vs #sqrt{HT};#sqrt{HT};MET", 50, 0., 40., 35, 0., 350.); 
 }
 
 

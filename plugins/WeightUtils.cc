@@ -505,13 +505,10 @@ float WeightUtils::GetQFlipWeight(unsigned nJets, string weightType)
                 else if (fabs(electronEta) >= 1.479)
                     weight += g_QFlipEE_High->Eval(electronPt);
             }
-            if (i == 0 && electronPt < 25.) weight *= 0.5;
+            //if (i == 0 && electronPt < 25.) weight *= 0.75;
         }
 
         // correction for low pt-bins
-        
-    
-
 
         // correction for jet multiplicity
         float jet_corrections[] = {1., 1.2};

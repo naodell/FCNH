@@ -203,7 +203,7 @@ class AnalysisTools():
         if doScale:
             if dataName[:4] == 'DATA' or dataName in ['Fakes', 'eFakes', 'muFakes', 'llFakes', 'QFlips', 'AIC', 'eeeAIC', 'eemuAIC', 'emumuAIC', 'mumumuAIC']:
                 if self._category == 'ss_ee' and dataName == 'eFakes':
-                    hist.Scale(2*self._scaleDict[self._period][dataName])
+                    hist.Scale(self._scaleDict[self._period][dataName])
                 else:
                     hist.Scale(self._scaleDict[self._period][dataName])
 

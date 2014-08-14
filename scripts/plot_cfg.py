@@ -25,7 +25,7 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-#cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.', 'CR_WZ'])#, 'CR_SUSY'])#, '5_BDT'])
+cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.', 'CR_WZ'])#, 'CR_SUSY'])#, '5_BDT'])
 #cutList.extend(['.', '.', '.', 'X_0jet', 'X_1jet'])
 
 crList      = []#'CR_WZ', 'CR_SUSY', 'CR_ZFake']
@@ -45,12 +45,11 @@ do2D        = True
 doInclusive = False
 doOS        = False
 doSS        = True
-do3l        = False
+do3l        = True
 
-doYields    = False
+doYields    = True
 
 ### Categories to be plotted ###
-#catSS       = ['ss_ee']
 catSS       = ['ss_inclusive']
 catSS.extend(['ss_mumu', 'ss_ee', 'ss_emu'])
 #catSS.extend(['ss_endcap', 'ss_mixed', 'ss_barrel'])
