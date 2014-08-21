@@ -21,11 +21,11 @@ else:
 ### This is the config file for manipulating 
 ### histograms using the PlotProducer class.  
 
-plotType    = '.png'
+plotType    = '.pdf'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.', 'CR_WZ'])#, 'CR_SUSY'])#, '5_BDT'])
+#cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.', 'CR_WZ'])#, 'CR_SUSY'])#, '5_BDT'])
 #cutList.extend(['.', '.', '.', 'X_0jet', 'X_1jet'])
 
 crList      = []#'CR_WZ', 'CR_SUSY', 'CR_ZFake']
@@ -43,7 +43,7 @@ do1D        = True
 do2D        = True
 
 doInclusive = False
-doOS        = False
+doOS        = True
 doSS        = True
 do3l        = True
 
@@ -64,17 +64,17 @@ samples     = {'all':[], 'inclusive':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[],
                 '3l_inclusive':[], '3l_eee':[], '3l_eemu':[], '3l_emumu':[], '3l_mumumu':[], 
                 'ss_inclusive':[], 'ss_ee':[], 'ss_emu':[], 'ss_mumu':[]}
 
-samples['all'].append('WZJets3LNu')
+#samples['all'].append('WZJets3LNu')
 samples['all'].append('ttV')
 samples['all'].append('ZZ4l')
 samples['all'].append('Triboson')
 #samples['all'].append('higgs')
 
-#samples['all'].append('ZJets')
+samples['all'].append('ZJets')
+samples['all'].append('top')
+samples['all'].append('Diboson')
 #samples['all'].append('WJetsToLNu')
 #samples['all'].append('WbbToLNu')
-#samples['all'].append('top')
-#samples['all'].append('Diboson')
 #samples['all'].append('WG')
 #samples['all'].append('WWSS')
 #samples['all'].append('QCD')
@@ -300,7 +300,7 @@ if doPlots:
 
     r.gROOT.SetStyle('Plain')
     r.gStyle.SetOptStat(0)
-    #r.gROOT.ProcessLine('.L ./tdrStyle.C')
+    #r.gROOT.ProcessLine('.L ./scripts/tdrStyle.C')
     #r.setTDRStyle()
 
     ### inclusive ###

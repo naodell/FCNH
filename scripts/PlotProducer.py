@@ -68,12 +68,12 @@ def build_legend(hists, dataList, styleDict):
         hists[data].Fill(1)
         set_hist_style(hists[data], data, styleDict)
 
-    legend = r.TLegend(0.91,0.45,1.0,0.89)
+    legend = r.TLegend(0.65,0.45,0.89,0.89)
     legend.SetFillColor(0)
-    legend.SetFillStyle(3001)
+    legend.SetFillStyle(0)
     legend.SetLineWidth(0)
     legend.SetLineColor(0)
-    legend.SetTextSize(0.045)
+    legend.SetTextSize(0.03)
 
     for data in dataList[::-1]:
         if data.split('_')[0] in ['Fakes', 'eFakes', 'muFakes', 'llFakes'] and data not in ['Fakes', 'eFakes', 'muFakes', 'llFakes']:
@@ -565,11 +565,11 @@ class PlotProducer(AnalysisTools):
         canvas = r.TCanvas('canvas', 'canvas', 650, 700)
 
         if (doRatio or doEff or doDiff):
-            pad1 = r.TPad('pad1', '', 0.02, 0.35, 0.89, 0.98, 0)
-            pad2 = r.TPad('pad2', '', 0.02, 0.02, 0.89, 0.35, 0)
+            pad1 = r.TPad('pad1', '', 0.02, 0.35, 0.99, 0.99, 0)
+            pad2 = r.TPad('pad2', '', 0.02, 0.02, 0.99, 0.35, 0)
 
-            pad1.SetBottomMargin(0.)
-            pad2.SetTopMargin(0.)
+            pad1.SetBottomMargin(0.02)
+            pad2.SetTopMargin(0.02)
             pad2.SetBottomMargin(0.2)
             pad1.Draw()
             pad2.Draw()
@@ -610,11 +610,11 @@ class PlotProducer(AnalysisTools):
                     stacks[var].SetMaximum(max(stacks[var].GetMaximum(), hists[var][0][0].GetMaximum())*1.25)
                     stacks[var].SetMinimum(0.00001)
 
-                if doRatio or doEff: 
-                    legend.SetX1(0.91)
-                    legend.SetX2(1.0)
-                    legend.SetY1(0.25)
-                    legend.SetY2(0.89)
+                #if doRatio or doEff: 
+                #    legend.SetX1(0.91)
+                #    legend.SetX2(1.0)
+                #    legend.SetY1(0.25)
+                #    legend.SetY2(0.89)
 
                 if stacks[var]:
                     stacks[var].Draw('HIST')    
@@ -651,7 +651,7 @@ class PlotProducer(AnalysisTools):
 
                 ## Draw info box ##
                 r.gStyle.SetOptTitle(0)
-                textBox = r.TPaveText(0.09, 0.91, 0.91, 0.98, 'NDC')
+                textBox = r.TPaveText(0.07, 0.91, 0.71, 0.98, 'NDC')
                 textBox.SetFillColor(0)
                 textBox.SetFillStyle(0)
                 textBox.SetLineWidth(0)

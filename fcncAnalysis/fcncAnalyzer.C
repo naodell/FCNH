@@ -425,7 +425,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
         // Vector bosons
         for (unsigned i = 0; i < dubyas.size(); ++i)
             if (dubyas[i].GetStatus() == 3 && dubyas[i].Mother() != 0) 
-                cout << "\t status = " << dubyas[i].GetStatus() <<  ", mass = " << dubyas[i].M() << ", pt = " << dubyas[i].Pt() << ", dubyas" << endl;
+                cout << "\t status = " << dubyas[i].GetStatus() <<  ", mass = " << dubyas[i].M() << ", pt = " << dubyas[i].Pt() <<  ", charge = " << dubyas[i].Charge() << ", dubyas" << endl;
 
         for (unsigned i = 0; i < Zeds.size(); ++i)
             if (Zeds[i].GetStatus() == 3 && dubyas[i].Mother() != 0) 
@@ -1991,6 +1991,8 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
                     "h2_TrailingElecQMisIDNumer", "trailing e charge misID (numerator);p_{T};#eta", nPtBins, elePtBins, nEtaBins, eleEtaBins); 
             histManager->Fill1DHist(nJets,
                     "h1_EleQMisIDNumerJets", "N_{jets};N_{jets};Entries", 5, -0.5, 4.5);
+            histManager->Fill1DHist(primaryVtx->GetSize(),
+                    "h1_EleQMisIDNumerPVs", "N_{PV};N_{PV};Entries", 51, -0.5, 50.5);
 
             histManager->Fill2DHist(nPtBins*iEta1 + iPt1, nPtBins*iEta2 + iPt2,
                     "h2_DileptonQMisIDNumer", "e charge misID (numerator);e_{leading};e_{trailing}", 9, 0.5, 9.5, 9, 0.5, 9.5);
@@ -2010,6 +2012,8 @@ void fcncAnalyzer::MakeQMisIDPlots(vObj& electrons, vector<TCGenParticle>& gElec
                     "h2_TrailingElecQMisIDDenom", "trailing e charge misID (denominator);p_{T};#eta", nPtBins, elePtBins, nEtaBins, eleEtaBins); 
             histManager->Fill1DHist(nJets,
                     "h1_EleQMisIDDenomJets", "N_{jets};N_{jets};Entries", 5, -0.5, 4.5);
+            histManager->Fill1DHist(primaryVtx->GetSize(),
+                    "h1_EleQMisIDDenomPVs", "N_{PV};N_{PV};Entries", 51, -0.5, 50.5);
 
             histManager->Fill2DHist(nPtBins*iEta1 + iPt1, nPtBins*iEta2 + iPt2,
                     "h2_DileptonQMisIDDenom", "e charge misID (denominator);e_{leading};e_{trailing}", 9, 0.5, 9.5, 9, 0.5, 9.5);
