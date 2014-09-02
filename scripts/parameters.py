@@ -112,7 +112,7 @@ styleDict['ggHToZZ4L_M-125']    = (2, r.kBlue+3, 0, 1, 'H#rightarrow 4l')
 
 #Misc
 styleDict['BGERROR']            = (0, r.kBlack, 3002, 0, 'BG uncertainty')
-styleDict['FCNH']               = (3, r.kRed+3, 0, 20, 'FCNH')
+styleDict['FCNH']               = (3, r.kRed+3, 0, 20, 'FCNH (#times 5)')
 styleDict['SUM_EFF']            = (2, r.kBlue, 1001, 21, 'BG')
 styleDict['SIG_EFF']            = (2, r.kRed, 1001, 21, 'Signal')
 styleDict['SIGNIFICANCE']       = (2, r.kGreen, 1001, 21, 'Signficance')
@@ -253,22 +253,22 @@ scaleDict['2012']['TTH_M-125']          = .1032
 #scaleDict['GJets_300to470']     = 1/1391.1
 #scaleDict['GJets_470to800']     = 1/15812.2
 
-scaleDict['2012']['FCNC_M125_t']            = 252*1.*0.01*0.215*3*0.324*0.324
-scaleDict['2012']['FCNC_M125_tbar']         = 252*1.*0.01*0.215*3*0.324*0.324
-scaleDict['2012']['FCNC_M125_t_semilep']    = 2*252*1.*0.01*0.215*3*0.676*0.324*0.324
-scaleDict['2012']['FCNC_ZZ_t']              = 252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
-scaleDict['2012']['FCNC_ZZ_tbar']           = 252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
-scaleDict['2012']['FCNC_TauTau_t']          = 252*1.*0.01*0.063*0.324
-scaleDict['2012']['FCNC_TauTau_tbar']       = 252*1.*0.01*0.063*0.324
+scaleDict['2012']['FCNC_M125_t']            = 5*252*1.*0.01*0.215*3*0.324*0.324
+scaleDict['2012']['FCNC_M125_tbar']         = 5*252*1.*0.01*0.215*3*0.324*0.324
+scaleDict['2012']['FCNC_M125_t_semilep']    = 5*2*252*1.*0.01*0.215*3*0.676*0.324*0.324
+scaleDict['2012']['FCNC_ZZ_t']              = 5*252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
+scaleDict['2012']['FCNC_ZZ_tbar']           = 5*252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
+scaleDict['2012']['FCNC_TauTau_t']          = 5*252*1.*0.01*0.063*0.324
+scaleDict['2012']['FCNC_TauTau_tbar']       = 5*252*1.*0.01*0.063*0.324
 
 scaleDict['2012']['DATA_MUON']          = 1.
 scaleDict['2012']['DATA_ELECTRON']      = 1.
 scaleDict['2012']['DATA_MUEG']          = 1.
 scaleDict['2012']['AIC']                = 1.
 scaleDict['2012']['eeeAIC']             = 1.
-scaleDict['2012']['eemuAIC']            = 0.5
+scaleDict['2012']['eemuAIC']            = 1.
 scaleDict['2012']['emumuAIC']           = 1.
-scaleDict['2012']['mumumuAIC']          = 0.5
+scaleDict['2012']['mumumuAIC']          = 1.
 scaleDict['2012']['Fakes']              = 1.
 scaleDict['2012']['eFakes']             = 1.
 scaleDict['2012']['muFakes']            = 1.

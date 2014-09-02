@@ -555,11 +555,6 @@ bool fcncAnalyzer::Process(Long64_t entry)
         }
     }
 
-    //!! Syncing muons with Brian !!//
-    //if (tightMuons.size() >= 2) {
-    //    ++eventCount[5];
-    //}
-    //return kTRUE;
 
     /////////////////////
     // Overlap studies //

@@ -26,7 +26,7 @@ selection   = 'fcnh'
 
 cutList     = ['1_preselection']
 #cutList.extend(['2_Z_veto', '3_jet', '4_MET'])
-fakeType    = 'muFakes'
+fakeType    = 'eFakes'
 
 period      = '2012'
 LUMIDATA    = 19.712 
@@ -199,7 +199,7 @@ if doPlots:
             plotter_3l.make_save_path(outFile, clean=True)
 
             for category in cat3l:
-                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(plotter_3l, category, inFile, outFile, do1D, do2D, False, doLog, doRatio, doEff)))
+                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(plotter_3l, category, inFile, outFile, do1D, do2D, False, doLog, doRatio, False, False)))
 
     ### ss selection ###
     if doSS:
@@ -230,7 +230,7 @@ if doPlots:
             #    ss_plotter.make_overlay_2D_projections('FakeableIsoRelVsJetMultiplicity', fakeType[category], 'Fake_tests', projection)
 
             for category in catSS:
-                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(ss_plotter, category, inFile, outFile, do1D, do2D, False, doLog, doRatio, doEff)))
+                p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(ss_plotter, category, inFile, outFile, do1D, do2D, False, doLog, doRatio, False, False)))
 
     ### ZPlusFake control region
     #ZFake_plotter = copy.deepcopy(plotter)

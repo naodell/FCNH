@@ -25,7 +25,7 @@ plotType    = '.pdf'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-#cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.', 'CR_WZ'])#, 'CR_SUSY'])#, '5_BDT'])
+#cutList.extend(['2_Z_veto', '3_2jet', '4_MET'])#, '.', 'CR_WZ'])#, 'CR_SUSY'])#, '5_BDT'])
 #cutList.extend(['.', '.', '.', 'X_0jet', 'X_1jet'])
 
 crList      = []#'CR_WZ', 'CR_SUSY', 'CR_ZFake']
@@ -37,12 +37,12 @@ doPlots     = True
 doLog       = False
 doEff       = False
 doDiff      = False
-doRatio     = True
+doRatio     = False
 doNorm      = True
 do1D        = True
 do2D        = True
 
-doInclusive = False
+doInclusive = True
 doOS        = True
 doSS        = True
 do3l        = True
@@ -64,10 +64,10 @@ samples     = {'all':[], 'inclusive':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[],
                 '3l_inclusive':[], '3l_eee':[], '3l_eemu':[], '3l_emumu':[], '3l_mumumu':[], 
                 'ss_inclusive':[], 'ss_ee':[], 'ss_emu':[], 'ss_mumu':[]}
 
-#samples['all'].append('WZJets3LNu')
 samples['all'].append('ttV')
 samples['all'].append('ZZ4l')
 samples['all'].append('Triboson')
+#samples['all'].append('WZJets3LNu')
 #samples['all'].append('higgs')
 
 samples['all'].append('ZJets')
@@ -236,7 +236,7 @@ if doPlots:
                                            'Lepton1dxy', 'Lepton1dz',
                                            'Lepton2dxy', 'Lepton2dz',
                                            'Lepton3dxy', 'Lepton3dz',
-                                           'LeptonMult', 'OverlapEleMu', 'fakeableOverlapMult']
+                                           'LeptonMult', 'MuEleDeltaR', 'fakeableOverlapMult']
                                            #'Lepton1Phi', 'Lepton2Phi', 'Lepton3Phi']
 
     plotter._variableDict['Dilepton']   = ['DileptonHiggsMass21', 'DileptonZMass21', 'DileptonMass21', 'DileptonTransMass21', 'DileptonQt21', 'DileptonBalance21',
@@ -549,7 +549,7 @@ if doYields:
         yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
 
-        yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets']# + 6*['.'] + ['0-jet', '1-jet']
+        yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', '.', 'WZ', 'SUSY']# + 6*['.'] + ['0-jet', '1-jet']
 
         for category in cat3l:
             yieldTable._category = category
@@ -562,7 +562,7 @@ if doYields:
 
         #yieldTable.add_datasets(['Irreducible', 'Fakes', 'QFlips'], Clear = True)
         #yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET']# + 5*['.'] + ['0-jet', '1-jet']# + 7*['.'] + ['BDT']
-        yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET', '.', 'WZ', 'SUSY']
+        yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET']#
 
         for category in catSS:
 
