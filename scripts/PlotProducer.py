@@ -555,7 +555,7 @@ class PlotProducer(AnalysisTools):
 
                 canvas.SaveAs(self._savePath + '/' + self._category + '/' + directory + '/' + var + self._plotType)
 
-    def make_overlays_1D(self, logScale = False, doRatio = True, doEff = False, doDiff = False):
+    def make_overlays_1D(self, logScale = False, doRatio = True, doEff = False, doDiff = False, rebin = 1.):
         '''
         Process to produce overlays and stacks from 1D histograms.
         '''

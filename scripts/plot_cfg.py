@@ -21,11 +21,11 @@ else:
 ### This is the config file for manipulating 
 ### histograms using the PlotProducer class.  
 
-plotType    = '.pdf'
+plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-#cutList.extend(['2_Z_veto', '3_2jet', '4_MET'])#, '.', 'CR_WZ'])#, 'CR_SUSY'])#, '5_BDT'])
+cutList.extend(['2_Z_veto', '3_2jet', '4_MET'])#, '.', 'CR_WZ'])#, 'CR_SUSY'])#, '5_BDT'])
 #cutList.extend(['.', '.', '.', 'X_0jet', 'X_1jet'])
 
 crList      = []#'CR_WZ', 'CR_SUSY', 'CR_ZFake']
@@ -42,9 +42,9 @@ doNorm      = True
 do1D        = True
 do2D        = True
 
-doInclusive = True
-doOS        = True
-doSS        = True
+doInclusive = False
+doOS        = False
+doSS        = False
 do3l        = True
 
 doYields    = True
@@ -67,12 +67,12 @@ samples     = {'all':[], 'inclusive':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[],
 samples['all'].append('ttV')
 samples['all'].append('ZZ4l')
 samples['all'].append('Triboson')
-#samples['all'].append('WZJets3LNu')
+samples['all'].append('WZJets3LNu')
 #samples['all'].append('higgs')
 
 samples['all'].append('ZJets')
 samples['all'].append('top')
-samples['all'].append('Diboson')
+#samples['all'].append('Diboson')
 #samples['all'].append('WJetsToLNu')
 #samples['all'].append('WbbToLNu')
 #samples['all'].append('WG')
@@ -344,6 +344,9 @@ if doPlots:
                     outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
 
                 plotter_3l.make_save_path(outFile, clean=True)
+                if i > 1:
+                    plotter_3l.set_rebin_factor(2)
+
                 p_plot.append(Process(name = cut[2:] + '/' + category, target = plotter_wrapper, args=(plotter_3l, category, inFile, outFile, do1D, do2D, False, doLog, doRatio, doEff, doDiff)))
 
     ### ss selection ###

@@ -1122,7 +1122,13 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
         if (recoMET->Mod() < metCut[0] || HT < htCut[0])
             return true;
     } else if (leptons.size() == 3) {
-        if (recoMET->Mod() < metCut[1] && HT < htCut[1]) 
+        // Test cut on second jet pt //
+        vector<TCJet> allJets;
+        allJets.insert(allJets.end(), jets.begin(), jets.end());
+        allJets.insert(allJets.end(), bJetsM.begin(), bJetsM.end());
+        sort(allJets.begin(), allJets.end(), P4SortCondition);
+
+        if (recoMET->Mod() < metCut[1] && HT < htCut[1] && allJets[1].Pt() < 50) 
             return true;
     }
     MakePlots(leptons, jets, bJetsM, *recoMET, 3);

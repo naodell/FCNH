@@ -202,7 +202,7 @@ bool Selector::MuonTightID(TCMuon* muon)
             //(muon->IsTRK() && muon->IsGLB() && muon->IsPF())
             //&& muon->PtError()/muon->Pt() < 0.1
             (muon->IsGLB() && muon->IsPF())
-            && muon->NormalizedChi2() < 10
+            && muon->NormalizedChi2() < 10.
             && muon->NumberOfValidMuonHits()  > 0
             && muon->NumberOfMatchedStations() > 1
             && muon->NumberOfValidPixelHits() > 0

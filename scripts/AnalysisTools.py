@@ -38,6 +38,7 @@ class AnalysisTools():
         #self._outFile       = r.TFile('test.root', 'OPEN')
         self._period        = '2012'
         self._savePath      = savePath
+        self._rebinFactor   = 1
         self._scale         = scale
         self._scaleDict     = scales
         self._styleDict     = styles
@@ -61,6 +62,9 @@ class AnalysisTools():
 
     def set_clean_fakes(self, doClean):
         self._cleanFakes = doClean
+
+    def set_rebin_factor(self, factor):
+        self._rebinFactor = factor
 
     def get_category(self):
         return self._category
@@ -188,7 +192,6 @@ class AnalysisTools():
         else:
             hist = inHist.Clone()
 
-
         if self._category in systematics:
             if dataName == 'QFlips':
                 hist = self.add_systematic(hist, 'QFlips')
@@ -209,6 +212,10 @@ class AnalysisTools():
 
             else:
                 hist.Scale(self._scale*self._scaleDict[self._period][dataName]) 
+
+        
+        if histType == '1D':
+            hist.Rebin(self._rebinFactor)
 
         return hist
 
