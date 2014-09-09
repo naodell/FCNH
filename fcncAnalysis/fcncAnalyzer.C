@@ -13,7 +13,7 @@ const bool      doGenPrint  = false;
 
 // MVA switches
 const bool      doMVACut    = true;
-const bool      doMVATree   = false;
+const bool      doMVATree   = true;
 
 // Data-driven BG estimation switches
 bool doCR       = true;
@@ -42,7 +42,7 @@ const float   muPtCut[]         = {10., 3.};
 const float   elePtCut[]        = {10., 7.};
 const float   phoPtCut[]        = {10., 10.};
 const float   leptonPtCut[]     = {20., 10.};
-const float   metCut[]          = {60., 30.};
+const float   metCut[]          = {40., 30.};
 const float   htCut[]           = {100., 0.};
 const float   massCut           = 30.;
 const float   bJetVeto          = 1e9;
@@ -1119,8 +1119,33 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
     //!! MET and HT cut !!//
     if (leptons.size() == 2){
         //if ((recoMET->Mod() < metCut[0] && HT < htCut[0]) || recoMET->Mod() < 30.)
+        // MET-dependent HT cuts
+        float metCuts[]   = {40., 50., 60., 70., 80., 90., 100., 110., 120., 130.};
+        float htCuts[]    = {140., 140., 140., 100., 100., 60., 60., 80., 80., 60.};
         if (recoMET->Mod() < metCut[0] || HT < htCut[0])
             return true;
+
+        if (recoMET->Mod() > metCuts[0] && recoMET->Mod() <= metCuts[1] && HT < htCuts[0])
+            return true;
+        else if (recoMET->Mod() > metCuts[1] && recoMET->Mod() <= metCuts[2] && HT < htCuts[1])
+            return true;
+        else if (recoMET->Mod() > metCuts[2] && recoMET->Mod() <= metCuts[3] && HT < htCuts[2])
+            return true;
+        else if (recoMET->Mod() > metCuts[3] && recoMET->Mod() <= metCuts[4] && HT < htCuts[3])
+            return true;
+        else if (recoMET->Mod() > metCuts[4] && recoMET->Mod() <= metCuts[5] && HT < htCuts[4])
+            return true;
+        else if (recoMET->Mod() > metCuts[5] && recoMET->Mod() <= metCuts[6] && HT < htCuts[5])
+            return true;
+        else if (recoMET->Mod() > metCuts[6] && recoMET->Mod() <= metCuts[7] && HT < htCuts[6])
+            return true;
+        else if (recoMET->Mod() > metCuts[7] && recoMET->Mod() <= metCuts[8] && HT < htCuts[7])
+            return true;
+        else if (recoMET->Mod() > metCuts[8] && recoMET->Mod() <= metCuts[9] && HT < htCuts[8])
+            return true;
+        else if (recoMET->Mod() > metCuts[9] && HT < htCuts[9])
+            return true;
+
     } else if (leptons.size() == 3) {
         // Test cut on second jet pt //
         vector<TCJet> allJets;
@@ -1128,9 +1153,10 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
         allJets.insert(allJets.end(), bJetsM.begin(), bJetsM.end());
         sort(allJets.begin(), allJets.end(), P4SortCondition);
 
-        if (recoMET->Mod() < metCut[1] && HT < htCut[1] && allJets[1].Pt() < 50) 
+        if (recoMET->Mod() < metCut[1] || HT < htCut[1] || allJets[1].Pt() < 50) 
             return true;
     }
+
     MakePlots(leptons, jets, bJetsM, *recoMET, 3);
     SetYields(8);
 
@@ -1691,13 +1717,13 @@ void fcncAnalyzer::LeptonPlots(vObj& leptons, vector<TCJet>& jets, vector<TCJet>
 void fcncAnalyzer::MetPlots(TCMET& met, vObj& leptons)
 {
     histManager->Fill1DHist(met.Mod(), 
-            "h1_Met", "MET;MET;Entries / 10 GeV", 30, 0., 150.);
+            "h1_Met", "MET;MET;Entries / 5 GeV", 30, 0., 150.);
     histManager->Fill1DHist(met.Phi() - TMath::Pi(),
             "h1_MetPhi", "#phi MET;#phi;Entries / 0.087 rad", 36, -TMath::Pi(), TMath::Pi());
     histManager->Fill1DHist(met.SumEt(),
-            "h1_MetSumEt", "#Sigma E_{T} of MET;#Sigma E_{T};Entries / 20 GeV", 75, 0., 2600.);
-    //histManager->Fill1DHist(met.Significance(),
-    //        "h1_MetSig", "MET/#sigma_{MET};MET/#sigma_{MET};Entries", 50, 0., 10.);
+            "h1_MetSumEt", "#Sigma E_{T} of MET;#Sigma E_{T};Entries / 40 GeV", 60, 0., 2400.);
+    histManager->Fill1DHist(met.Mod()/met.SumEt(),
+            "h1_MetSig", "MET/#sigma_{MET};MET/#sigma_{MET};Entries / bin", 50, 0., 5.);
     //histManager->Fill1DHist(met.Mod()/met.Significance(),
     //        "h1_MetOverMetSig", "MET/#sigma_{MET};MET/#sigma_{MET};Entries", 50, 0., 10.);
 

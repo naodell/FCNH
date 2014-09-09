@@ -68,7 +68,7 @@ def build_legend(hists, dataList, styleDict):
         hists[data].Fill(1)
         set_hist_style(hists[data], data, styleDict)
 
-    legend = r.TLegend(0.65,0.55,0.84,0.89)
+    legend = r.TLegend(0.6,0.55,0.79,0.89)
     legend.SetFillColor(0)
     legend.SetFillStyle(0)
     legend.SetLineWidth(0)
@@ -578,8 +578,9 @@ class PlotProducer(AnalysisTools):
             pad2.SetGridx()
             pad2.SetGridy()
         else:
-            pad1 = r.TPad('pad1', '', 0.06, 0.02, 0.89, 0.98, 0)
+            pad1 = r.TPad('pad1', '', 0.00, 0.02, 1., 1., 0)
             pad1.Draw()
+            pad1.SetLeftMargin(0.15)
             #pad1.SetGridx()
             #pad1.SetGridy()
 
@@ -653,19 +654,35 @@ class PlotProducer(AnalysisTools):
 
                 ## Draw info box ##
                 r.gStyle.SetOptTitle(0)
-                textBox = r.TPaveText(0.09, 0.91, 0.71, 0.98, 'NDC')
-                textBox.SetFillColor(0)
-                textBox.SetFillStyle(0)
-                textBox.SetLineWidth(0)
-                textBox.SetLineColor(0)
-                textBox.SetTextSize(0.03)
+                cmsBox = r.TPaveText(0.16, 0.75, 0.51, 0.89, 'NDC')
+                cmsBox.SetFillColor(0)
+                cmsBox.SetFillStyle(0)
+                cmsBox.SetLineWidth(0)
+                cmsBox.SetLineColor(0)
+                cmsBox.SetTextSize(0.028)
 
+                cmsBox.AddText('#scale[2.5]{CMS}')
+                cmsBox.AddText('#it{preliminary}')
+                cmsBox.AddText('#bf{#color[2]{' + categories[self._category] + '}}')
+
+                cmsBox.Draw('same')
+
+                energy = ''
                 if self._period is '2011':
-                    textBox.AddText('#scale[1.2]{CMS preliminary, #sqrt{s} = 7 TeV, #it{L}_{int}' + ' = {0:.1f}'.format(self._scale) + ' fb^{-1}       #bf{#color[2]{' + categories[self._category] + '}}}')
+                    energy = '7'
                 elif self._period is '2012':
-                    textBox.AddText('#scale[1.2]{CMS preliminary, #sqrt{s} = 8 TeV, #it{L}_{int}' + ' = {0:.1f}'.format(self._scale) + ' fb^{-1}       #bf{#color[2]{' + categories[self._category] + '}}}')
+                    energy = '8'
 
-                textBox.Draw('same')
+                lumiBox = r.TPaveText(0.51, 0.91, 0.89, 0.96, 'NDC')
+                lumiBox.SetFillColor(0)
+                lumiBox.SetFillStyle(0)
+                lumiBox.SetLineWidth(0)
+                lumiBox.SetLineColor(0)
+                lumiBox.SetTextSize(0.028)
+
+                lumiBox.AddText('#it{L}_{int} = ' + '{0:.1f}'.format(self._scale) + ' fb^{-1} (#sqrt{s} = ' + energy + ' TeV)')       
+
+                lumiBox.Draw('same')
 
                 if doDiff:
                     doRatio = False

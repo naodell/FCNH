@@ -214,8 +214,8 @@ class AnalysisTools():
                 hist.Scale(self._scale*self._scaleDict[self._period][dataName]) 
 
         
-        if histType == '1D':
-            hist.Rebin(self._rebinFactor)
+        #if histType == '1D' and hist.GetNbinsX()%self._rebinFactor is 0:
+        #    hist.Rebin(self._rebinFactor)
 
         return hist
 

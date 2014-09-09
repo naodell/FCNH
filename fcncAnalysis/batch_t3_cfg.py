@@ -6,8 +6,7 @@ cfg = b.JobConfig
 
 ''' Specify parameters '''
 dataDir     = '/tthome/naodell/storage/ntuples/Data'
-#mcDir       = '/tthome/naodell/storage/ntuples/MC_skimmed'
-signalDir = '/tthome/naodell/storage/ntuples/MC_FCNH'
+signalDir   = '/tthome/naodell/storage/ntuples/MC_FCNH'
 mcDir       = '/tthome/naodell/storage/data/nuTuples_v9.6_8TeV/MC'
 executable  = 'execBatch.sh'
 

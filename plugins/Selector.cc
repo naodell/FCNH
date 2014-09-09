@@ -490,7 +490,6 @@ bool Selector::PhotonTightID(TCPhoton* photon)
     bool pass = false;
     if (
             ((fabs(photon->Eta()) < 1.442     
-              && photon->ConversionVeto()           
               && photon->SigmaIEtaIEta()            < 0.01  
               && photon->HadOverEm()                < 0.05      
              ) ||

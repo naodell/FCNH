@@ -190,9 +190,9 @@ scaleDict['2012']['WZJets3LNu']         = 1.086
 scaleDict['2012']['WZJets2L2Q']         = 5.09
 scaleDict['2012']['WWJets2L2Nu']        = 5.995
 
-scaleDict['2012']['ttbar']              = 234
-scaleDict['2012']['ttbarHad']           = 234
-scaleDict['2012']['ttbarLep']           = 234
+scaleDict['2012']['ttbar']              = 252
+scaleDict['2012']['ttbarHad']           = 252
+scaleDict['2012']['ttbarLep']           = 252
 scaleDict['2012']['tW']                 = 11.177
 scaleDict['2012']['tbarW']              = 11.177
 scaleDict['2012']['t_t-channel']        = 55.53
@@ -329,7 +329,7 @@ categoryDict = {'inclusive':'inclusive',
                 'ss_inclusive':'ss inclusive', 'ss_mumu':'#mu^{#pm}#mu^{#pm}', 'ss_ee':'e^{#pm}e^{#pm}', 'ss_emu':'e^{#pm}#mu^{#pm}',
                 'ss_endcap':'ss (EE)', 'ss_mixed':'ss (EB)', 'ss_barrel':'ss (BB)',
                 'os_inclusive':'os inclusive', 'os_mumu':'#mu^{#pm}#mu^{#mp}', 'os_ee':'e^{#pm}e^{#mp}', 'os_emu':'e^{#pm}mu^{#mp}', 
-                '3l_inclusive':'3l inclusive', '3l_OSSF':'(l^{#pm}l^{#mp})l', '3l_SSSF':'(l^{#pm}l^{#pm})l',
+                '3l_inclusive':'trilepton inclusive', '3l_OSSF':'(l^{#pm}l^{#mp})l', '3l_SSSF':'(l^{#pm}l^{#pm})l',
                 '3l_eee':'eee', '3l_eemu':'ee#mu', '3l_emumu':'e#mu#mu','3l_mumumu':'#mu#mu#mu',
                 'AntiIso3l':'Anti-Iso CR', 'QCD2l':'QCD ll', 'ZPlusJet':'Z+jet',
                 'PureLep':'Pure Muon', 'SameSign':'l^{#pm}l^{#pm}',

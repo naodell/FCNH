@@ -21,7 +21,7 @@ else:
 ### This is the config file for manipulating 
 ### histograms using the PlotProducer class.  
 
-plotType    = '.png'
+plotType    = '.pdf'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
@@ -44,7 +44,7 @@ do2D        = True
 
 doInclusive = False
 doOS        = False
-doSS        = False
+doSS        = True
 do3l        = True
 
 doYields    = True
@@ -70,8 +70,8 @@ samples['all'].append('Triboson')
 samples['all'].append('WZJets3LNu')
 #samples['all'].append('higgs')
 
-samples['all'].append('ZJets')
-samples['all'].append('top')
+#samples['all'].append('ZJets')
+#samples['all'].append('top')
 #samples['all'].append('Diboson')
 #samples['all'].append('WJetsToLNu')
 #samples['all'].append('WbbToLNu')
@@ -552,7 +552,7 @@ if doYields:
         yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
 
-        yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', '.', 'WZ', 'SUSY']# + 6*['.'] + ['0-jet', '1-jet']
+        yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET/jet', 'WZ', 'SUSY']# + 6*['.'] + ['0-jet', '1-jet']
 
         for category in cat3l:
             yieldTable._category = category
