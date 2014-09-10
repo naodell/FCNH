@@ -1880,7 +1880,7 @@ void fcncAnalyzer::DileptonPlots2D(vObj& leptons)
                 histManager->Fill2DHist(leptons[i].DeltaR(leptons[j]), (leptons[i] + leptons[j]).M(),
                         "h2_DileptonMVsDeltaROS", "M_{OS} vs #Delta R;#Delta R;M_{OS}", 70, 0., 7., 40, 0., 400.);
                 histManager->Fill2DHist((leptons[i] + leptons[j]).M(), (leptons[0] + leptons[1] + leptons[2]).M(),
-                        "h2_TrileptonMVsDileptonMOS", "M_{lll} vs M_{OS};M_{OS};M_{lll}", 60, 0., 300., 60, 0., 300.);
+                        "h2_TrileptonMVsDileptonMOS", "M_{lll} vs M_{OS};M_{OS};M_{lll}", 50, 0., 300., 50, 0., 300.);
             }
         } 
     }
