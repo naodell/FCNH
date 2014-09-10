@@ -27,9 +27,6 @@ if __name__ == '__main__':
     h1_fakeRates['ZJets_DATA'].SetLineWidth(2)
 
     h1_fakeRates['QCD2l_DATA']  = dataFiles['DATA_QCD2l'].Get('QCD2l/h1_{0}FakePt'.format(lepType))
-    :xa
-
-
     h1_fakeRates['QCD2l_DATA'].SetBit(r.TH1.kIsAverage)
     h1_fakeRates['QCD2l_DATA'].SetLineColor(r.kRed)
     h1_fakeRates['QCD2l_DATA'].SetLineWidth(2)
@@ -69,7 +66,7 @@ if __name__ == '__main__':
     legend.AddEntry(h1_fakeRates['ZJets_DATA'], 'Z+jet')
     legend.Draw()
 
-    canvas.SaveAs('plots/fake_syst_DATA.pdf')
+    canvas.SaveAs('plots/Fakes/fake_syst_DATA.pdf')
 
     ### Z+jets rates ###
     h1_fakeRates['ZJets_ZJets'] = dataFiles['ZJets'].Get('ZPlusJet/h1_{0}FakePt'.format(lepType))
@@ -113,7 +110,7 @@ if __name__ == '__main__':
     legend.AddEntry(h1_fakeRates['MC_truth_ZJets'], 'Z+jet (MC-truth)')
     legend.Draw()
 
-    canvas.SaveAs('plots/fake_syst_ZJets.pdf')
+    canvas.SaveAs('plots/Fakes/fake_syst_ZJets.pdf')
 
     ### MC rates ###
     h1_fakeRates['MC_truth_QCD']    = dataFiles['QCD'].Get('MC_truth/h1_{0}FakePt'.format(lepType))
@@ -175,7 +172,7 @@ if __name__ == '__main__':
     legend.AddEntry(h1_fakeRates['MC_truth_ttbar'], 't#bar{t}')
     legend.Draw()
 
-    canvas.SaveAs('plots/fake_syst_MC.pdf')
+    canvas.SaveAs('plots/Fakes/fake_syst_MC.pdf')
 
     ### Data vs. MC ###
 
@@ -226,4 +223,4 @@ if __name__ == '__main__':
     legend.AddEntry(h1_fakeRates['Combined_MIX'], 'Data - MC')
     legend.Draw()
 
-    canvas.SaveAs('plots/fake_syst_DataVsMC.pdf')
+    canvas.SaveAs('plots/Fakes/fake_syst_DataVsMC.pdf')

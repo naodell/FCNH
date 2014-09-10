@@ -111,7 +111,7 @@ styleDict['higgs']              = (2, r.kBlue+3, 0, 1, 'higgs')
 styleDict['ggHToZZ4L_M-125']    = (2, r.kBlue+3, 0, 1, 'H#rightarrow 4l')
 
 #Misc
-styleDict['BGERROR']            = (0, r.kBlack, 3002, 0, 'BG uncertainty')
+styleDict['BGERROR']            = (0, r.kBlack, 3004, 0, 'BG uncertainty')
 styleDict['FCNH']               = (3, r.kRed+3, 0, 20, 'FCNH (#times 5)')
 styleDict['SUM_EFF']            = (2, r.kBlue, 1001, 21, 'BG')
 styleDict['SIG_EFF']            = (2, r.kRed, 1001, 21, 'Signal')
@@ -255,7 +255,6 @@ scaleDict['2012']['TTH_M-125']          = .1032
 
 scaleDict['2012']['FCNC_M125_t']            = 5*252*1.*0.01*0.215*3*0.324*0.324
 scaleDict['2012']['FCNC_M125_tbar']         = 5*252*1.*0.01*0.215*3*0.324*0.324
-scaleDict['2012']['FCNC_M125_t_semilep']    = 5*2*252*1.*0.01*0.215*3*0.676*0.324*0.324
 scaleDict['2012']['FCNC_ZZ_t']              = 5*252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
 scaleDict['2012']['FCNC_ZZ_tbar']           = 5*252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
 scaleDict['2012']['FCNC_TauTau_t']          = 5*252*1.*0.01*0.063*0.324

@@ -13,7 +13,7 @@ const bool      doGenPrint  = false;
 
 // MVA switches
 const bool      doMVACut    = true;
-const bool      doMVATree   = true;
+const bool      doMVATree   = false;
 
 // Data-driven BG estimation switches
 bool doCR       = true;
@@ -44,7 +44,7 @@ const float   phoPtCut[]        = {10., 10.};
 const float   leptonPtCut[]     = {20., 10.};
 const float   metCut[]          = {40., 30.};
 const float   htCut[]           = {100., 0.};
-const float   massCut           = 30.;
+const float   massCut[]         = {30., 12.};
 const float   bJetVeto          = 1e9;
 
 bool P4SortCondition(TLorentzVector p1, TLorentzVector p2) {return (p1.Pt() > p2.Pt());} 
@@ -545,7 +545,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
         if (
                 muons[0].Pt() > 20. && muons[1].Pt() > 10.
                 && muons[0].Charge() == muons[1].Charge()
-                && (muons[0] + muons[1]).M() > massCut
+                && (muons[0] + muons[1]).M() > massCut[0]
            ) {
             histManager->Fill1DHist(muons[0].Pt(),
                     "h1_LeadMuonPt_SS", "lead muon p_{T} test;p_{T};Entries / 4 GeV", 28, 0., 140.);
@@ -634,8 +634,14 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
         for (unsigned i = 1; i < leptons.size(); ++i) {
             for (unsigned j = 0; j < i; ++j) {
-                if ((leptons[i] + leptons[j]).M() < massCut) 
-                    lowMassOS = true;
+                if (leptons.size() == 2) {
+                    if ((leptons[i] + leptons[j]).M() < massCut[0]) 
+                        lowMassOS = true;
+                } else if (leptons.size() == 3) {
+                    if ((leptons[i] + leptons[j]).M() < massCut[1]) 
+                        lowMassOS = true;
+                }
+                    
 
                 //if (isRealData && leptons[i].Type() == "muon" && leptons[j].Type() == "muon")
                 //    if (CosmicMuonFilter(leptons[i], leptons[j]))
@@ -719,8 +725,8 @@ bool fcncAnalyzer::Process(Long64_t entry)
                         leptons[0].Type() == leptons[1].Type() 
                         && leptons[0].Charge() != leptons[1].Charge()
                         && (leptons[0] + leptons[1]).M() < 75
-                        && (leptons[0] + photons[0]).M() > massCut
-                        && (leptons[1] + photons[0]).M() > massCut
+                        && (leptons[0] + photons[0]).M() > massCut[1]
+                        && (leptons[1] + photons[0]).M() > massCut[1]
                    ) {
 
                     vector<TCJet> cleanJets, cleanBJetsM, cleanBJetsL;
@@ -765,7 +771,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
                     break;
                 }
 
-                if ((fakeables[i] + leptons[j]).M() < massCut) {
+                if ((fakeables[i] + leptons[j]).M() < massCut[0]) {
                     lowMassResonance = true;
                     break;
                 }
@@ -782,7 +788,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
                     matchedFakeables.push_back(fakeables[i]);
                 }  
                 
-                if ((fakeables[i] + fakeables[j]).M() < massCut) {
+                if ((fakeables[i] + fakeables[j]).M() < massCut[0]) {
                     lowMassResonance = true;
                     break;
                 }
@@ -905,7 +911,7 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
     if (leptons.size() == 4) {
         if ( bJetsM.size() == 0) {
             Make4lPlots(leptons, *recoMET);
-            SetYields(13);
+            SetYields(14);
         }
         return kTRUE; 
     }
@@ -929,16 +935,16 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
         }
 
         // ttbar control region //
-        //if (
-        //        leptons.size() == 2 
-        //        && (bJetsM.size() == 1 || bJetsL.size() == 2)
-        //        && leptons[0].Type() != leptons[1].Type()
-        //        && leptons[0].Charge() != leptons[1].Charge()
-        //        && MET > 30
-        //   ) {
-        //    MakePlots(leptons, jets, bJetsM, *recoMET, 6);
-        //    SetYields(11);
-        //}
+        if (
+                leptons.size() == 2 
+                && (bJetsM.size() == 1 || bJetsL.size() == 2)
+                && leptons[0].Type() != leptons[1].Type()
+                && leptons[0].Charge() != leptons[1].Charge()
+                && MET > 30
+           ) {
+            MakePlots(leptons, jets, bJetsM, *recoMET, 6);
+            SetYields(11);
+        }
 
         // multilepton SUSY cross-check (
         if (
@@ -949,8 +955,8 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
                 && MET > 50. && MET < 100.
                 && bJetsM.size() >= 1
            ) {
-            MakePlots(leptons, jets, bJetsM, *recoMET, 6);
-            SetYields(11);
+            MakePlots(leptons, jets, bJetsM, *recoMET, 7);
+            SetYields(12);
         }
 
         // Z+fake control region //
@@ -960,8 +966,8 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
                 && leptons.size() == 3 
                 && MET < 30
            ) {
-            MakePlots(leptons, jets, bJetsM, *recoMET, 7);
-            SetYields(12);
+            MakePlots(leptons, jets, bJetsM, *recoMET, 8);
+            SetYields(13);
         }
     }
 
@@ -1047,19 +1053,19 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
         // 0-jet CR //
         if (jets.size() + bJetsM.size() == 0) {
             MakePlots(leptons, jets, bJetsM, *recoMET, 8);
-            SetYields(14);
+            SetYields(15);
         }
 
         // 1-jet CR //
         if (jets.size() + bJetsM.size() == 1) {
             MakePlots(leptons, jets, bJetsM, *recoMET, 9);
-            SetYields(15);
+            SetYields(16);
         }
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
     }
 
     //!! Require at least two jets !!//
-    if (bJetsM.size() + jets.size() <= 1) return true;
+    if (bJetsM.size() + jets.size() <= 2) return true;
     MakePlots(leptons, jets, bJetsM, *recoMET, 2);
     SetYields(7);
 
@@ -2185,8 +2191,8 @@ void fcncAnalyzer::ConversionPlots(vObj& leptons, TCPhoton& photon)
                 leptons[0].Type() == leptons[1].Type() 
                 && leptons[0].Charge() != leptons[1].Charge()
                 && (leptons[0] + leptons[1]).M() < 75.
-                && (leptons[0] + photon).M() > massCut
-                && (leptons[1] + photon).M() > massCut
+                && (leptons[0] + photon).M() > massCut[1]
+                && (leptons[1] + photon).M() > massCut[1]
            ) {
 
             histManager->SetFileNumber(0);

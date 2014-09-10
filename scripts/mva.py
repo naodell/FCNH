@@ -81,7 +81,7 @@ if __name__ == '__main__':
         r.gROOT.LoadMacro   ("${ROOTSYS}/tmva/test/TMVAGui.C")
 
     # Input file and tree merging
-    inFile  = r.TFile('histos/fcnh_cut1_2012_{0}.root'.format(batch), 'OPEN')
+    inFile  = r.TFile('fcncAnalysis/combined_histos/fcnh_cut1_2012_{0}.root'.format(batch), 'OPEN')
 
     print'\nCarrying out BDT optimization of {0} selection with category {1}\n'.format(selection, flCat)
 
@@ -105,7 +105,6 @@ if __name__ == '__main__':
 
     # Set verbosity
     factory.SetVerbose(False)
-
     factory.AddVariable('met', 'met', 'GeV', 'F')
     factory.AddVariable('HT', 'HT', 'GeV', 'F')
     factory.AddVariable('MT', 'MT', 'GeV', 'F')
@@ -179,5 +178,3 @@ if __name__ == '__main__':
     if doGUI:
         r.gROOT.ProcessLine('TMVAGui(\"mvaOutput/{0}.root\")'.format(batch))
         r.gApplication.Run() 
-
-
