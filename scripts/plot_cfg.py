@@ -25,7 +25,7 @@ plotType    = '.pdf'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-cutList.extend(['2_Z_veto', '3_2jet', '4_MET'])#, '.', 'CR_WZ'])#, 'CR_SUSY'])#, '5_BDT'])
+#cutList.extend(['2_Z_veto', '3_2jet', '4_MET'])#, '.', 'CR_WZ'])#, 'CR_SUSY'])#, '5_BDT'])
 #cutList.extend(['.', '.', '.', 'X_0jet', 'X_1jet'])
 
 crList      = []#'CR_WZ', 'CR_SUSY', 'CR_ZFake']
@@ -37,13 +37,13 @@ doPlots     = True
 doLog       = False
 doEff       = False
 doDiff      = False
-doRatio     = False
+doRatio     = True
 doNorm      = True
 do1D        = True
 do2D        = True
 
 doInclusive = False
-doOS        = False
+doOS        = True
 doSS        = True
 do3l        = True
 
@@ -70,8 +70,8 @@ samples['all'].append('Triboson')
 samples['all'].append('WZJets3LNu')
 #samples['all'].append('higgs')
 
-#samples['all'].append('ZJets')
-#samples['all'].append('top')
+samples['all'].append('ZJets')
+samples['all'].append('top')
 #samples['all'].append('Diboson')
 #samples['all'].append('WJetsToLNu')
 #samples['all'].append('WbbToLNu')
@@ -275,7 +275,7 @@ if doPlots:
                                            'MatchedMuJetBDiscr', 'MatchedEleJetBDiscr', 
                                            'DijetMass']
 
-    plotter._variableDict['MET']        = ['Met', 'MHT', 'METLD', 'MHT-MET', 'MetPhi', 'MetSumEt',
+    plotter._variableDict['MET']        = ['Met', 'MHT', 'METLD', 'MHT-MET', 'MetPhi', 'MetSumEt', 'MetSig',
                                            'MetLepton1DeltaPhi', 'MetLepton2DeltaPhi', 'MetLepton3DeltaPhi'
                                            'MetLepDeltaPhiMin', 'nearLepIndex', 'ProjectedMet'] 
 

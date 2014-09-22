@@ -154,8 +154,8 @@ class PlotProducer(AnalysisTools):
                     hist.GetXaxis().SetTitle('HT (GeV)');
                 if var == 'Met':
                     hist.GetXaxis().SetTitle('MET (GeV)');
-                if var == 'DileptonMass21':
-                    hist.GetYaxis().SetTitle('Entries / 5 GeV/c^{2}');
+                if var in ['DileptonMass21', 'DileptonZMass21', 'DileptonHiggsMass21']:
+                    #hist.GetYaxis().SetTitle('Entries / 5 GeV/c^{2}');
                     hist.GetXaxis().SetTitle('M_{ll} (GeV/c^{2})');
                 if var == 'TrileptonMVsDileptonMOS':
                     hist.GetXaxis().SetTitle('M_{OS} (GeV/c^{2})');
@@ -348,7 +348,7 @@ class PlotProducer(AnalysisTools):
                 textBox.SetFillColor(0)
                 textBox.SetFillStyle(0)
                 textBox.SetLineWidth(0)
-                textBox.SetLineColor(0)
+                #textBox.SetLineColor(0)
                 textBox.SetTextSize(0.025)
 
                 if self._period is '2011':

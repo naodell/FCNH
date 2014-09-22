@@ -243,23 +243,24 @@ void fcncAnalyzer::Begin(TTree* tree)
             mva3lReader.push_back(mvaReader);
         }
 
-        string mvaSSCats[3] = {"inclusive"};
-        for (unsigned i = 0; i < 1; ++i) {
+        string mvaSSCats[3] = {"ee", "emu", "mumu"};
+        for (unsigned i = 0; i < 3; ++i) {
             TMVA::Reader* mvaReader = new TMVA::Reader("!Color:!Silent");
 
             mvaReader->AddVariable("met", &MET);
             mvaReader->AddVariable("HT", &HT);
-            mvaReader->AddVariable("MT", &MT);
+            //mvaReader->AddVariable("MT", &MT);
+            mvaReader->AddVariable("jetMult", &f_jetMult);
             mvaReader->AddVariable("bJetMult", &f_bJetMult);
             mvaReader->AddVariable("dileptonMass", &dileptonMassOS);
             //mvaReader->AddVariable("dileptonDR", &dileptonDROS);
 
             mvaReader->AddSpectator("flavorCat", &f_flavorCat);
             mvaReader->AddSpectator("chargeCat", &f_chargeCat);
-            mvaReader->AddSpectator("jetMult", &f_jetMult);
+            //mvaReader->AddSpectator("jetMult", &f_jetMult);
             mvaReader->AddSpectator("evtWeight", &evtWeight);
 
-            mvaReader->BookMVA("test", ("../data/weights/20131217_205058/TMVAClassification_SS_" + mvaSSCats[i] + "_BDTG.weights.xml").c_str());
+            mvaReader->BookMVA("test", ("../data/weights/20140909_135019/TMVAClassification_SS_" + mvaSSCats[i] + "_BDTG.weights.xml").c_str());
             mvaSSReader.push_back(mvaReader);
         }
     }
@@ -1065,7 +1066,7 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
     }
 
     //!! Require at least two jets !!//
-    if (bJetsM.size() + jets.size() <= 2) return true;
+    if (bJetsM.size() + jets.size() <= 1) return true;
     MakePlots(leptons, jets, bJetsM, *recoMET, 2);
     SetYields(7);
 
@@ -1092,28 +1093,32 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
             //    mvaCut   = -0.1532;
             //}
 
-            histManager->SetFileNumber(1);
+            histManager->SetFileNumber(0);
             histManager->SetDirectory("3l_inclusive/" + subdir);
             histManager->Fill1DHist(mvaValue, "h1_BDT", "BDT value;Entries / bin;BDT", 36, -1., 0.2);
 
         } else if (leptons.size() == 2 && leptons[0].Charge() == leptons[1].Charge()) {
             mvaValue = mvaSSReader[0]->EvaluateMVA("test");
-            mvaCut   = -0.8628;
 
-            //if (flavorCat == 1) {
-            //    mvaValue = mvaSSReader[0]->EvaluateMVA("test");
-            //    mvaCut   = 0.1390;
-            //} else if (flavorCat == 2 || flavorCat == 3) {
-            //    mvaValue = mvaSSReader[1]->EvaluateMVA("test");
-            //    mvaCut   = -0.2249;
-            //} else if (flavorCat == 4) {
-            //    mvaValue = mvaSSReader[2]->EvaluateMVA("test");
-            //    mvaCut   = -0.499;
-            //}
+            string catType = "inclusive";
+            //cout << flavorCat << " : " << leptons[0].Type() << ", " << leptons[1].Type() << endl;
 
-            histManager->SetFileNumber(1);
+            if (flavorCat == 1) {
+                mvaValue = mvaSSReader[0]->EvaluateMVA("test");
+                catType = "ee";
+            } else if (flavorCat == 2 || flavorCat == 3) {
+                mvaValue = mvaSSReader[1]->EvaluateMVA("test");
+                catType = "emu";
+            } else if (flavorCat == 4) {
+                mvaValue = mvaSSReader[2]->EvaluateMVA("test");
+                catType = "mumu";
+            }
+
+            histManager->SetFileNumber(0);
             histManager->SetDirectory("ss_inclusive/" + subdir);
-            histManager->Fill1DHist(mvaValue, "h1_BDT", "BDT value;Entries / bin;BDT", 36, -1., 0.2);
+            histManager->Fill1DHist(mvaValue, "h1_BDT", "BDT value;Entries / bin;BDT", 40, -1., 1.);
+            histManager->SetDirectory("ss_" + catType + "/" + subdir);
+            histManager->Fill1DHist(mvaValue, "h1_BDT", "BDT value;Entries / bin;BDT", 40, -1., 1.);
         }
 
         if (mvaValue > mvaCut) {
@@ -1728,8 +1733,8 @@ void fcncAnalyzer::MetPlots(TCMET& met, vObj& leptons)
             "h1_MetPhi", "#phi MET;#phi;Entries / 0.087 rad", 36, -TMath::Pi(), TMath::Pi());
     histManager->Fill1DHist(met.SumEt(),
             "h1_MetSumEt", "#Sigma E_{T} of MET;#Sigma E_{T};Entries / 40 GeV", 60, 0., 2400.);
-    histManager->Fill1DHist(met.Mod()/met.SumEt(),
-            "h1_MetSig", "MET/#sigma_{MET};MET/#sigma_{MET};Entries / bin", 50, 0., 5.);
+    histManager->Fill1DHist(met.Significance(),
+            "h1_MetSig", "MET/#sigma_{MET};MET/#sigma_{MET};Entries / bin", 60, 0., 30.);
     //histManager->Fill1DHist(met.Mod()/met.Significance(),
     //        "h1_MetOverMetSig", "MET/#sigma_{MET};MET/#sigma_{MET};Entries", 50, 0., 10.);
 

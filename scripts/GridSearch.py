@@ -68,12 +68,14 @@ if __name__ == '__main__':
         print 'A batch and ratio type must be specified.  Otherwise, do some hacking so this thing knows about your inputs.'
         exit()
 
+    r.gStyle.SetOptStat(0)
+
     doSimpleCuts    = False
     doBinnedScan    = False
     doMask          = True
 
     lumi        = 19.7e3
-    categories  = ['ss_ee', 'ss_emu', 'ss_mumu']
+    categories  = ['ss_ee', 'ss_emu', 'ss_mumu', 'ss_inclusive']
     backgrounds = ['irr', 'Fakes', 'QFlips']
     datasets    = ['obs', 'sig'] + backgrounds
 
@@ -88,7 +90,6 @@ if __name__ == '__main__':
     variable    = 'MetVsHT'
     xBounds     = [60., 300.] # HT
     yBounds     = [10., 140.] # MET
-
 
     # input file
     scaleFile   = r.TFile('fcncAnalysis/combined_histos/fcnh_cut1_2012_{0}.root'.format(batch), 'OPEN')
@@ -144,6 +145,71 @@ if __name__ == '__main__':
         yBinning = (yHigh - yLow)/yBins
         xCutHigh = xBins
         yCutHigh = yBins
+
+        if category == 'ss_inclusive': ### Draw optimal cut boundaries on BG and Signal plots
+            maskFile = open('data/{0}_mask.txt'.format(variable), 'r')
+
+            canvas = r.TCanvas('canvas', 'canvas', 1000, 500)
+            pad1 = r.TPad('pad1', '', 0., 0., 0.5, 1., 0)
+            pad1.Draw()
+            pad2 = r.TPad('pad2', '', 0.5, 0., 1., 1., 0)
+            pad2.Draw()
+
+            cuts = [r.TLine(140., 40., 500., 40.), r.TLine(60., 130., 60., 150.)]
+            cuts[0].SetLineColor(r.kRed)
+            cuts[0].SetLineWidth(3)
+            cuts[1].SetLineColor(r.kRed)
+            cuts[1].SetLineWidth(3)
+
+            prevXLow = 140.
+            for line in maskFile:
+                if line[0] == '#':
+                    continue
+
+                line = line.strip('\n')
+                #print line
+
+                lineData    = line.split(' ')
+                yBin        = int(lineData[0])
+                xRangeLow   = int(lineData[1])
+                xRangeHigh  = int(lineData[2])
+                expLimit    = float(lineData[3])
+
+                newCutX = r.TLine(xRangeLow, yBin, prevXLow, yBin)
+                newCutX.SetLineColor(r.kRed)
+                newCutX.SetLineWidth(3)
+
+                newCutY = r.TLine(xRangeLow, yBin, xRangeLow, yBin+yBinning)
+                newCutY.SetLineColor(r.kRed)
+                newCutY.SetLineWidth(3)
+
+                prevXLow = xRangeLow
+
+                cuts.append(newCutX)
+                cuts.append(newCutY)
+
+            bgHist = sumBG['irr'].Clone() 
+            bgHist.Add(sumBG['Fakes'])
+            bgHist.Add(sumBG['QFlips'])
+            bgHist.SetTitle('Background')
+            bgHist.GetXaxis().SetRangeUser(0.,500.)
+            bgHist.GetYaxis().SetRangeUser(0.,150.)
+
+            sumBG['sig'].SetTitle('Signal')
+            sumBG['sig'].GetXaxis().SetRangeUser(0.,500.)
+            sumBG['sig'].GetYaxis().SetRangeUser(0.,150.)
+
+            pad1.cd()
+            bgHist.Draw('colz')
+            for cut in cuts:
+                cut.Draw('same')
+
+            pad2.cd()
+            sumBG['sig'].Draw('colz')
+            for cut in cuts:
+                cut.Draw('same')
+
+            canvas.Print('plots/test.pdf')
 
         if doSimpleCuts:
             for xCutLow in range(int(math.ceil(xBins/2.))):
