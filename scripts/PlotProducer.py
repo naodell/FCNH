@@ -636,7 +636,7 @@ class PlotProducer(AnalysisTools):
                     if var == 'HT':
                         stacks[var].GetXaxis().SetRangeUser(0., 1500.);
 
-                    stacks[var].GetYaxis().SetTitleOffset(1.5);
+                    stacks[var].GetYaxis().SetTitleOffset(1.);
                     stacks[var].GetYaxis().SetTitleSize(0.04);
                     stacks[var].GetXaxis().SetTitleOffset(0.9);
                     stacks[var].GetXaxis().SetTitleSize(0.04);

@@ -5,6 +5,15 @@ import ROOT as r
 
 seed = int(str(time.time())[6:10])
 
+paramFile   = open('scripts/fcncParams.pkl', 'rb')
+scales      = pickle.load(paramFile)
+styles      = pickle.load(paramFile)
+combos      = pickle.load(paramFile)
+removes     = pickle.load(paramFile)
+categories  = pickle.load(paramFile)
+systematics = pickle.load(paramFile)
+
+
 '''
 Carries out a random grid search to optimize rectangular cuts in 2D plane.
 '''
@@ -27,9 +36,9 @@ def card_producer(yields, categories, backgrounds, cardFile):
     nObs   = []
     nSigBG = []
     for category in categories:
-        nObs.append(str(yields[category]._yields['obs']))
+        nObs.append(str(yields[category]._yields['data_obs']))
 
-        nSigBG.append('{0:.2f}'.format(yields[category]._yields['sig']))
+        nSigBG.append('{0:.2f}'.format(yields[category]._yields['fcnh']))
         for bg in backgrounds:
             nSigBG.append('{0:.2f}'.format(yields[category]._yields[bg]))
 
@@ -45,7 +54,7 @@ def card_producer(yields, categories, backgrounds, cardFile):
     cardFile.write('------------\n')
     cardFile.write('bin             {0}\n'.format(''.join([(nBG+1)*'{0}\t'.format(category) for category in categories])))
     cardFile.write('process         {0}\n'.format(''.join(nChannels*['{0}\t'.format(i) for i in range(nBG+1)])))
-    cardFile.write('process         {0}\n'.format(''.join(nChannels*['{0}\t'.format(sigBG) for sigBG in ['sig'] + backgrounds])))
+    cardFile.write('process         {0}\n'.format(''.join(nChannels*['{0}\t'.format(sigBG) for sigBG in ['fcnh'] + backgrounds])))
     cardFile.write('rate            {0}\n'.format('\t'.join(nSigBG)))
     cardFile.write('------------\n')
 
@@ -54,8 +63,8 @@ def card_producer(yields, categories, backgrounds, cardFile):
     cardFile.write('MET     lnN     1.04    1.04    --      --      1.04    1.04    --      --      1.04    1.04    --      --      # 1% MET resolution uncertainty (verify this)\n')
     cardFile.write('WZ      lnN     --      1.01    --      --      --      1.01    --      --      --      1.01    --      --      # 1% error on irreducible background from WZ contribution\n')
     cardFile.write('ttbar   lnN     1.01    --      --      --      1.01    --      --      --      1.01    --      --      --      # 1% uncertainty on ttbar simulation\n')
-    cardFile.write('mu_eff  lnN     1.014   1.014   --      --      1.014   1.014   --      --      1.014   1.014   --      --      # 5% uncertainty on efficiencies (correlated just for simplicity)\n')
-    cardFile.write('el_eff  lnN     1.008   1.008   --      --      1.008   1.008   --      --      1.008   1.008   --      --      # 5% uncertainty on efficiencies (correlated just for simplicity)\n')
+    cardFile.write('mu_eff  lnN     1.014   1.014   --      --      1.014   1.014   --      --      1.02    1.02    --      --      # 5% uncertainty on efficiencies (correlated just for simplicity)\n')
+    cardFile.write('el_eff  lnN     1.008   1.008   --      --      1.008   1.008   --      --      --      --      --      --      # 5% uncertainty on efficiencies (correlated just for simplicity)\n')
     cardFile.write('qFlips  lnN     --      --      --      1.20     --      --      --      1.20     --      --      --      --    # 1% uncertainty charge flips\n')
     cardFile.write('fakes   lnN     --      --      1.20     --      --      --      1.20     --      --      --      1.20    --    # 5% flat uncertainty on fake rate estimation\n')
     cardFile.write('pileup  lnN     1.01    1.01    --      --      1.01    1.01    --      --      1.01    1.01    --      --      # 1% pileup uncertainty\n')
@@ -77,11 +86,11 @@ if __name__ == '__main__':
     lumi        = 19.7e3
     categories  = ['ss_ee', 'ss_emu', 'ss_mumu', 'ss_inclusive']
     backgrounds = ['irr', 'Fakes', 'QFlips']
-    datasets    = ['obs', 'sig'] + backgrounds
+    datasets    = ['data_obs', 'fcnh'] + backgrounds
 
     dataDict = {}
-    dataDict['obs']     = ['DATA_ELECTRON', 'DATA_MUON', 'DATA_MUEG'] # Observed
-    dataDict['sig']     = ['FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_ZZ_t', 'FCNC_ZZ_tbar', 'FCNC_TauTau_t', 'FCNC_TauTau_tbar'] # signal
+    dataDict['data_obs']     = ['DATA_ELECTRON', 'DATA_MUON', 'DATA_MUEG'] # Observed
+    dataDict['fcnh']    = ['FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_ZZ_t', 'FCNC_ZZ_tbar', 'FCNC_TauTau_t', 'FCNC_TauTau_tbar'] # signal
 
     dataDict['irr']     = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG'] # Irreducible backgrounds
     dataDict['Fakes']   = ['muFakes', 'eFakes', 'llFakes'] # Fakes
@@ -96,7 +105,6 @@ if __name__ == '__main__':
     histFile    = r.TFile('fcncAnalysis/combined_histos/fcnh_cut3_2012_{0}.root'.format(batch), 'OPEN')
     # Scale factors
     paramFile = open('scripts/fcncParams.pkl', 'rb')
-    scales    = pickle.load(paramFile)
 
     # prepare output directory
     filePath = 'data/dataCards'
@@ -122,7 +130,7 @@ if __name__ == '__main__':
                 if not hist: continue
 
                 ### Do scaling of MC samples ###
-                if dataset not in ['obs', 'QFlips', 'Fakes']:
+                if dataset not in ['data_obs', 'QFlips', 'Fakes']:
                     yieldHist   = scaleFile.GetDirectory('inclusive/' + sample).Get('h1_YieldByCut')
                     nInit       = yieldHist.GetBinContent(1)
                     hist.Scale(scales['2012'][sample]*lumi/nInit)
@@ -195,9 +203,9 @@ if __name__ == '__main__':
             bgHist.GetXaxis().SetRangeUser(0.,500.)
             bgHist.GetYaxis().SetRangeUser(0.,150.)
 
-            sumBG['sig'].SetTitle('Signal')
-            sumBG['sig'].GetXaxis().SetRangeUser(0.,500.)
-            sumBG['sig'].GetYaxis().SetRangeUser(0.,150.)
+            sumBG['fcnh'].SetTitle('Signal')
+            sumBG['fcnh'].GetXaxis().SetRangeUser(0.,500.)
+            sumBG['fcnh'].GetYaxis().SetRangeUser(0.,150.)
 
             pad1.cd()
             bgHist.Draw('colz')
@@ -205,7 +213,7 @@ if __name__ == '__main__':
                 cut.Draw('same')
 
             pad2.cd()
-            sumBG['sig'].Draw('colz')
+            sumBG['fcnh'].Draw('colz')
             for cut in cuts:
                 cut.Draw('same')
 
@@ -227,6 +235,7 @@ if __name__ == '__main__':
                             numEvents = sumBG[dataset].Integral(xCutLow, xBins, yCutLow, yBins)
                         else:
                             numEvents = 0.
+
                         yields[cut][category].add_data(dataset, numEvents)
 
         if doBinnedScan:

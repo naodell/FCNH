@@ -332,10 +332,13 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
     vstring passNames = triggerSelector->GetPassNames();
 
-    //for (unsigned i = 0; i < passNames.size(); ++i) cout << passNames[i] << endl;
-    //cout << endl;
+    //for (unsigned i = 0; i < passNames.size(); ++i) 
+    //    cout << passNames[i] << endl;
 
-    if (passNames.size() == 0) passNames.push_back("NULL");
+    if (passNames.size() == 0) 
+        passNames.push_back("NULL");
+    //else
+    //    cout << endl;
 
 
     ////////////////////////////
@@ -1164,7 +1167,7 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
         allJets.insert(allJets.end(), bJetsM.begin(), bJetsM.end());
         sort(allJets.begin(), allJets.end(), P4SortCondition);
 
-        if (recoMET->Mod() < metCut[1] || HT < htCut[1] || allJets[1].Pt() < 50) 
+        if (recoMET->Mod() < metCut[1] || HT < htCut[1]) 
             return true;
     }
 
@@ -2499,6 +2502,7 @@ void fcncAnalyzer::SetYields(unsigned cut)
         if (geoCat < N_CATEGORIES) {
             FillYieldHists(categoryNames[geoCat] + "/" + subdir, evtWeight, cut);
         }
+        //cout << evtWeight << endl;
     }
 
     if (subdir == suffix) {

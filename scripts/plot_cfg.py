@@ -21,11 +21,11 @@ else:
 ### This is the config file for manipulating 
 ### histograms using the PlotProducer class.  
 
-plotType    = '.pdf'
+plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-#cutList.extend(['2_Z_veto', '3_2jet', '4_MET'])#, '.', 'CR_WZ'])#, 'CR_SUSY'])#, '5_BDT'])
+#cutList.extend(['2_Z_veto', '3_2jet', '4_MET'])#, '.', 'CR_WZ', 'CR_SUSY'])#, '5_BDT'])
 #cutList.extend(['.', '.', '.', 'X_0jet', 'X_1jet'])
 
 crList      = []#'CR_WZ', 'CR_SUSY', 'CR_ZFake']
@@ -43,7 +43,7 @@ do1D        = True
 do2D        = True
 
 doInclusive = False
-doOS        = True
+doOS        = False
 doSS        = True
 do3l        = True
 
@@ -70,8 +70,8 @@ samples['all'].append('Triboson')
 samples['all'].append('WZJets3LNu')
 #samples['all'].append('higgs')
 
-samples['all'].append('ZJets')
-samples['all'].append('top')
+#samples['all'].append('ZJets')
+#samples['all'].append('top')
 #samples['all'].append('Diboson')
 #samples['all'].append('WJetsToLNu')
 #samples['all'].append('WbbToLNu')
@@ -129,7 +129,7 @@ samples['ss_inclusive'].append('Triboson')
 samples['ss_inclusive'].append('ttV')
 samples['ss_inclusive'].append('ZZ4l')
 samples['ss_inclusive'].append('WZJets3LNu')
-samples['ss_inclusive'].append('Fakes')
+#samples['ss_inclusive'].append('Fakes')
 
 #samples['ss_inclusive'].append('WWSS')
 #samples['ss_inclusive'].append('WJetsToLNu')
@@ -142,20 +142,20 @@ samples['ss_inclusive'].append('Fakes')
 
 ## dielectrons
 samples['ss_ee'].extend(samples['ss_inclusive'])
-#samples['ss_ee'].extend(['eFakes', 'llFakes'])
+samples['ss_ee'].extend(['eFakes', 'llFakes'])
 samples['ss_ee'].append('QFlips')
 
 ## electron+muon
 samples['ss_emu'].extend(samples['ss_inclusive'])
-#samples['ss_emu'].extend(['eFakes', 'muFakes', 'llFakes'])
+samples['ss_emu'].extend(['eFakes', 'muFakes', 'llFakes'])
 samples['ss_emu'].append('QFlips')
 
 ## dimuons
 samples['ss_mumu'].extend(samples['ss_inclusive'])
-#samples['ss_mumu'].extend(['muFakes', 'llFakes'])
+samples['ss_mumu'].extend(['muFakes', 'llFakes'])
 
 ## inclusive
-#samples['ss_inclusive'].append('Fakes')
+samples['ss_inclusive'].append('Fakes')
 samples['ss_inclusive'].append('QFlips')
 
 ## geometric categories

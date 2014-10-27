@@ -24,6 +24,25 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
     _muSF2012_ISO[2] = (TGraphErrors*)f_muRecoSF2012_ISO->Get("DATA_over_MC_combRelIsoPF04dBeta<012_Tight_pt_abseta1.2-2.1");
     _muSF2012_ISO[3] = (TGraphErrors*)f_muRecoSF2012_ISO->Get("DATA_over_MC_combRelIsoPF04dBeta<012_Tight_pt_abseta2.1-2.4");
 
+    for (unsigned i = 0; i < 4; ++i) {
+        Int_t nBins = _muSF2012_ID[i]->GetN();
+        Double_t* xPointsID = _muSF2012_ID[i]->GetX();
+        Double_t* yPointsID = new Double_t[nBins];
+
+        for (unsigned j = 0; j < nBins; ++j) {
+            yPointsID[j] = _muSF2012_ID[i]->GetErrorY(j);
+        }
+        _muSF2012_ID_err[i] = new TGraph(nBins, xPointsID, yPointsID);
+
+        Double_t* xPointsISO = _muSF2012_ISO[i]->GetX();
+        Double_t* yPointsISO = new Double_t[nBins];
+
+        for (unsigned j = 0; j < nBins; ++j) {
+            yPointsISO[j] = _muSF2012_ISO[i]->GetErrorY(j);
+        }
+        _muSF2012_ISO_err[i] = new TGraph(nBins, xPointsISO, yPointsISO);
+    }
+
     h2_MuTriggerSFs[0] = (TH2D*)f_muRecoSF2012_TRIG->Get("DATA_over_MC_Mu17Mu8_OR_Mu17TkMu8_Tight_Mu1_10To20_&_Mu2_20ToInfty_with_STAT_uncrt");
     h2_MuTriggerSFs[1] = (TH2D*)f_muRecoSF2012_TRIG->Get("DATA_over_MC_Mu17Mu8_OR_Mu17TkMu8_Tight_Mu1_20ToInfty_&_Mu2_20ToInfty_with_STAT_uncrt");
 
@@ -60,6 +79,7 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
     h2_MuonFakes["ZPlusJet"]        = (TH2D*)f_fakeFile->Get("ZPlusJet/h2_MuonFake");
     h2_MuonFakes["AntiIso3l"]       = (TH2D*)f_fakeFile->Get("AntiIso3l/h2_MuonFake");
     h2_MuonFakes["Combined"]        = (TH2D*)f_fakeFile->Get("Combined/h2_MuonFake");
+
     h2_ElectronFakes["QCD2l"]       = (TH2D*)f_fakeFile->Get("QCD2l/h2_ElectronFake");
     h2_ElectronFakes["ZPlusJet"]    = (TH2D*)f_fakeFile->Get("ZPlusJet/h2_ElectronFake");
     h2_ElectronFakes["AntiIso3l"]   = (TH2D*)f_fakeFile->Get("AntiIso3l/h2_ElectronFake");
@@ -236,7 +256,7 @@ float WeightUtils::GetEleTriggerEff(TLorentzVector& lep1, TLorentzVector& lep2) 
 {
     int etaBin[]  = {0,0};
     int ptBin[]   = {0,0};
-    float weight = 1.;
+
     float ptBins1[]  = {10., 15., 20., 30., 40., 50., 9999.};
     float ptBins2[]  = {20., 30., 40., 50., 9999.};
 
@@ -266,8 +286,6 @@ float WeightUtils::GetEleTriggerEff(TLorentzVector& lep1, TLorentzVector& lep2) 
         etaBin[1] = 0;
     else if (fabs(lep2.Eta()) < 1.566)
         etaBin[1] = 1;
-    else
-        etaBin[1] = 2;
 
     // scale factors from Brian
     float _HLTEl17El8_8Leg2012[3][6] = {
@@ -276,6 +294,7 @@ float WeightUtils::GetEleTriggerEff(TLorentzVector& lep1, TLorentzVector& lep2) 
         { 0.9493 , 1.0459 , 1.0033 , 0.9929 , 0.9940 , 0.9944 }, // 1.4442 > |eta| > 1.566
         { 0.9010 , 0.9715 , 0.9966 , 0.9954 , 0.9977 , 0.9979 } // |eta| > 1.566, trailing
     };
+
 
     float _HLTEl17El8_17Leg2012[3][4] = {
         //20<pt<30 30<pt<40 40<pt<60 50<pt
@@ -290,10 +309,23 @@ float WeightUtils::GetEleTriggerEff(TLorentzVector& lep1, TLorentzVector& lep2) 
 float WeightUtils::GetElectronEff(TLorentzVector& lep) const
 {
     float weight = 1.;
-    if (lep.Pt() < 200.) 
-        weight = h2_EleMVASF->GetBinContent(h2_EleMVASF->FindBin(fabs(lep.Eta()), lep.Pt()));
-    else
+    float errStat, errSys;
+    if (lep.Pt() < 200.) {
+        weight  = h2_EleMVASF->GetBinContent(h2_EleMVASF->FindBin(fabs(lep.Eta()), lep.Pt()));
+        errStat = h2_EleMVASF->GetBinError(h2_EleMVASF->FindBin(fabs(lep.Eta()), lep.Pt()));
+
+    } else {
         weight = h2_EleMVASF->GetBinContent(h2_EleMVASF->FindBin(fabs(lep.Eta()), 199.));
+        errStat = h2_EleMVASF->GetBinError(h2_EleMVASF->FindBin(fabs(lep.Eta()), 199.));
+    }
+
+    errSys  = 0.02*weight;
+    float error = sqrt(errStat*errStat + errSys*errSys);
+    //weight += error;
+    //weight -= error;
+    
+    //cout << weight << "+/-" << errSys << "+/-" << errStat << " :: " << error << endl;
+
     return weight;
 }
 
@@ -310,10 +342,27 @@ float WeightUtils::GetMuEff(TLorentzVector& lep) const
         }
     }
 
-    if (lep.Pt() < 300.)
-        weight = _muSF2012_ID[etaBin]->Eval(lep.Pt())*_muSF2012_ISO[etaBin]->Eval(lep.Pt());
-    else
+    if (lep.Pt() < 300.) {
+
+        float idWeight  = _muSF2012_ID[etaBin]->Eval(lep.Pt());
+        float isoWeight = _muSF2012_ISO[etaBin]->Eval(lep.Pt());
+
+        float sysErrID  = 0.005*idWeight;
+        float statErrID = _muSF2012_ID_err[etaBin]->Eval(lep.Pt());
+        float errID     = sqrt(sysErrID*sysErrID + statErrID*statErrID);
+
+        float sysErrISO  = 0.002*isoWeight;
+        float statErrISO = _muSF2012_ISO_err[etaBin]->Eval(lep.Pt());
+        float errISO     = sqrt(sysErrISO*sysErrISO + statErrISO*statErrISO);
+
+        //cout << idWeight << ", " << isoWeight << ": " << sysErrID << ", " << statErrID << " :: " << sysErrISO << ", " << statErrISO << endl;
+
+        weight = idWeight*isoWeight;
+        //weight = idWeight*(1. + errID)*isoWeight*(1 + errISO);
+        //weight = idWeight*(1. - errID)*isoWeight*(1 - errISO);
+    } else {
         weight = 1;
+    }
 
     return weight;
 }
@@ -352,6 +401,20 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
         } else if (fabs(fakeable.Eta()) >= 1.5) {
             //fakeRate  = g_MuonFakesPtE[controlRegion]->Eval(fakeablePt);
             fakeRate  = h2_MuonFakes[controlRegion]->GetBinContent(iPt, 2);
+        }
+
+    } else if (fakeable.Type() == "electron") {
+
+        float fakeablePt = fakeable.Pt();
+        if (fakeable.Pt() < 35) 
+            fakeablePt = fakeable.Pt();
+        else
+            fakeablePt = 35;
+
+        if (fabs(fakeable.Eta()) < 0.8) {
+            //fakeRate  = g_ElectronFakesPtB[controlRegion]->Eval(fakeablePt);
+            fakeRate  = h2_ElectronFakes[controlRegion]->GetBinContent(iPt, 1);
+        } else if (fabs(fakeable.Eta()) >= 0.8 && fabs(fakeable.Eta()) < 1.479) {
         }
 
     } else if (fakeable.Type() == "electron") {
@@ -441,7 +504,7 @@ float WeightUtils::GetQFlipWeight(unsigned nJets, string weightType)
 
     if (weightType == "2D") {
         unsigned iEta1, iPt1, iEta2, iPt2;
-        // Set iEta bins for leading and trailing _leptons
+        // Set iEta bins for leading and trailing leptons
         if (fabs(_leptons[0].Eta()) < 0.8)
             iEta1 = 0;
         else if (fabs(_leptons[0].Eta()) >= 0.8 && fabs(_leptons[0].Eta()) < 1.479)
@@ -456,7 +519,7 @@ float WeightUtils::GetQFlipWeight(unsigned nJets, string weightType)
         else if (fabs(_leptons[1].Eta()) >= 1.479 && fabs(_leptons[1].Eta()) < 2.1)
             iEta2 = 2;
 
-        // Set iPt bins for leading and trailing _leptons
+        // Set iPt bins for leading and trailing leptons
         if (_leptons[0].Pt() >= 10. && _leptons[0].Pt() < 25.)
             iPt1 = 1;
         else if (_leptons[0].Pt() >= 25. && _leptons[0].Pt() < 40.)
@@ -507,8 +570,6 @@ float WeightUtils::GetQFlipWeight(unsigned nJets, string weightType)
             }
             //if (i == 0 && electronPt < 25.) weight *= 0.75;
         }
-
-        // correction for low pt-bins
 
         // correction for jet multiplicity
         float jet_corrections[] = {1., 1.2};

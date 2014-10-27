@@ -193,10 +193,10 @@ class AnalysisTools():
             hist = inHist.Clone()
 
         if self._category in systematics:
-            if dataName == 'QFlips':
-                hist = self.add_systematic(hist, 'QFlips')
-            elif dataName in self._combineDict['Fakes']:
+            if dataName in ['QFlips', 'ttW', 'ttZ', 'WZJets3LNu', 'muFakes', 'eFakes', 'llFakes']:
                 hist = self.add_systematic(hist, dataName)
+            elif dataName in self._combineDict['FCNH']:
+                hist = self.add_systematic(hist, 'signal')
             elif dataName in self._combineDict['Irreducible']:
                 hist = self.add_systematic(hist, 'Irreducible')
 
@@ -213,9 +213,9 @@ class AnalysisTools():
             else:
                 hist.Scale(self._scale*self._scaleDict[self._period][dataName]) 
 
-        
-        #if histType == '1D' and hist.GetNbinsX()%self._rebinFactor is 0:
-        #    hist.Rebin(self._rebinFactor)
+        # Rebin hack
+        #if self._category == '3l_inclusive' and var in ['TrileptonMass', 'DileptonOSMass']:
+        #    hist.Rebin(4)
 
         return hist
 
