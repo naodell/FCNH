@@ -6,7 +6,7 @@ cfg = b.JobConfig
 
 ''' Specify parameters '''
 dataDir     = '/tthome/naodell/storage/ntuples/Data'
-signalDir   = '/tthome/naodell/storage/ntuples/MC_FCNH'
+signalDir   = '/tthome/naodell/storage/ntuples/MC_FCNH/PDF_studies'
 mcDir       = '/tthome/naodell/storage/data/nuTuples_v9.6_8TeV/MC/'
 executable  = 'execBatch.sh'
 
@@ -126,12 +126,12 @@ if period == '2012':
     signal.extend([
         #cfg('FCNC_M125_tHj', mcDir+'/TToFCNHToWWTo2l2nuPlusTop_M125', 1, 'FCNC_M125_t mc 2012'),
         #cfg('FCNC_M125_tbarHj', mcDir+'/TbarToFCNHToWWTo2l2nuPlusTop_M125/', 1, 'FCNC_M125_tbar mc 2012')
-        cfg('FCNC_M125_tHj', '{0}/FCNH_WW_semileptonic_Plus'.format(signalDir), 1, 'FCNC_M125_t mc 2012'),
-        cfg('FCNC_M125_tbarHj', '{0}/FCNH_WW_semileptonic_Minus'.format(signalDir), 1, 'FCNC_M125_tbar mc 2012'),
+        cfg('FCNC_M125_tHj', '{0}/FCNHToWW_semileptonic_Plus'.format(signalDir), 1, 'FCNC_M125_t mc 2012'),
+        #cfg('FCNC_M125_tbarHj', '{0}/FCNH_WW_semileptonic_Minus'.format(signalDir), 1, 'FCNC_M125_tbar mc 2012'),
         cfg('FCNC_M125_ZZ_Plus', '{0}/FCNHToZZ_Plus'.format(signalDir), 1, 'FCNC_ZZ_t mc 2012'),
-        cfg('FCNC_M125_ZZ_Minus', '{0}/FCNHToZZ_Minus'.format(signalDir), 1, 'FCNC_ZZ_tbar mc 2012'),
+        #cfg('FCNC_M125_ZZ_Minus', '{0}/FCNHToZZ_Minus'.format(signalDir), 1, 'FCNC_ZZ_tbar mc 2012'),
         cfg('FCNC_M125_TauTau_Plus', '{0}/FCNHToTauTau_Plus'.format(signalDir), 1, 'FCNC_TauTau_t mc 2012'),
-        cfg('FCNC_M125_TauTau_Minus', '{0}/FCNHToTauTau_Minus'.format(signalDir), 1, 'FCNC_TauTau_tbar mc 2012'),
+        #cfg('FCNC_M125_TauTau_Minus', '{0}/FCNHToTauTau_Minus'.format(signalDir), 1, 'FCNC_TauTau_tbar mc 2012'),
         ])
 
 

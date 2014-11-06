@@ -44,7 +44,7 @@ const float   phoPtCut[]        = {10., 10.};
 const float   leptonPtCut[]     = {20., 10.};
 const float   metCut[]          = {40., 30.};
 const float   htCut[]           = {100., 0.};
-const float   massCut[]         = {30., 12.};
+const float   massCut[]         = {30., 30.};
 const float   bJetVeto          = 1e9;
 
 bool P4SortCondition(TLorentzVector p1, TLorentzVector p2) {return (p1.Pt() > p2.Pt());} 
@@ -647,9 +647,9 @@ bool fcncAnalyzer::Process(Long64_t entry)
                 }
                     
 
-                //if (isRealData && leptons[i].Type() == "muon" && leptons[j].Type() == "muon")
-                //    if (CosmicMuonFilter(leptons[i], leptons[j]))
-                //        isCosmics = true;
+                if (isRealData && leptons[i].Type() == "muon" && leptons[j].Type() == "muon")
+                    if (CosmicMuonFilter(leptons[i], leptons[j]))
+                        isCosmics = true;
             }
         }
 
@@ -664,6 +664,18 @@ bool fcncAnalyzer::Process(Long64_t entry)
         weighter->SetObjects(leptons, jets, nPUVerticesTrue, passNames[0]);
         evtWeight *= weighter->GetTotalWeight();
         histManager->SetWeight(evtWeight);
+
+        // Hack for PDF systematic studies: Reweight to CT10 (fcnh signal
+        // generated with cteq6l1) and consider three cases: nominal, nominal +
+        // 1*sigma, nominal - 1*sigma
+        if (!isRealData && suffix.substr(0, 4) == "FCNC") {
+            //cout << pdfWeights[0]*evtWeight << " + " << pdfWeights[1] << " - " << pdfWeights[2] << endl;
+            histManager->Fill1DHist(pdfWeights[0], "h1_pdfWeights", "PDF rescaling;weight;Entries", 100, 0.5, 1.5);
+
+            evtWeight *= pdfWeights[0]*(1 - pdfWeights[2]/pdfWeights[0]);
+            histManager->SetWeight(evtWeight);
+
+        }
 
         SetEventCategory(leptons);
         SetEventVariables(leptons, jets, bJetsM, *recoMET); 
