@@ -192,10 +192,9 @@ if __name__ == '__main__':
                 xRangeHigh  = int(int(lineData[2])/xBinning)
                 expLimit    = float(lineData[3])
 
-                if yBin <= 4: 
-                    continue
+                if yBin <= 4: continue
 
-                #print xRangeLow, xCutHigh, yBin
+                print xRangeLow, xCutHigh, yBin
 
                 for dataset in datasets:
                     if sumBG[dataset]:
