@@ -196,7 +196,7 @@ class AnalysisTools():
             if dataName in ['QFlips', 'ttW', 'ttZ', 'WZJets3LNu', 'muFakes', 'eFakes', 'llFakes']:
                 hist = self.add_systematic(hist, dataName)
             elif dataName in self._combineDict['FCNH']:
-                hist = self.add_systematic(hist, 'signal')
+                hist = self.add_systematic(hist, 'fcnh')
             elif dataName in self._combineDict['Irreducible']:
                 hist = self.add_systematic(hist, 'Irreducible')
 

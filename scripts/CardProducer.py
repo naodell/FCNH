@@ -63,6 +63,7 @@ class CardProducer():
         cardFile.write('------------\n')
 
         systList = ['lumi', 'jes', 'MET', 'pileup', 'mu_eff', 'el_eff', 'mu_trig', 'el_trig', 'qFlips', 'mufakes', 'elFakes', 'PDF', 'ttbar', 'ttW', 'ttZ', 'WZ']
+        systList = ['lumi', 'jes', 'MET', 'pileup', 'mu_eff', 'el_eff', 'mu_trig', 'el_trig', 'mufakes', 'elFakes', 'PDF', 'ttbar', 'ttW', 'ttZ', 'WZ']
         for i, systematic in enumerate(systList):
             cardFile.write('{0}\tlnN\t'.format(systematic))
             for category in self._categories:
@@ -98,9 +99,6 @@ class CardProducer():
                         nInit       = yieldHist.GetBinContent(1)
                         hist.Scale(self._lumi*scales['2012'][sample]/nInit)
 
-                    #elif sample == 'eFakes' and category == 'ss_ee':
-                    #    hist.Scale(2.)
-
                     if sumBG[dataset] == None:
                         sumBG[dataset] = hist.Clone()
                     else:
@@ -121,54 +119,56 @@ class CardProducer():
         return sumBG
 
 
-    if __name__ == '__main__':
+if __name__ == '__main__':
 
-        if len(sys.argv) > 0:
-            batch   = sys.argv[1]
-        else:
-            print 'A batch and ratio type must be specified.  Otherwise, do some hacking so this thing knows about your inputs.'
-            exit()
+    if len(sys.argv) > 0:
+        batch   = sys.argv[1]
+    else:
+        print 'A batch and ratio type must be specified.  Otherwise, do some hacking so this thing knows about your inputs.'
+        exit()
 
-        r.gStyle.SetOptStat(0)
+    r.gStyle.SetOptStat(0)
 
-        lumi        = 19.7e3
-        cutLevel    = 6
-        categories  = ['ss_ee', 'ss_emu', 'ss_mumu', '3l_inclusive']
-        #categories  = ['ss_inclusive']
-        backgrounds = ['Irreducible', 'ttW', 'ttZ', 'WZJets3LNu', 'muFakes', 'eFakes', 'llFakes', 'QFlips']
-        datasets    = ['data_obs', 'fcnh'] + backgrounds
+    lumi        = 19.7e3
+    cutLevel    = 8
+    #categories  = ['ss_ee', 'ss_emu', 'ss_mumu']
+    categories  = ['3l_eee', '3l_eemu', '3l_emumu', '3l_mumumu']
+    backgrounds = ['Irreducible', 'ttW', 'ttZ', 'WZJets3LNu', 'muFakes', 'eFakes', 'llFakes']#, 'QFlips']
+    datasets    = ['data_obs', 'fcnh'] + backgrounds
 
-        dataDict = {}
-        dataDict['data_obs']    = ['DATA_ELECTRON', 'DATA_MUON', 'DATA_MUEG'] # Observed
-        dataDict['fcnh']        = ['FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_ZZ_t', 'FCNC_ZZ_tbar', 'FCNC_TauTau_t', 'FCNC_TauTau_tbar'] # signal
-        dataDict['Irreducible'] = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttG'] # Irreducible backgrounds
-        dataDict['Fakes']       = ['muFakes', 'eFakes', 'llFakes'] # Fakes
+    dataDict = {}
+    dataDict['data_obs']    = ['DATA_ELECTRON', 'DATA_MUON', 'DATA_MUEG'] # Observed
+    dataDict['fcnh']        = ['FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_ZZ_t', 'FCNC_ZZ_tbar', 'FCNC_TauTau_t', 'FCNC_TauTau_tbar'] # signal
+    dataDict['Irreducible'] = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttG'] # Irreducible backgrounds
+    dataDict['Fakes']       = ['muFakes', 'eFakes', 'llFakes'] # Fakes
 
-        # input file
-        scaleFile   = r.TFile('fcncAnalysis/combined_histos/fcnh_cut1_2012_{0}.root'.format(batch), 'OPEN')
-        histFile    = r.TFile('fcncAnalysis/combined_histos/fcnh_cut3_2012_{0}.root'.format(batch), 'OPEN')
+    # input file
+    scaleFile   = r.TFile('fcncAnalysis/combined_histos/fcnh_cut1_2012_{0}.root'.format(batch), 'OPEN')
+    histFile    = r.TFile('fcncAnalysis/combined_histos/fcnh_cut3_2012_{0}.root'.format(batch), 'OPEN')
 
-        # Scale factors
-        paramFile = open('scripts/fcncParams.pkl', 'rb')
+    # Scale factors
+    paramFile = open('scripts/fcncParams.pkl', 'rb')
 
-        # prepare output directory
-        filePath = 'data/dataCards'
-        if not os.path.exists(filePath):
-            os.system('mkdir -p '+filePath)
-        elif len(os.listdir(filePath)) is not 0:
-            os.system('rm -r {0}/*'.format(filePath))
+    # prepare output directory
+    filePath = 'data/dataCards'    
+    if not os.path.exists(filePath):
+        os.system('mkdir -p '+filePath)
 
-        cardMaker = CardProducer(categories, datasets, dataDict, scaleFile)
-        cardMaker.set_luminosity(lumi)
+    cardMaker = CardProducer(categories, datasets, dataDict, scaleFile)
+    cardMaker.set_luminosity(lumi)
 
-        yields  = {}
-        cuts    = []
-        for category in categories:
-            # Get histograms for different samples 
-            sumBG = cardMaker.get_hists_for_yields(histFile, 'h1_YieldByCut', category)
-            yields[category] = CatData(category, datasets)
-            for dataset in datasets:
+    # get yields for each dataset for the given category
+    yields = {}
+    for category in categories:
+        # Get histograms for different samples 
+        sumBG = cardMaker.get_hists_for_yields(histFile, 'h1_YieldByCut', category)
+        yields[category] = CatData(category, datasets)
+        for dataset in datasets:
+            if sumBG[dataset]:
                 yields[category].add_data(dataset, sumBG[dataset].GetBinContent(cutLevel))
 
-        dataCard = open('{0}/{1}_{2}.txt'.format(filePath, variable, cut), 'w')
-        cardMaker.card_producer(yields[cut], backgrounds, dataCard)
+        print category
+
+    
+    dataCard = open('{0}/{1}_{2}.txt'.format(filePath, batch, '3l'), 'w')
+    cardMaker.card_producer(yields, backgrounds, dataCard)

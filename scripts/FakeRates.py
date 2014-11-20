@@ -1,73 +1,99 @@
 #! /usr/bin/env python
-from array import array
-import subprocess
-import ROOT as r
+from RatioMaker import *
 
-canvas  = r.TCanvas('canvas', 'canvas', 800, 600)
-inFile  = r.TFile('histos/fakeHistograms.root', 'OPEN')
-outFile = r.TFile('histos/fakeRates.root', 'RECREATE') 
-path    = '~/work/plots/fakes/rates'
+inFile  = 'fakeEstimator/histos/{0}.root'.format(batch)
+outFile = 'data/fakeRates_TEST.root'
 
-fakeCategories = []
-fakeCategories.extend(['ele_v1', 'ele_v2', 'ele_v3', 'ele_v4'])
-fakeCategories.extend(['mu_v1', 'mu_v2']) 
+datasets = ['QCD']
+#fakeCategories = ['QCD2l', 'ZPlusJet', 'AntiIso3l']
+fakeCategories = ['MC_truth']
 
-r.gROOT.SetBatch()
-r.gStyle.SetOptStat(0)
+ratioMaker = RatioMaker(inFile, outFile, scale = 19.7)
+ratioMaker.get_scale_factors(['QCD'], corrected = False)
+#ratioMaker.get_scale_factors(['ttbar'], corrected = False)
+#ratioMaker.get_scale_factors(['WJets'], corrected = False)
+#ratioMaker.get_scale_factors(['ZJets', 'WJetsToLNu', 'QCD', 'ttbar'], corrected = False)
+#ratioMaker.get_scale_factors(['PROMPT'], corrected = False)
 
-h2_Fakes2D  = []
-ptBins      = [10., 15., 20., 25., 30., 35., 50., 80., 120., 250.];
-etaBins     = [-2.5, -2., -1.479, -1., 0., 1., 1.479, 2., 2.5];
+fakeDict1D = {
+    'MuonFakePt':('MuNumerPt', 'MuDenomPt'),
+    #'MuonFakeJetMult':('MuNumerJetMult', 'MuDenomJetMult'),
+    #'MuonFakeEta':('MuNumerEta', 'MuDenomEta'),
+    #'MuonFakeMet':('MuNumerMet', 'MuDenomMet'),
+    'ElectronFakePt':('EleNumerPt', 'EleDenomPt'),
+    #'ElectronFakeEta':('EleNumerEta', 'EleDenomEta'),
+    #'ElectronFakeMet':('EleNumerMet', 'EleDenomMet'),
+}
 
-for i,cat in enumerate(fakeCategories):
+fakeDict2D = {
+    'MuonFake':('MuNumer', 'MuDenom'),
+    'ElectronFake':('EleNumer', 'EleDenom')
+}
 
-    print cat
-    canvas.SetGridx()
-    canvas.SetGridy()
+for category in fakeCategories:
+    print category
+    ratioMaker.set_category(category)
 
-    # pt fakes
-    h1_NumerPt = inFile.GetDirectory(cat + '/DATA').Get('h1_NumerPt')
-    h1_DenomPt = inFile.GetDirectory(cat + '/DATA').Get('h1_DenomPt')
+    #bgType ='PROMPT'
+    bgType =''
 
-    g_EffPt = r.TGraphAsymmErrors()
-    g_EffPt.Divide(h1_NumerPt, h1_DenomPt)
-    g_EffPt.SetName('g_FakePt_' + cat)
-    g_EffPt.SetTitle(cat + ' fake rate;p_{T};#varepsilon')
-    g_EffPt.Draw('AP')
+    ratioMaker.set_ratio_1D(fakeDict1D)
+    ratioMaker.make_1D_ratios(dataset, bgType)
 
-    canvas.Print(path + '/' + cat + '_pt.png')
+    ratioMaker.set_ratio_2D(fakeDict2D)
+    ratioMaker.make_2D_ratios(dataset, bgType, doProjections = True)
 
-    outFile.Add(g_EffPt)
+ratioMaker.write_outfile()
 
-    # eta fakes
-    h1_NumerEta = inFile.GetDirectory(cat + '/DATA').Get('h1_NumerEta')
-    h1_DenomEta = inFile.GetDirectory(cat + '/DATA').Get('h1_DenomEta')
+# Combined fakeCategory rates
+if False:
+    fTest = r.TFile('data/fakeRates_TEST.root', 'UPDATE')
+    fTest.mkdir('Combined')
+    fTest.cd('Combined')
 
-    g_EffEta = r.TGraphAsymmErrors()
-    g_EffEta.Divide(h1_NumerEta, h1_DenomEta)
-    g_EffEta.SetName('g_FakeEta_' + cat)
-    g_EffEta.SetTitle(cat + ' fake rate;#eta;#varepsilon')
-    g_EffEta.Draw('AP')
+    #Get 1D histograms
+    histList_1D = ['MuonFakePt', 'MuonFakeEta', 'ElectronFakePt', 'ElectronFakeEta']
+    histList_2D = ['MuonFake', 'ElectronFake']
+    outHists = []
+    for hist in histList_1D:
+        h1_QCD2l        = fTest.GetDirectory('QCD2l').Get('h1_{0}'.format(hist))
+        h1_ZPlusJet     = fTest.GetDirectory('ZPlusJet').Get('h1_{0}'.format(hist))
+        h1_AntiIso3l    = fTest.GetDirectory('AntiIso3l').Get('h1_{0}'.format(hist))
 
-    canvas.Print(path + '/' + cat + '_eta.png')
+        h1_QCD2l.SetBit(r.TH1.kIsAverage)    
+        h1_ZPlusJet.SetBit(r.TH1.kIsAverage) 
+        h1_AntiIso3l.SetBit(r.TH1.kIsAverage)        
 
-    outFile.Add(g_EffEta)
+        h1_combined = r.TH1D('h1_{0}'.format(hist), ';p_{T};#varepsilon', h1_QCD2l.GetNbinsX(), h1_QCD2l.GetXaxis().GetXmin(), h1_QCD2l.GetXaxis().GetXmax())
+        h1_combined.SetBit(r.TH1.kIsAverage)
 
-    # 2D (pt and eta) fakes
-    canvas.SetLogy()
-    canvas.SetGridx(0)
-    canvas.SetGridy(0)
+        h1_combined.Add(h1_QCD2l)
+        h1_combined.Add(h1_ZPlusJet)
+        h1_combined.Add(h1_AntiIso3l)
 
-    h2_Numer = inFile.GetDirectory(cat + '/DATA').Get('h2_NumerPtVsEta')
-    h2_Denom = inFile.GetDirectory(cat + '/DATA').Get('h2_DenomPtVsEta')
+        outHists.append(h1_combined)
 
-    h2_Fakes2D.append(r.TH2D('h2_Fakes_' + cat, 'fake rates ' + cat +';#eta;p_{T}', 5, array('f', etaBins), 6, array('f', ptBins)))
-    #h2_Fakes2D[i].Divide(h2_Numer, h2_Denom)
-    #h2_Fakes2D[i].Draw('colz text')
+    for hist in histList_2D:
+        h2_QCD2l        = fTest.GetDirectory('QCD2l').Get('h2_{0}'.format(hist))
+        h2_ZPlusJet     = fTest.GetDirectory('ZPlusJet').Get('h2_{0}'.format(hist))
+        h2_AntiIso3l    = fTest.GetDirectory('AntiIso3l').Get('h2_{0}'.format(hist))
 
-    #canvas.Print(path + '/' + cat + '_2D.png')
-    canvas.SetLogy(0)
+        h2_QCD2l.SetBit(r.TH1.kIsAverage)    
+        h2_ZPlusJet.SetBit(r.TH1.kIsAverage) 
+        h2_AntiIso3l.SetBit(r.TH1.kIsAverage)        
 
+        h2_combined = r.TH2D('h2_{0}'.format(hist), ';p_{T};#varepsilon', 
+                         h2_QCD2l.GetNbinsX(), h2_QCD2l.GetXaxis().GetXmin(), h2_QCD2l.GetXaxis().GetXmax(), 
+                         h2_QCD2l.GetNbinsY(), h2_QCD2l.GetYaxis().GetXmin(), h2_QCD2l.GetYaxis().GetXmax())
 
-outFile.Write()
-outFile.Close()
+            h2_combined.SetBit(r.TH1.kIsAverage)
+
+            h2_combined.Add(h2_QCD2l)
+            h2_combined.Add(h2_ZPlusJet)
+            h2_combined.Add(h2_AntiIso3l)
+
+            outHists.append(h2_combined)
+
+        fTest.Write()
+        fTest.Close()
+

@@ -390,16 +390,16 @@ bool fcncAnalyzer::Process(Long64_t entry)
         selector->GenParticleSelector(genParticles, 25, 3, "Higgs");
         selector->GenParticleSelector(genParticles, 24, 3, "Dubya");
         selector->GenParticleSelector(genParticles, 23, 3, "Zeds");
-        selector->GenParticleSelector(genParticles, 11, 3, "electrons");
-        selector->GenParticleSelector(genParticles, 13, 3, "muons");
-        selector->GenParticleSelector(genParticles, 15, 3, "taus");
+        selector->GenParticleSelector(genParticles, 11, 3, "electron");
+        selector->GenParticleSelector(genParticles, 13, 3, "muon");
+        selector->GenParticleSelector(genParticles, 15, 3, "tau");
 
         higgs       = selector->GetSelectedGenParticles("Higgs");
         dubyas      = selector->GetSelectedGenParticles("Dubya");
         Zeds        = selector->GetSelectedGenParticles("Zeds");
-        gElectrons  = selector->GetSelectedGenParticles("electrons");
-        gMuons      = selector->GetSelectedGenParticles("muons");
-        gTaus       = selector->GetSelectedGenParticles("taus");
+        gElectrons  = selector->GetSelectedGenParticles("electron");
+        gMuons      = selector->GetSelectedGenParticles("muon");
+        gTaus       = selector->GetSelectedGenParticles("tau");
 
         gLeptons.insert(gLeptons.end(), gElectrons.begin(), gElectrons.end());
         gLeptons.insert(gLeptons.end(), gMuons.begin(), gMuons.end());
@@ -655,6 +655,38 @@ bool fcncAnalyzer::Process(Long64_t entry)
 
         if (lowMassOS || isCosmics) return kTRUE;
 
+        if (!isRealData) {
+            if (gLeptons.size() == 2) {
+                if (gLeptons[0].Type() == "muon" && gLeptons[1].Type() == "muon") {
+                    if (fabs((gLeptons[0]+gLeptons[1]).M() - 91.2) < 15) {
+                        histManager->Fill1DHist(gLeptons[0].Pt(), "h1_GenMuonPt_InZ", "gen #mu p_{T} (in Z);p_{T};Entries/4 GeV", 35, 0., 140.);
+                        histManager->Fill1DHist(gLeptons[1].Pt(), "h1_GenMuonPt_InZ", "gen #mu p_{T} (in Z);p_{T};Entries/4 GeV", 35, 0., 140.);
+
+                        if (leptons.size() == 2) {
+                            if (leptons[0].Type() == "muon" && leptons[1].Type() == "muon" && leptons[0].Charge() != leptons[1].Charge()) {
+                                if (fabs((leptons[0]+leptons[1]).M() - 91.2) < 15) {
+                                    histManager->Fill1DHist(leptons[0].Pt(), "h1_RecoMuonPt_InZ", "reco #mu p_{T} (in Z);p_{T};Entries/4 GeV", 35, 0., 140.);
+                                    histManager->Fill1DHist(leptons[1].Pt(), "h1_RecoMuonPt_InZ", "reco #mu p_{T} (in Z);p_{T};Entries/4 GeV", 35, 0., 140.);
+                                }
+                            }
+                        }
+
+                    } else if ((gLeptons[0]+gLeptons[1]).M() > 106.2) {
+                        histManager->Fill1DHist(gLeptons[0].Pt(), "h1_GenMuonPt_UpZ", "gen #mu p_{T} (above Z);p_{T};Entries/4 GeV", 35, 0., 140.);
+                        histManager->Fill1DHist(gLeptons[1].Pt(), "h1_GenMuonPt_UpZ", "gen #mu p_{T} (above Z);p_{T};Entries/4 GeV", 35, 0., 140.);
+                        if (leptons.size() == 2) {
+                            if (leptons[0].Type() == "muon" && leptons[1].Type() == "muon" && leptons[0].Charge() != leptons[1].Charge()) {
+                                if ((leptons[0]+leptons[1]).M() > 106.2) {
+                                    histManager->Fill1DHist(leptons[0].Pt(), "h1_RecoMuonPt_UpZ", "reco #mu p_{T} (above Z);p_{T};Entries/4 GeV", 35, 0., 140.);
+                                    histManager->Fill1DHist(leptons[1].Pt(), "h1_RecoMuonPt_UpZ", "reco #mu p_{T} (above Z);p_{T};Entries/4 GeV", 35, 0., 140.);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
 
         //!!!!!!!!!!!!!!!!!!!!!!!!!!//
         // End of preselection cuts //
@@ -668,14 +700,14 @@ bool fcncAnalyzer::Process(Long64_t entry)
         // Hack for PDF systematic studies: Reweight to CT10 (fcnh signal
         // generated with cteq6l1) and consider three cases: nominal, nominal +
         // 1*sigma, nominal - 1*sigma
-        if (!isRealData && suffix.substr(0, 4) == "FCNC") {
-            //cout << pdfWeights[0]*evtWeight << " + " << pdfWeights[1] << " - " << pdfWeights[2] << endl;
-            histManager->Fill1DHist(pdfWeights[0], "h1_pdfWeights", "PDF rescaling;weight;Entries", 100, 0.5, 1.5);
+        //if (!isRealData && suffix.substr(0, 4) == "FCNC") {
+        //    //cout << pdfWeights[0]*evtWeight << " + " << pdfWeights[1] << " - " << pdfWeights[2] << endl;
+        //    histManager->Fill1DHist(pdfWeights[0], "h1_pdfWeights", "PDF rescaling;weight;Entries", 100, 0.5, 1.5);
 
-            evtWeight *= pdfWeights[0]*(1 - pdfWeights[2]/pdfWeights[0]);
-            histManager->SetWeight(evtWeight);
+        //    evtWeight *= pdfWeights[0]*(1 - pdfWeights[2]/pdfWeights[0]);
+        //    histManager->SetWeight(evtWeight);
 
-        }
+        //}
 
         SetEventCategory(leptons);
         SetEventVariables(leptons, jets, bJetsM, *recoMET); 

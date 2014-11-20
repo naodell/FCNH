@@ -23,9 +23,9 @@ const float phoPtCut[]  = {10., 10.};
 
 
 unsigned  nMetBins      = 10;
-unsigned  nPtBins       = 8;
+unsigned  nPtBins       = 10;
 float     metBins[]     = {0., 10., 20., 30., 40., 50., 60., 70., 80., 100., 300.}; 
-float     ptBins[]      = {10., 15., 20., 25., 30., 35., 40., 45., 50.}; 
+float     ptBins[]      = {10., 15., 20., 25., 30., 35., 40., 45., 50., 70., 100.}; 
 float     etaBinsMu[]   = {0., 1.5, 2.5};
 float     etaBinsEle[]  = {0., 0.8, 1.479, 2.5};
 
@@ -252,12 +252,12 @@ bool fakeAnalyzer::Process(Long64_t entry)
     // for any probes since they will be the same for both regions of interest
     
     // Only consider lower MET events (MET < 50 GeV)
-    if (recoMET->Mod() > 50.) return kTRUE;
 
     if (
             doQCDDileptonCR 
             && (muProbes.size() >= 1 || eleProbes.size() >= 1)
             && muTags.size() == 1
+            && recoMET->Mod() < 50.
        ) {
 
         histManager->SetDirectory("QCD2l/" + suffix);
@@ -376,6 +376,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
             doZPlusJetCR
             && leptons.size() >= 2
             && (eleProbes.size() >= 1 || muProbes.size() >= 1)
+            && recoMET->Mod() < 50.
        ) {
 
         histManager->SetDirectory("ZPlusJet/" + suffix);
@@ -683,27 +684,36 @@ bool fakeAnalyzer::Process(Long64_t entry)
         // and no specific CR requirements.  Look for probe muon satisfying
         // standard requirements and make sure they are not matched to a
         // generator lepton.
-
+        //
         histManager->SetDirectory("MC_truth/" + suffix);
 
-        vObj realLep;
-        for (unsigned i = 0; i < muonsNoIso.size(); ++i) {
-            if (GenProbeMatcher(muonsNoIso[i], gLeptons)) {
-                //cout << gLeptons[0].DeltaR(muProbes[i]) << "\t" << gLeptons[1].DeltaR(muProbes[i]) << endl;
-                realLep.push_back(muonsNoIso[i]);
+        // Make sure that gen leptons pass acceptance cuts
+        for (unsigned i = 0; i < gLeptons.size(); ++i) {
+            if (gLeptons[i].Pt() < 10. || fabs(gLeptons[i].Eta()) > 2.5) {
+                gLeptons.erase(gLeptons.begin()+i);
+                --i;
             }
         }
-        for (unsigned i = 0; i < electronsNoIso.size(); ++i) {
+
+        // Match remaining gen leptons to reco leptons so they are not counted
+        // as fakes
+        vObj realLep; 
+        for (unsigned i = 0; i < muonsNoIso.size(); ++i) { 
+            if (GenProbeMatcher(muonsNoIso[i], gLeptons)) {
+                realLep.push_back(muonsNoIso[i]); 
+            } 
+        } 
+
+        for (unsigned i = 0; i < electronsNoIso.size(); ++i) { 
             if (GenProbeMatcher(electronsNoIso[i], gLeptons)) {
-                realLep.push_back(electronsNoIso[i]);
-            }
+                realLep.push_back(electronsNoIso[i]); 
+            } 
         }
 
         if (realLep.size() == gLeptons.size()) {
 
             vObj fakeMuProbes, fakeEleProbes;
             unsigned nMuProbes = 0;
-            unsigned nEleProbes = 0;
             for (unsigned i = 0; i < muProbes.size(); ++i) {
                 bool matched = false;
                 for (unsigned j = 0; j < realLep.size(); ++j) {
@@ -718,6 +728,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
                 }
             }
 
+            unsigned nEleProbes = 0;
             for (unsigned i = 0; i < eleProbes.size(); ++i) {
                 bool matched = false;
                 for (unsigned j = 0; j < realLep.size(); ++j) {
@@ -760,6 +771,26 @@ bool fakeAnalyzer::Process(Long64_t entry)
                     } else if (fakeMuProbes[0].IdMap("IsoRel") > 0.20) {
                         FillJetHists(fakeMuProbes[0], cleanJets, "fail");
                         FillClosureHists(fakeMuProbes[0], cleanJets);
+                    }
+                }
+                if (nEleProbes == 1) {
+                    tag = fakeEleProbes[0];
+
+                    vector<TCJet> cleanJets;
+                    for (unsigned i = 0; i < jets.size(); ++i) {
+                        if (jets[i].DeltaR(fakeEleProbes[0]) > 0.5)
+                            cleanJets.push_back(jets[i]);
+                    }
+
+                    FillJetHists(fakeEleProbes[0], cleanJets, "inclusive");
+                    FillDenominatorHists(fakeEleProbes[0], cleanJets);
+
+                    if (fakeEleProbes[0].IdMap("IsoRel") < 0.12) {
+                        FillJetHists(fakeEleProbes[0], cleanJets, "tight");
+                        FillNumeratorHists(fakeEleProbes[0], cleanJets);
+                    } else if (fakeEleProbes[0].IdMap("IsoRel") > 0.20) {
+                        FillJetHists(fakeEleProbes[0], cleanJets, "fail");
+                        FillClosureHists(fakeEleProbes[0], cleanJets);
                     }
                 }
             }
@@ -877,7 +908,7 @@ void fakeAnalyzer::FillDenominatorHists(TCPhysObject& probe, vector<TCJet>& jets
                 "h1_" + lepType + "DenomIsoRelBin2", "probe muon IsoRel;IsoRel;Entries", 40, 0., 1.2);
     }
 
-    if (probe.Pt() < 50.) {
+    if (probe.Pt() < 100.) {
         if (probe.Type() == "muon") {
             histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
                     "h1_" + lepType + "DenomEta", "probe muon #eta;#eta;Entries / bin", 2, etaBinsMu);
@@ -927,7 +958,7 @@ void fakeAnalyzer::FillNumeratorHists(TCPhysObject& probe, vector<TCJet>& jets)
     histManager->Fill1DHist(CalculateTransMass(probe, *recoMET),
             "h1_" + lepType + "PassTransverseMass", "MT pass muon;MT;Entries / 5 GeV", 30, 0., 150.);
 
-    if (probe.Pt() < 50.) {
+    if (probe.Pt() < 100.) {
         if (probe.Type() == "muon") {
             histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
                     "h1_" + lepType + "NumerEta", "pass muon #eta;#eta;Entries", 2, etaBinsMu);
@@ -1008,7 +1039,7 @@ void fakeAnalyzer::FillClosureHists(TCPhysObject& probe, vector<TCJet>& jets)
         histManager->Fill1DHist(probe.Eta(),
                 "h1_" + lepType + "EtaClosure_" + cat, "#eta (closure);#eta;Entries / 3 GeV", 5, 0., 2.5);
 
-        if (probe.Pt() < 50.) {
+        if (probe.Pt() < 100.) {
             if (probe.Type() == "muon") {
                 histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
                         "h1_" + lepType + "UnevenEtaClosure_" + cat, "muon #eta (closure);#eta;Entries / bin", 2, etaBinsMu);

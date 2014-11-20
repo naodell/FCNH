@@ -40,11 +40,11 @@ if __name__ == '__main__':
     paramFile = open('scripts/fcncParams.pkl', 'rb')
 
     # prepare output directory
-    filePath = 'data/dataCards'
+    filePath = 'data/dataCards'.format(batch)
     if not os.path.exists(filePath):
         os.system('mkdir -p '+filePath)
-    elif len(os.listdir(filePath)) is not 0:
-        os.system('rm -r {0}/*'.format(filePath))
+    #elif len(os.listdir(filePath)) is not 0:
+    #    os.system('rm -r {0}/*'.format(filePath))
 
     cardMaker = CardProducer(categories, datasets, dataDict, scaleFile)
     cardMaker.set_luminosity(lumi)
@@ -194,7 +194,7 @@ if __name__ == '__main__':
 
                 if yBin <= 4: continue
 
-                print xRangeLow, xCutHigh, yBin
+                #print xRangeLow, xCutHigh, yBin
 
                 for dataset in datasets:
                     if sumBG[dataset]:
@@ -203,7 +203,7 @@ if __name__ == '__main__':
                         numEvents[dataset] += 0.
 
             for dataset in datasets:
-                print dataset, numEvents[dataset]
+                #print dataset, numEvents[dataset]
                 yields[category].add_data(dataset, numEvents[dataset])
             #print '\n'
 
@@ -211,8 +211,8 @@ if __name__ == '__main__':
     if not doMask:
         cuts = sorted(list(set(cuts)))
         for cut in cuts:
-            dataCard = open('{0}/{1}_{2}.txt'.format(filePath, variable, cut), 'w')
+            dataCard = open('{0}/{1}_{2}_{3}.txt'.format(filePath, batch, variable, cut), 'w')
             cardMaker.card_producer(yields[cut], backgrounds, dataCard)
     else:
-        dataCard = open('{0}/{1}_{2}.txt'.format(filePath, variable, 'optimal'), 'w')
+        dataCard = open('{0}/{1}_{2}.txt'.format(filePath, batch, variable), 'w')
         cardMaker.card_producer(yields, backgrounds, dataCard)

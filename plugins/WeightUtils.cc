@@ -57,6 +57,7 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
 
     // weights for fake background
     TFile* f_fakeFile = new TFile("../data/fakeRates.root", "OPEN");
+    TFile* f_fakeFile_tmp = new TFile("../data/fakeRates_QCD_20141119_144146.root", "OPEN");
     //g_MuonFakesPtB["QCD2l"]         = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_MuonFake_1");
     //g_MuonFakesPtE["QCD2l"]         = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_MuonFake_2");
     //g_ElectronFakesPtB["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_ElectronFake_1");
@@ -390,10 +391,10 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
     if (fakeable.Type() == "muon") {
 
         float fakeablePt = fakeable.Pt();
-        if (fakeable.Pt() < 35) 
-            fakeablePt = fakeable.Pt();
-        else
-            fakeablePt = 35;
+        //if (fakeable.Pt() < 35) 
+        //    fakeablePt = fakeable.Pt();
+        //else
+        //    fakeablePt = 35;
 
         if (fabs(fakeable.Eta()) < 1.5) {
             //fakeRate  = g_MuonFakesPtB[controlRegion]->Eval(fakeablePt);

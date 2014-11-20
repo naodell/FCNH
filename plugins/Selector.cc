@@ -6,7 +6,6 @@ Selector::Selector()
 
 Selector::~Selector()
 {
-    delete electronMVA;
 }
 
 Selector::Selector(const float* muPtCuts, const float* elePtCuts, const float* jetPtCuts, const float* phoPtCuts) 

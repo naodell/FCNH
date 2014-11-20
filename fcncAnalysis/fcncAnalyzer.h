@@ -192,7 +192,7 @@ class fcncAnalyzer : public TSelector {
         Float_t         rhoMuFactor;
         ULong64_t       triggerStatus;
         UInt_t          hltPrescale[64];
-        Float_t         pdfWeights[3];
+        //Float_t         pdfWeights[3];
 
         Bool_t          NoiseFilters_isScraping;
         Bool_t          NoiseFilters_isNoiseHcalHBHE;
@@ -227,7 +227,7 @@ class fcncAnalyzer : public TSelector {
         TBranch        *b_rhoMuFactor;   //!
         TBranch        *b_triggerStatus;   //!
         TBranch        *b_hltPrescale;   //!
-        TBranch        *b_pdfWeights;   //!
+        //TBranch        *b_pdfWeights;   //!
         TBranch        *b_NoiseFilters;   //!
 
         //For counting events
@@ -353,7 +353,7 @@ void fcncAnalyzer::Init(TTree *tree)
     fChain->SetBranchAddress("qScale", &qScale, &b_qScale);
     fChain->SetBranchAddress("triggerStatus", &triggerStatus, &b_triggerStatus);
     fChain->SetBranchAddress("hltPrescale", hltPrescale, &b_hltPrescale);
-    fChain->SetBranchAddress("pdfWeights", pdfWeights, &b_pdfWeights);
+    //fChain->SetBranchAddress("pdfWeights", pdfWeights, &b_pdfWeights);
     fChain->SetBranchAddress("NoiseFilters", &NoiseFilters_isScraping, &b_NoiseFilters);
 }
 

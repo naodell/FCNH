@@ -12,7 +12,7 @@ if __name__ == '__main__':
     now         = datetime.datetime.now()
     currentDate = '{0:02d}/{1:02d}/{2:02d}'.format(now.year, now.month, now.day)
 
-    lepType     = 'Muon' # 'Muon' or 'Electron'
+    lepType     = 'Electron' # 'Muon' or 'Electron'
     datasets    = ['DATA', 'ZJets', 'ttbar', 'QCD', 'WJets', 'DATA_QCD2l']
     dataFiles   = {}
     for dataset in datasets:

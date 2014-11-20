@@ -25,7 +25,7 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-#cutList.extend(['2_Z_veto', '3_2jet', '4_MET'])#, '.', 'CR_WZ', 'CR_SUSY'])#, '5_BDT'])
+cutList.extend(['2_Z_veto', '3_2jet', '4_MET'])#, '.', 'CR_WZ', 'CR_SUSY'])#, '5_BDT'])
 #cutList.extend(['.', '.', '.', 'X_0jet', 'X_1jet'])
 
 crList      = []#'CR_WZ', 'CR_SUSY', 'CR_ZFake']
@@ -76,7 +76,7 @@ samples['all'].append('WZJets3LNu')
 #samples['all'].append('WJetsToLNu')
 #samples['all'].append('WbbToLNu')
 #samples['all'].append('WG')
-#samples['all'].append('WWSS')
+samples['all'].append('WWSS')
 #samples['all'].append('QCD')
 
 #samples['inclusive'].append('higgs')
@@ -131,7 +131,7 @@ samples['ss_inclusive'].append('ZZ4l')
 samples['ss_inclusive'].append('WZJets3LNu')
 #samples['ss_inclusive'].append('Fakes')
 
-#samples['ss_inclusive'].append('WWSS')
+samples['ss_inclusive'].append('WWSS')
 #samples['ss_inclusive'].append('WJetsToLNu')
 #samples['ss_inclusive'].append('QCD')
 #samples['ss_inclusive'].append('WbbToLNu')
