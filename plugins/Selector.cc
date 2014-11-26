@@ -437,6 +437,7 @@ void Selector::ElectronSelector(TClonesArray* electrons)
            ) continue;
 
         float pfPhoIso_corr = ElectronPhoIsoHack(*thisElec);
+        //cout << thisElec->PfIsoCharged() << "\t" << thisElec->PfIsoNeutral() << "\t" << thisElec->PfIsoPhoton() << "\t" << thisElec->Pt() << "\t" << endl;
         float eleISO = (thisElec->PfIsoCharged() + max(0.,(double)thisElec->PfIsoNeutral() 
                     + pfPhoIso_corr - _rho*thisElec->EffArea()))/thisElec->Pt();
         float eleISO_uncorr = (thisElec->PfIsoCharged() + max(0.,(double)thisElec->PfIsoNeutral() 

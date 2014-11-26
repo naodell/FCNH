@@ -71,13 +71,14 @@ samples['all'].append('WZJets3LNu')
 #samples['all'].append('higgs')
 
 #samples['all'].append('ZJets')
-#samples['all'].append('top')
+samples['all'].append('ttbar')
 #samples['all'].append('Diboson')
 #samples['all'].append('WJetsToLNu')
+samples['all'].append('WJets')
 #samples['all'].append('WbbToLNu')
 #samples['all'].append('WG')
 samples['all'].append('WWSS')
-#samples['all'].append('QCD')
+samples['all'].append('QCD')
 
 #samples['inclusive'].append('higgs')
 samples['inclusive'].append('Triboson')
@@ -129,6 +130,7 @@ samples['ss_inclusive'].append('Triboson')
 samples['ss_inclusive'].append('ttV')
 samples['ss_inclusive'].append('ZZ4l')
 samples['ss_inclusive'].append('WZJets3LNu')
+#samples['ss_inclusive'].append('ttbar')
 #samples['ss_inclusive'].append('Fakes')
 
 samples['ss_inclusive'].append('WWSS')
@@ -152,7 +154,10 @@ samples['ss_emu'].append('QFlips')
 
 ## dimuons
 samples['ss_mumu'].extend(samples['ss_inclusive'])
-samples['ss_mumu'].extend(['muFakes', 'llFakes'])
+samples['ss_mumu'].append('ttbar')
+samples['ss_mumu'].append('QCD')
+samples['ss_mumu'].append('WJets')
+#samples['ss_mumu'].extend(['muFakes', 'llFakes'])
 
 ## inclusive
 samples['ss_inclusive'].append('Fakes')

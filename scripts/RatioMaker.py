@@ -50,6 +50,7 @@ class RatioMaker(AnalysisTools):
         self._ratioDict1D   = {}
         self._ratioDict2D   = {}
         self._hists         = []
+        self._dataset       = ''
 
     def write_outfile(self, hists = []):
         
@@ -65,11 +66,14 @@ class RatioMaker(AnalysisTools):
     def set_ratio_2D(self, ratioDict):
         self._ratioDict2D = ratioDict
 
-    def make_category_directory(self):
-        if not self._outFile.GetDirectory(self._category):
-            self._outFile.mkdir(self._category)
-            self._outFile.cd(self._category)
+    def set_dataset(self, dataset):
+        self._dataset = dataset
 
+    def make_category_directory(self):
+        fileName = '{0}_{1}'.format(self._category, self._dataset)
+        if not self._outFile.GetDirectory(fileName):
+            self._outFile.mkdir(fileName)
+            self._outFile.cd(fileName)
                 
     def make_1D_ratios(self, ratioSample, bgSample = '', categories = []):
         ### make ratios for all variables specified in ratioDict1D.  Sample
@@ -116,7 +120,7 @@ class RatioMaker(AnalysisTools):
             self._hists.append(h1_Denom)
 
             g_Ratio = make_graph_ratio_1D(key, h1_Numer, h1_Denom)
-            self._outFile.GetDirectory(self._category).Add(g_Ratio)
+            self._outFile.GetDirectory('{0}_{1}'.format(self._category, self._dataset)).Add(g_Ratio)
 
 
     def make_2D_ratios(self, ratioSample, bgSample = '', doProjections = True): 
@@ -162,7 +166,7 @@ class RatioMaker(AnalysisTools):
             ### Save ratios to 1D graphs (TGraphAsymmErrors)
             g_RatioList = make_graph_ratio_2D(key, h2_Numer, h2_Denom)
             for g_Ratio in g_RatioList:
-                self._outFile.GetDirectory(self._category).Add(g_Ratio)
+                self._outFile.GetDirectory('{0}_{1}'.format(self._category, self._dataset)).Add(g_Ratio)
 
 
     def charge_flip_fitter(self, ratioSample, nToys = 10):

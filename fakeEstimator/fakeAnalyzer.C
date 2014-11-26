@@ -174,7 +174,9 @@ bool fakeAnalyzer::Process(Long64_t entry)
         gLeptons.insert(gLeptons.end(), gTaus.begin(), gTaus.end());
 
         // Hack to split ttbar sample
-        if (suffix == "ttbarHad" && gLeptons.size() > 1)
+        if (suffix == "ttbarHad" && gLeptons.size() != 0)
+            return kTRUE;
+        else if (suffix == "ttbarSemilep" && gLeptons.size() != 1)
             return kTRUE;
         else if (suffix == "ttbarLep" && gLeptons.size() != 2)
             return kTRUE;
@@ -684,12 +686,12 @@ bool fakeAnalyzer::Process(Long64_t entry)
         // and no specific CR requirements.  Look for probe muon satisfying
         // standard requirements and make sure they are not matched to a
         // generator lepton.
-        //
+        
         histManager->SetDirectory("MC_truth/" + suffix);
 
         // Make sure that gen leptons pass acceptance cuts
         for (unsigned i = 0; i < gLeptons.size(); ++i) {
-            if (gLeptons[i].Pt() < 10. || fabs(gLeptons[i].Eta()) > 2.5) {
+            if (fabs(gLeptons[i].Eta()) > 2.5 || gLeptons[i].Pt() < 10) {
                 gLeptons.erase(gLeptons.begin()+i);
                 --i;
             }
@@ -717,6 +719,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
             for (unsigned i = 0; i < muProbes.size(); ++i) {
                 bool matched = false;
                 for (unsigned j = 0; j < realLep.size(); ++j) {
+                    //cout << realLep[j].DeltaR(muProbes[i]) << ", " << realLep[j].Pt() << ", " << muProbes[i].Pt() << endl;
                     if (realLep[j].DeltaR(muProbes[i]) < 0.5) {
                         matched = true;
                     }
@@ -743,18 +746,34 @@ bool fakeAnalyzer::Process(Long64_t entry)
                 }
             }
 
-            if (nEleProbes >= 1 || nMuProbes >= 1) {
+            bool singleProbe = true;
+            if (nEleProbes > 1 || nMuProbes > 1) 
+                singleProbe = false;
+
+            if (nEleProbes == 1 && nMuProbes == 1) {
+                if (eleProbes[0].DeltaR(muProbes[0]) > 0.3)
+                    singleProbe = false;
+            }
+
+            if ((nEleProbes >= 1 || nMuProbes >= 1) && singleProbe) {
                 // Probe object is found and event is consistent with AntiIso3l 
                 // control region requirements. Now fill histograms for
                 // parameterizing fake rates by pt and eta.
-                //
-                //cout << nEleProbes << ", " << nMuProbes << endl;
+                
 
                 histManager->Fill2DHist(nMuProbes, nEleProbes,
                         "h2_NumberProbesMC", ";N_{#mu probes};N_{e probes}", 4, -0.5, 3.5, 4, -0.5, 3.5);
                 
                 if (nMuProbes == 1) {
                     tag = fakeMuProbes[0];
+
+                    //if (tag.IdMap("IsoRel") < 0.12) {
+                    //    cout << tag.Pt() << endl;
+                    //    for (unsigned i = 0; i < gLeptons.size(); ++i) {
+                    //        cout << gLeptons[i].Pt() << ", " << tag.DeltaR(gLeptons[i]) << endl;
+                    //    }
+                    //    cout << endl;
+                    //}
 
                     vector<TCJet> cleanJets;
                     for (unsigned i = 0; i < jets.size(); ++i) {
@@ -929,6 +948,15 @@ void fakeAnalyzer::FillDenominatorHists(TCPhysObject& probe, vector<TCJet>& jets
                 "h1_" + lepType + "DenomMet", "probe lepton Met;Met;Entries", nMetBins, metBins);
         histManager->Fill1DHist(cleanJets.size(),
                 "h1_" + lepType + "DenomJetMult", "jet multiplicity; N_{jets}; Entries / bin", 10, -0.5, 9.5);
+        
+        //Bin fake rates by jet multiplicity
+        if (cleanJets.size() < 2) {
+            histManager->Fill1DHistUnevenBins(probe.Pt(),
+                    "h1_" + lepType + "DenomPtLowJet", "probe lepton p_{T} (N_{jets} < 2);p_{T};Entries / bin", nPtBins, ptBins);
+        } else {
+            histManager->Fill1DHistUnevenBins(probe.Pt(),
+                    "h1_" + lepType + "DenomPtHighJet", "probe lepton p_{T} (N_{jets} #geq 2);p_{T};Entries / bin", nPtBins, ptBins);
+        }
     }
 }
 
@@ -979,6 +1007,15 @@ void fakeAnalyzer::FillNumeratorHists(TCPhysObject& probe, vector<TCJet>& jets)
                 "h1_" + lepType + "NumerMet", "pass lepton Met;Met;Entries", nMetBins, metBins);
         histManager->Fill1DHist(cleanJets.size(),
                 "h1_" + lepType + "NumerJetMult", "jet multiplicity; N_{jets}; Entries / bin", 10, -0.5, 9.5);
+
+        //Bin fake rates by jet multiplicity
+        if (cleanJets.size() < 2) {
+            histManager->Fill1DHistUnevenBins(probe.Pt(),
+                    "h1_" + lepType + "NumerPtLowJet", "pass lepton p_{T} (N_{jets} < 2);p_{T};Entries / bin", nPtBins, ptBins);
+        } else {
+            histManager->Fill1DHistUnevenBins(probe.Pt(),
+                    "h1_" + lepType + "NumerPtHighJet", "pass lepton p_{T} (N_{jets} #geq 2);p_{T};Entries / bin", nPtBins, ptBins);
+        }
 
     }
 }
@@ -1194,7 +1231,7 @@ bool fakeAnalyzer::GenProbeMatcher(TCPhysObject& probe, vector<TCGenParticle>& g
 {
     bool genMatched = false;
     for (unsigned i = 0; i < gLeptons.size(); ++i) {
-        if (probe.DeltaR(gLeptons[0]) < 1.) {
+        if (probe.DeltaR(gLeptons[0]) < 0.5 ) {
             if (probe.Type() == "muon") {
                 histManager->Fill1DHist(probe.DeltaR(gLeptons[i]), 
                         "h1_GenLepMuProbeDeltaR", "#Delta R(gen, #mu);#Delta R(gen, #mu);Entries", 50, 0., 1.);

@@ -104,9 +104,9 @@ void fcncAnalyzer::Begin(TTree* tree)
                 doQFlips = false;
 
             // Samples for fake bg cleanup
-            string fakeMC[5] = {"ZJets_M-50", "ZJets_M-10To50", "ttbarLep", "ttbarHad", "WZJets3LNu"};
+            string fakeMC[9] = {"ZJets_M-50", "ZJets_M-10To50", "ttbarLep", "ttbarHad", "WZJets3LNu", "W1JetsToLNu", "W2JetsToLNu", "W3JetsToLNu", "W4JetsToLNu"};
 
-            for (unsigned j = 0; j < 5; ++j) {
+            for (unsigned j = 0; j < 9; ++j) {
                 if (suffix == fakeMC[j]) { 
                     doFakeMC = true;
                     break;

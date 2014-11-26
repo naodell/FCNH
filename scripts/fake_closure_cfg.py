@@ -25,8 +25,8 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-#cutList.extend(['2_Z_veto', '3_jet', '4_MET'])
-fakeType    = 'eFakes'
+cutList.extend(['2_Z_veto', '3_jet', '4_MET'])
+fakeType    = 'muFakes'
 
 period      = '2012'
 LUMIDATA    = 19.712 
@@ -57,10 +57,10 @@ samples     = {'all':[], 'inclusive':[], '3l':[], 'ss':[]}
 #samples['all'].append('Triboson')
 #samples['all'].append('ttV')
 #samples['all'].append('Diboson')
-samples['all'].append('top')
-samples['all'].append('ZJets')
+samples['all'].append('ttbar')
+#samples['all'].append('ZJets')
 samples['all'].append('WZJets3LNu')
-#samples['all'].append('WJets')
+samples['all'].append('WJets')
 #samples['all'].append('QCD')
 #samples['all'].extend(['ZbbToLL', 'WbbToLNu']) #, 'ZGstar'])
 
@@ -81,7 +81,7 @@ samples['ss'].append(fakeType + '_ZJets')
 samples['ss'].append(fakeType + '_ttbarLep')
 #samples['ss'].append(fakeType + '_WG')
 samples['ss'].append(fakeType + '_ttbarHad')
-#samples['ss'].append(fakeType + '_WJets')
+samples['ss'].append(fakeType + '_WJets')
 #samples['ss'].append(fakeType + '_QCD')
 
 p_plot = []
