@@ -25,7 +25,7 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-cutList.extend(['2_Z_veto', '3_2jet', '4_MET'])#, '.', 'CR_WZ', 'CR_SUSY'])#, '5_BDT'])
+cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.', 'CR_WZ'])#, 'CR_SUSY', '5_BDT'])
 #cutList.extend(['.', '.', '.', 'X_0jet', 'X_1jet'])
 
 crList      = []#'CR_WZ', 'CR_SUSY', 'CR_ZFake']
@@ -44,7 +44,7 @@ do2D        = True
 
 doInclusive = False
 doOS        = False
-doSS        = True
+doSS        = False
 do3l        = True
 
 doYields    = True
@@ -68,17 +68,17 @@ samples['all'].append('ttV')
 samples['all'].append('ZZ4l')
 samples['all'].append('Triboson')
 samples['all'].append('WZJets3LNu')
+samples['all'].append('WWSS')
 #samples['all'].append('higgs')
 
 #samples['all'].append('ZJets')
-samples['all'].append('ttbar')
+#samples['all'].append('ttbar')
 #samples['all'].append('Diboson')
 #samples['all'].append('WJetsToLNu')
-samples['all'].append('WJets')
+#samples['all'].append('WJets')
 #samples['all'].append('WbbToLNu')
 #samples['all'].append('WG')
-samples['all'].append('WWSS')
-samples['all'].append('QCD')
+#samples['all'].append('QCD')
 
 #samples['inclusive'].append('higgs')
 samples['inclusive'].append('Triboson')
@@ -130,11 +130,11 @@ samples['ss_inclusive'].append('Triboson')
 samples['ss_inclusive'].append('ttV')
 samples['ss_inclusive'].append('ZZ4l')
 samples['ss_inclusive'].append('WZJets3LNu')
-#samples['ss_inclusive'].append('ttbar')
-#samples['ss_inclusive'].append('Fakes')
-
 samples['ss_inclusive'].append('WWSS')
-#samples['ss_inclusive'].append('WJetsToLNu')
+samples['ss_inclusive'].append('Fakes')
+
+#samples['ss_inclusive'].append('ttbar')
+#samples['ss_inclusive'].append('WJets')
 #samples['ss_inclusive'].append('QCD')
 #samples['ss_inclusive'].append('WbbToLNu')
 #samples['ss_inclusive'].append('WG')
@@ -144,19 +144,19 @@ samples['ss_inclusive'].append('WWSS')
 
 ## dielectrons
 samples['ss_ee'].extend(samples['ss_inclusive'])
-samples['ss_ee'].extend(['eFakes', 'llFakes'])
+#samples['ss_ee'].extend(['eFakes', 'llFakes'])
 samples['ss_ee'].append('QFlips')
 
 ## electron+muon
 samples['ss_emu'].extend(samples['ss_inclusive'])
-samples['ss_emu'].extend(['eFakes', 'muFakes', 'llFakes'])
+#samples['ss_emu'].extend(['eFakes', 'muFakes', 'llFakes'])
 samples['ss_emu'].append('QFlips')
 
 ## dimuons
 samples['ss_mumu'].extend(samples['ss_inclusive'])
-samples['ss_mumu'].append('ttbar')
-samples['ss_mumu'].append('QCD')
-samples['ss_mumu'].append('WJets')
+#samples['ss_mumu'].append('ttbar')
+#samples['ss_mumu'].append('QCD')
+#samples['ss_mumu'].append('WJets')
 #samples['ss_mumu'].extend(['muFakes', 'llFakes'])
 
 ## inclusive
@@ -557,7 +557,7 @@ if doYields:
         yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
 
-        yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET/jet', 'WZ', 'SUSY']# + 6*['.'] + ['0-jet', '1-jet']
+        yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET/jet', '.', 'WZ', 'SUSY']# + 6*['.'] + ['0-jet', '1-jet']
 
         for category in cat3l:
             yieldTable._category = category

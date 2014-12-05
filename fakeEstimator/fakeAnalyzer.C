@@ -12,7 +12,7 @@ const bool  doQCDDileptonCR = true;
 const bool  doZPlusJetCR    = true;
 const bool  doAntiIso3l     = false;
 const bool  doPureLep       = false;
-const bool  doSameSign      = false;
+const bool  doSameSign      = true;
 const bool  doGenMatching   = false;
 const bool  doMCTruth       = true;
 
@@ -690,24 +690,24 @@ bool fakeAnalyzer::Process(Long64_t entry)
         histManager->SetDirectory("MC_truth/" + suffix);
 
         // Make sure that gen leptons pass acceptance cuts
-        for (unsigned i = 0; i < gLeptons.size(); ++i) {
-            if (fabs(gLeptons[i].Eta()) > 2.5 || gLeptons[i].Pt() < 10) {
-                gLeptons.erase(gLeptons.begin()+i);
-                --i;
-            }
-        }
+        //for (unsigned i = 0; i < gLeptons.size(); ++i) {
+        //    if (fabs(gLeptons[i].Eta()) > 3. || gLeptons[i].Pt() < 5) {
+        //        gLeptons.erase(gLeptons.begin()+i);
+        //        --i;
+        //    }
+        //}
 
         // Match remaining gen leptons to reco leptons so they are not counted
         // as fakes
         vObj realLep; 
         for (unsigned i = 0; i < muonsNoIso.size(); ++i) { 
-            if (GenProbeMatcher(muonsNoIso[i], gLeptons)) {
+            if (GenProbeMatcher(muonsNoIso[i], gLeptons, 0.5)) {
                 realLep.push_back(muonsNoIso[i]); 
             } 
         } 
 
         for (unsigned i = 0; i < electronsNoIso.size(); ++i) { 
-            if (GenProbeMatcher(electronsNoIso[i], gLeptons)) {
+            if (GenProbeMatcher(electronsNoIso[i], gLeptons, 0.5)) {
                 realLep.push_back(electronsNoIso[i]); 
             } 
         }

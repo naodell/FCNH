@@ -15,13 +15,15 @@ else:
 inFile  = 'fakeEstimator/histos/{0}.root'.format(batch)
 outFile = 'data/fakeRates_TEST.root'
 
-datasets = ['ttbarHad', 'ttbarSemilep', 'ttbarLep', 'QCD', 'ZJets', 'WJets']
+datasets = ['ttbarHad', 'ttbarSemilep', 'ttbarLep', 'ZJets', 'WJets', 'QCD']
 bgType = ''
 #fakeCategories = ['QCD2l', 'ZPlusJet', 'AntiIso3l']
 fakeCategories = ['MC_truth']
 
 ratioMaker = RatioMaker(inFile, outFile, scale = 19.7)
 ratioMaker.get_scale_factors(datasets, corrected = False)
+
+datasets.append('ttbar')
 
 fakeDict1D = {
     'MuonFakePt':('MuNumerPt', 'MuDenomPt'),

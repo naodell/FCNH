@@ -1745,9 +1745,9 @@ void fcncAnalyzer::LeptonPlots(vObj& leptons, vector<TCJet>& jets, vector<TCJet>
 
     if (jets.size() > 0) {
         histManager->Fill1DHist(HT,
-                "h1_HT", "HT;HT;Entries / 20 GeV", 30, 0., 600.);
+                "h1_HT", "H_{T};H_{T};Entries / 20 GeV", 30, 0., 600.);
         histManager->Fill1DHist(sqrt(HT),
-                "h1_sqrtHT", "HT;HT;Entries / bin", 80, 0., 40.);
+                "h1_sqrtHT", "H_{T};H_{T};Entries / bin", 80, 0., 40.);
     }
 
     histManager->Fill1DHist(HTs + MET,
@@ -1762,13 +1762,13 @@ void fcncAnalyzer::LeptonPlots(vObj& leptons, vector<TCJet>& jets, vector<TCJet>
             "h1_METLD", "METLD;METLD;Entries / bin", 50, 0., 1.); 
 
     histManager->Fill2DHist(HT, MET,
-            "h2_MetVsHT", "MET vs HT;HT;MET", 50, 0., 1000., 35, 0., 350.); 
+            "h2_MetVsHT", "MET vs H_{T};H_{T};MET", 50, 0., 1000., 35, 0., 350.); 
     histManager->Fill2DHist(HT, MET,
-            "h2_MetVsHT_zoom", "MET vs HT;HT;MET", 44, 80., 300., 22, 40., 150.); 
+            "h2_MetVsHT_zoom", "MET vs H_{T};H_{T};MET", 44, 80., 300., 22, 40., 150.); 
     histManager->Fill2DHist(HTs, MET,
             "h2_MetVsHts", "MET vs HTs;HTs;MET", 25, 0., 500., 15, 0., 150.); 
     histManager->Fill2DHist(sqrt(HT), MET,
-            "h2_MetVsSqrtHt", "MET vs #sqrt{HT};#sqrt{HT};MET", 50, 0., 40., 35, 0., 350.); 
+            "h2_MetVsSqrtHt", "MET vs #sqrt{H_{T}};#sqrt{H_{T}};MET", 50, 0., 40., 35, 0., 350.); 
 }
 
 

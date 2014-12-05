@@ -58,7 +58,7 @@ styleDict['ZZ2mu2tau']          = (2, r.kOrange+5, 1001, 1, 'ZZ#rightarrow 2#mu2
 #top
 styleDict['top']                = (0, r.kBlue+1, 1001, 1, 't#bar{t}/t')
 styleDict['single top']         = (0, r.kBlue+2, 3004, 1, 't')
-styleDict['ttbar']              = (0, r.kBlue+0, 1001, 1, 't#bar{t}')
+styleDict['ttbar']              = (0, r.kBlue+0, 1001, 2, 't#bar{t}')
 styleDict['ttbarHad']           = (0, r.kBlue+3, 1001, 1, 't#bar{t} (had)')
 styleDict['ttbarSemilep']       = (0, r.kBlue+3, 1001, 1, 't#bar{t} (semi-lep)')
 styleDict['ttbarLep']           = (0, r.kAzure+2, 1001, 1, 't#bar{t} (lep)')
@@ -82,7 +82,7 @@ styleDict['ZZZ']                = (0, r.kCyan+3, 1001, 1, 'ZZZ')
 styleDict['WWG']                = (0, r.kCyan+4, 1001, 1, 'WWG')
 
 #QCD
-styleDict['QCD']                = (2, r.kOrange, 1001, 1, 'QCD')
+styleDict['QCD']                = (2, r.kOrange+3, 1001, 1, 'QCD')
 styleDict['QCD_EM']             = (2, r.kOrange+1, 1001, 1, 'QCD e#gamma')
 styleDict['QCD_20_MU']          = (2, r.kOrange-1, 1001, 1, 'QCD #mu')
 
@@ -128,11 +128,14 @@ styleDict['mumumuAIC']          = (2, r.kCyan+2, 1001, 20, 'AIC')
 styleDict['Fakes']              = (2, r.kRed-3, 1001, 20, 'Fakes')
 styleDict['eFakes']             = (2, r.kCyan, 3001, 20, 'Fakes e')
 styleDict['muFakes']            = (2, r.kMagenta+3, 3001, 20, 'Fakes #mu')
-styleDict['eFakese']            = (2, r.kCyan +4, 3001, 1, 'Fakes ee')
-styleDict['eFakesmu']           = (2, r.kViolet-5, 3001, 1, 'Fakes e#mu')
-styleDict['muFakesmu']          = (2, r.kMagenta+4, 3001, 1, 'Fakes #mu#mu')
 styleDict['llFakes']            = (2, r.kViolet+9, 3001, 1, 'Fakes ll')
 styleDict['QFlips']             = (2, r.kAzure+2, 1001, 1, 'QFlips')
+
+styleDict['ss_ee']             = (2, r.kCyan, 3001, 20, 'e^{#pm}e^{#pm}')
+styleDict['ss_mumu']           = (2, r.kRed-1, 3001, 20, '#mu^{#pm}#mu^{#pm}')
+styleDict['ss_emu']            = (2, r.kViolet+9, 3001, 1, 'e^{#pm}#mu^{#pm}')
+styleDict['3l_inclusive']      = (2, r.kGreen-2, 3001, 1, 'trilepton')
+
 
 ### Set scales
 scaleDict = {'2011':{}, '2012':{}}

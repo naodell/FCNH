@@ -112,10 +112,14 @@ class RatioMaker(AnalysisTools):
                     h1_Denom.SetBinContent(i+1,0.)
 
             ### Save ratios to histograms
-            h1_Eff = r.TH1D('h1_{0}'.format(key), '{0};;'.format(key), h1_Numer.GetNbinsX(), h1_Numer.GetXaxis().GetXmin(), h1_Numer.GetXaxis().GetXmax())
+            #h1_Eff = r.TH1D('h1_{0}'.format(key), '{0};;'.format(key), h1_Numer.GetNbinsX(), h1_Numer.GetXaxis().GetXmin(), h1_Numer.GetXaxis().GetXmax())
+            h1_Eff = h1_Numer.Clone()
+            h1_Eff.SetName('h1_{0}'.format(key))
+            h1_Eff.SetTitle('{0};{1};fake rate'.format(key, h1_Numer.GetXaxis().GetTitle()))
+            #h1_Eff.Clear()
             h1_Eff.Divide(h1_Numer, h1_Denom, 1., 1., 'B')
+            
             self._hists.append(h1_Eff)
-
             self._hists.append(h1_Numer)
             self._hists.append(h1_Denom)
 

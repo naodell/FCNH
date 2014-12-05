@@ -285,7 +285,7 @@ void Selector::MuonSelector(TClonesArray* muons)
                 _selMuons["tight_id"].push_back(*thisMuon);
                 if (muISO < 0.12) {
                     _selMuons["tight"].push_back(*thisMuon);
-                } else if (muISO > 0.2 && muISO < 0.6) {
+                } else if (muISO > 0.2  && muISO < 0.6) {
                     thisMuon->SetFake(true);
                     _selMuons["fakeable"].push_back(*thisMuon);
                 }
