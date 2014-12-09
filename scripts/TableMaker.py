@@ -109,7 +109,7 @@ class TableMaker(AnalysisTools):
                 if dataset in ['DATA']:
                     continue
 
-                if dataset in ['FCNH', 'HIGGS', 'SIGNAL']: # Add extra signal names as needed
+                if dataset in ['FCNHWW', 'FCNHZZ', 'FCNHTauTau', 'FCNH', 'HIGGS', 'SIGNAL']: # Add extra signal names as needed
                     totalSig  += value
                     sigErr2   += pow(error, 2)
 
@@ -125,7 +125,7 @@ class TableMaker(AnalysisTools):
                     error = histDict[column].GetBinError(count)
                     eff   = 1. #value/histDict[column].GetBinContent(1)
 
-                if column in ['FCNH', 'HIGGS', 'SIGNAL'] or column[:4] == 'FCNC':
+                if column in ['FCNHWW', 'FCNHZZ', 'FCNHTauTau', 'FCNH', 'HIGGS', 'SIGNAL'] or column[:4] == 'FCNC':
                     if doErrors:
                         #self._outFile.write(' {3} {0:.1f} $\pm$ {1:.1f} ({2:.1f} \%) '.format(value, error, eff*100, delimiter))
                         self._outFile.write(' {3} {0:.1f} $\pm$ {1:.1f} '.format(value, error, eff*100, delimiter))

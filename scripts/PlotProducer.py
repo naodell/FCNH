@@ -18,16 +18,16 @@ def scale_to_pad(histogram):
 def prep_hist(hist, yRange = (0,1)):
 
     hist.SetStats(0)
-    hist.GetYaxis().SetLabelSize(0.08);
-    hist.GetYaxis().SetTitleSize(0.09);
-    hist.GetYaxis().SetTitleOffset(0.44);
-    hist.GetYaxis().SetNdivisions(5);
-    hist.GetYaxis().CenterTitle();
-    hist.GetXaxis().SetLabelSize(0.08);
-    hist.GetXaxis().SetTitleSize(0.09);
-    hist.GetXaxis().SetTitleOffset(0.90);
-    hist.SetMinimum(yRange[0]);
-    hist.SetMaximum(yRange[1]);
+    hist.GetYaxis().SetLabelSize(0.08)
+    hist.GetYaxis().SetTitleSize(0.09)
+    hist.GetYaxis().SetTitleOffset(0.44)
+    hist.GetYaxis().SetNdivisions(5)
+    hist.GetYaxis().CenterTitle()
+    hist.GetXaxis().SetLabelSize(0.08)
+    hist.GetXaxis().SetTitleSize(0.09)
+    hist.GetXaxis().SetTitleOffset(0.90)
+    hist.SetMinimum(yRange[0])
+    hist.SetMaximum(yRange[1])
 
 
 def format_axis(axis, offset, title, color):
@@ -151,15 +151,15 @@ class PlotProducer(AnalysisTools):
                 if hist is None: continue
 
                 if var == 'HT':
-                    hist.GetXaxis().SetTitle('HT (GeV)');
+                    hist.GetXaxis().SetTitle('H_{T} [GeV]')
                 if var == 'Met':
-                    hist.GetXaxis().SetTitle('MET (GeV)');
+                    hist.GetXaxis().SetTitle('MET [GeV]')
                 if var in ['DileptonMass21', 'DileptonZMass21', 'DileptonHiggsMass21']:
-                    #hist.GetYaxis().SetTitle('Entries / 5 GeV/c^{2}');
-                    hist.GetXaxis().SetTitle('M_{ll} (GeV/c^{2})');
+                    #hist.GetYaxis().SetTitle('Entries / 5 GeV/c^{2}')
+                    hist.GetXaxis().SetTitle('M_{ll} [GeV/c^{2}]')
                 if var == 'TrileptonMVsDileptonMOS':
-                    hist.GetXaxis().SetTitle('M_{OS} (GeV/c^{2})');
-                    hist.GetYaxis().SetTitle('M_{lll} (GeV/c^{2})');
+                    hist.GetXaxis().SetTitle('M_{OS} [GeV/c^{2}]')
+                    hist.GetYaxis().SetTitle('M_{lll} [GeV/c^{2}]')
 
                 set_hist_style(hist, data, self._styleDict, histType)
 
@@ -207,7 +207,7 @@ class PlotProducer(AnalysisTools):
 
         ### a fudge to get labels for category hists
         if hist1.GetName() in ['h1_LeptonFlavor', 'h1_LeptonCharge']:
-            hDiff.GetXaxis().SetLabelSize(0.15);
+            hDiff.GetXaxis().SetLabelSize(0.15)
             for i in range(nBins):
                 hDiff.GetXaxis().SetBinLabel(i+1, hist1.GetXaxis().GetBinLabel(i+1))
         ###
@@ -233,7 +233,7 @@ class PlotProducer(AnalysisTools):
 
         ### a fudge to get labels for category hists ###
         if hist1.GetName() in ['h1_LeptonFlavor', 'h1_LeptonCharge']:
-            hRatio.GetXaxis().SetLabelSize(0.15);
+            hRatio.GetXaxis().SetLabelSize(0.15)
             for i in range(nBins):
                 hRatio.GetXaxis().SetBinLabel(i+1, hist1.GetXaxis().GetBinLabel(i+1))
         ###
@@ -354,7 +354,7 @@ class PlotProducer(AnalysisTools):
                 if self._period is '2011':
                     textBox.AddText('#scale[1.2]{CMS preliminary, #sqrt{s} = 7 TeV, #it{L}_{int}' + ' = {0:.1f}'.format(self._scale) + ' fb^{-1}       #bf{#color[2]{' + categories[self._category] + '}}}')
                 elif self._period is '2012':
-                    textBox.AddText('#scale[1.2]{CMS preliminary, #sqrt{s} = 8 TeV, #it{L}_{int}' + ' = {0:.1f}'.format(self._scale) + ' fb^{-1}       #bf{#color[2]{' + categories[self._category] + '}}}')
+                    textBox.AddText('#scale[1.2]{CMS preliminary, 8 TeV, ' + '{0:.1f}'.format(self._scale) + ' fb^{-1}       #bf{#color[2]{' + categories[self._category] + '}}}')
 
                 textBox.Draw('same')
 
@@ -443,10 +443,10 @@ class PlotProducer(AnalysisTools):
                 hist.Draw(opt)
 
                 if hist.GetYaxis():
-                    hist.GetYaxis().SetTitleOffset(1.3);
-                    hist.GetYaxis().SetTitleSize(0.04);
-                    hist.GetXaxis().SetTitleOffset(0.9);
-                    hist.GetXaxis().SetTitleSize(0.04);
+                    hist.GetYaxis().SetTitleOffset(1.3)
+                    hist.GetYaxis().SetTitleSize(0.04)
+                    hist.GetXaxis().SetTitleOffset(0.9)
+                    hist.GetXaxis().SetTitleSize(0.04)
 
                 isBlank = False
             else:
@@ -634,12 +634,13 @@ class PlotProducer(AnalysisTools):
                 if not logScale or not doRatio:
 
                     if var == 'HT':
-                        stacks[var].GetXaxis().SetRangeUser(0., 1500.);
+                        stacks[var].GetXaxis().SetRangeUser(0., 1500.)
+                        stacks[var].GetXaxis().SetTitle('H_{T} [GeV]')
 
-                    stacks[var].GetYaxis().SetTitleOffset(1.);
-                    stacks[var].GetYaxis().SetTitleSize(0.04);
-                    stacks[var].GetXaxis().SetTitleOffset(0.9);
-                    stacks[var].GetXaxis().SetTitleSize(0.04);
+                    stacks[var].GetYaxis().SetTitleOffset(1.95)
+                    stacks[var].GetYaxis().SetTitleSize(0.04)
+                    stacks[var].GetXaxis().SetTitleOffset(0.9)
+                    stacks[var].GetXaxis().SetTitleSize(0.04)
                     stacks[var].Draw('HIST')
 
                 sums[var].Draw('E2 SAME')
@@ -654,7 +655,7 @@ class PlotProducer(AnalysisTools):
 
                 ## Draw info box ##
                 r.gStyle.SetOptTitle(0)
-                cmsBox = r.TPaveText(0.16, 0.75, 0.51, 0.89, 'NDC')
+                cmsBox = r.TPaveText(0.16, 0.75, 0.51, 0.87, 'NDC')
                 cmsBox.SetFillColor(0)
                 cmsBox.SetFillStyle(0)
                 cmsBox.SetLineWidth(0)
@@ -662,7 +663,7 @@ class PlotProducer(AnalysisTools):
                 cmsBox.SetTextSize(0.028)
 
                 cmsBox.AddText('#scale[2.5]{CMS}')
-                cmsBox.AddText('#it{preliminary}')
+                cmsBox.AddText('#it{Preliminary}')
                 cmsBox.AddText('#bf{#color[2]{' + categories[self._category] + '}}')
 
                 cmsBox.Draw('same')
@@ -678,9 +679,9 @@ class PlotProducer(AnalysisTools):
                 lumiBox.SetFillStyle(0)
                 lumiBox.SetLineWidth(0)
                 lumiBox.SetLineColor(0)
-                lumiBox.SetTextSize(0.028)
+                lumiBox.SetTextSize(0.035)
 
-                lumiBox.AddText('#it{L}_{int} = ' + '{0:.1f}'.format(self._scale) + ' fb^{-1} (#sqrt{s} = ' + energy + ' TeV)')       
+                lumiBox.AddText('{0:.1f}'.format(self._scale) + ' fb^{-1} (' + energy + ' TeV)')       
 
                 lumiBox.Draw('same')
 
@@ -784,8 +785,8 @@ class PlotProducer(AnalysisTools):
         canvas = r.TCanvas('canvas', 'canvas', 650, 700)
 
         if doProjection:
-            pad1 = r.TPad('pad1', '', 0.02, 0.34, 0.90, 0.98, 0)
-            pad2 = r.TPad('pad2', '', 0.02, 0.02, 0.90, 0.35, 0)
+            pad1 = r.TPad('pad1', '', 0.0, 0.34, 0.90, 0.98, 0)
+            pad2 = r.TPad('pad2', '', 0.0, 0.0, 0.90, 0.35, 0)
             pad1.SetBottomMargin(0.)
             pad2.SetTopMargin(0.)
             pad2.SetBottomMargin(0.2)
@@ -794,13 +795,17 @@ class PlotProducer(AnalysisTools):
             #pad2.SetGridx()
             #pad2.SetGridy()
         else:
-            pad1 = r.TPad('pad1', '', 0.02, 0.65, 0.96, 0.96, 0)
-            pad2 = r.TPad('pad2', '', 0.02, 0.335, 0.96, 0.645, 0)
-            pad3 = r.TPad('pad3', '', 0.02, 0.02, 0.96, 0.33, 0)
+            pad1 = r.TPad('pad1', '', 0.0, 0.65, 0.99, 0.96, 0)
+            pad2 = r.TPad('pad2', '', 0.0, 0.335, 0.99, 0.645, 0)
+            pad3 = r.TPad('pad3', '', 0.0, 0.0, 0.99, 0.33, 0)
+
+            pad1.SetRightMargin(0.15)
+            pad2.SetRightMargin(0.15)
+            pad3.SetRightMargin(0.15)
 
             pad2.SetTopMargin(0.)
             pad3.SetTopMargin(0.)
-            pad3.SetBottomMargin(0.2)
+            pad3.SetBottomMargin(0.25)
 
             pad1.Draw()
             pad2.Draw()
@@ -829,7 +834,7 @@ class PlotProducer(AnalysisTools):
         if self._period is '2011':
             textBox.AddText('#scale[1.2]{CMS preliminary, #sqrt{s} = 7 TeV, #it{L}_{int}' + ' = {0:.1f}'.format(self._scale) + ' fb^{-1}       #bf{#color[2]{' + categories[self._category] + '}}}')
         elif self._period is '2012':
-            textBox.AddText('#scale[1.2]{CMS preliminary, #sqrt{s} = 8 TeV, #it{L}_{int}' + ' = {0:.1f}'.format(self._scale) + ' fb^{-1}       #bf{#color[2]{' + categories[self._category] + '}}}')
+            textBox.AddText('#scale[1.2]{CMS preliminary, ' + '{0:.1f}'.format(self._scale) + ' fb^{-1} (8 TeV),        #bf{#color[2]{' + categories[self._category] + '}}}')
 
         for directory in self._directoryList2D:
             hists           = self.get_hist_dict(directory, '2D')
@@ -851,9 +856,9 @@ class PlotProducer(AnalysisTools):
                   
                 idBox = r.TPaveText(0.7, 0.24, 0.89, 0.4, 'NDC')
                 idBox.SetFillColor(0)
-                idBox.SetFillStyle(0)
-                idBox.SetLineWidth(0)
-                idBox.SetLineColor(0)
+                #idBox.SetFillStyle(1)
+                idBox.SetLineWidth(1)
+                idBox.SetLineColor(1)
                 idBox.SetTextSize(0.1)
                 idBox.SetTextColor(r.kBlue)
 
@@ -869,21 +874,33 @@ class PlotProducer(AnalysisTools):
 
                         hist.GetZaxis().SetLabelSize(0.09)
 
+                        # Hacks
+                        if var == 'MetVsHT':
+                            hist.GetXaxis().SetRangeUser(0., 500.)
+                            hist.GetYaxis().SetRangeUser(0., 200.)
+
                         hist.Draw('COLZ')
 
                         sigBox = idBox.Clone()
                         sigBox.AddText('signal')
-                        sigBox.Draw('SAME')
+                        #sigBox.Draw('SAME')
 
                     if data in ['DATA', 'DATA_MUON','DATA_ELECTRON', 'DATA_MUEG']:
                         pad2.cd()
                         hist.GetYaxis().CenterTitle()
                         hist.GetYaxis().SetTitleSize(0.13)
-                        hist.GetYaxis().SetTitleOffset(0.4)
+                        hist.GetYaxis().SetTitleOffset(0.35)
                         hist.GetYaxis().SetLabelOffset(0.01)
                         hist.GetYaxis().SetLabelSize(0.06)
+
+                        # Hacks
                         if var == 'TrileptonMVsDileptonMOS':
-                            hist.GetYaxis().SetTitle('M_{lll} (GeV/c^{2})');
+                            hist.GetYaxis().SetTitle('M_{lll} [GeV/c^{2}]')
+
+                        if var == 'MetVsHT':
+                            hist.GetXaxis().SetRangeUser(0., 500.)
+                            hist.GetYaxis().SetRangeUser(0., 200.)
+
 
                         hist.GetXaxis().SetTitle('')
                         hist.GetXaxis().SetLabelSize(0.)
@@ -894,7 +911,7 @@ class PlotProducer(AnalysisTools):
 
                         dataBox = idBox.Clone()
                         dataBox.AddText('data')
-                        dataBox.Draw('SAME')
+                        #dataBox.Draw('SAME')
 
                 pad3.cd()
                 sums[var].GetYaxis().SetTitle('')
@@ -906,13 +923,18 @@ class PlotProducer(AnalysisTools):
                 sums[var].GetXaxis().SetTitleSize(0.10)
                 sums[var].GetXaxis().SetTitleOffset(1.)
 
+                if var == 'MetVsHT':
+                    sums[var].GetXaxis().SetRangeUser(0., 500.)
+                    sums[var].GetYaxis().SetRangeUser(0., 200.)
+                    sums[var].GetXaxis().SetTitle('H_{T} [GeV]')
+
                 sums[var].GetZaxis().SetLabelSize(0.09)
 
                 sums[var].Draw('COLZ')
 
                 bgBox = idBox.Clone()
                 bgBox.AddText('background')
-                bgBox.Draw('SAME')
+                #bgBox.Draw('SAME')
 
 
                 #canvas.SaveAs(self._savePath + '/' + self._category + '/' + directory + '/' + var + self._plotType)

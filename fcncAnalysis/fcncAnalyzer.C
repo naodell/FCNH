@@ -43,7 +43,7 @@ const float   elePtCut[]        = {10., 7.};
 const float   phoPtCut[]        = {10., 10.};
 const float   leptonPtCut[]     = {20., 10.};
 const float   metCut[]          = {40., 30.};
-const float   htCut[]           = {100., 0.};
+const float   htCut[]           = {60., 0.};
 const float   massCut[]         = {30., 30.};
 const float   bJetVeto          = 1e9;
 
@@ -1178,8 +1178,8 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
     if (leptons.size() == 2){
         //if ((recoMET->Mod() < metCut[0] && HT < htCut[0]) || recoMET->Mod() < 30.)
         // MET-dependent HT cuts
-        float metCuts[]   = {40., 50., 60., 70., 80., 90., 100., 110., 120., 130.};
-        float htCuts[]    = {140., 140., 140., 100., 100., 60., 60., 80., 80., 60.};
+        float metCuts[]   = {40., 70., 90.};
+        float htCuts[]    = {140., 100., 60.};
         if (recoMET->Mod() < metCut[0] || HT < htCut[0])
             return true;
 
@@ -1187,21 +1187,7 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
             return true;
         else if (recoMET->Mod() > metCuts[1] && recoMET->Mod() <= metCuts[2] && HT < htCuts[1])
             return true;
-        else if (recoMET->Mod() > metCuts[2] && recoMET->Mod() <= metCuts[3] && HT < htCuts[2])
-            return true;
-        else if (recoMET->Mod() > metCuts[3] && recoMET->Mod() <= metCuts[4] && HT < htCuts[3])
-            return true;
-        else if (recoMET->Mod() > metCuts[4] && recoMET->Mod() <= metCuts[5] && HT < htCuts[4])
-            return true;
-        else if (recoMET->Mod() > metCuts[5] && recoMET->Mod() <= metCuts[6] && HT < htCuts[5])
-            return true;
-        else if (recoMET->Mod() > metCuts[6] && recoMET->Mod() <= metCuts[7] && HT < htCuts[6])
-            return true;
-        else if (recoMET->Mod() > metCuts[7] && recoMET->Mod() <= metCuts[8] && HT < htCuts[7])
-            return true;
-        else if (recoMET->Mod() > metCuts[8] && recoMET->Mod() <= metCuts[9] && HT < htCuts[8])
-            return true;
-        else if (recoMET->Mod() > metCuts[9] && HT < htCuts[9])
+        else if (recoMET->Mod() > metCuts[2] && HT < htCuts[2])
             return true;
 
     } else if (leptons.size() == 3) {

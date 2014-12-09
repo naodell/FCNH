@@ -25,7 +25,7 @@ plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
-cutList.extend(['2_Z_veto', '3_2jet', '4_MET', '.', 'CR_WZ'])#, 'CR_SUSY', '5_BDT'])
+cutList.extend(['2_Z_veto', '3_2jet', '4_MET'])#, '.', 'CR_WZ', 'CR_SUSY', '5_BDT'])
 #cutList.extend(['.', '.', '.', 'X_0jet', 'X_1jet'])
 
 crList      = []#'CR_WZ', 'CR_SUSY', 'CR_ZFake']
@@ -34,20 +34,20 @@ period      = '2012'
 LUMIDATA    = 19.712 
 
 doPlots     = True
+doYields    = True
+
 doLog       = False
 doEff       = False
 doDiff      = False
-doRatio     = True
+doRatio     = False
 doNorm      = True
 do1D        = True
 do2D        = True
 
 doInclusive = False
 doOS        = False
-doSS        = False
+doSS        = True
 do3l        = True
-
-doYields    = True
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive']
@@ -90,6 +90,7 @@ samples['inclusive'].append('ZJets')
 ## trilepton categories
 #samples['3l_inclusive'].append('higgs')
 samples['3l_inclusive'].append('Triboson')
+#samples['3l_inclusive'].append('WWSS')
 samples['3l_inclusive'].append('ttV')
 samples['3l_inclusive'].append('ZZ4l')
 #samples['3l_inclusive'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
@@ -127,10 +128,10 @@ samples['3l_mumumu'].extend(samples['3l_inclusive'])
 ## same-sign categories
 #samples['ss_inclusive'].append('higgs')
 samples['ss_inclusive'].append('Triboson')
+samples['ss_inclusive'].append('WWSS')
 samples['ss_inclusive'].append('ttV')
 samples['ss_inclusive'].append('ZZ4l')
 samples['ss_inclusive'].append('WZJets3LNu')
-samples['ss_inclusive'].append('WWSS')
 samples['ss_inclusive'].append('Fakes')
 
 #samples['ss_inclusive'].append('ttbar')
@@ -160,7 +161,7 @@ samples['ss_mumu'].extend(samples['ss_inclusive'])
 #samples['ss_mumu'].extend(['muFakes', 'llFakes'])
 
 ## inclusive
-samples['ss_inclusive'].append('Fakes')
+#samples['ss_inclusive'].append('Fakes')
 samples['ss_inclusive'].append('QFlips')
 
 ## geometric categories
@@ -292,11 +293,8 @@ if doPlots:
 
     plotter._variableDict['4l']         = ['4lMass', '4lPt', '4lSumPt', '4lMet']
 
-    plotter._variableDict['2D']         = ['metVsHt', 'metVsSqrtHt', 'TrileptonMVsDileptonMOS',
-                                            'DileptonMVsDeltaROS', 'DileptonQtVsDeltaROS',
-                                            #'DileptonM13VsM21', 'DileptonM12VsM31', 'DileptonM21VsM32',
-                                            #'DalitzM13VsM21', 'DalitzM12VsM31', 'DalitzM21VsM32',
-                                            'LepChargeVsFlavor']
+    plotter._variableDict['2D']         = ['MetVsHT', 'MetVsHT_zoom', 'MetVsSqrtHt', 'TrileptonMVsDileptonMOS',
+                                            'DileptonMVsDeltaROS', 'DileptonQtVsDeltaROS', 'LepChargeVsFlavor']
 
 
      ###################   
@@ -548,13 +546,14 @@ if doYields:
 
     if do3l:
         #yieldTable._columnList  = ['Irreducible', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
-        yieldTable._columnList  = samples['3l_inclusive'] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
-        #yieldTable._columnList  = ['BG', 'DATA', 'FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau','FCNH']# 'Significance'] 
+        #yieldTable._columnList  = samples['3l_inclusive'] + ['BG', 'DATA', 'FCNH']
+        yieldTable._columnList  = ['BG', 'DATA', 'FCNHWW', 'FCNHZZ', 'FCNHTauTau']
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
-        #yieldTable.add_datasets(['Irreducible', 'Fakes'], Clear = True)
         yieldTable.add_datasets(samples['3l_inclusive'], Clear = True)
-        yieldTable.add_datasets('FCNH')
+        yieldTable.add_datasets('FCNHWW')
+        yieldTable.add_datasets('FCNHZZ')
+        yieldTable.add_datasets('FCNHTauTau')
         yieldTable.add_datasets('DATA')
 
         yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET/jet', '.', 'WZ', 'SUSY']# + 6*['.'] + ['0-jet', '1-jet']
@@ -574,12 +573,14 @@ if doYields:
 
         for category in catSS:
 
-            #yieldTable.add_datasets(['Irreducible', 'Fakes', 'FCNH'], Clear = True)
             #yieldTable._columnList  = ['Irreducible', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
-            yieldTable._columnList  = samples[category] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
+            #yieldTable._columnList  = samples[category] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
+            yieldTable._columnList  = ['BG', 'DATA', 'FCNHWW', 'FCNHZZ', 'FCNHTauTau']#, 'Significance'] 
 
             yieldTable.add_datasets(samples[category], Clear = True)
-            yieldTable.add_datasets('FCNH')
+            yieldTable.add_datasets('FCNHWW')
+            yieldTable.add_datasets('FCNHZZ')
+            yieldTable.add_datasets('FCNHTauTau')
             yieldTable.add_datasets('DATA')
             yieldTable._category = category
 

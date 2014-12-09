@@ -115,7 +115,10 @@ styleDict['ggHToZZ4L_M-125']    = (2, r.kBlue+3, 0, 1, 'H#rightarrow 4l')
 
 #Misc
 styleDict['BGERROR']            = (0, r.kBlack, 3003, 0, 'BG uncertainty')
-styleDict['FCNH']               = (3, r.kRed+3, 0, 20, 'FCNH')
+styleDict['FCNH']               = (3, r.kRed+3, 0, 20, 'FCNH (#times 2)')
+styleDict['FCNHWW']             = (3, r.kRed+3, 0, 20, 'FCNH #rightarrow WW')
+styleDict['FCNHZZ']             = (3, r.kRed+3, 0, 20, 'FCNH #rightarrow ZZ')
+styleDict['FCNHTauTau']         = (3, r.kRed+3, 0, 20, 'FCNH #rightarrow #tau#tau')
 styleDict['SUM_EFF']            = (2, r.kBlue, 1001, 21, 'BG')
 styleDict['SIG_EFF']            = (2, r.kRed, 1001, 21, 'Signal')
 styleDict['SIGNIFICANCE']       = (2, r.kGreen, 1001, 21, 'Signficance')
@@ -265,12 +268,12 @@ scaleDict['2012']['TTH_M-125']          = .1032
 #scaleDict['GJets_300to470']     = 1/1391.1
 #scaleDict['GJets_470to800']     = 1/15812.2
 
-scaleDict['2012']['FCNC_M125_t']            = 252*1.*0.01*0.215*3*0.324*0.324
-scaleDict['2012']['FCNC_M125_tbar']         = 252*1.*0.01*0.215*3*0.324*0.324
-scaleDict['2012']['FCNC_ZZ_t']              = 252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
-scaleDict['2012']['FCNC_ZZ_tbar']           = 252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
-scaleDict['2012']['FCNC_TauTau_t']          = 252*1.*0.01*0.063*0.324
-scaleDict['2012']['FCNC_TauTau_tbar']       = 252*1.*0.01*0.063*0.324
+scaleDict['2012']['FCNC_M125_t']            = 2*252*1.*0.01*0.215*3*0.324*0.324
+scaleDict['2012']['FCNC_M125_tbar']         = 2*252*1.*0.01*0.215*3*0.324*0.324
+scaleDict['2012']['FCNC_ZZ_t']              = 2*252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
+scaleDict['2012']['FCNC_ZZ_tbar']           = 2*252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
+scaleDict['2012']['FCNC_TauTau_t']          = 2*252*1.*0.01*0.063*0.324
+scaleDict['2012']['FCNC_TauTau_tbar']       = 2*252*1.*0.01*0.063*0.324
 
 scaleDict['2012']['DATA_MUON']          = 1.
 scaleDict['2012']['DATA_ELECTRON']      = 1.
@@ -288,6 +291,9 @@ scaleDict['2012']['QFlips']             = 1.
 
 combineDict = {}
 combineDict['FCNH']             = ['FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_ZZ_t', 'FCNC_ZZ_tbar', 'FCNC_TauTau_t', 'FCNC_TauTau_tbar']
+combineDict['FCNHWW']           = ['FCNC_M125_t', 'FCNC_M125_tbar']
+combineDict['FCNHZZ']           = ['FCNC_ZZ_t', 'FCNC_ZZ_tbar']
+combineDict['FCNHTauTau']       = ['FCNC_TauTau_t', 'FCNC_TauTau_tbar']
 #combineDict['FCNH']             = ['FCNC_M125_t', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau']
 combineDict['DATA']             = ['DATA_MUON', 'DATA_ELECTRON', 'DATA_MUEG']
 
@@ -338,8 +344,8 @@ cleanDict = {}
 #                                   'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
 
 categoryDict = {'inclusive':'inclusive',
-                'ss_inclusive':'ss inclusive', 'ss_mumu':'#mu^{#pm}#mu^{#pm}', 'ss_ee':'e^{#pm}e^{#pm}', 'ss_emu':'e^{#pm}#mu^{#pm}',
-                'ss_endcap':'ss (EE)', 'ss_mixed':'ss (EB)', 'ss_barrel':'ss (BB)',
+                'ss_inclusive':'same-sign inclusive', 'ss_mumu':'#mu^{#pm}#mu^{#pm}', 'ss_ee':'e^{#pm}e^{#pm}', 'ss_emu':'e^{#pm}#mu^{#pm}',
+                'ss_endcap':'same-sign (EE)', 'ss_mixed':'same-sign (EB)', 'ss_barrel':'same-sign (BB)',
                 'os_inclusive':'os inclusive', 'os_mumu':'#mu^{#pm}#mu^{#mp}', 'os_ee':'e^{#pm}e^{#mp}', 'os_emu':'e^{#pm}mu^{#mp}', 
                 '3l_inclusive':'trilepton inclusive', '3l_OSSF':'(l^{#pm}l^{#mp})l', '3l_SSSF':'(l^{#pm}l^{#pm})l',
                 '3l_eee':'eee', '3l_eemu':'ee#mu', '3l_emumu':'e#mu#mu','3l_mumumu':'#mu#mu#mu',

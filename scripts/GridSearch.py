@@ -12,14 +12,15 @@ if __name__ == '__main__':
         exit()
 
     r.gStyle.SetOptStat(0)
+    r.gROOT.SetBatch()
 
     doSimpleCuts    = False
     doBinnedScan    = False
     doMask          = True
 
     lumi        = 19.7e3
-    categories  = ['ss_ee', 'ss_emu', 'ss_mumu']
-    #categories  = ['ss_inclusive']
+    #categories  = ['ss_ee', 'ss_emu', 'ss_mumu']
+    categories  = ['ss_inclusive']
     backgrounds = ['Irreducible', 'ttW', 'ttZ', 'WZJets3LNu', 'muFakes', 'eFakes', 'llFakes', 'QFlips']
     datasets    = ['data_obs', 'fcnh'] + backgrounds
 
@@ -179,6 +180,8 @@ if __name__ == '__main__':
             numEvents = dict(zip(datasets, len(datasets)*[0.]))
             yields[category] = CatData(category, datasets)
 
+            binnedYields = [{'DATA':0., 'BG':0., 'fcnh':0.}, {'DATA':0., 'BG':0., 'fcnh':0.}, {'DATA':0., 'BG':0., 'fcnh':0.}] # dataset, bin, nEvents, error
+
             for line in maskFile:
                 if line[0] == '#':
                     continue
@@ -194,18 +197,39 @@ if __name__ == '__main__':
 
                 if yBin <= 4: continue
 
-                #print xRangeLow, xCutHigh, yBin
+                #print xRangeLow, xCutHigh, yBin 
+                if yBin < 7:
+                    bin = 0
+                elif yBin < 9:
+                    bin = 1
+                else:
+                    bin = 2
 
                 for dataset in datasets:
+                    integral    = 0.
+                    error       = r.Double()
                     if sumBG[dataset]:
-                        numEvents[dataset] += sumBG[dataset].Integral(xRangeLow, xCutHigh, yBin, yBin)
+                        integral = sumBG[dataset].IntegralAndError(xRangeLow, xCutHigh, yBin, yBin, error)
+
+                    numEvents[dataset] += 0
+
+                    #binnedYields[yBin-1][dataset] = (numEvents[dataset], error)
+
+                    if dataset == 'data_obs':
+                        binnedYields[bin]['DATA'] += integral
+                    elif dataset == 'fcnh':
+                        binnedYields[bin]['fcnh'] += integral
                     else:
-                        numEvents[dataset] += 0.
+                        binnedYields[bin]['BG']   += integral
 
             for dataset in datasets:
-                #print dataset, numEvents[dataset]
                 yields[category].add_data(dataset, numEvents[dataset])
-            #print '\n'
+
+            for yields in binnedYields:
+                for dataset, nEvents in yields.iteritems():
+                    print '& {0:.1f} '.format(nEvents),
+
+                print ' \\\\'
 
 
     if not doMask:
