@@ -115,7 +115,8 @@ styleDict['ggHToZZ4L_M-125']    = (2, r.kBlue+3, 0, 1, 'H#rightarrow 4l')
 
 #Misc
 styleDict['BGERROR']            = (0, r.kBlack, 3003, 0, 'BG uncertainty')
-styleDict['FCNH']               = (3, r.kRed+3, 0, 20, 'FCNH (#times 2)')
+#styleDict['FCNH']               = (3, r.kRed+3, 0, 20, 'FCNH (#times 2)')
+styleDict['FCNH']               = (3, r.kRed+3, 0, 20, 'FCNH')
 styleDict['FCNHWW']             = (3, r.kRed+3, 0, 20, 'FCNH #rightarrow WW')
 styleDict['FCNHZZ']             = (3, r.kRed+3, 0, 20, 'FCNH #rightarrow ZZ')
 styleDict['FCNHTauTau']         = (3, r.kRed+3, 0, 20, 'FCNH #rightarrow #tau#tau')
@@ -123,7 +124,9 @@ styleDict['SUM_EFF']            = (2, r.kBlue, 1001, 21, 'BG')
 styleDict['SIG_EFF']            = (2, r.kRed, 1001, 21, 'Signal')
 styleDict['SIGNIFICANCE']       = (2, r.kGreen, 1001, 21, 'Signficance')
 styleDict['RATIO']              = (0, r.kBlack, 3002, 20, 'Ratio')
+styleDict['AVG']                = (0, r.kBlue, 3005, 0, 'Average')
 styleDict['AIC']                = (2, r.kCyan+2, 1001, 20, 'AIC')
+
 styleDict['eeeAIC']             = (2, r.kCyan+2, 1001, 20, 'AIC')
 styleDict['eemuAIC']            = (2, r.kCyan+2, 1001, 20, 'AIC')
 styleDict['emumuAIC']           = (2, r.kCyan+2, 1001, 20, 'AIC')
@@ -133,6 +136,7 @@ styleDict['eFakes']             = (2, r.kCyan, 3001, 20, 'Fakes e')
 styleDict['muFakes']            = (2, r.kMagenta+3, 3001, 20, 'Fakes #mu')
 styleDict['llFakes']            = (2, r.kViolet+9, 3001, 1, 'Fakes ll')
 styleDict['QFlips']             = (2, r.kAzure+2, 1001, 1, 'QFlips')
+styleDict['Rare']               = (2, r.kYellow+2, 1001, 1, 'Rare')
 
 styleDict['ss_ee']             = (2, r.kCyan, 3001, 20, 'e^{#pm}e^{#pm}')
 styleDict['ss_mumu']           = (2, r.kRed-1, 3001, 20, '#mu^{#pm}#mu^{#pm}')
@@ -268,12 +272,12 @@ scaleDict['2012']['TTH_M-125']          = .1032
 #scaleDict['GJets_300to470']     = 1/1391.1
 #scaleDict['GJets_470to800']     = 1/15812.2
 
-scaleDict['2012']['FCNC_M125_t']            = 2*252*1.*0.01*0.215*3*0.324*0.324
-scaleDict['2012']['FCNC_M125_tbar']         = 2*252*1.*0.01*0.215*3*0.324*0.324
-scaleDict['2012']['FCNC_ZZ_t']              = 2*252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
-scaleDict['2012']['FCNC_ZZ_tbar']           = 2*252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
-scaleDict['2012']['FCNC_TauTau_t']          = 2*252*1.*0.01*0.063*0.324
-scaleDict['2012']['FCNC_TauTau_tbar']       = 2*252*1.*0.01*0.063*0.324
+scaleDict['2012']['FCNC_M125_t']            = 1.*252*1.*0.01*0.215*3*0.324*0.324
+scaleDict['2012']['FCNC_M125_tbar']         = 1.*252*1.*0.01*0.215*3*0.324*0.324
+scaleDict['2012']['FCNC_ZZ_t']              = 1.*252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
+scaleDict['2012']['FCNC_ZZ_tbar']           = 1.*252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
+scaleDict['2012']['FCNC_TauTau_t']          = 1.*252*1.*0.01*0.063*0.324
+scaleDict['2012']['FCNC_TauTau_tbar']       = 1.*252*1.*0.01*0.063*0.324
 
 scaleDict['2012']['DATA_MUON']          = 1.
 scaleDict['2012']['DATA_ELECTRON']      = 1.
@@ -325,6 +329,7 @@ combineDict['Remove_ss']        = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarLep']#,
 combineDict['Remove_3l']        = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']#, 'ttZ', 'ttW', 'WWW', 'WWZ', 'WZZ', 'ZZZ']
 #combineDict['Irreducible']      = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125', 'WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ']#, 'WWG']
 combineDict['Irreducible']      = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ']#, 'WWG']
+combineDict['Rare']             = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ', 'WmWmqq', 'WpWpqq', 'WWDPS', 'TBZ']#, 'WWG']
 combineDict['PROMPT']           = [
                                    'ZJets_M-50', 'ZJets_M-10To50', 'WJetsToLNu', 
                                    'ttbarHad', 'ttbarLep', 'tbarW', 'tW', 

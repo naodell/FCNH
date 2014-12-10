@@ -57,7 +57,6 @@ WeightUtils::WeightUtils(string sampleName, string dataPeriod, string selection,
 
     // weights for fake background
     TFile* f_fakeFile = new TFile("../data/fakeRates.root", "OPEN");
-    TFile* f_fakeFile_tmp = new TFile("../data/fakeRates_QCD_20141119_144146.root", "OPEN");
     //g_MuonFakesPtB["QCD2l"]         = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_MuonFake_1");
     //g_MuonFakesPtE["QCD2l"]         = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_MuonFake_2");
     //g_ElectronFakesPtB["QCD2l"]     = (TGraphAsymmErrors*)f_fakeFile->Get("QCD2l/g_ElectronFake_1");
@@ -377,8 +376,8 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
     unsigned  nPtBins = 8;
     float     ptBins[] = {10., 15., 20., 25., 30., 35., 40., 45., 50.}; 
 
-    if (fakeable.Pt() > 35.) {
-        iPt = 5;
+    if (fakeable.Pt() > 40.) {
+        iPt = 6;
     } else {
         for (unsigned j = 0; j < nPtBins; ++j) {
             if (fakeable.Pt() > ptBins[j] && fakeable.Pt() < ptBins[j + 1]) {
@@ -416,20 +415,6 @@ float WeightUtils::GetFakeWeight(TCPhysObject& fakeable, string controlRegion)
             //fakeRate  = g_ElectronFakesPtB[controlRegion]->Eval(fakeablePt);
             fakeRate  = h2_ElectronFakes[controlRegion]->GetBinContent(iPt, 1);
         } else if (fabs(fakeable.Eta()) >= 0.8 && fabs(fakeable.Eta()) < 1.479) {
-        }
-
-    } else if (fakeable.Type() == "electron") {
-
-        float fakeablePt = fakeable.Pt();
-        if (fakeable.Pt() < 35) 
-            fakeablePt = fakeable.Pt();
-        else
-            fakeablePt = 35;
-
-        if (fabs(fakeable.Eta()) < 0.8) {
-            //fakeRate  = g_ElectronFakesPtB[controlRegion]->Eval(fakeablePt);
-            fakeRate  = h2_ElectronFakes[controlRegion]->GetBinContent(iPt, 1);
-        } else if (fabs(fakeable.Eta()) >= 0.8 && fabs(fakeable.Eta()) < 1.479) {
             //fakeRate  = g_ElectronFakesPtG[controlRegion]->Eval(fakeablePt);
             fakeRate  = h2_ElectronFakes[controlRegion]->GetBinContent(iPt, 2);
         } else if (fabs(fakeable.Eta()) >= 1.479) {
@@ -450,7 +435,7 @@ float WeightUtils::GetFakeUncertainty(TCPhysObject& fakeable, string controlRegi
     float fakeError   = 0.;
     unsigned iPt = 0;
     unsigned  nPtBins = 5;
-    float     ptBins[] = {10., 15., 20., 25., 30., 35.}; 
+    float     ptBins[] = {10., 15., 20., 25., 30., 35., 40.}; 
 
     if (fakeable.Pt() > ptBins[nPtBins]) {
         iPt = nPtBins;

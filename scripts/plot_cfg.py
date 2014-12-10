@@ -21,7 +21,7 @@ else:
 ### This is the config file for manipulating 
 ### histograms using the PlotProducer class.  
 
-plotType    = '.png'
+plotType    = '.pdf'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
@@ -33,7 +33,7 @@ crList      = []#'CR_WZ', 'CR_SUSY', 'CR_ZFake']
 period      = '2012'
 LUMIDATA    = 19.712 
 
-doPlots     = True
+doPlots     = False
 doYields    = True
 
 doLog       = False
@@ -64,11 +64,13 @@ samples     = {'all':[], 'inclusive':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[],
                 '3l_inclusive':[], '3l_eee':[], '3l_eemu':[], '3l_emumu':[], '3l_mumumu':[], 
                 'ss_inclusive':[], 'ss_ee':[], 'ss_emu':[], 'ss_mumu':[]}
 
-samples['all'].append('ttV')
-samples['all'].append('ZZ4l')
-samples['all'].append('Triboson')
+#samples['all'].append('TBZ')
+#samples['all'].append('WWSS')
+#samples['all'].append('Triboson')
+#samples['all'].append('ttV')
+#samples['all'].append('ZZ4l')
+samples['all'].append('Rare')
 samples['all'].append('WZJets3LNu')
-samples['all'].append('WWSS')
 #samples['all'].append('higgs')
 
 #samples['all'].append('ZJets')
@@ -89,11 +91,11 @@ samples['inclusive'].append('ZJets')
 
 ## trilepton categories
 #samples['3l_inclusive'].append('higgs')
-samples['3l_inclusive'].append('Triboson')
+#samples['3l_inclusive'].append('Triboson')
 #samples['3l_inclusive'].append('WWSS')
-samples['3l_inclusive'].append('ttV')
-samples['3l_inclusive'].append('ZZ4l')
-#samples['3l_inclusive'].extend(['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'])
+#samples['3l_inclusive'].append('ttV')
+#samples['3l_inclusive'].append('ZZ4l')
+samples['3l_inclusive'].append('Rare')
 samples['3l_inclusive'].append('WZJets3LNu')
 #samples['3l_inclusive'].append('top')
 #samples['3l_inclusive'].append('ZJets')
@@ -127,10 +129,13 @@ samples['3l_mumumu'].extend(samples['3l_inclusive'])
 
 ## same-sign categories
 #samples['ss_inclusive'].append('higgs')
-samples['ss_inclusive'].append('Triboson')
-samples['ss_inclusive'].append('WWSS')
-samples['ss_inclusive'].append('ttV')
-samples['ss_inclusive'].append('ZZ4l')
+#samples['ss_inclusive'].append('TBZ')
+#samples['ss_inclusive'].append('WWSS')
+#samples['ss_inclusive'].append('Triboson')
+#samples['ss_inclusive'].append('ttV')
+#samples['ss_inclusive'].append('ZZ4l')
+
+samples['ss_inclusive'].append('Rare')
 samples['ss_inclusive'].append('WZJets3LNu')
 samples['ss_inclusive'].append('Fakes')
 
@@ -545,15 +550,16 @@ if doYields:
         yieldTable.get_scale_factors(['FCNH'])
 
     if do3l:
-        #yieldTable._columnList  = ['Irreducible', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
+        yieldTable._columnList  = ['Rare', 'WZJets3LNu', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
         #yieldTable._columnList  = samples['3l_inclusive'] + ['BG', 'DATA', 'FCNH']
-        yieldTable._columnList  = ['BG', 'DATA', 'FCNHWW', 'FCNHZZ', 'FCNHTauTau']
+        #yieldTable._columnList  = ['BG', 'DATA', 'FCNHWW', 'FCNHZZ', 'FCNHTauTau']
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
         yieldTable.add_datasets(samples['3l_inclusive'], Clear = True)
-        yieldTable.add_datasets('FCNHWW')
-        yieldTable.add_datasets('FCNHZZ')
-        yieldTable.add_datasets('FCNHTauTau')
+        #yieldTable.add_datasets('FCNHWW')
+        #yieldTable.add_datasets('FCNHZZ')
+        #yieldTable.add_datasets('FCNHTauTau')
+        yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
 
         yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET/jet', '.', 'WZ', 'SUSY']# + 6*['.'] + ['0-jet', '1-jet']
@@ -573,14 +579,15 @@ if doYields:
 
         for category in catSS:
 
-            #yieldTable._columnList  = ['Irreducible', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
+            yieldTable._columnList  = ['Rare', 'WZJets3LNu', 'QFlips', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
             #yieldTable._columnList  = samples[category] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
-            yieldTable._columnList  = ['BG', 'DATA', 'FCNHWW', 'FCNHZZ', 'FCNHTauTau']#, 'Significance'] 
+            #yieldTable._columnList  = ['BG', 'DATA', 'FCNHWW', 'FCNHZZ', 'FCNHTauTau']#, 'Significance'] 
 
             yieldTable.add_datasets(samples[category], Clear = True)
-            yieldTable.add_datasets('FCNHWW')
-            yieldTable.add_datasets('FCNHZZ')
-            yieldTable.add_datasets('FCNHTauTau')
+            #yieldTable.add_datasets('FCNHWW')
+            #yieldTable.add_datasets('FCNHZZ')
+            #yieldTable.add_datasets('FCNHTauTau')
+            yieldTable.add_datasets('FCNH')
             yieldTable.add_datasets('DATA')
             yieldTable._category = category
 

@@ -24,9 +24,9 @@ if __name__ == '__main__':
 
     canvas = r.TCanvas('canvas', 'canvas', 600, 450)
 
-    legend = r.TLegend(0.65, 0.6, 0.89, 0.89)
+    legend = r.TLegend(0.6, 0.6, 0.89, 0.89)
     legend.SetFillColor(0)
-    legend.SetFillStyle(0)
+    #legend.SetFillStyle(0)
     legend.SetTextSize(0.03)
 
     ### One component of the systematic uncertainty is from extrapolating to
@@ -41,20 +41,21 @@ if __name__ == '__main__':
     line = r.TLine(40., 40., 0., 1.)
     line.SetLineWidth(2)
 
-    print ''.join(['| *{0}* '.format(cat) for cat in categories]),
-    print '|'
+    print ''.join(['& {0} '.format(cat) for cat in categories]),
+    print '\\\\ \\hline'
     for fakeType in fakeTypes:
-        print '| {0} '.format(fakeType),
+        print ' {0} '.format(fakeType),
         count = 0
+        hCombined = 0.
         for category in categories:
             hist    = inFile.Get('{0}/{1}/h1_FakeablePt'.format(category, fakeType))
 
             if hist:
                 pct     = hist.Integral(hist.FindBin(40), hist.GetNbinsX())/hist.Integral()
                 fakeInfo.append(pct)
-                print '| {0:.1%} '.format(pct),
+                print '& {0:.1%} '.format(pct),
             else:
-                print '| -- ',
+                print '& -- ',
                 continue
 
             pp.set_hist_style(hist, category, styles)
@@ -63,6 +64,7 @@ if __name__ == '__main__':
             if count == 0:
                 hist.SetTitle('{0};p_{{T}}; Normalized Entries/Bin'.format(styles[fakeType][4]))
                 hist.GetXaxis().SetRangeUser(0., 150.)
+                hist.GetYaxis().SetTitleOffset(1.2)
                 hist.SetMinimum(0.)
                 hist.SetMaximum(1.25*hist.GetMaximum())
 
@@ -71,12 +73,21 @@ if __name__ == '__main__':
             else:
                 hist.DrawNormalized('same')
 
+            if hCombined == 0.:
+                hCombined = hist.Clone()
+            else:
+                hCombined.Add(hist)
+
             count += 1
+
+        print '& {0:.1%} \\\\ \\hline'.format(hCombined.Integral(hCombined.FindBin(40.), hCombined.GetNbinsX())/hCombined.Integral())
 
         legend.Draw()
         canvas.Print('{0}/FakeablePt_{1}.png'.format(outDir, fakeType))
-        print '|'
         legend.Clear()
+
+        hCombined.DrawNormalized()
+        canvas.Print('{0}/CombinedFakeablePt_{1}.png'.format(outDir, fakeType))
 
     print '\n\n'
 
@@ -148,7 +159,8 @@ if __name__ == '__main__':
             
     ### Check dependency of fake rate on jet multiplicity
     lepType     = 'Muon' # 'Muon' or 'Electron'
-    mcFile    = r.TFile('data/fakeRates_TEST.root', 'OPEN')
+    dataFile    = r.TFile('data/fakeRates.root', 'OPEN')
+    mcFile      = r.TFile('data/fakeRates_TEST.root', 'OPEN')
     datasets    = ['ZJets', 'ttbar', 'QCD', 'WJets']
 
     for dataset in datasets:
@@ -182,10 +194,13 @@ if __name__ == '__main__':
         legend.Clear()
 
     ### Overlay QCD, W+jets, and ttbar
-    variables   = ['FakePt', 'FakePtLowJet', 'FakePtHighJet']#, 'FakeJetMult']
+    variables   = ['FakeEta', 'FakeEtaLowJet', 'FakeEtaHighJet']#, 'FakeJetMult']
     datasets    = ['QCD', 'WJets', 'ttbar']
+
+    mc_avg      = {}
     for variable in variables:
         binContent  = {}
+        binError    = {}
         h1_avg      = r.TH1F()
         for i,dataset in enumerate(datasets):
             hist = mcFile.Get('MC_truth_{0}/h1_{1}{2}'.format(dataset, lepType, variable))
@@ -193,8 +208,10 @@ if __name__ == '__main__':
             pp.set_hist_style(hist, dataset, styles)
 
             binContent[dataset] = []
+            binError[dataset]   = []
             for bin in range(hist.GetNbinsX()):
                 binContent[dataset].append(hist.GetBinContent(bin))
+                binError[dataset].append(hist.GetBinError(bin))
 
             if i == 0:
                 hist.SetMinimum(0.)
@@ -209,37 +226,41 @@ if __name__ == '__main__':
             legend.AddEntry(hist, styles[dataset][4])
 
         for bin in range(h1_avg.GetNbinsX()): 
-            if variable == 'FakePtHighJet':
-                h1_avg.SetBinContent(bin, 0.63*binContent['ttbar'][bin] + 0.36*binContent['WJets'][bin] + 0.1*binContent['QCD'][bin]) #post-selection
-            else:
-                h1_avg.SetBinContent(bin, 0.021*binContent['ttbar'][bin] + 0.16*binContent['WJets'][bin] + 0.8*binContent['QCD'][bin]) #pre-selection
-            h1_avg.SetBinError(bin+1, 0.25*h1_avg.GetBinContent(bin+1))
+            if variable == 'FakeEtaHighJet': #post-selection
+                h1_avg.SetBinContent(bin, 0.63*binContent['ttbar'][bin] + 0.36*binContent['WJets'][bin] + 0.1*binContent['QCD'][bin]) 
+                h1_avg.SetBinError(bin, math.sqrt((0.63*binError['ttbar'][bin])**2 + (0.36*binError['WJets'][bin])**2))# + (0.0*binError['QCD'][bin])**2)) 
+            else: #pre-selection
+                h1_avg.SetBinContent(bin, 0.021*binContent['ttbar'][bin] + 0.16*binContent['WJets'][bin] + 0.8*binContent['QCD'][bin]) 
+                h1_avg.SetBinError(bin, math.sqrt((0.021*binError['ttbar'][bin])**2 + (0.16*binError['WJets'][bin])**2 + (0.8*binError['QCD'][bin])**2)) 
+
+            #h1_avg.SetBinError(bin+1, 0.25*h1_avg.GetBinContent(bin+1))
+
 
         h1_avg.SetLineColor(r.kGreen)
         h1_avg.SetFillColor(r.kGreen)
         h1_avg.SetFillStyle(3004)
         h1_avg.Draw('E2 SAME')
+        mc_avg[variable] = h1_avg.Clone()
+
         legend.AddEntry(h1_avg, 'Combined #pm 25%')
-        
         legend.Draw()
         canvas.Print('{0}/{1}_overlays.png'.format(outDir, variable))
-
         legend.Clear()
 
     ### Overlay QCD from data and MC
-    dataFile = r.TFile('data/fakeRates.root', 'OPEN')
-
-    h1_qcd_MC   = mcFile.Get('MC_truth_QCD/h1_MuonFakePt')
-    g_qcd_Data = dataFile.Get('QCD2l/g_MuonFakePt')
+    h1_qcd_MC    = mcFile.Get('MC_truth_QCD/h1_MuonFakeEta')
+    h1_qcd_Data  = dataFile.Get('QCD2l/h1_MuonFakeEta')
+    h1_qcd_MC.SetBit(r.TH1.kIsAverage)
+    h1_qcd_Data.SetBit(r.TH1.kIsAverage)
 
     pp.set_hist_style(h1_qcd_MC, 'QCD', styles)
-    pp.set_hist_style(g_qcd_Data, 'DATA', styles)
+    pp.set_hist_style(h1_qcd_Data, 'DATA', styles)
 
-    h1_qcd_MC.Draw()
-    g_qcd_Data.Draw('P SAME')
+    h1_qcd_MC.Draw('E')
+    h1_qcd_Data.Draw('E SAME')
 
     legend.AddEntry(h1_qcd_MC, 'QCD (MC)')
-    legend.AddEntry(g_qcd_Data, 'QCD (Data)')
+    legend.AddEntry(h1_qcd_Data, 'QCD (Data)')
     legend.Draw()
 
     canvas.Print('{0}/{1}_overlays.png'.format(outDir, 'QCD_DataMC'))
@@ -247,41 +268,95 @@ if __name__ == '__main__':
     ### Overlay Z+jet from data and MC
     zJetsFile = r.TFile('data/fakeRates_ZJets.root', 'OPEN')
 
-    g_zJets_MC      = zJetsFile.Get('ZPlusJet/g_MuonFakePt')
-    g_zJets_Data    = dataFile.Get('ZPlusJet/g_MuonFakePt')
+    h1_zJets_MC      = zJetsFile.Get('ZPlusJet/h1_MuonFakeEta')
+    h1_zJets_Data    = dataFile.Get('ZPlusJet/h1_MuonFakeEta')
+    h1_zJets_MC.SetBit(r.TH1.kIsAverage)
+    h1_zJets_Data.SetBit(r.TH1.kIsAverage)
 
-    pp.set_hist_style(g_zJets_MC, 'ZJets', styles)
-    pp.set_hist_style(g_zJets_Data, 'DATA', styles)
+    pp.set_hist_style(h1_zJets_MC, 'ZJets', styles)
+    pp.set_hist_style(h1_zJets_Data, 'DATA', styles)
 
-    g_zJets_MC.GetYaxis().SetRangeUser(0., 0.35)
-    g_zJets_MC.SetTitle(' #mu fake rates;p_{T};fake rate')
+    h1_zJets_MC.GetYaxis().SetRangeUser(0., 0.35)
+    h1_zJets_MC.SetTitle(' #mu fake rates;p_{T};fake rate')
 
-    g_zJets_MC.Draw('AP')
-    g_zJets_Data.Draw('P SAME')
+    h1_zJets_MC.Draw('E')
+    h1_zJets_Data.Draw('E SAME')
 
     legend.Clear()
-    legend.AddEntry(g_zJets_MC, 'ZPlusJet (MC)')
-    legend.AddEntry(g_zJets_Data, 'ZPlusJet (Data)')
+    legend.AddEntry(h1_zJets_MC, 'ZPlusJet (MC)')
+    legend.AddEntry(h1_zJets_Data, 'ZPlusJet (Data)')
     legend.Draw()
 
     canvas.Print('{0}/{1}_overlays.png'.format(outDir, 'ZPlusJet_DataMC'))
 
     ### Overlay Z+jet and QCD from data
-    pp.set_hist_style(g_qcd_Data, 'QCD', styles)
-    pp.set_hist_style(g_zJets_Data, 'ZJets', styles)
+    h1_data_avg = h1_qcd_Data.Clone()
+    #h1_data_avg.Add(h1_zJets_Data)
 
-    g_qcd_Data.GetYaxis().SetRangeUser(0., 0.35)
-    g_qcd_Data.SetTitle(' #mu fake rates;p_{T};fake rate')
+    pp.set_hist_style(h1_qcd_Data, 'QCD', styles)
+    pp.set_hist_style(h1_zJets_Data, 'ZJets', styles)
+    pp.set_hist_style(mc_avg['FakeEtaHighJet'], 'AVG', styles)
 
-    g_qcd_Data.Draw('AP')
-    g_zJets_Data.Draw('P SAME')
+    h1_qcd_Data.GetYaxis().SetRangeUser(0., 0.45)
+    h1_qcd_Data.SetTitle(' #mu fake rates;p_{T};fake rate')
+
+    h1_data_avg.GetYaxis().SetRangeUser(0., 0.45)
+    #h1_qcd_Data.Draw('E')
+    #h1_zJets_Data.Draw('E SAME')
+    h1_data_avg.Draw('E')
+    mc_avg['FakeEtaLowJet'].Draw('E2 SAME')
+    mc_avg['FakeEtaHighJet'].Draw('E2 SAME')
 
     legend.Clear()
-    legend.AddEntry(g_qcd_Data, 'QCD (Data)')
-    legend.AddEntry(g_zJets_Data, 'ZPlusJet (Data)')
+    legend.AddEntry(h1_data_avg, 'Combined (Data)')
+    legend.AddEntry(mc_avg['FakeEtaLowJet'], 'Combined < 2 jets (MC)')
+    legend.AddEntry(mc_avg['FakeEtaHighJet'], 'Combined #geq 2 jets (MC)')
     legend.Draw()
 
     canvas.Print('{0}/{1}_overlays.png'.format(outDir, 'ZJetsVsQCD_DATA'))
+
+    ### Ratio between low and high jet mc fake rates
+    h1_Ratio = mc_avg['FakeEtaHighJet'].Clone()
+    h1_Ratio.Divide(mc_avg['FakeEtaLowJet'])
+    #h1_data_avg.Add(h1_zJets_Data)
+
+    pp.set_hist_style(h1_Ratio, 'AVG', styles)
+
+    h1_Ratio.SetTitle(';p_{T};FR_{MC,#geq 2 jets}/FR_{MC,< 2 jets}')
+    h1_Ratio.GetYaxis().SetRangeUser(0., 2.)
+    h1_Ratio.GetYaxis().CenterTitle()
+    h1_Ratio.GetYaxis().SetTitleSize(0.045)
+    #h1_Ratio.Fit('pol0')
+
+    canvas.SetGridx()
+    canvas.SetGridy()
+    canvas.SetLeftMargin(0.1)
+    #r.gStyle.SetOptFit(1)
+    #h1_data_avg.GetYaxis().SetRangeUser(0., 0.45)
+    #h1_qcd_Data.Draw('E')
+    #h1_zJets_Data.Draw('E SAME')
+    h1_Ratio.Draw('E')
+
+    canvas.Print('{0}/{1}.png'.format(outDir, 'Ratio'))
+
+
+    ### Compare QCD jet multiplicity rates
+    #h1_qcdJet_MC    = mcFile.Get('MC_truth_QCD/h1_MuonFakeJetMult')
+    #h1_qcdJet_Data  = dataFile.Get('QCD2l/h1_MuonFakeJetMult')
+    #h1_qcdJet_MC.SetBit(r.TH1.kIsAverage)
+    #h1_qcdJet_Data.SetBit(r.TH1.kIsAverage)
+
+    #pp.set_hist_style(h1_qcdJet_MC, 'QCD', styles)
+    #pp.set_hist_style(h1_qcdJet_Data, 'DATA', styles)
+
+    #h1_qcdJet_MC.Draw('E')
+    #h1_qcdJet_Data.Draw('E SAME')
+
+    #legend.AddEntry(h1_qcdJet_MC, 'QCD (MC)')
+    #legend.AddEntry(h1_qcdJet_Data, 'QCD (Data)')
+    #legend.Draw()
+
+    #canvas.Print('{0}/{1}_overlays.png'.format(outDir, 'QCD_jets_DataMC'))
 
     ### Plot jet flavor for various backgrounds
     inFile = r.TFile('fakeEstimator/histos/20141130_234120.root')

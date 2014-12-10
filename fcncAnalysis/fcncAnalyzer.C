@@ -1307,13 +1307,13 @@ void fcncAnalyzer::GetFakeBG(vObj& leptons, vObj& fakeables, vector<TCJet>& jets
                 DoFakes(leptons, fakeable1, jets, bJetsM, bJetsL);
                 evtWeight /= (2*fakeWeight1*(1 - fakeWeight2));
 
-                } else if (leptons.size() == 1 && fakeWeight1 >= 0 && fakeWeight2 > 0) {
+            } else if (leptons.size() == 1 && fakeWeight1 >= 0 && fakeWeight2 > 0) {
                 vObj fakeable2;
                 fakeable2.push_back(fakeables[1]);
                 evtWeight *= fakeWeight2*(1 - fakeWeight1);
                 DoFakes(leptons, fakeable2, jets, bJetsM, bJetsL);
                 evtWeight /= (2*fakeWeight2*(1 - fakeWeight1));
-                }
+            }
         }
     }
 }

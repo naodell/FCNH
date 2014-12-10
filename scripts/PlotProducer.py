@@ -68,7 +68,7 @@ def build_legend(hists, dataList, styleDict):
         hists[data].Fill(1)
         set_hist_style(hists[data], data, styleDict)
 
-    legend = r.TLegend(0.6,0.55,0.79,0.89)
+    legend = r.TLegend(0.6,0.55,0.79,0.88)
     legend.SetFillColor(0)
     legend.SetFillStyle(0)
     legend.SetLineWidth(0)
@@ -581,6 +581,8 @@ class PlotProducer(AnalysisTools):
             pad1 = r.TPad('pad1', '', 0.00, 0.02, 1., 1., 0)
             pad1.Draw()
             pad1.SetLeftMargin(0.15)
+            pad1.SetTickx()
+            pad1.SetTicky()
             #pad1.SetGridx()
             #pad1.SetGridy()
 
@@ -610,7 +612,7 @@ class PlotProducer(AnalysisTools):
                     stacks[var].SetMaximum(max(stacks[var].GetMaximum(), hists[var][0][0].GetMaximum())*5)
                     stacks[var].SetMinimum(0.2)
                 else:
-                    stacks[var].SetMaximum(max(stacks[var].GetMaximum(), hists[var][0][0].GetMaximum())*1.25)
+                    stacks[var].SetMaximum(max(stacks[var].GetMaximum(), hists[var][0][0].GetMaximum())*1.3)
                     stacks[var].SetMinimum(0.00001)
 
                 #if doRatio or doEff: 
@@ -898,6 +900,7 @@ class PlotProducer(AnalysisTools):
                             hist.GetYaxis().SetTitle('M_{lll} [GeV/c^{2}]')
 
                         if var == 'MetVsHT':
+                            hist.GetYaxis().SetTitle('MET [GeV]')
                             hist.GetXaxis().SetRangeUser(0., 500.)
                             hist.GetYaxis().SetRangeUser(0., 200.)
 

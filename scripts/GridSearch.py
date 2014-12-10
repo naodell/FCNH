@@ -116,12 +116,18 @@ if __name__ == '__main__':
             bgHist.Add(sumBG['llFakes'])
             bgHist.Add(sumBG['QFlips'])
             bgHist.SetTitle('Background')
+            bgHist.GetXaxis().SetTitle('H_{T} [GeV]')
+            bgHist.GetYaxis().SetTitle('MET [GeV]')
             bgHist.GetXaxis().SetRangeUser(0.,500.)
             bgHist.GetYaxis().SetRangeUser(0.,150.)
+            bgHist.GetYaxis().SetTitleOffset(1.3)
 
             sumBG['fcnh'].SetTitle('Signal')
+            sumBG['fcnh'].GetXaxis().SetTitle('H_{T} [GeV]')
+            sumBG['fcnh'].GetYaxis().SetTitle('MET [GeV]')
             sumBG['fcnh'].GetXaxis().SetRangeUser(0.,500.)
             sumBG['fcnh'].GetYaxis().SetRangeUser(0.,150.)
+            sumBG['fcnh'].GetYaxis().SetTitleOffset(1.3)
 
             pad1.cd()
             bgHist.Draw('colz')
@@ -230,6 +236,8 @@ if __name__ == '__main__':
                     print '& {0:.1f} '.format(nEvents),
 
                 print ' \\\\'
+
+    print yields
 
 
     if not doMask:

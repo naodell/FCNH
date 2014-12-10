@@ -953,9 +953,23 @@ void fakeAnalyzer::FillDenominatorHists(TCPhysObject& probe, vector<TCJet>& jets
         if (cleanJets.size() < 2) {
             histManager->Fill1DHistUnevenBins(probe.Pt(),
                     "h1_" + lepType + "DenomPtLowJet", "probe lepton p_{T} (N_{jets} < 2);p_{T};Entries / bin", nPtBins, ptBins);
+            if (probe.Type() == "muon") {
+                histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
+                        "h1_" + lepType + "DenomEtaLowJet", "probe muon #eta;#eta;Entries / bin", 2, etaBinsMu);
+            } else if (probe.Type() == "electron") {
+                histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
+                        "h1_" + lepType + "DenomEtaLowJet", "probe electron #eta;#eta;Entries / bin", 3, etaBinsEle);
+            }
         } else {
             histManager->Fill1DHistUnevenBins(probe.Pt(),
                     "h1_" + lepType + "DenomPtHighJet", "probe lepton p_{T} (N_{jets} #geq 2);p_{T};Entries / bin", nPtBins, ptBins);
+            if (probe.Type() == "muon") {
+                histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
+                        "h1_" + lepType + "DenomEtaHighJet", "probe muon #eta;#eta;Entries / bin", 2, etaBinsMu);
+            } else if (probe.Type() == "electron") {
+                histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
+                        "h1_" + lepType + "DenomEtaHighJet", "probe electron #eta;#eta;Entries / bin", 3, etaBinsEle);
+            }
         }
     }
 }
@@ -1012,9 +1026,23 @@ void fakeAnalyzer::FillNumeratorHists(TCPhysObject& probe, vector<TCJet>& jets)
         if (cleanJets.size() < 2) {
             histManager->Fill1DHistUnevenBins(probe.Pt(),
                     "h1_" + lepType + "NumerPtLowJet", "pass lepton p_{T} (N_{jets} < 2);p_{T};Entries / bin", nPtBins, ptBins);
+            if (probe.Type() == "muon") {
+                histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
+                        "h1_" + lepType + "NumerEtaLowJet", "probe muon #eta;#eta;Entries / bin", 2, etaBinsMu);
+            } else if (probe.Type() == "electron") {
+                histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
+                        "h1_" + lepType + "NumerEtaLowJet", "probe electron #eta;#eta;Entries / bin", 3, etaBinsEle);
+            }
         } else {
             histManager->Fill1DHistUnevenBins(probe.Pt(),
                     "h1_" + lepType + "NumerPtHighJet", "pass lepton p_{T} (N_{jets} #geq 2);p_{T};Entries / bin", nPtBins, ptBins);
+            if (probe.Type() == "muon") {
+                histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
+                        "h1_" + lepType + "NumerEtaHighJet", "probe muon #eta;#eta;Entries / bin", 2, etaBinsMu);
+            } else if (probe.Type() == "electron") {
+                histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
+                        "h1_" + lepType + "NumerEtaHighJet", "probe electron #eta;#eta;Entries / bin", 3, etaBinsEle);
+            }
         }
 
     }
