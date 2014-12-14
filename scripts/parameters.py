@@ -2,6 +2,7 @@
 import ROOT as r
 import pickle
 
+signalScale = .05
 ### Set styles
 styleDict = {}
 
@@ -116,10 +117,10 @@ styleDict['ggHToZZ4L_M-125']    = (2, r.kBlue+3, 0, 1, 'H#rightarrow 4l')
 #Misc
 styleDict['BGERROR']            = (0, r.kBlack, 3003, 0, 'BG uncertainty')
 #styleDict['FCNH']               = (3, r.kRed+3, 0, 20, 'FCNH (#times 2)')
-styleDict['FCNH']               = (3, r.kRed+3, 0, 20, 'FCNH')
-styleDict['FCNHWW']             = (3, r.kRed+3, 0, 20, 'FCNH #rightarrow WW')
-styleDict['FCNHZZ']             = (3, r.kRed+3, 0, 20, 'FCNH #rightarrow ZZ')
-styleDict['FCNHTauTau']         = (3, r.kRed+3, 0, 20, 'FCNH #rightarrow #tau#tau')
+styleDict['FCNH']               = (3, r.kRed+3, 0, 0, 'FCNH (BR = {0:1.0%})'.format(signalScale))
+styleDict['FCNHWW']             = (3, r.kRed+3, 0, 0, 'FCNH #rightarrow WW')
+styleDict['FCNHZZ']             = (3, r.kRed+3, 0, 0, 'FCNH #rightarrow ZZ')
+styleDict['FCNHTauTau']         = (3, r.kRed+3, 0, 0, 'FCNH #rightarrow #tau#tau')
 styleDict['SUM_EFF']            = (2, r.kBlue, 1001, 21, 'BG')
 styleDict['SIG_EFF']            = (2, r.kRed, 1001, 21, 'Signal')
 styleDict['SIGNIFICANCE']       = (2, r.kGreen, 1001, 21, 'Signficance')
@@ -131,11 +132,11 @@ styleDict['eeeAIC']             = (2, r.kCyan+2, 1001, 20, 'AIC')
 styleDict['eemuAIC']            = (2, r.kCyan+2, 1001, 20, 'AIC')
 styleDict['emumuAIC']           = (2, r.kCyan+2, 1001, 20, 'AIC')
 styleDict['mumumuAIC']          = (2, r.kCyan+2, 1001, 20, 'AIC')
-styleDict['Fakes']              = (2, r.kRed-3, 1001, 20, 'Fakes')
+styleDict['Fakes']              = (2, r.kRed-3, 1001, 20, 'Non-prompt')
 styleDict['eFakes']             = (2, r.kCyan, 3001, 20, 'Fakes e')
 styleDict['muFakes']            = (2, r.kMagenta+3, 3001, 20, 'Fakes #mu')
 styleDict['llFakes']            = (2, r.kViolet+9, 3001, 1, 'Fakes ll')
-styleDict['QFlips']             = (2, r.kAzure+2, 1001, 1, 'QFlips')
+styleDict['QFlips']             = (2, r.kAzure+2, 1001, 1, 'Charge MisID')
 styleDict['Rare']               = (2, r.kYellow+2, 1001, 1, 'Rare')
 
 styleDict['ss_ee']             = (2, r.kCyan, 3001, 20, 'e^{#pm}e^{#pm}')
@@ -225,7 +226,7 @@ scaleDict['2012']['WZZ']                = 0.0192
 scaleDict['2012']['ZZZ']                = 0.0046
 scaleDict['2012']['WWG']                = 0.528
 
-scaleDict['2012']['QCD_20_MU']          = 134680.
+scaleDict['2012']['QCD_20_MU']          = 134680./2.
 scaleDict['2012']['QCD_20-30_EM']       = 2920632.
 scaleDict['2012']['QCD_30-80_EM']       = 4615893.
 scaleDict['2012']['QCD_80-170_EM']      = 183722
@@ -272,12 +273,12 @@ scaleDict['2012']['TTH_M-125']          = .1032
 #scaleDict['GJets_300to470']     = 1/1391.1
 #scaleDict['GJets_470to800']     = 1/15812.2
 
-scaleDict['2012']['FCNC_M125_t']            = 1.*252*1.*0.01*0.215*3*0.324*0.324
-scaleDict['2012']['FCNC_M125_tbar']         = 1.*252*1.*0.01*0.215*3*0.324*0.324
-scaleDict['2012']['FCNC_ZZ_t']              = 1.*252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
-scaleDict['2012']['FCNC_ZZ_tbar']           = 1.*252*1.*0.01*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
-scaleDict['2012']['FCNC_TauTau_t']          = 1.*252*1.*0.01*0.063*0.324
-scaleDict['2012']['FCNC_TauTau_tbar']       = 1.*252*1.*0.01*0.063*0.324
+scaleDict['2012']['FCNC_M125_t']            = signalScale*252*1.*0.215*3*0.324*0.324
+scaleDict['2012']['FCNC_M125_tbar']         = signalScale*252*1.*0.215*3*0.324*0.324
+scaleDict['2012']['FCNC_ZZ_t']              = signalScale*252*1.*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
+scaleDict['2012']['FCNC_ZZ_tbar']           = signalScale*252*1.*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
+scaleDict['2012']['FCNC_TauTau_t']          = signalScale*252*1.*0.063*0.324
+scaleDict['2012']['FCNC_TauTau_tbar']       = signalScale*252*1.*0.063*0.324
 
 scaleDict['2012']['DATA_MUON']          = 1.
 scaleDict['2012']['DATA_ELECTRON']      = 1.
@@ -331,10 +332,10 @@ combineDict['Remove_3l']        = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2
 combineDict['Irreducible']      = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ']#, 'WWG']
 combineDict['Rare']             = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ', 'WmWmqq', 'WpWpqq', 'WWDPS', 'TBZ']#, 'WWG']
 combineDict['PROMPT']           = [
-                                   'ZJets_M-50', 'ZJets_M-10To50', 'WJetsToLNu', 
-                                   'ttbarHad', 'ttbarLep', 'tbarW', 'tW', 
+                                   'ZJets_M-50', 'ZJets_M-10To50', 'WJets', 
+                                   'ttbarLep', 'ttbarSemilep', #'tbarW', 'tW', 
                                    'WZJets3LNu', #'WWJets2L2Nu', 'ZZJets2L2Nu', 'WZJets2L2Q', 'ZZJets2L2Q',
-                                   'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'
+                                   #'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'
                                    ]
 
 combineDict['DATA_FAKES']       = combineDict['DATA']
@@ -349,10 +350,10 @@ cleanDict = {}
 #                                   'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
 
 categoryDict = {'inclusive':'inclusive',
-                'ss_inclusive':'same-sign inclusive', 'ss_mumu':'#mu^{#pm}#mu^{#pm}', 'ss_ee':'e^{#pm}e^{#pm}', 'ss_emu':'e^{#pm}#mu^{#pm}',
+                'ss_inclusive':'same-sign dilepton', 'ss_mumu':'#mu^{#pm}#mu^{#pm}', 'ss_ee':'e^{#pm}e^{#pm}', 'ss_emu':'e^{#pm}#mu^{#pm}',
                 'ss_endcap':'same-sign (EE)', 'ss_mixed':'same-sign (EB)', 'ss_barrel':'same-sign (BB)',
-                'os_inclusive':'os inclusive', 'os_mumu':'#mu^{#pm}#mu^{#mp}', 'os_ee':'e^{#pm}e^{#mp}', 'os_emu':'e^{#pm}mu^{#mp}', 
-                '3l_inclusive':'trilepton inclusive', '3l_OSSF':'(l^{#pm}l^{#mp})l', '3l_SSSF':'(l^{#pm}l^{#pm})l',
+                'os_inclusive':'os dilepton', 'os_mumu':'#mu^{#pm}#mu^{#mp}', 'os_ee':'e^{#pm}e^{#mp}', 'os_emu':'e^{#pm}mu^{#mp}', 
+                '3l_inclusive':'trilepton', '3l_OSSF':'(l^{#pm}l^{#mp})l', '3l_SSSF':'(l^{#pm}l^{#pm})l',
                 '3l_eee':'eee', '3l_eemu':'ee#mu', '3l_emumu':'e#mu#mu','3l_mumumu':'#mu#mu#mu',
                 'AntiIso3l':'Anti-Iso CR', 'QCD2l':'QCD ll', 'ZPlusJet':'Z+jet',
                 'PureLep':'Pure Muon', 'SameSign':'l^{#pm}l^{#pm}',

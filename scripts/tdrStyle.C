@@ -26,7 +26,7 @@ void setTDRStyle() {
 
     // For the Pad:
     tdrStyle->SetPadBorderMode(0);
-    // tdrStyle->SetPadBorderSize(Width_t size = 1);
+    //tdrStyle->SetPadBorderSize(Width_t size = 1);
     tdrStyle->SetPadColor(kWhite);
     tdrStyle->SetPadGridX(false);
     tdrStyle->SetPadGridY(false);
@@ -41,11 +41,11 @@ void setTDRStyle() {
     tdrStyle->SetFrameFillStyle(0);
     tdrStyle->SetFrameLineColor(1);
     tdrStyle->SetFrameLineStyle(1);
-    tdrStyle->SetFrameLineWidth(1);
+    tdrStyle->SetFrameLineWidth(0);
 
     // For the histo:
-    // tdrStyle->SetHistFillColor(1);
-    // tdrStyle->SetHistFillStyle(0);
+    tdrStyle->SetHistFillColor(1);
+    tdrStyle->SetHistFillStyle(0);
     tdrStyle->SetHistLineColor(1);
     tdrStyle->SetHistLineStyle(0);
     tdrStyle->SetHistLineWidth(1);
@@ -53,8 +53,8 @@ void setTDRStyle() {
     // tdrStyle->SetNumberContours(Int_t number = 20);
 
     tdrStyle->SetEndErrorSize(2);
-    //  tdrStyle->SetErrorMarker(20);
-    tdrStyle->SetErrorX(0.);
+    //tdrStyle->SetErrorMarker(20);
+    //tdrStyle->SetErrorX(0.);
 
     tdrStyle->SetMarkerStyle(20);
 
@@ -89,25 +89,23 @@ void setTDRStyle() {
     tdrStyle->SetPadTopMargin(0.05);
     tdrStyle->SetPadBottomMargin(0.13);
     tdrStyle->SetPadLeftMargin(0.16);
-    tdrStyle->SetPadRightMargin(0.02);
+    tdrStyle->SetPadRightMargin(0.05);
 
     // For the Global title:
-
     tdrStyle->SetOptTitle(0);
     tdrStyle->SetTitleFont(42);
     tdrStyle->SetTitleColor(1);
     tdrStyle->SetTitleTextColor(1);
     tdrStyle->SetTitleFillColor(10);
     tdrStyle->SetTitleFontSize(0.05);
-    // tdrStyle->SetTitleH(0); // Set the height of the title box
-    // tdrStyle->SetTitleW(0); // Set the width of the title box
-    // tdrStyle->SetTitleX(0); // Set the position of the title box
-    // tdrStyle->SetTitleY(0.985); // Set the position of the title box
-    // tdrStyle->SetTitleStyle(Style_t style = 1001);
-    // tdrStyle->SetTitleBorderSize(2);
+    //tdrStyle->SetTitleH(0); // Set the height of the title box
+    //tdrStyle->SetTitleW(0); // Set the width of the title box
+    //tdrStyle->SetTitleX(0); // Set the position of the title box
+    //tdrStyle->SetTitleY(0.985); // Set the position of the title box
+    //tdrStyle->SetTitleStyle(Style_t style = 1001);
+    //tdrStyle->SetTitleBorderSize(2);
 
     // For the axis titles:
-
     tdrStyle->SetTitleColor(1, "XYZ");
     tdrStyle->SetTitleFont(42, "XYZ");
     tdrStyle->SetTitleSize(0.06, "XYZ");
@@ -118,14 +116,12 @@ void setTDRStyle() {
     // tdrStyle->SetTitleOffset(1.1, "Y"); // Another way to set the Offset
 
     // For the axis labels:
-
     tdrStyle->SetLabelColor(1, "XYZ");
     tdrStyle->SetLabelFont(42, "XYZ");
     tdrStyle->SetLabelOffset(0.007, "XYZ");
     tdrStyle->SetLabelSize(0.05, "XYZ");
 
     // For the axis:
-
     tdrStyle->SetAxisColor(1, "XYZ");
     tdrStyle->SetStripDecimals(kTRUE);
     tdrStyle->SetTickLength(0.03, "XYZ");
@@ -137,6 +133,9 @@ void setTDRStyle() {
     tdrStyle->SetOptLogx(0);
     tdrStyle->SetOptLogy(0);
     tdrStyle->SetOptLogz(0);
+
+    // Legend options
+    //tdrStyle->SetLegendBorderMode(0);
 
     // Postscript options:
     tdrStyle->SetPaperSize(20.,20.);
@@ -151,6 +150,17 @@ void setTDRStyle() {
     // tdrStyle->SetPalette(Int_t ncolors = 0, Int_t* colors = 0);
     // tdrStyle->SetTimeOffset(Double_t toffset);
     // tdrStyle->SetHistMinimumZero(kTRUE);
+    // tdrStyle->SetPalette(1)
+
+    const Int_t NRGBs = 5;
+    const Int_t NCont = 255;
+
+    Double_t stops[NRGBs] = { 0.00, 0.34, 0.61, 0.84, 1.00 };
+    Double_t red[NRGBs]   = { 0.00, 0.00, 0.87, 1.00, 0.51 };
+    Double_t green[NRGBs] = { 0.00, 0.81, 1.00, 0.20, 0.00 };
+    Double_t blue[NRGBs]  = { 0.51, 1.00, 0.12, 0.00, 0.00 };
+    TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+    tdrStyle->SetNumberContours(NCont);
 
     tdrStyle->cd();
 

@@ -15,10 +15,10 @@ else:
 inFile  = 'fakeEstimator/histos/{0}.root'.format(batch)
 outFile = 'data/fakeRates_TEST.root'
 
-datasets = ['ttbarHad', 'ttbarSemilep', 'ttbarLep', 'ZJets', 'WJets', 'QCD']
-bgType = ''
-#fakeCategories = ['QCD2l', 'ZPlusJet', 'AntiIso3l']
-fakeCategories = ['MC_truth']
+datasets = ['DATA']#'ttbarHad', 'ttbarSemilep', 'ttbarLep', 'ZJets', 'WJets', 'QCD']
+bgType = 'PROMPT'
+fakeCategories = ['QCD2l', 'ZPlusJet']
+#fakeCategories = ['MC_truth']
 
 ratioMaker = RatioMaker(inFile, outFile, scale = 19.7)
 ratioMaker.get_scale_factors(datasets, corrected = False)
@@ -29,13 +29,13 @@ fakeDict1D = {
     'MuonFakePt':('MuNumerPt', 'MuDenomPt'),
     'MuonFakePtLowJet':('MuNumerPtLowJet', 'MuDenomPtLowJet'),
     'MuonFakePtHighJet':('MuNumerPtHighJet', 'MuDenomPtHighJet'),
-    'MuonFakeJetMult':('MuNumerJetMult', 'MuDenomJetMult'),
-    'MuonFakeEta':('MuNumerEta', 'MuDenomEta'),
-    'MuonFakeEtaLowJet':('MuNumerEtaLowJet', 'MuDenomEtaLowJet'),
+    #'MuonFakeJetMult':('MuNumerJetMult', 'MuDenomJetMult'),
+    #'MuonFakeEta':('MuNumerEta', 'MuDenomEta'),
+    #'MuonFakeEtaLowJet':('MuNumerEtaLowJet', 'MuDenomEtaLowJet'),
     #'MuonFakeEtaHighJet':('MuNumerEtaHighJet', 'MuDenomEtaHighJet'),
     #'MuonFakeEta':('MuNumerEta', 'MuDenomEta'),
     #'MuonFakeMet':('MuNumerMet', 'MuDenomMet'),
-    'ElectronFakePt':('EleNumerPt', 'EleDenomPt'),
+    #'ElectronFakePt':('EleNumerPt', 'EleDenomPt'),
     #'ElectronFakeEta':('EleNumerEta', 'EleDenomEta'),
     #'ElectronFakeMet':('EleNumerMet', 'EleDenomMet'),
 }

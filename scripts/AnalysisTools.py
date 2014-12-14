@@ -161,10 +161,10 @@ class AnalysisTools():
 
                     self._scaleDict[self._period][dataName] = 1e3*self._scaleDict[self._period][dataName]/nInit 
 
-                else:
-                    print '{0} not found in scale dictionary; setting to 0'.format(dataName)
-                    self._scaleDict[self._period][dataName] = 0.
-                    continue
+            else:
+                print '{0} not found in scale dictionary; setting to 0'.format(dataName)
+                self._scaleDict[self._period][dataName] = 0.
+                continue
 
             print ''
         print '\n'
@@ -192,6 +192,10 @@ class AnalysisTools():
         else:
             hist = inHist.Clone()
 
+        # Change axis labels
+        yTitle = hist.GetYaxis().GetTitle()
+        hist.GetYaxis().SetTitle(yTitle.replace('Entries', 'Events'))
+
         if self._category in systematics:
             if dataName in ['QFlips', 'ttW', 'ttZ', 'WZJets3LNu', 'muFakes', 'eFakes', 'llFakes']:
                 hist = self.add_systematic(hist, dataName)
@@ -199,6 +203,7 @@ class AnalysisTools():
                 hist = self.add_systematic(hist, 'fcnh')
             elif dataName in self._combineDict['Irreducible']:
                 hist = self.add_systematic(hist, 'Irreducible')
+
 
         if dataName.split('_')[0] in ['Fakes', 'eFakes', 'muFakes', 'llFakes'] and len(dataName.split('_')) > 1:
             dataName = dataName.split('_', 1)[1]
@@ -214,8 +219,8 @@ class AnalysisTools():
                 hist.Scale(self._scale*self._scaleDict[self._period][dataName]) 
 
         # Rebin hack
-        #if self._category == '3l_inclusive' and var in ['TrileptonMass', 'DileptonOSMass']:
-        #    hist.Rebin(4)
+        if self._category[:2] == '3l' and var in ['Met']:
+            hist.Rebin()
 
         return hist
 

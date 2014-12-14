@@ -34,14 +34,10 @@ doRatio     = False
 
 ### Samples to be included in stacks ###
 samples = {}
-samples['inclusive']    = ['ZJets', 'ttbar', 'ZZ4l', 'WJetsToLNu', 'WZJets3LNu', 'ttV']
-#samples['ZPlusJet']     = ['ggHToZZ4L_M-125', 'ZZ4l', 'WZJets3LNu', 'WZJets2L2Q', 'ZZJets2L2Q', 'ttbar', 'ZJets']
-samples['ZPlusJet']     = ['ZZ4l', 'WZJets3LNu', 'ZJets']
-samples['QCD2l']        = ['ttbar', 'single top', 'ZJets', 'WJetsToLNu']
-samples['AntiIso3l']    = ['ttbar', 'single top', 'ZJets', 'WJetsToLNu']
-samples['PureLep']      = ['ttbar', 'ZJets', 'WZJets3LNu']
-samples['SameSign']     = ['ZZ4l', 'WZJets3LNu', 'single top', 'ttbar', 'ZJets', 'WJetsToLNu']
-#samples['AntiIso3l']    = ['ZJets', 'ttbarLep', 'ttbarHad', 'WZJets3LNu', 'WbbToLNu'] #'WJetsToLNu']
+samples['inclusive']    = ['ZJets', 'ttbar', 'WJets', 'WZJets3LNu', 'QCD']
+samples['ZPlusJet']     = ['WZJets3LNu', 'ZJets']
+samples['QCD2l']        = ['ZJets', 'WJets', 'QCD']
+samples['SameSign']     = ['WZJets3LNu', 'ttbar', 'ZJets', 'WJets', 'QCD']
 
 if doPlots:
 
@@ -58,10 +54,9 @@ if doPlots:
 
     ### DATASETS ###
 
-    plotter.add_datasets(['PROMPT', 'WZJets2L2Q', 'ZZJets2L2Q'])#, 'ggHToZZ4L_M-125'])
+    plotter.add_datasets(samples['inclusive'])
     plotter._overlayList.extend(['DATA'])
-
-    plotter.get_scale_factors(addData = ['ZJets'], corrected = False)
+    plotter.get_scale_factors(corrected = False)
 
     plotter._directoryList1D            = ['Muon', 'Electron']
 
@@ -112,15 +107,14 @@ if doPlots:
      ### MAKE PLOTS! ###  
      ###################   
 
-    r.gROOT.SetStyle('Plain')
+    r.gROOT.ProcessLine('.L ./scripts/tdrStyle.C')
+    r.setTDRStyle()
+
+    r.TGaxis.SetMaxDigits(3)
     r.gStyle.SetOptStat(0)
 
-    ### inclusive ###
-
-    plotter.add_datasets(samples, Clear=True)
-
     ### Categories to be plotted ###
-    catList = ['QCD2l', 'ZPlusJet', 'AntiIso3l']
+    catList = ['QCD2l', 'ZPlusJet', 'SameSign']
 
     for category in catList:
         plotter._directoryList1D = ['Muon', 'Electron']
@@ -129,7 +123,7 @@ if doPlots:
         plotter.make_overlays_1D(logScale = doLog, doRatio = doRatio, doEff = doEff)
 
         # Closure plots
-        #for CR in ['QCD2l', 'AntiIso3l', 'ZPlusJet']:
+        #for CR in ['QCD2l', 'ZPlusJet']:
 
         #    plotter.make_overlays_diff([(['PROMPT', 'DATA_FAKES'], ['MuNumerEta', 'MuUnevenEtaClosure_{0}'.format(CR)]), 
         #                                (['DATA'],['MuNumerEta'])], 'Muon', 'MuClosureEta_{0}'.format(CR)) 

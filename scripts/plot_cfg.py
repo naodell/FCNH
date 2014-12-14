@@ -21,7 +21,7 @@ else:
 ### This is the config file for manipulating 
 ### histograms using the PlotProducer class.  
 
-plotType    = '.pdf'
+plotType    = '.png'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
@@ -33,7 +33,7 @@ crList      = []#'CR_WZ', 'CR_SUSY', 'CR_ZFake']
 period      = '2012'
 LUMIDATA    = 19.712 
 
-doPlots     = False
+doPlots     = True
 doYields    = True
 
 doLog       = False
@@ -306,13 +306,15 @@ if doPlots:
      ### MAKE PLOTS! ###  
      ###################   
 
-    r.gROOT.SetStyle('Plain')
+    r.gROOT.ProcessLine('.L ./scripts/tdrStyle.C')
+    r.setTDRStyle()
+
+    #r.gROOT.SetStyle('Plain')
+    r.TGaxis.SetMaxDigits(3)
     r.gStyle.SetOptStat(0)
-    #r.gROOT.ProcessLine('.L ./scripts/tdrStyle.C')
-    #r.setTDRStyle()
+
 
     ### inclusive ###
-
     if doInclusive:
         inclusive_plotter = copy.deepcopy(plotter)
         inclusive_plotter.add_datasets(samples['inclusive'], Clear=True)
@@ -550,16 +552,17 @@ if doYields:
         yieldTable.get_scale_factors(['FCNH'])
 
     if do3l:
-        yieldTable._columnList  = ['Rare', 'WZJets3LNu', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
+        yieldTable._columnList  = ['Rare', 'WZJets3LNu', 'Fakes', 'BG', 'DATA', 'FCNHWW', 'FCNHTauTau', 'FCNHZZ']#, 'Significance'] 
+        #yieldTable._columnList  = ['Rare', 'WZJets3LNu', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
         #yieldTable._columnList  = samples['3l_inclusive'] + ['BG', 'DATA', 'FCNH']
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNHWW', 'FCNHZZ', 'FCNHTauTau']
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
         yieldTable.add_datasets(samples['3l_inclusive'], Clear = True)
-        #yieldTable.add_datasets('FCNHWW')
-        #yieldTable.add_datasets('FCNHZZ')
-        #yieldTable.add_datasets('FCNHTauTau')
-        yieldTable.add_datasets('FCNH')
+        yieldTable.add_datasets('FCNHWW')
+        yieldTable.add_datasets('FCNHZZ')
+        yieldTable.add_datasets('FCNHTauTau')
+        #yieldTable.add_datasets('FCNH')
         yieldTable.add_datasets('DATA')
 
         yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET/jet', '.', 'WZ', 'SUSY']# + 6*['.'] + ['0-jet', '1-jet']
@@ -579,15 +582,16 @@ if doYields:
 
         for category in catSS:
 
-            yieldTable._columnList  = ['Rare', 'WZJets3LNu', 'QFlips', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
+            yieldTable._columnList  = ['Rare', 'WZJets3LNu', 'QFlips', 'Fakes', 'BG', 'DATA', 'FCNHWW', 'FCNHTauTau', 'FCNHZZ']#, 'Significance'] 
+            #yieldTable._columnList  = ['Rare', 'WZJets3LNu', 'QFlips', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
             #yieldTable._columnList  = samples[category] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
             #yieldTable._columnList  = ['BG', 'DATA', 'FCNHWW', 'FCNHZZ', 'FCNHTauTau']#, 'Significance'] 
 
             yieldTable.add_datasets(samples[category], Clear = True)
-            #yieldTable.add_datasets('FCNHWW')
-            #yieldTable.add_datasets('FCNHZZ')
-            #yieldTable.add_datasets('FCNHTauTau')
-            yieldTable.add_datasets('FCNH')
+            yieldTable.add_datasets('FCNHWW')
+            yieldTable.add_datasets('FCNHZZ')
+            yieldTable.add_datasets('FCNHTauTau')
+            #yieldTable.add_datasets('FCNH')
             yieldTable.add_datasets('DATA')
             yieldTable._category = category
 

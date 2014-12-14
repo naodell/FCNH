@@ -194,7 +194,7 @@ if __name__ == '__main__':
         legend.Clear()
 
     ### Overlay QCD, W+jets, and ttbar
-    variables   = ['FakeEta', 'FakeEtaLowJet', 'FakeEtaHighJet']#, 'FakeJetMult']
+    variables   = ['FakePt', 'FakePtLowJet', 'FakePtHighJet']#, 'FakeJetMult']
     datasets    = ['QCD', 'WJets', 'ttbar']
 
     mc_avg      = {}
@@ -226,14 +226,18 @@ if __name__ == '__main__':
             legend.AddEntry(hist, styles[dataset][4])
 
         for bin in range(h1_avg.GetNbinsX()): 
-            if variable == 'FakeEtaHighJet': #post-selection
+            #h1_avg.SetBinContent(bin, binContent['WJets'][bin]) 
+            #h1_avg.SetBinError(bin, binError['WJets'][bin]) 
+
+            if variable == 'FakePtHighJet': #post-selection
                 h1_avg.SetBinContent(bin, 0.63*binContent['ttbar'][bin] + 0.36*binContent['WJets'][bin] + 0.1*binContent['QCD'][bin]) 
                 h1_avg.SetBinError(bin, math.sqrt((0.63*binError['ttbar'][bin])**2 + (0.36*binError['WJets'][bin])**2))# + (0.0*binError['QCD'][bin])**2)) 
             else: #pre-selection
                 h1_avg.SetBinContent(bin, 0.021*binContent['ttbar'][bin] + 0.16*binContent['WJets'][bin] + 0.8*binContent['QCD'][bin]) 
                 h1_avg.SetBinError(bin, math.sqrt((0.021*binError['ttbar'][bin])**2 + (0.16*binError['WJets'][bin])**2 + (0.8*binError['QCD'][bin])**2)) 
 
-            #h1_avg.SetBinError(bin+1, 0.25*h1_avg.GetBinContent(bin+1))
+            #h1_avg.SetBinError(bin, 0.25*h1_avg.GetBinContent(bin+1))
+
 
 
         h1_avg.SetLineColor(r.kGreen)
@@ -248,8 +252,8 @@ if __name__ == '__main__':
         legend.Clear()
 
     ### Overlay QCD from data and MC
-    h1_qcd_MC    = mcFile.Get('MC_truth_QCD/h1_MuonFakeEta')
-    h1_qcd_Data  = dataFile.Get('QCD2l/h1_MuonFakeEta')
+    h1_qcd_MC    = mcFile.Get('MC_truth_QCD/h1_MuonFakePt')
+    h1_qcd_Data  = dataFile.Get('QCD2l/h1_MuonFakePt')
     h1_qcd_MC.SetBit(r.TH1.kIsAverage)
     h1_qcd_Data.SetBit(r.TH1.kIsAverage)
 
@@ -268,8 +272,8 @@ if __name__ == '__main__':
     ### Overlay Z+jet from data and MC
     zJetsFile = r.TFile('data/fakeRates_ZJets.root', 'OPEN')
 
-    h1_zJets_MC      = zJetsFile.Get('ZPlusJet/h1_MuonFakeEta')
-    h1_zJets_Data    = dataFile.Get('ZPlusJet/h1_MuonFakeEta')
+    h1_zJets_MC      = zJetsFile.Get('ZPlusJet/h1_MuonFakePt')
+    h1_zJets_Data    = dataFile.Get('ZPlusJet/h1_MuonFakePt')
     h1_zJets_MC.SetBit(r.TH1.kIsAverage)
     h1_zJets_Data.SetBit(r.TH1.kIsAverage)
 
@@ -295,7 +299,7 @@ if __name__ == '__main__':
 
     pp.set_hist_style(h1_qcd_Data, 'QCD', styles)
     pp.set_hist_style(h1_zJets_Data, 'ZJets', styles)
-    pp.set_hist_style(mc_avg['FakeEtaHighJet'], 'AVG', styles)
+    pp.set_hist_style(mc_avg['FakePtHighJet'], 'AVG', styles)
 
     h1_qcd_Data.GetYaxis().SetRangeUser(0., 0.45)
     h1_qcd_Data.SetTitle(' #mu fake rates;p_{T};fake rate')
@@ -304,20 +308,20 @@ if __name__ == '__main__':
     #h1_qcd_Data.Draw('E')
     #h1_zJets_Data.Draw('E SAME')
     h1_data_avg.Draw('E')
-    mc_avg['FakeEtaLowJet'].Draw('E2 SAME')
-    mc_avg['FakeEtaHighJet'].Draw('E2 SAME')
+    mc_avg['FakePtLowJet'].Draw('E2 SAME')
+    mc_avg['FakePtHighJet'].Draw('E2 SAME')
 
     legend.Clear()
     legend.AddEntry(h1_data_avg, 'Combined (Data)')
-    legend.AddEntry(mc_avg['FakeEtaLowJet'], 'Combined < 2 jets (MC)')
-    legend.AddEntry(mc_avg['FakeEtaHighJet'], 'Combined #geq 2 jets (MC)')
+    legend.AddEntry(mc_avg['FakePtLowJet'], 'Combined < 2 jets (MC)')
+    legend.AddEntry(mc_avg['FakePtHighJet'], 'Combined #geq 2 jets (MC)')
     legend.Draw()
 
-    canvas.Print('{0}/{1}_overlays.png'.format(outDir, 'ZJetsVsQCD_DATA'))
+    canvas.Print('{0}/{1}_overlays.png'.format(outDir, 'DataVsMC_JetSplit'))
 
     ### Ratio between low and high jet mc fake rates
-    h1_Ratio = mc_avg['FakeEtaHighJet'].Clone()
-    h1_Ratio.Divide(mc_avg['FakeEtaLowJet'])
+    h1_Ratio = mc_avg['FakePtHighJet'].Clone()
+    h1_Ratio.Divide(mc_avg['FakePtLowJet'])
     #h1_data_avg.Add(h1_zJets_Data)
 
     pp.set_hist_style(h1_Ratio, 'AVG', styles)
@@ -326,6 +330,7 @@ if __name__ == '__main__':
     h1_Ratio.GetYaxis().SetRangeUser(0., 2.)
     h1_Ratio.GetYaxis().CenterTitle()
     h1_Ratio.GetYaxis().SetTitleSize(0.045)
+    h1_Ratio.SetLineWidth(2)
     #h1_Ratio.Fit('pol0')
 
     canvas.SetGridx()
