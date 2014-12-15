@@ -28,6 +28,10 @@ styleDict['ZbbToLL']            = (2, r.kRed-8, 1001, 1, 'Z+bb')
 styleDict['ZG']                 = (0, r.kRed-9, 1001, 1, 'Z#gamma')
 styleDict['WJetsToLNu']         = (2, r.kAzure-3, 1001, 1, 'W+jets')
 styleDict['WJets']              = (2, r.kAzure-3, 1001, 1, 'W+jets')
+styleDict['W1JetsToLNu']        = (2, r.kAzure-4, 1001, 1, 'W+1 jet')
+styleDict['W2JetsToLNu']        = (2, r.kAzure+3, 1001, 1, 'W+2 jet')
+styleDict['W3JetsToLNu']        = (2, r.kAzure-2, 1001, 1, 'W+3 jet')
+styleDict['W4JetsToLNu']        = (2, r.kAzure+1, 1001, 1, 'W+4 jet')
 styleDict['WbbToLNu']           = (2, r.kAzure-2, 1001, 1, 'W+bb')
 styleDict['WG']                 = (0, r.kAzure-1, 1001, 1, 'W#rightarrow l#nu#gamma')
 styleDict['WGstar']             = (0, r.kAzure-1, 1001, 1, 'WG*')
@@ -186,11 +190,11 @@ scaleDict['2011']['Fakes']              = 1.
 scaleDict['2011']['QFlips']             = 1.
 
 ### 2012 x-sections
-scaleDict['2012']['WJetsToLNu']         = 36257.2
-scaleDict['2012']['W1JetsToLNu']        = 17754.
-scaleDict['2012']['W2JetsToLNu']        = 10744.
-scaleDict['2012']['W3JetsToLNu']        = 6432.
-scaleDict['2012']['W4JetsToLNu']        = 3747.
+scaleDict['2012']['WJetsToLNu']         = 36257.
+scaleDict['2012']['W1JetsToLNu']        = 0.5*17754.
+scaleDict['2012']['W2JetsToLNu']        = 0.5*10744.
+scaleDict['2012']['W3JetsToLNu']        = 0.5*6432.
+scaleDict['2012']['W4JetsToLNu']        = 0.5*3747.
 scaleDict['2012']['WbbToLNu']           = 39.9 
 scaleDict['2012']['WG']                 = 461.6 # Find the right number for this
 scaleDict['2012']['WGStarLNu2E']        = 5.873
@@ -226,7 +230,7 @@ scaleDict['2012']['WZZ']                = 0.0192
 scaleDict['2012']['ZZZ']                = 0.0046
 scaleDict['2012']['WWG']                = 0.528
 
-scaleDict['2012']['QCD_20_MU']          = 134680./2.
+scaleDict['2012']['QCD_20_MU']          = 134680.*0.7
 scaleDict['2012']['QCD_20-30_EM']       = 2920632.
 scaleDict['2012']['QCD_30-80_EM']       = 4615893.
 scaleDict['2012']['QCD_80-170_EM']      = 183722
@@ -325,17 +329,18 @@ combineDict['higgs']            = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToW
 combineDict['AIC']              = ['eeeAIC', 'eemuAIC', 'emumuAIC', 'mumumuAIC']
 combineDict['AIC_BG']           = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'muFakes', 'eFakes', 'llFakes']
 combineDict['Fakes']            = ['eFakes', 'muFakes', 'llFakes']
-#combineDict['PROMPT']           = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarHad', 'ttbarLep', 'tbarW', 'tW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'WbbToLNu', 'WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
 combineDict['Remove_ss']        = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarLep']#, 'tW', 'tbarW', 'WWJets2L2Nu', 'ZZJets2L2Nu', 'ZZJets2L2Q']
 combineDict['Remove_3l']        = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']#, 'ttZ', 'ttW', 'WWW', 'WWZ', 'WZZ', 'ZZZ']
 #combineDict['Irreducible']      = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125', 'WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ']#, 'WWG']
 combineDict['Irreducible']      = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ']#, 'WWG']
 combineDict['Rare']             = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ', 'WmWmqq', 'WpWpqq', 'WWDPS', 'TBZ']#, 'WWG']
 combineDict['PROMPT']           = [
-                                   #'ZJets_M-50', 'ZJets_M-10To50'#, 'WJets', 
-                                   'ttbarLep', 'ttbarSemilep', #'tbarW', 'tW', 
-                                   'WZJets3LNu', #'WWJets2L2Nu', 'ZZJets2L2Nu', 'WZJets2L2Q', 'ZZJets2L2Q',
-                                   #'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'
+                                   #'ZJets_M-50', 'ZJets_M-10To50',
+                                   'W1JetsToLNu', 'W2JetsToLNu', 'W3JetsToLNu', 'W4JetsToLNu', 
+                                   'ttbarLep', 'ttbarSemilep', 
+                                   'WZJets3LNu', 
+                                   'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 
+                                   'ttZ', 'ttW', 'ttG'
                                    ]
 
 combineDict['DATA_FAKES']       = combineDict['DATA']

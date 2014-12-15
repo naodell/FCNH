@@ -34,10 +34,11 @@ doRatio     = False
 
 ### Samples to be included in stacks ###
 samples = {}
-samples['inclusive']    = ['ZJets', 'ttbar', 'WJets', 'WZJets3LNu', 'QCD']
-samples['ZPlusJet']     = ['WZJets3LNu', 'ZJets', 'WJets']
+samples['inclusive']    = ['Rare', 'ZJets', 'ttbar', 'WJets', 'WZJets3LNu', 'QCD']
+samples['ZPlusJet']     = ['Rare', 'WZJets3LNu', 'ZJets', 'WJets']
 samples['QCD2l']        = ['ZJets', 'WJets', 'QCD']
-samples['SameSign']     = ['WZJets3LNu', 'ttbar', 'ZJets', 'WJets', 'QCD']
+samples['SameSign']     = ['Rare', 'WZJets3LNu', 'ttbar', 'ZJets', 'WJets', 'QCD']
+#samples['SameSign']     = ['WZJets3LNu', 'ttbar', 'ZJets', 'W1JetsToLNu', 'W2JetsToLNu', 'W3JetsToLNu', 'W4JetsToLNu']
 
 if doPlots:
 

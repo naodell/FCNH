@@ -12,37 +12,38 @@ else:
     print 'You forgot to specify what file to run over.'
     exit()
 
+doCombination = False
+
 inFile  = 'fakeEstimator/histos/{0}.root'.format(batch)
 outFile = 'data/fakeRates_TEST.root'
 
-#datasets = ['DATA']
-datasets = ['ttbarHad', 'ttbarSemilep', 'ttbarLep', 'ZJets_M-50', 'WJets', 'QCD']
-bgType = ''#PROMPT'
+datasets = ['DATA']
+bgType = 'PROMPT'
+
+#datasets = ['QCD']#'ttbarHad', 'ttbarSemilep', 'ttbarLep', 'ZJets_M-50', 'WJets', 'QCD']
+#bgType = ''
 
 fakeCategories = []
 fakeCategories.append('QCD2l')
 fakeCategories.append('ZPlusJet')
-fakeCategories.append('MC_truth')
+#fakeCategories.append('SameSign')
+#fakeCategories.append('MC_truth')
 
 ratioMaker = RatioMaker(inFile, outFile, scale = 19.7)
 
-if bgType == '':
-    ratioMaker.get_scale_factors([bgType], corrected = False)
+ratioMaker.get_scale_factors(datasets + [bgType], corrected = False)
 
 fakeDict1D = {
     'MuonFakePt':('MuNumerPt', 'MuDenomPt'),
     'MuonFakePtLowJet':('MuNumerPtLowJet', 'MuDenomPtLowJet'),
     'MuonFakePtHighJet':('MuNumerPtHighJet', 'MuDenomPtHighJet'),
-    #'MuonFakeJetMult':('MuNumerJetMult', 'MuDenomJetMult'),
-    #'MuonFakeEta':('MuNumerEta', 'MuDenomEta'),
-    #'MuonFakeEtaLowJet':('MuNumerEtaLowJet', 'MuDenomEtaLowJet'),
-    #'MuonFakeEtaHighJet':('MuNumerEtaHighJet', 'MuDenomEtaHighJet'),
-    #'MuonFakeEta':('MuNumerEta', 'MuDenomEta'),
+    'MuonFakeEta':('MuNumerEta', 'MuDenomEta'),
     #'MuonFakeMet':('MuNumerMet', 'MuDenomMet'),
+    #'MuonFakeJetMult':('MuNumerJetMult', 'MuDenomJetMult'),
     'ElectronFakePt':('EleNumerPt', 'EleDenomPt'),
-    #'ElectronFakePtLowJet':('EleNumerPtLowJet', 'EleDenomPtLowJet'),
-    #'ElectronFakePtHighJet':('EleNumerPtHighJet', 'EleDenomPtHighJet'),
-    #'ElectronFakeEta':('EleNumerEta', 'EleDenomEta'),
+    'ElectronFakePtLowJet':('EleNumerPtLowJet', 'EleDenomPtLowJet'),
+    'ElectronFakePtHighJet':('EleNumerPtHighJet', 'EleDenomPtHighJet'),
+    'ElectronFakeEta':('EleNumerEta', 'EleDenomEta'),
     #'ElectronFakeMet':('EleNumerMet', 'EleDenomMet'),
 }
 
@@ -60,13 +61,13 @@ for category in fakeCategories:
         ratioMaker.set_ratio_1D(fakeDict1D)
         ratioMaker.make_1D_ratios(dataset, bgType)
 
-        ratioMaker.set_ratio_2D(fakeDict2D)
+        #ratioMaker.set_ratio_2D(fakeDict2D)
         #ratioMaker.make_2D_ratios(dataset, bgType, doProjections = True)
 
 ratioMaker.write_outfile()
 
 # Combined fakeCategory rates
-if False:
+if doCombination:
     fTest = r.TFile('data/fakeRates_TEST.root', 'UPDATE')
     fTest.mkdir('Combined')
     fTest.cd('Combined')

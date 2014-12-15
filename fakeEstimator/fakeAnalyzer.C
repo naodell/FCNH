@@ -19,7 +19,6 @@ const float muPtCut[]   = {10., 3.};
 const float elePtCut[]  = {10., 10.};
 const float phoPtCut[]  = {10., 10.};
 
-
 unsigned  nMetBins      = 10;
 unsigned  nPtBins       = 10;
 float     metBins[]     = {0., 10., 20., 30., 40., 50., 60., 70., 80., 100., 300.}; 
@@ -53,7 +52,7 @@ void fakeAnalyzer::Begin(TTree* tree)
     // Initialize utilities and selectors here //
     selector        = new Selector(muPtCut, elePtCut, jetPtCut, phoPtCut);
     weighter        = new WeightUtils(suffix, period, selection, isRealData);
-    triggerSelector = new TriggerSelector(selection, "2012", *triggerNames, false, true);
+    triggerSelector = new TriggerSelector(selection, "2012", *triggerNames, true, true);
 
     // Add single lepton triggers for fake rates //
     vstring triggers;
@@ -73,7 +72,7 @@ void fakeAnalyzer::Begin(TTree* tree)
         triggers.push_back("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
         triggers.push_back("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
     }
-    triggerSelector->AddTriggers(triggers);
+    //triggerSelector->AddTriggers(triggers);
 
     // Random numbers! //
     //rnGenerator = new TRandom3();
@@ -747,9 +746,12 @@ void fakeAnalyzer::FillDenominatorHists(TCPhysObject& probe, vector<TCJet>& jets
         lepType = "Ele";
 
     vector<TCJet> cleanJets;
+    float HT = 0.;
     for (unsigned i = 0; i < jets.size(); ++i) {
-        if (jets[i].DeltaR(probe) > 0.5) 
+        if (jets[i].DeltaR(probe) > 0.5) {
             cleanJets.push_back(jets[i]);
+            HT += jets[i].Pt();
+        }
     }
 
     histManager->Fill1DHist(tag.Pt(),
@@ -814,19 +816,7 @@ void fakeAnalyzer::FillDenominatorHists(TCPhysObject& probe, vector<TCJet>& jets
                 "h1_" + lepType + "DenomJetMult", "jet multiplicity; N_{jets}; Entries / bin", 10, -0.5, 9.5);
         
         //Bin fake rates by jet multiplicity
-        if (cleanJets.size() < 2) {
-            histManager->Fill1DHist(probe.IdMap("IsoRel")*probe.Pt(),
-                    "h1_" + lepType + "DenomIsoLowJet", "probe lepton Iso (N_{jets} < 2);Iso;Entries", 40, 0., 120);
-            histManager->Fill1DHistUnevenBins(probe.Pt(),
-                    "h1_" + lepType + "DenomPtLowJet", "probe lepton p_{T} (N_{jets} < 2);p_{T};Entries / bin", nPtBins, ptBins);
-            if (probe.Type() == "muon") {
-                histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
-                        "h1_" + lepType + "DenomEtaLowJet", "probe muon #eta;#eta;Entries / bin", 2, etaBinsMu);
-            } else if (probe.Type() == "electron") {
-                histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
-                        "h1_" + lepType + "DenomEtaLowJet", "probe electron #eta;#eta;Entries / bin", 3, etaBinsEle);
-            }
-        } else {
+        if (cleanJets.size() < 2 && recoMET->Mod() > 40. && HT > 100.) {
             histManager->Fill1DHist(probe.IdMap("IsoRel")*probe.Pt(),
                     "h1_" + lepType + "DenomIsoHighJet", "probe lepton Iso (N_{jets} #geq 2);Iso;Entries", 40, 0., 120);
             histManager->Fill1DHistUnevenBins(probe.Pt(),
@@ -837,6 +827,18 @@ void fakeAnalyzer::FillDenominatorHists(TCPhysObject& probe, vector<TCJet>& jets
             } else if (probe.Type() == "electron") {
                 histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
                         "h1_" + lepType + "DenomEtaHighJet", "probe electron #eta;#eta;Entries / bin", 3, etaBinsEle);
+            }
+        } else {
+            histManager->Fill1DHist(probe.IdMap("IsoRel")*probe.Pt(),
+                    "h1_" + lepType + "DenomIsoLowJet", "probe lepton Iso (N_{jets} < 2);Iso;Entries", 40, 0., 120);
+            histManager->Fill1DHistUnevenBins(probe.Pt(),
+                    "h1_" + lepType + "DenomPtLowJet", "probe lepton p_{T} (N_{jets} < 2);p_{T};Entries / bin", nPtBins, ptBins);
+            if (probe.Type() == "muon") {
+                histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
+                        "h1_" + lepType + "DenomEtaLowJet", "probe muon #eta;#eta;Entries / bin", 2, etaBinsMu);
+            } else if (probe.Type() == "electron") {
+                histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
+                        "h1_" + lepType + "DenomEtaLowJet", "probe electron #eta;#eta;Entries / bin", 3, etaBinsEle);
             }
         }
     }
@@ -851,9 +853,12 @@ void fakeAnalyzer::FillNumeratorHists(TCPhysObject& probe, vector<TCJet>& jets)
         lepType = "Ele";
 
     vector<TCJet> cleanJets;
+    float HT = 0.;
     for (unsigned i = 0; i < jets.size(); ++i) {
-        if (jets[i].DeltaR(probe) > 0.5) 
+        if (jets[i].DeltaR(probe) > 0.5) {
             cleanJets.push_back(jets[i]);
+            HT += jets[i].Pt();
+        }
     }
 
     histManager->Fill1DHist((tag + probe).M(),
@@ -893,23 +898,11 @@ void fakeAnalyzer::FillNumeratorHists(TCPhysObject& probe, vector<TCJet>& jets)
                 "h1_" + lepType + "NumerJetMult", "jet multiplicity; N_{jets}; Entries / bin", 10, -0.5, 9.5);
 
         //Bin fake rates by jet multiplicity
-        if (cleanJets.size() < 2) {
+        if (cleanJets.size() < 2 && recoMET->Mod() > 40. && HT > 100.) {
             histManager->Fill1DHist(probe.IdMap("IsoRel")*probe.Pt(),
-                    "h1_" + lepType + "NumerIsoLowJet", "pass lepton Iso (N_{jets} < 2);Iso;Entries", 40, 0., 120);
+                    "h1_" + lepType + "NumerIsoHighJet", "probe lepton Iso (N_{jets} #geq 2);Iso;Entries", 40, 0., 120);
             histManager->Fill1DHistUnevenBins(probe.Pt(),
-                    "h1_" + lepType + "NumerPtLowJet", "pass lepton p_{T} (N_{jets} < 2);p_{T};Entries / bin", nPtBins, ptBins);
-            if (probe.Type() == "muon") {
-                histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
-                        "h1_" + lepType + "NumerEtaLowJet", "probe muon #eta;#eta;Entries / bin", 2, etaBinsMu);
-            } else if (probe.Type() == "electron") {
-                histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
-                        "h1_" + lepType + "NumerEtaLowJet", "probe electron #eta;#eta;Entries / bin", 3, etaBinsEle);
-            }
-        } else {
-            histManager->Fill1DHist(probe.IdMap("IsoRel")*probe.Pt(),
-                    "h1_" + lepType + "NumerIsoHighJet", "pass lepton Iso (N_{jets} #geq 2);Iso;Entries", 40, 0., 120);
-            histManager->Fill1DHistUnevenBins(probe.Pt(),
-                    "h1_" + lepType + "NumerPtHighJet", "pass lepton p_{T} (N_{jets} #geq 2);p_{T};Entries / bin", nPtBins, ptBins);
+                    "h1_" + lepType + "NumerPtHighJet", "probe lepton p_{T} (N_{jets} #geq 2);p_{T};Entries / bin", nPtBins, ptBins);
             if (probe.Type() == "muon") {
                 histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
                         "h1_" + lepType + "NumerEtaHighJet", "probe muon #eta;#eta;Entries / bin", 2, etaBinsMu);
@@ -917,8 +910,19 @@ void fakeAnalyzer::FillNumeratorHists(TCPhysObject& probe, vector<TCJet>& jets)
                 histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
                         "h1_" + lepType + "NumerEtaHighJet", "probe electron #eta;#eta;Entries / bin", 3, etaBinsEle);
             }
+        } else {
+            histManager->Fill1DHist(probe.IdMap("IsoRel")*probe.Pt(),
+                    "h1_" + lepType + "NumerIsoLowJet", "probe lepton Iso (N_{jets} < 2);Iso;Entries", 40, 0., 120);
+            histManager->Fill1DHistUnevenBins(probe.Pt(),
+                    "h1_" + lepType + "NumerPtLowJet", "probe lepton p_{T} (N_{jets} < 2);p_{T};Entries / bin", nPtBins, ptBins);
+            if (probe.Type() == "muon") {
+                histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
+                        "h1_" + lepType + "NumerEtaLowJet", "probe muon #eta;#eta;Entries / bin", 2, etaBinsMu);
+            } else if (probe.Type() == "electron") {
+                histManager->Fill1DHistUnevenBins(fabs(probe.Eta()),
+                        "h1_" + lepType + "NumerEtaLowJet", "probe electron #eta;#eta;Entries / bin", 3, etaBinsEle);
+            }
         }
-
     }
 }
 

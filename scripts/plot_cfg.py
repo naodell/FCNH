@@ -28,8 +28,6 @@ cutList     = ['1_preselection']
 cutList.extend(['2_Z_veto', '3_2jet', '4_MET'])#, '.', 'CR_WZ', 'CR_SUSY', '5_BDT'])
 #cutList.extend(['.', '.', '.', 'X_0jet', 'X_1jet'])
 
-crList      = []#'CR_WZ', 'CR_SUSY', 'CR_ZFake']
-
 period      = '2012'
 LUMIDATA    = 19.712 
 
@@ -421,113 +419,6 @@ if doPlots:
 
     doLog = False
 
-    ### WZ control region
-    if 'CR_WZ' in crList:
-        wz_plotter = copy.deepcopy(plotter)
-        wz_plotter.add_datasets(samples['WZ'], Clear=True)
-        wz_plotter._overlayList = ['DATA']
-
-        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 7, period, batch)
-
-        if doLog:
-            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'CR_WZ')
-        else:
-            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'CR_WZ')
-
-        wz_plotter.make_save_path(outFile, clean=True)
-
-        for category in cat3l:
-            p_plot.append(Process(name = 'CR_WZ/' + category, target = plotter_wrapper, args=(wz_plotter, category, inFile, outFile, do1D, False, False, doLog, doRatio, False, False)))
-
-    ### ttbar control region
-    if 'CR_ttbar' in crList:
-        ttbar_plotter = copy.deepcopy(plotter)
-        ttbar_plotter.add_datasets(samples['ttbar'],  Clear=True)
-        ttbar_plotter._overlayList = ['DATA']
-
-        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 8, period, batch)
-
-        if doLog:
-            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'CR_ttbar')
-        else:
-            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'CR_ttbar')
-
-        ttbar_plotter.make_save_path(outFile, clean=True)
-
-        p_plot.append(Process(name = 'CR_ttbar/os_emu', target = plotter_wrapper, args=(ttbar_plotter, 'os_emu', inFile, outFile, do1D, False, False, doLog, doRatio, False, False)))
-
-    doLog = True
-
-    ### ZPlusFake control region
-    if 'CR_ZFake' in crList:
-        ZFake_plotter = copy.deepcopy(plotter)
-        ZFake_plotter.add_datasets(samples['ZFake'],  Clear=True)
-        ZFake_plotter._overlayList = ['DATA']
-
-        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 9, period, batch)
-
-        if doLog:
-            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'CR_ZFake')
-        else:
-            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'CR_ZFake')
-
-        ZFake_plotter.make_save_path(outFile, clean=True)
-
-        for category in cat3l:
-            p_plot.append(Process(name = 'CR_ZFake/' + category, target = plotter_wrapper, args=(ZFake_plotter, category, inFile, outFile, do1D, False, False, doLog, doRatio, False, False)))
-    
-    ### low delta eta ss control region
-    if 'high_mass_ss' in crList:
-        hm_plotter = copy.deepcopy(plotter)
-        hm_plotter.add_datasets(samples['ss'],  Clear=True)
-        hm_plotter._overlayList = ['DATA']
-
-        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 9, period, batch)
-
-        if doLog:
-            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'high_mass_ss')
-        else:
-            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'high_mass_ss')
-
-        hm_plotter.make_save_path(outFile, clean=True)
-
-        for category in catSS:
-            p_plot.append(Process(name = 'high_mass_ss/' + category, target = plotter_wrapper, args=(hm_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False, False)))
-
-    ### low delta eta ss control region
-    if 'low_mass_ss' in crList:
-        lm_plotter = copy.deepcopy(plotter)
-        lm_plotter.add_datasets(samples['ss'],  Clear=True)
-        lm_plotter._overlayList = ['DATA']
-
-        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 10, period, batch)
-
-        if doLog:
-            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'low_mass_ss')
-        else:
-            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'low_mass_ss')
-
-        lm_plotter.make_save_path(outFile, clean=True)
-
-        for category in catSS:
-            p_plot.append(Process(name = 'high_mass_ss/' + category, target = plotter_wrapper, args=(lm_plotter, category, inFile, outFile, do1D, False, doLog, doRatio, False, False)))
-
-    ### low delta eta ss control region
-    if 'barrel_leptons' in crList:
-        bl_plotter = copy.deepcopy(plotter)
-        bl_plotter.add_datasets(samples['ss'],  Clear=True)
-        bl_plotter._overlayList = ['DATA']
-
-        inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 11, period, batch)
-
-        if doLog:
-            outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, 'barrel_leptons')
-        else:
-            outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, 'barrel_leptons')
-
-        bl_plotter.make_save_path(outFile, clean=True)
-
-
 ### End of configuration for PlotProducer ###
 
 for process in p_plot:
@@ -598,31 +489,19 @@ if doYields:
             histDict = yieldTable.get_hist_dict('YieldByCut')
             yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
 
-    crCats = {'CR_WZ':'3l_inclusive', 'CR_ttbar':'os_emu', 'CR_ttZ':'3l_inclusive'}
-    for i,CR in enumerate(crList):
-        if CR[:2] != 'CR' or CR == 'CR_ZFake': continue
+    if True: ## Adding WZ high jet check
 
-        yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, i+5, period, batch))
-        yieldTable._columnList  = samples[CR[3:]] + ['BG', 'DATA']
+        yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 6, period, batch))
+        yieldTable._columnList  = samples['3l_inclusive'] + ['BG', 'DATA']
 
-        yieldTable.add_datasets(samples[CR[3:]], Clear = True)
+        yieldTable.add_datasets(samples['3l_inclusive'], Clear = True)
         yieldTable.add_datasets('DATA')
 
-        yieldTable._rowList = ['preselection'] + (4+i)*['.'] + [CR[3:]]
+        yieldTable._rowList = ['{0} jet'.format(i+1) for i in range(5)]
 
-        yieldTable._category = crCats[CR]
-        histDict = yieldTable.get_hist_dict('YieldByCut')
-        yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 6)
-
-    ### Special case for ZZ->4l control region ###
-    #yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut1_{1}_{2}.root'.format(selection, period, batch))
-    #yieldTable.add_datasets(['ZZ4l', 'DATA'], Clear = True)
-    #yieldTable._columnList  = ['ZZ4l'] + ['BG', 'DATA']
-    #yieldTable._rowList = 8*['.'] + ['ZZ4l']
-
-    #yieldTable._category = 'inclusive'
-    #histDict = yieldTable.get_hist_dict('YieldByCut')
-    #yieldTable.print_table(histDict, doErrors = False, doEff = False, startBin = 6)
+        yieldTable._category = 'CR_WZ'
+        histDict = yieldTable.get_hist_dict('AllJetMult')
+        yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
 
     tableFile.close()
 

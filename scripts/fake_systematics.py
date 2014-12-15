@@ -5,8 +5,8 @@ import ROOT as r
 import PlotProducer as pp
 
 paramFile   = open('scripts/fcncParams.pkl', 'rb')
-scales      = pickle.load(paramFile)
 styles      = pickle.load(paramFile)
+scales      = pickle.load(paramFile)
 combos      = pickle.load(paramFile)
 
 def FakeInfo():
@@ -160,7 +160,7 @@ if __name__ == '__main__':
     ### Check dependency of fake rate on jet multiplicity
     lepType     = 'Muon' # 'Muon' or 'Electron'
     dataFile    = r.TFile('data/fakeRates.root', 'OPEN')
-    mcFile      = r.TFile('data/fakeRates_TEST.root', 'OPEN')
+    mcFile      = r.TFile('data/fakeRates_MC.root', 'OPEN')
     datasets    = ['ZJets', 'ttbar', 'QCD', 'WJets']
 
     for dataset in datasets:
