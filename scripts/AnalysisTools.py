@@ -3,10 +3,9 @@ from math import *
 import ROOT as r
 
 paramFile   = open('scripts/fcncParams.pkl', 'rb')
-scales      = pickle.load(paramFile)
 styles      = pickle.load(paramFile)
+scales      = pickle.load(paramFile)
 combos      = pickle.load(paramFile)
-removes     = pickle.load(paramFile)
 categories  = pickle.load(paramFile)
 systematics = pickle.load(paramFile)
 
@@ -43,8 +42,6 @@ class AnalysisTools():
         self._scaleDict     = scales
         self._styleDict     = styles
         self._combineDict   = combos
-        self._cleanDict     = removes
-        self._cleanFakes    = True
         self._category      = ''
         self._datasets      = []
 
@@ -59,9 +56,6 @@ class AnalysisTools():
 
     def set_period(self, period):
         self._period = period
-
-    def set_clean_fakes(self, doClean):
-        self._cleanFakes = doClean
 
     def set_rebin_factor(self, factor):
         self._rebinFactor = factor
@@ -125,7 +119,6 @@ class AnalysisTools():
             if dataName in self._combineDict:
                 print dataName, ':\t',
                 for data in self._combineDict[dataName]:
-                    print data,
 
                     if not self._histFile.GetDirectory('inclusive/' + data):
                         print '\nCould not find {0} in root file!'.format(data)
@@ -139,15 +132,19 @@ class AnalysisTools():
 
                         nInit = nInit - (nRaw - nWeighted)
 
-                    self._scaleDict[self._period][data] = 1e3*self._scaleDict[self._period][data]/nInit 
+                    newScale = 1e3*self._scaleDict[self._period][data]/nInit 
+                    self._scaleDict[self._period][data] = newScale 
+
+                    print '{0} ({1:.2f})'.format(data, newScale),
 
             else:
                 if dataName in self._scaleDict[self._period]:
-                    print dataName,
 
                     if not self._histFile.GetDirectory('inclusive/' + dataName):
+                        print ''
                         print '\nCould not find {0} in root file!'.format(dataName)
                         continue
+
 
                     yieldHist = self._histFile.GetDirectory('inclusive/' + dataName).Get('h1_YieldByCut')
                     nInit       = yieldHist.GetBinContent(1)
@@ -158,13 +155,16 @@ class AnalysisTools():
 
                         nInit = nInit - (nRaw - nWeighted)
 
+                    newScale = 1e3*self._scaleDict[self._period][dataName]/nInit 
+                    self._scaleDict[self._period][dataName] = newScale
 
-                    self._scaleDict[self._period][dataName] = 1e3*self._scaleDict[self._period][dataName]/nInit 
+                    print '{0} ({1:.2f})'.format(dataName, newScale),
 
-            else:
-                print '{0} not found in scale dictionary; setting to 0'.format(dataName)
-                self._scaleDict[self._period][dataName] = 0.
-                continue
+                else:
+                    print ''
+                    print '{0} not found in scale dictionary; setting to 0'.format(dataName)
+                    self._scaleDict[self._period][dataName] = 0.
+                    continue
 
             print ''
         print '\n'
@@ -238,15 +238,6 @@ class AnalysisTools():
                 for data in self._combineDict['Fakes']:
                     hist = self.get_hist(var, data, histType)
 
-                    if self._cleanFakes and hist:
-                        for mc in self._combineDict['Remove_{0}'.format(self._category.split('_')[0])]:
-                            mc_hist = self.get_hist(var, data + '_' + mc, histType)
-                            if mc_hist is None:
-                                continue
-                            else:
-                                hist.Add(mc_hist, -1.)
-                                #bin_by_bin_hist_addition(outHist, mc_hist, -1.)
-
                     if not outHist:
                         outHist = hist
                     elif hist:
@@ -254,15 +245,6 @@ class AnalysisTools():
 
             elif dataName in fakeCats: # fakes from data
                 outHist = self.get_hist(var, dataName, histType)
-                if self._cleanFakes and outHist:
-                    for mc in self._combineDict['Remove_{0}'.format(self._category.split('_')[0])]:
-                        mc_hist = self.get_hist(var, dataName + '_' + mc, histType)
-
-                        if not mc_hist:
-                            continue
-                        elif mc_hist:
-                            outHist.Add(mc_hist, -1.)
-                            #bin_by_bin_hist_addition(outHist, mc_hist, -1.)
 
             else: # MC fakes
                 if dataName.split('_')[1] not in self._combineDict:
@@ -282,20 +264,11 @@ class AnalysisTools():
             else:
                 for data in self._combineDict[dataName]:
                     hist = self.get_hist(var, data, histType)
-
+                    
                     if outHist is None and hist is not None:
                         outHist = hist
                     elif hist is not None:
                         outHist.Add(hist, 1)
-
-            if dataName in self._cleanDict:
-                for data in self._cleanDict[dataName]:
-                    hist = self.get_hist(var, data, histType)
-
-                    if outHist is None and hist is not None:
-                        outHist = hist
-                    elif hist is not None:
-                        outHist.Add(hist, -1.)
 
         return outHist
 

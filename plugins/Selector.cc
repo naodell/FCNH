@@ -451,7 +451,7 @@ void Selector::ElectronSelector(TClonesArray* electrons)
         if (ElectronLooseID(thisElec)) {
             _selElectrons["loose_id"].push_back(*thisElec);
 
-            if ((eleISO < 1. && !(eleISO > 0.15 && eleISO < 0.2))) {
+            if (eleISO_uncorr < 1. && !(eleISO_uncorr > 0.15 && eleISO_uncorr < 0.2)) {
                 _selElectrons["probe"].push_back(*thisElec);
             }
 

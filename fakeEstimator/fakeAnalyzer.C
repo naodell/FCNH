@@ -53,17 +53,17 @@ void fakeAnalyzer::Begin(TTree* tree)
     // Initialize utilities and selectors here //
     selector        = new Selector(muPtCut, elePtCut, jetPtCut, phoPtCut);
     weighter        = new WeightUtils(suffix, period, selection, isRealData);
-    triggerSelector = new TriggerSelector(selection, "2012", *triggerNames, true, true);
+    triggerSelector = new TriggerSelector(selection, "2012", *triggerNames, false, true);
 
     // Add single lepton triggers for fake rates //
     vstring triggers;
     if (selection == "muon") {
-        //triggers.push_back("HLT_Mu17_Mu8_v");
-        //triggers.push_back("HLT_Mu17_TkMu8_v");
+        triggers.push_back("HLT_Mu17_Mu8_v");
+        triggers.push_back("HLT_Mu17_TkMu8_v");
         triggers.push_back("HLT_Mu8_v");
         triggers.push_back("HLT_Mu17_v");
     } else if (selection == "electron") {
-        //triggers.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+        triggers.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
         triggers.push_back("HLT_Ele8_CaloIdT_TrkIdVL_v");
         triggers.push_back("HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
         triggers.push_back("HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v");
@@ -73,7 +73,7 @@ void fakeAnalyzer::Begin(TTree* tree)
         triggers.push_back("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
         triggers.push_back("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
     }
-    //triggerSelector->AddTriggers(triggers);
+    triggerSelector->AddTriggers(triggers);
 
     // Random numbers! //
     //rnGenerator = new TRandom3();
@@ -339,7 +339,6 @@ bool fakeAnalyzer::Process(Long64_t entry)
                     cleanJets.push_back(jets[i]);
             }
 
-
             if (isQCD2l.test(1)) {
                 FillJetHists(eleProbe, cleanJets, "inclusive");
                 FillDenominatorHists(eleProbe, cleanJets);
@@ -520,6 +519,39 @@ bool fakeAnalyzer::Process(Long64_t entry)
                 }
             }
         }     
+
+        if (electronsNoIso.size() == 2 && muons.size() == 0) {
+            if (
+                    electronsNoIso[0].IdMap("IsoRel") < 0.1 
+                    && electronsNoIso[1].IdMap("IsoRel") < 1. && !(electronsNoIso[1].IdMap("IsoRel") > 0.1 && electronsNoIso[1].IdMap("IsoRel") < 0.2)
+                    && electronsNoIso[0].DeltaR(electronsNoIso[1]) > 0.5
+                    && electronsNoIso[0].Charge() == electronsNoIso[1].Charge()
+               ) {
+
+                tag = electronsNoIso[0];
+                unsigned nEleProbes = 1;
+                TCElectron eleProbe = electronsNoIso[1];
+
+                // Make jet collection which does not include tag
+                vector<TCJet> cleanJets;
+                for (unsigned i = 0; i < jets.size(); ++i) {
+                    if (jets[i].DeltaR(tag) > 0.5) 
+                        cleanJets.push_back(jets[i]);
+                }
+
+                if (nEleProbes == 1) {
+                    FillJetHists(eleProbe, cleanJets, "inclusive");
+                    FillDenominatorHists(eleProbe, cleanJets);
+                    if (eleProbe.IdMap("IsoRel") < 0.12) {
+                        FillJetHists(eleProbe, cleanJets, "tight");
+                        FillNumeratorHists(eleProbe, cleanJets);
+                    } else if (eleProbe.IdMap("IsoRel") > 0.2) {
+                        FillJetHists(eleProbe, cleanJets, "fail");
+                        FillClosureHists(eleProbe, cleanJets);
+                    }
+                }
+            }
+        }     
     }
 
     if (doMCTruth && !isRealData) {
@@ -621,6 +653,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
                         FillClosureHists(fakeMuProbes[0], cleanJets);
                     }
                 }
+
                 if (nEleProbes == 1) {
                     tag = fakeEleProbes[0];
 

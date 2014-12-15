@@ -35,7 +35,7 @@ doRatio     = False
 ### Samples to be included in stacks ###
 samples = {}
 samples['inclusive']    = ['ZJets', 'ttbar', 'WJets', 'WZJets3LNu', 'QCD']
-samples['ZPlusJet']     = ['WZJets3LNu', 'ZJets']
+samples['ZPlusJet']     = ['WZJets3LNu', 'ZJets', 'WJets']
 samples['QCD2l']        = ['ZJets', 'WJets', 'QCD']
 samples['SameSign']     = ['WZJets3LNu', 'ttbar', 'ZJets', 'WJets', 'QCD']
 
@@ -50,7 +50,6 @@ if doPlots:
     plotter.set_period(period)
     plotter.set_output_type(plotType)
     plotter.set_save_path('plots/{0}/{1}_{2}_{3}/log'.format(currentDate, selection, batch, suffix))
-    plotter.set_clean_fakes(False)
 
     ### DATASETS ###
 
@@ -110,7 +109,7 @@ if doPlots:
     r.gROOT.ProcessLine('.L ./scripts/tdrStyle.C')
     r.setTDRStyle()
 
-    r.TGaxis.SetMaxDigits(3)
+    #r.TGaxis.SetMaxDigits(3)
     r.gStyle.SetOptStat(0)
 
     ### Categories to be plotted ###

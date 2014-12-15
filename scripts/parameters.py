@@ -332,7 +332,7 @@ combineDict['Remove_3l']        = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2
 combineDict['Irreducible']      = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ']#, 'WWG']
 combineDict['Rare']             = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ', 'WmWmqq', 'WpWpqq', 'WWDPS', 'TBZ']#, 'WWG']
 combineDict['PROMPT']           = [
-                                   'ZJets_M-50', 'ZJets_M-10To50', 'WJets', 
+                                   #'ZJets_M-50', 'ZJets_M-10To50'#, 'WJets', 
                                    'ttbarLep', 'ttbarSemilep', #'tbarW', 'tW', 
                                    'WZJets3LNu', #'WWJets2L2Nu', 'ZZJets2L2Nu', 'WZJets2L2Q', 'ZZJets2L2Q',
                                    #'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau'
@@ -342,12 +342,6 @@ combineDict['DATA_FAKES']       = combineDict['DATA']
 combineDict['PASS']             = combineDict['DATA']
 combineDict['FAKEABLE']         = combineDict['DATA']
 
-cleanDict = {}
-#cleanDict['AIC']                = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
-#cleanDict['DATA_FAKES']         = ['ZJets_M-50', 'ZJets_M-10To50', 'WJetsToLNu',
-#                                   'ttbarHad', 'ttbarLep', 'tbarW', 'tW',   
-#                                   'WWJets2L2Nu', 'ZZJets2L2Nu', 'WZJets2L2Q', 'WWJets2L2Q', 'WZJets3LNu', 
-#                                   'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']
 
 categoryDict = {'inclusive':'inclusive',
                 'ss_inclusive':'same-sign dilepton', 'ss_mumu':'#mu^{#pm}#mu^{#pm}', 'ss_ee':'e^{#pm}e^{#pm}', 'ss_emu':'e^{#pm}#mu^{#pm}',
@@ -444,10 +438,9 @@ systDict['3l_mumumu']['eFakes']         =  [0.,     0.005,  0.,   0.,      0.,  
 systDict['3l_mumumu']['llFakes']        =  [0.,     0.005,  0.,   0.,      0.,     0.,     0.,      0.,      0.2,     0.,      0.,      0.,    0.,   0.,    0.  ]
 
 paramFile = open('scripts/fcncParams.pkl', 'wb')
-pickle.dump(scaleDict, paramFile)
 pickle.dump(styleDict, paramFile)
+pickle.dump(scaleDict, paramFile)
 pickle.dump(combineDict, paramFile)
-pickle.dump(cleanDict, paramFile)
 pickle.dump(categoryDict, paramFile)
 pickle.dump(systDict, paramFile)
 paramFile.close()
