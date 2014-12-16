@@ -59,20 +59,20 @@ if period == '2012':
     ])
 
     bg.extend([
-        #cfg('ZJets_M-50',      '{0}/DYJetsToLL_M-50'.format(mcDir),            40,  'ZJets_M-50      {0}   2012'.format(mcTrigger)),
+        cfg('ZJets_M-50',      '{0}/DYJetsToLL_M-50'.format(mcDir),            40,  'ZJets_M-50      {0}   2012'.format(mcTrigger)),
         #cfg('ZJets_M-10To50',  '{0}/DYJetsToLL_M-10To50filter'.format(mcDir),  20,  'ZJets_M-10To50  {0}   2012'.format(mcTrigger)),
         #cfg('WbbToLNu',         '{0}/WbbJetsToLNu'.format(mcDir),               20,  'WbbToLNu        {0}   2012'.format(mcTrigger)),
         #cfg('WjetToLNu',        '{0}/WJetsToLNu'.format(mcDir),                 50,  'WJetsToLNu      {0}   2012'.format(mcTrigger)),
-        #cfg('W1JetToLNu',        '{0}/W1JetsToLNu'.format(mcDir),                 20,  'W1JetsToLNu      {0}   2012'.format(mcTrigger)),
-        #cfg('W2JetToLNu',        '{0}/W2JetsToLNu'.format(mcDir),                 20,  'W2JetsToLNu      {0}   2012'.format(mcTrigger)),
-        #cfg('W3JetToLNu',        '{0}/W3JetsToLNu'.format(mcDir),                 20,  'W3JetsToLNu      {0}   2012'.format(mcTrigger)),
-        #cfg('W4JetToLNu',        '{0}/W4JetsToLNu'.format(mcDir),                 20,  'W4JetsToLNu      {0}   2012'.format(mcTrigger)),
+        cfg('W1JetToLNu',        '{0}/W1JetsToLNu'.format(mcDir),                 20,  'W1JetsToLNu      {0}   2012'.format(mcTrigger)),
+        cfg('W2JetToLNu',        '{0}/W2JetsToLNu'.format(mcDir),                 20,  'W2JetsToLNu      {0}   2012'.format(mcTrigger)),
+        cfg('W3JetToLNu',        '{0}/W3JetsToLNu'.format(mcDir),                 20,  'W3JetsToLNu      {0}   2012'.format(mcTrigger)),
+        cfg('W4JetToLNu',        '{0}/W4JetsToLNu'.format(mcDir),                 20,  'W4JetsToLNu      {0}   2012'.format(mcTrigger)),
         #cfg('WGStarLNu2Mu',    '{0}/WGstarToLNu2Mu'.format(mcDir),             5,   'WGStarLNu2Mu    {0}   2012'.format(mcTrigger)),
         #cfg('WGStarLNu2Tau',   '{0}/WGstarToLNu2Tau'.format(mcDir),            5,   'WGStarLNu2Tau   {0}   2012'.format(mcTrigger)),
 
-        #cfg('ttbarHad',     '{0}/TTJets'.format(mcDir),   30,  'ttbarHad  {0}   2012'.format(mcTrigger)),
-        #cfg('ttbarSemilep', '{0}/TTJets'.format(mcDir),   30,  'ttbarSemilep  {0}   2012'.format(mcTrigger)),
-        #cfg('ttbarLep',     '{0}/TTJets'.format(mcDir),   30,  'ttbarLep  {0}   2012'.format(mcTrigger)),
+        cfg('ttbarHad',     '{0}/TTJets'.format(mcDir),   30,  'ttbarHad  {0}   2012'.format(mcTrigger)),
+        cfg('ttbarSemilep', '{0}/TTJets'.format(mcDir),   30,  'ttbarSemilep  {0}   2012'.format(mcTrigger)),
+        cfg('ttbarLep',     '{0}/TTJets'.format(mcDir),   30,  'ttbarLep  {0}   2012'.format(mcTrigger)),
         #cfg('tbarW',     '{0}/Tbar_tW'.format(mcDir),  10,  'tbarW     {0}   2012'.format(mcTrigger)),
         #cfg('tW',        '{0}/T_tW'.format(mcDir),     10,  'tW        {0}   2012'.format(mcTrigger)),
         #cfg('ttW',       '{0}/TTWJets'.format(mcDir),  5,   'ttW       {0}   2012'.format(mcTrigger)),

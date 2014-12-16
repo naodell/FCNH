@@ -36,7 +36,7 @@ doRatio     = False
 samples = {}
 samples['inclusive']    = ['Rare', 'ZJets', 'ttbar', 'WJets', 'WZJets3LNu', 'QCD']
 samples['ZPlusJet']     = ['Rare', 'WZJets3LNu', 'ZJets', 'WJets']
-samples['QCD2l']        = ['ZJets', 'WJets', 'QCD']
+samples['QCD2l']        = ['ZJets', 'WJets', 'QCD', 'ttbar']
 samples['SameSign']     = ['Rare', 'WZJets3LNu', 'ttbar', 'ZJets', 'WJets', 'QCD']
 #samples['SameSign']     = ['WZJets3LNu', 'ttbar', 'ZJets', 'W1JetsToLNu', 'W2JetsToLNu', 'W3JetsToLNu', 'W4JetsToLNu']
 
@@ -64,6 +64,8 @@ if doPlots:
                                            'MuProbeLepPt', 'MuProbeLepEta', 'MuProbeTransverseMass',
                                            'MuNumerPt', 'MuNumerEta', 'MuNumerMet', 'MuNumerIsoRel',
                                            'MuDenomPt', 'MuDenomEta', 'MuDenomMet', 'MuDenomIsoRel',
+                                           'MuNumerPtLowJet', 'MuNumerPtHighJet',
+                                           'MuDenomPtLowJet', 'MuDenomPtHighJet',
                                            'MuDenomIsoRelBin1', 'MuDenomIsoRelBin2',
                                            'MuFailLepPt', 'MuFailLepEta', 'MuFailTransverseMass', 
                                            'MuTagLepPt', 'MuTagLepEta', 'MuTagIsoRel', 'MuTagDz', 'MuTagDxy', 

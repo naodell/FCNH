@@ -17,17 +17,17 @@ doCombination = False
 inFile  = 'fakeEstimator/histos/{0}.root'.format(batch)
 outFile = 'data/fakeRates_TEST.root'
 
-datasets = ['DATA']
-bgType = 'PROMPT'
+#datasets = ['DATA']
+#bgType = 'PROMPT'
 
-#datasets = ['QCD']#'ttbarHad', 'ttbarSemilep', 'ttbarLep', 'ZJets_M-50', 'WJets', 'QCD']
-#bgType = ''
+datasets = ['QCD', 'ttbarHad', 'ttbarSemilep', 'ttbarLep', 'ZJets_M-50', 'WJets', 'QCD']
+bgType = ''
 
 fakeCategories = []
 fakeCategories.append('QCD2l')
 fakeCategories.append('ZPlusJet')
-#fakeCategories.append('SameSign')
-#fakeCategories.append('MC_truth')
+fakeCategories.append('SameSign')
+fakeCategories.append('MC_truth')
 
 ratioMaker = RatioMaker(inFile, outFile, scale = 19.7)
 

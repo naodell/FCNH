@@ -31,7 +31,7 @@ cutList.extend(['2_Z_veto', '3_2jet', '4_MET'])#, '.', 'CR_WZ', 'CR_SUSY', '5_BD
 period      = '2012'
 LUMIDATA    = 19.712 
 
-doPlots     = True
+doPlots     = False
 doYields    = True
 
 doLog       = False
@@ -42,10 +42,9 @@ doNorm      = True
 do1D        = True
 do2D        = True
 
-doInclusive = False
 doOS        = False
-doSS        = True
-do3l        = True
+doSS        = False
+do3l        = False
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive']
@@ -71,7 +70,7 @@ samples['all'].append('Rare')
 samples['all'].append('WZJets3LNu')
 #samples['all'].append('higgs')
 
-#samples['all'].append('ZJets')
+samples['all'].append('ZJets')
 #samples['all'].append('ttbar')
 #samples['all'].append('Diboson')
 #samples['all'].append('WJetsToLNu')
@@ -311,28 +310,6 @@ if doPlots:
     r.TGaxis.SetMaxDigits(3)
     r.gStyle.SetOptStat(0)
 
-
-    ### inclusive ###
-    if doInclusive:
-        inclusive_plotter = copy.deepcopy(plotter)
-        inclusive_plotter.add_datasets(samples['inclusive'], Clear=True)
-        inclusive_plotter._overlayList = ['DATA'] # overlaySamples
-
-        for i, cut in enumerate(cutList):
-            if cut == '.':
-                continue
-
-            inFile  = 'fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, str(i+1), period, batch)
-
-            if doLog:
-                outFile = 'plots/{0}/{1}_{2}_{3}/log/{4}'.format(currentDate, selection, batch, suffix, cut)
-            else:
-                outFile = 'plots/{0}/{1}_{2}_{3}/linear/{4}'.format(currentDate, selection, batch, suffix, cut)
-
-            inclusive_plotter.make_save_path(outFile, clean=True)
-            p_plot.append(Process(name = cut[2:] + '/inclusive', target = plotter_wrapper, args=(inclusive_plotter, 'inclusive', inFile, outFile, do1D, do2D, False, doLog, doRatio, False, False)))
-
-
     ### 3l selection ###
     if do3l:
         for category in cat3l:
@@ -433,11 +410,11 @@ print '\n'
 if doYields:
     ### Initialize table maker ###
     tableFile       = file('yields/.yields_tmp.tex', 'w')
-    yieldTable      = TableMaker('fcncAnalysis/combined_histos/{0}_cut1_{1}_{2}.root'.format(selection, period, batch), tableFile, scale = LUMIDATA, delimiter = '&', doSumBG = True)
+    yieldTable      = TableMaker('fcncAnalysis/combined_histos/{0}_cut1_{1}_{2}.root'.format(selection, period, batch), 
+                                    tableFile, scale = LUMIDATA, 
+                                    delimiter = '&', doSumBG = True)
     yieldTable.set_period(period)
-
     yieldTable.add_datasets(samples['all'], Clear = True)
-
     if not doPlots:
         #yieldTable.get_scale_factors()
         yieldTable.get_scale_factors(['FCNH'])
@@ -489,22 +466,23 @@ if doYields:
             histDict = yieldTable.get_hist_dict('YieldByCut')
             yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
 
-    if True: ## Adding WZ high jet check
+    if True: ## Adding WZ high N_jet check
 
         yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 6, period, batch))
+        yieldTable._rowList     = ['{0} jet'.format(i+1) for i in range(5)]
         yieldTable._columnList  = samples['3l_inclusive'] + ['BG', 'DATA']
 
+        yieldTable._category = '3l_inclusive'
         yieldTable.add_datasets(samples['3l_inclusive'], Clear = True)
         yieldTable.add_datasets('DATA')
 
-        yieldTable._rowList = ['{0} jet'.format(i+1) for i in range(5)]
-
-        yieldTable._category = 'CR_WZ'
         histDict = yieldTable.get_hist_dict('AllJetMult')
         yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
 
     tableFile.close()
 
+    savePath = 'plots/{0}/{1}_{2}_{3}'.format(currentDate, selection, batch, suffix)
+    yieldTable.make_save_path(savePath)
     subprocess.call('pdflatex -output-dir=yields yields/yields.tex', shell = True)
-    subprocess.call('cp yields/yields.pdf plots/{0}/{1}_{2}_{3}/.'.format(currentDate, selection, batch, suffix), shell = True)
-    subprocess.call('cp yields/.yields_tmp.tex plots/{0}/{1}_{2}_{3}/yields.tex'.format(currentDate, selection, batch, suffix), shell = True)
+    subprocess.call('cp yields/yields.pdf {0}/.'.format(savePath), shell = True)
+    subprocess.call('cp yields/.yields_tmp.tex {0}/yields.tex'.format(savePath), shell = True)
