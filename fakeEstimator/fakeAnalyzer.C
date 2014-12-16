@@ -541,7 +541,7 @@ bool fakeAnalyzer::Process(Long64_t entry)
                 if (nEleProbes == 1) {
                     FillJetHists(eleProbe, cleanJets, "inclusive");
                     FillDenominatorHists(eleProbe, cleanJets);
-                    if (eleProbe.IdMap("IsoRel") < 0.12) {
+                    if (eleProbe.IdMap("IsoRel") < 0.1) {
                         FillJetHists(eleProbe, cleanJets, "tight");
                         FillNumeratorHists(eleProbe, cleanJets);
                     } else if (eleProbe.IdMap("IsoRel") > 0.2) {

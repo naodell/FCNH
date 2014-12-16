@@ -164,6 +164,7 @@ if __name__ == '__main__':
     datasets    = ['ZJets', 'ttbar', 'QCD', 'WJets']
 
     for dataset in datasets:
+        print dataset,
         h1_fakePt        = mcFile.Get('MC_truth_{0}/h1_{1}FakePt'.format(dataset, lepType))
         h1_fakePtLowJet  = mcFile.Get('MC_truth_{0}/h1_{1}FakePtLowJet'.format(dataset, lepType))
         h1_fakePtHighJet = mcFile.Get('MC_truth_{0}/h1_{1}FakePtHighJet'.format(dataset, lepType))
@@ -195,12 +196,13 @@ if __name__ == '__main__':
 
     ### Overlay QCD, W+jets, and ttbar
     variables   = ['FakePt', 'FakePtLowJet', 'FakePtHighJet']#, 'FakeJetMult']
-    datasets    = ['QCD', 'WJets', 'ttbar']
+    datasets    = ['QCD', 'WJets', 'ttbar', 'ZJets']
 
     mc_avg      = {}
     for variable in variables:
         binContent  = {}
         binError    = {}
+        hists       = {}
         h1_avg      = r.TH1F()
         for i,dataset in enumerate(datasets):
             hist = mcFile.Get('MC_truth_{0}/h1_{1}{2}'.format(dataset, lepType, variable))
@@ -223,6 +225,8 @@ if __name__ == '__main__':
             else:
                 hist.Draw('same')
 
+            hists[dataset] = hist
+
             legend.AddEntry(hist, styles[dataset][4])
 
         for bin in range(h1_avg.GetNbinsX()): 
@@ -232,16 +236,28 @@ if __name__ == '__main__':
             if variable == 'FakePtHighJet': #post-selection
                 h1_avg.SetBinContent(bin, 0.63*binContent['ttbar'][bin] + 0.36*binContent['WJets'][bin] + 0.1*binContent['QCD'][bin]) 
                 h1_avg.SetBinError(bin, math.sqrt((0.63*binError['ttbar'][bin])**2 + (0.36*binError['WJets'][bin])**2))# + (0.0*binError['QCD'][bin])**2)) 
-            else: #pre-selection
-                h1_avg.SetBinContent(bin, 0.021*binContent['ttbar'][bin] + 0.16*binContent['WJets'][bin] + 0.8*binContent['QCD'][bin]) 
-                h1_avg.SetBinError(bin, math.sqrt((0.021*binError['ttbar'][bin])**2 + (0.16*binError['WJets'][bin])**2 + (0.8*binError['QCD'][bin])**2)) 
+            #elif variable == 'FakePtLowJet': #pre-selection
+            #    h1_avg.SetBinContent(bin, 0.021*binContent['ttbar'][bin] + 0.16*binContent['WJets'][bin] + 0.8*binContent['QCD'][bin]) 
+            #    h1_avg.SetBinError(bin, math.sqrt((0.021*binError['ttbar'][bin])**2 + (0.16*binError['WJets'][bin])**2 + (0.8*binError['QCD'][bin])**2)) 
+            else:
+                if binError['ZJets'][bin] != 0 and binError['ZJets'][bin] != 0:
+                    error = 1./math.sqrt(1./binError['ZJets'][bin]**2 + 1./binError['QCD'][bin]**2)
+                    entry = (binContent['ZJets'][bin]/binError['ZJets'][bin]**2 + binContent['QCD'][bin]/binError['QCD'][bin]**2)*error**2
+                else:
+                    error = 0.
+                    entry = 0.
+
+                h1_avg.SetBinContent(bin, entry)
+                h1_avg.SetBinError(bin, error)
 
             #h1_avg.SetBinError(bin, 0.25*h1_avg.GetBinContent(bin+1))
 
 
 
-        h1_avg.SetLineColor(r.kGreen)
-        h1_avg.SetFillColor(r.kGreen)
+        h1_avg.SetLineColor(r.kGreen+3)
+        h1_avg.SetMarkerColor(r.kGreen+3)
+        h1_avg.SetMarkerStyle(20)
+        h1_avg.SetFillColor(r.kGreen+3)
         h1_avg.SetFillStyle(3004)
         h1_avg.Draw('E2 SAME')
         mc_avg[variable] = h1_avg.Clone()
@@ -295,16 +311,17 @@ if __name__ == '__main__':
 
     ### Overlay Z+jet and QCD from data
     h1_data_avg = h1_qcd_Data.Clone()
-    #h1_data_avg.Add(h1_zJets_Data)
+    h1_data_avg.Add(h1_zJets_Data)
 
     pp.set_hist_style(h1_qcd_Data, 'QCD', styles)
     pp.set_hist_style(h1_zJets_Data, 'ZJets', styles)
     pp.set_hist_style(mc_avg['FakePtHighJet'], 'AVG', styles)
 
-    h1_qcd_Data.GetYaxis().SetRangeUser(0., 0.45)
+    h1_qcd_Data.GetYaxis().SetRangeUser(0., 0.4)
     h1_qcd_Data.SetTitle(' #mu fake rates;p_{T};fake rate')
 
-    h1_data_avg.GetYaxis().SetRangeUser(0., 0.45)
+    h1_data_avg.GetYaxis().SetRangeUser(0., 0.4)
+    h1_data_avg.GetXaxis().SetRangeUser(10., 39.)
     #h1_qcd_Data.Draw('E')
     #h1_zJets_Data.Draw('E SAME')
     h1_data_avg.Draw('E')

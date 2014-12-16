@@ -20,7 +20,11 @@ outFile = 'data/fakeRates_TEST.root'
 #datasets = ['DATA']
 #bgType = 'PROMPT'
 
-datasets = ['QCD', 'ttbarHad', 'ttbarSemilep', 'ttbarLep', 'ZJets_M-50', 'WJets', 'QCD']
+datasets = {}
+datasets['QCD2l']       = ['QCD', 'ttbar', 'ZJets', 'WJets']
+datasets['ZPlusJet']    = ['ttbar', 'ZJets']
+datasets['SameSign']    = ['QCD', 'ttbar', 'ZJets', 'WJets']
+datasets['MC_truth']    = ['QCD', 'ttbar', 'ZJets', 'WJets']
 bgType = ''
 
 fakeCategories = []
@@ -31,19 +35,19 @@ fakeCategories.append('MC_truth')
 
 ratioMaker = RatioMaker(inFile, outFile, scale = 19.7)
 
-ratioMaker.get_scale_factors(datasets + [bgType], corrected = False)
+ratioMaker.get_scale_factors(datasets['QCD2l'] + [bgType], corrected = False)
 
 fakeDict1D = {
     'MuonFakePt':('MuNumerPt', 'MuDenomPt'),
     'MuonFakePtLowJet':('MuNumerPtLowJet', 'MuDenomPtLowJet'),
     'MuonFakePtHighJet':('MuNumerPtHighJet', 'MuDenomPtHighJet'),
-    'MuonFakeEta':('MuNumerEta', 'MuDenomEta'),
+    #'MuonFakeEta':('MuNumerEta', 'MuDenomEta'),
     #'MuonFakeMet':('MuNumerMet', 'MuDenomMet'),
     #'MuonFakeJetMult':('MuNumerJetMult', 'MuDenomJetMult'),
-    'ElectronFakePt':('EleNumerPt', 'EleDenomPt'),
-    'ElectronFakePtLowJet':('EleNumerPtLowJet', 'EleDenomPtLowJet'),
-    'ElectronFakePtHighJet':('EleNumerPtHighJet', 'EleDenomPtHighJet'),
-    'ElectronFakeEta':('EleNumerEta', 'EleDenomEta'),
+    #'ElectronFakePt':('EleNumerPt', 'EleDenomPt'),
+    #'ElectronFakePtLowJet':('EleNumerPtLowJet', 'EleDenomPtLowJet'),
+    #'ElectronFakePtHighJet':('EleNumerPtHighJet', 'EleDenomPtHighJet'),
+    #'ElectronFakeEta':('EleNumerEta', 'EleDenomEta'),
     #'ElectronFakeMet':('EleNumerMet', 'EleDenomMet'),
 }
 
@@ -54,7 +58,7 @@ fakeDict2D = {
 
 for category in fakeCategories:
     print category
-    for dataset in datasets:
+    for dataset in datasets[category]:
         ratioMaker.set_category(category)
         ratioMaker.set_dataset(dataset)
 
