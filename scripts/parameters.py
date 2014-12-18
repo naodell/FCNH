@@ -245,12 +245,12 @@ scaleDict['2012']['QCD_150_B+MU']       = 0.0086*50000 # Can't find value for th
 scaleDict['2012']['DYToMuMu']           = 1666.
 scaleDict['2012']['DYToEE']             = 1666.
 scaleDict['2012']['DYToTauTau']         = 1666.
-scaleDict['2012']['ZZ4mu']              = 0.07691 
-scaleDict['2012']['ZZ4e']               = 0.07691
-scaleDict['2012']['ZZ4tau']             = 0.07691
-scaleDict['2012']['ZZ2e2mu']            = 0.1767 
-scaleDict['2012']['ZZ2e2tau']           = 0.1767
-scaleDict['2012']['ZZ2mu2tau']          = 0.1767
+scaleDict['2012']['ZZ4mu']              = 2*0.07691 
+scaleDict['2012']['ZZ4e']               = 2*0.07691
+scaleDict['2012']['ZZ4tau']             = 2*0.07691
+scaleDict['2012']['ZZ2e2mu']            = 2*0.1767 
+scaleDict['2012']['ZZ2e2tau']           = 2*0.1767
+scaleDict['2012']['ZZ2mu2tau']          = 2*0.1767
 scaleDict['2012']['ZZ']                 = 7.7
 scaleDict['2012']['WZ']                 = 32.3
 scaleDict['2012']['WW']                 = 54.8
@@ -335,12 +335,13 @@ combineDict['Remove_3l']        = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2
 combineDict['Irreducible']      = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ']#, 'WWG']
 combineDict['Rare']             = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ', 'WmWmqq', 'WpWpqq', 'WWDPS', 'TBZ']#, 'WWG']
 combineDict['PROMPT']           = [
-                                   #'ZJets_M-50', 'ZJets_M-10To50',
+                                   'ZJets_M-50', 'ZJets_M-10To50',
                                    'W1JetsToLNu', 'W2JetsToLNu', 'W3JetsToLNu', 'W4JetsToLNu', 
                                    'ttbarLep', 'ttbarSemilep', 
                                    'WZJets3LNu', 
                                    'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 
-                                   'ttZ', 'ttW', 'ttG'
+                                   'ttZ', 'ttW', 'ttG', 
+                                   'WWW', 'WWZ', 'WZZ', 'ZZZ'
                                    ]
 
 combineDict['DATA_FAKES']       = combineDict['DATA']

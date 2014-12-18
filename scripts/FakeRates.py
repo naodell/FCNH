@@ -7,9 +7,10 @@ r.TH1.SetDefaultSumw2(r.kTRUE)
 r.TH2.SetDefaultSumw2(r.kTRUE)
 
 if len(sys.argv) > 1:
-    batch   = sys.argv[1]
+    batch       = sys.argv[1]
+    selection   = sys.argv[2]
 else:
-    print 'You forgot to specify what file to run over.'
+    print 'You forgot to specify what file to run over and whether you want DATA or MC.'
     exit()
 
 doCombination = False
@@ -17,21 +18,26 @@ doCombination = False
 inFile  = 'fakeEstimator/histos/{0}.root'.format(batch)
 outFile = 'data/fakeRates_TEST.root'
 
-#datasets = ['DATA']
-#bgType = 'PROMPT'
-
-datasets = {}
-datasets['QCD2l']       = ['QCD', 'ttbar', 'ZJets', 'WJets']
-datasets['ZPlusJet']    = ['ttbar', 'ZJets']
-datasets['SameSign']    = ['QCD', 'ttbar', 'ZJets', 'WJets']
-datasets['MC_truth']    = ['QCD', 'ttbar', 'ZJets', 'WJets']
-bgType = ''
-
 fakeCategories = []
-fakeCategories.append('QCD2l')
-fakeCategories.append('ZPlusJet')
-fakeCategories.append('SameSign')
-fakeCategories.append('MC_truth')
+datasets = {}
+bgType = ''
+if selection == 'DATA':
+    datasets['QCD2l']       = ['DATA']
+    datasets['ZPlusJet']    = ['DATA']
+    bgType = 'PROMPT'
+
+    fakeCategories.append('QCD2l')
+    fakeCategories.append('ZPlusJet')
+elif selection == 'MC':
+    datasets['QCD2l']       = ['QCD', 'ttbar', 'ZJets', 'WJets']
+    datasets['ZPlusJet']    = ['ttbar', 'ZJets']
+    datasets['SameSign']    = ['QCD', 'ttbar', 'ZJets', 'WJets']
+    datasets['MC_truth']    = ['QCD', 'ttbar', 'ZJets', 'WJets']
+
+    fakeCategories.append('QCD2l')
+    fakeCategories.append('ZPlusJet')
+    fakeCategories.append('SameSign')
+    fakeCategories.append('MC_truth')
 
 ratioMaker = RatioMaker(inFile, outFile, scale = 19.7)
 
