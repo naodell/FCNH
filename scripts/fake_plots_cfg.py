@@ -119,7 +119,7 @@ if doPlots:
     catList = ['QCD2l', 'ZPlusJet', 'SameSign']
 
     for category in catList:
-        plotter._directoryList1D = ['Muon', 'Electron']
+        plotter._directoryList1D = ['Muon', 'Electron', 'GenStudies']
         plotter.add_datasets(samples[category], Clear=True)
         plotter.set_category(category)
         plotter.make_overlays_1D(logScale = doLog, doRatio = doRatio, doEff = doEff)

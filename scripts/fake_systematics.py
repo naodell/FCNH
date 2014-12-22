@@ -159,12 +159,12 @@ if __name__ == '__main__':
             
     ### Check dependency of fake rate on jet multiplicity
     lepType     = 'Muon' # 'Muon' or 'Electron'
-    dataFile    = r.TFile('data/fakeRates.root', 'OPEN')
+    dataFile    = r.TFile('data/fakeRates_DATA.root', 'OPEN')
     mcFile      = r.TFile('data/fakeRates_MC.root', 'OPEN')
     datasets    = ['ZJets', 'ttbar', 'QCD', 'WJets']
 
     for dataset in datasets:
-        print dataset,
+        #print dataset,
         h1_fakePt        = mcFile.Get('MC_truth_{0}/h1_{1}FakePt'.format(dataset, lepType))
         h1_fakePtLowJet  = mcFile.Get('MC_truth_{0}/h1_{1}FakePtLowJet'.format(dataset, lepType))
         h1_fakePtHighJet = mcFile.Get('MC_truth_{0}/h1_{1}FakePtHighJet'.format(dataset, lepType))
@@ -233,22 +233,24 @@ if __name__ == '__main__':
             #h1_avg.SetBinContent(bin, binContent['WJets'][bin]) 
             #h1_avg.SetBinError(bin, binError['WJets'][bin]) 
 
+            content, error = 0., 0.
             if variable == 'FakePtHighJet': #post-selection
-                h1_avg.SetBinContent(bin, 0.63*binContent['ttbar'][bin] + 0.36*binContent['WJets'][bin] + 0.1*binContent['QCD'][bin]) 
-                h1_avg.SetBinError(bin, math.sqrt((0.63*binError['ttbar'][bin])**2 + (0.36*binError['WJets'][bin])**2))# + (0.0*binError['QCD'][bin])**2)) 
+                error   = math.sqrt((0.63*binError['ttbar'][bin])**2 + (0.36*binError['WJets'][bin])**2 + (0.01*binError['QCD'][bin])**2) 
+                content = 0.63*binContent['ttbar'][bin] + 0.36*binContent['WJets'][bin] + 0.01*binContent['QCD'][bin] 
             #elif variable == 'FakePtLowJet': #pre-selection
             #    h1_avg.SetBinContent(bin, 0.021*binContent['ttbar'][bin] + 0.16*binContent['WJets'][bin] + 0.8*binContent['QCD'][bin]) 
             #    h1_avg.SetBinError(bin, math.sqrt((0.021*binError['ttbar'][bin])**2 + (0.16*binError['WJets'][bin])**2 + (0.8*binError['QCD'][bin])**2)) 
             else:
-                if binError['ZJets'][bin] != 0 and binError['ZJets'][bin] != 0:
+                #print binError['QCD'][bin], binError['ZJets'][bin]
+                if binError['QCD'][bin] != 0 and binError['ZJets'][bin] != 0:
                     error = 1./math.sqrt(1./binError['ZJets'][bin]**2 + 1./binError['QCD'][bin]**2)
-                    entry = (binContent['ZJets'][bin]/binError['ZJets'][bin]**2 + binContent['QCD'][bin]/binError['QCD'][bin]**2)*error**2
+                    content = (binContent['ZJets'][bin]/binError['ZJets'][bin]**2 + binContent['QCD'][bin]/binError['QCD'][bin]**2)*error**2
                 else:
                     error = 0.
-                    entry = 0.
+                    content = 0.
 
-                h1_avg.SetBinContent(bin, entry)
-                h1_avg.SetBinError(bin, error)
+            h1_avg.SetBinContent(bin, content)
+            h1_avg.SetBinError(bin, error)
 
             #h1_avg.SetBinError(bin, 0.25*h1_avg.GetBinContent(bin+1))
 
@@ -269,7 +271,7 @@ if __name__ == '__main__':
 
     ### Overlay QCD from data and MC
     h1_qcd_MC    = mcFile.Get('MC_truth_QCD/h1_MuonFakePt')
-    h1_qcd_Data  = dataFile.Get('QCD2l/h1_MuonFakePt')
+    h1_qcd_Data  = dataFile.Get('QCD2l_DATA/h1_MuonFakePt')
     h1_qcd_MC.SetBit(r.TH1.kIsAverage)
     h1_qcd_Data.SetBit(r.TH1.kIsAverage)
 
@@ -288,8 +290,9 @@ if __name__ == '__main__':
     ### Overlay Z+jet from data and MC
     zJetsFile = r.TFile('data/fakeRates_ZJets.root', 'OPEN')
 
-    h1_zJets_MC      = zJetsFile.Get('ZPlusJet/h1_MuonFakePt')
-    h1_zJets_Data    = dataFile.Get('ZPlusJet/h1_MuonFakePt')
+    #h1_zJets_MC      = zJetsFile.Get('ZPlusJet/h1_MuonFakePt')
+    h1_zJets_MC      = mcFile.Get('ZPlusJet_ZJets/h1_MuonFakePt')
+    h1_zJets_Data    = dataFile.Get('ZPlusJet_DATA/h1_MuonFakePt')
     h1_zJets_MC.SetBit(r.TH1.kIsAverage)
     h1_zJets_Data.SetBit(r.TH1.kIsAverage)
 

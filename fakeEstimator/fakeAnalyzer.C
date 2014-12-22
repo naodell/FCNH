@@ -586,7 +586,8 @@ bool fakeAnalyzer::Process(Long64_t entry)
 
         if (realLep.size() == gLeptons.size()) {
 
-            vObj fakeMuProbes, fakeEleProbes;
+            vector<TCMuon> fakeMuProbes;
+            vector<TCElectron> fakeEleProbes;
             unsigned nMuProbes = 0;
             for (unsigned i = 0; i < muProbes.size(); ++i) {
                 bool matched = false;
@@ -665,10 +666,10 @@ bool fakeAnalyzer::Process(Long64_t entry)
                     FillJetHists(fakeEleProbes[0], cleanJets, "inclusive");
                     FillDenominatorHists(fakeEleProbes[0], cleanJets);
 
-                    if (fakeEleProbes[0].IdMap("IsoRel") < 0.12) {
+                    if (selector->ElectronMVA(&fakeEleProbes[0]) && fakeEleProbes[0].IdMap("IsoRel") < 0.15) {
                         FillJetHists(fakeEleProbes[0], cleanJets, "tight");
                         FillNumeratorHists(fakeEleProbes[0], cleanJets);
-                    } else if (fakeEleProbes[0].IdMap("IsoRel") > 0.20) {
+                    } else if (!selector->ElectronMVA(&fakeEleProbes[0]) || fakeEleProbes[0].IdMap("IsoRel") > 0.20) {
                         FillJetHists(fakeEleProbes[0], cleanJets, "fail");
                         FillClosureHists(fakeEleProbes[0], cleanJets);
                     }
@@ -816,7 +817,7 @@ void fakeAnalyzer::FillDenominatorHists(TCPhysObject& probe, vector<TCJet>& jets
                 "h1_" + lepType + "DenomJetMult", "jet multiplicity; N_{jets}; Entries / bin", 10, -0.5, 9.5);
         
         //Bin fake rates by jet multiplicity
-        if (cleanJets.size() < 2 && recoMET->Mod() > 40. && HT > 100.) {
+        if (cleanJets.size() < 2 && HT > 100.) {// && recoMET->Mod() > 40.) {
             histManager->Fill1DHist(probe.IdMap("IsoRel")*probe.Pt(),
                     "h1_" + lepType + "DenomIsoHighJet", "probe lepton Iso (N_{jets} #geq 2);Iso;Entries", 40, 0., 120);
             histManager->Fill1DHistUnevenBins(probe.Pt(),
@@ -898,7 +899,7 @@ void fakeAnalyzer::FillNumeratorHists(TCPhysObject& probe, vector<TCJet>& jets)
                 "h1_" + lepType + "NumerJetMult", "jet multiplicity; N_{jets}; Entries / bin", 10, -0.5, 9.5);
 
         //Bin fake rates by jet multiplicity
-        if (cleanJets.size() < 2 && recoMET->Mod() > 40. && HT > 100.) {
+        if (cleanJets.size() < 2 && HT > 100.) {// && recoMET->Mod() > 40.) {
             histManager->Fill1DHist(probe.IdMap("IsoRel")*probe.Pt(),
                     "h1_" + lepType + "NumerIsoHighJet", "probe lepton Iso (N_{jets} #geq 2);Iso;Entries", 40, 0., 120);
             histManager->Fill1DHistUnevenBins(probe.Pt(),
