@@ -230,7 +230,7 @@ scaleDict['2012']['WZZ']                = 0.0192
 scaleDict['2012']['ZZZ']                = 0.0046
 scaleDict['2012']['WWG']                = 0.528
 
-scaleDict['2012']['QCD_20_MU']          = 134680.*0.7
+scaleDict['2012']['QCD_20_MU']          = 134680.
 scaleDict['2012']['QCD_20-30_EM']       = 2920632.
 scaleDict['2012']['QCD_30-80_EM']       = 4615893.
 scaleDict['2012']['QCD_80-170_EM']      = 183722

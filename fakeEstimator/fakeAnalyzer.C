@@ -813,6 +813,8 @@ void fakeAnalyzer::FillDenominatorHists(TCPhysObject& probe, vector<TCJet>& jets
                 "h1_" + lepType + "DenomIso", "probe lepton Iso;Iso;Entries", 24, 0., 120);
         histManager->Fill1DHistUnevenBins(recoMET->Mod(),
                 "h1_" + lepType + "DenomMet", "probe lepton Met;Met;Entries", nMetBins, metBins);
+        histManager->Fill1DHist(HT,
+                "h1_" + lepType + "DenomHT", "probe lepton H_{T};H_{T};Entries", 7, 0., 210.);
         histManager->Fill1DHist(cleanJets.size(),
                 "h1_" + lepType + "DenomJetMult", "jet multiplicity; N_{jets}; Entries / bin", 10, -0.5, 9.5);
         
@@ -895,6 +897,8 @@ void fakeAnalyzer::FillNumeratorHists(TCPhysObject& probe, vector<TCJet>& jets)
                 "h1_" + lepType + "NumerIsoRel", "pass lepton IsoRel;IsoRel;Entries", 40, 0., 0.20);
         histManager->Fill1DHistUnevenBins(recoMET->Mod(),
                 "h1_" + lepType + "NumerMet", "pass lepton Met;Met;Entries", nMetBins, metBins);
+        histManager->Fill1DHist(HT,
+                "h1_" + lepType + "NumerHT", "pass lepton H_{T};H_{T};Entries", 7, 0., 210.);
         histManager->Fill1DHist(cleanJets.size(),
                 "h1_" + lepType + "NumerJetMult", "jet multiplicity; N_{jets}; Entries / bin", 10, -0.5, 9.5);
 

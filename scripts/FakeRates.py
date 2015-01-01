@@ -47,14 +47,15 @@ fakeDict1D = {
     'MuonFakePt':('MuNumerPt', 'MuDenomPt'),
     'MuonFakePtLowJet':('MuNumerPtLowJet', 'MuDenomPtLowJet'),
     'MuonFakePtHighJet':('MuNumerPtHighJet', 'MuDenomPtHighJet'),
-    #'MuonFakeEta':('MuNumerEta', 'MuDenomEta'),
-    #'MuonFakeMet':('MuNumerMet', 'MuDenomMet'),
+    'MuonFakeEta':('MuNumerEta', 'MuDenomEta'),
+    'MuonFakeMet':('MuNumerMet', 'MuDenomMet'),
+    'MuonFakeHT':('MuNumerHT', 'MuDenomHT'),
     #'MuonFakeJetMult':('MuNumerJetMult', 'MuDenomJetMult'),
     'ElectronFakePt':('EleNumerPt', 'EleDenomPt'),
-    #'ElectronFakePtLowJet':('EleNumerPtLowJet', 'EleDenomPtLowJet'),
-    #'ElectronFakePtHighJet':('EleNumerPtHighJet', 'EleDenomPtHighJet'),
+    'ElectronFakePtLowJet':('EleNumerPtLowJet', 'EleDenomPtLowJet'),
+    'ElectronFakePtHighJet':('EleNumerPtHighJet', 'EleDenomPtHighJet'),
     #'ElectronFakeEta':('EleNumerEta', 'EleDenomEta'),
-    #'ElectronFakeMet':('EleNumerMet', 'EleDenomMet'),
+    'ElectronFakeMet':('EleNumerMet', 'EleDenomMet'),
 }
 
 fakeDict2D = {

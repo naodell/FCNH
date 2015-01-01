@@ -202,7 +202,6 @@ if __name__ == '__main__':
     for variable in variables:
         binContent  = {}
         binError    = {}
-        hists       = {}
         h1_avg      = r.TH1F()
         for i,dataset in enumerate(datasets):
             hist = mcFile.Get('MC_truth_{0}/h1_{1}{2}'.format(dataset, lepType, variable))
@@ -221,11 +220,9 @@ if __name__ == '__main__':
                 hist.Draw()
 
                 h1_avg = hist.Clone()
-                h1_avg.SetTitle('#mu fake rates (average);p_{{T}};fake rate')
             else:
                 hist.Draw('same')
 
-            hists[dataset] = hist
 
             legend.AddEntry(hist, styles[dataset][4])
 
@@ -234,19 +231,19 @@ if __name__ == '__main__':
             #h1_avg.SetBinError(bin, binError['WJets'][bin]) 
 
             content, error = 0., 0.
-            if variable == 'FakePtHighJet': #post-selection
-                error   = math.sqrt((0.63*binError['ttbar'][bin])**2 + (0.36*binError['WJets'][bin])**2 + (0.01*binError['QCD'][bin])**2) 
-                content = 0.63*binContent['ttbar'][bin] + 0.36*binContent['WJets'][bin] + 0.01*binContent['QCD'][bin] 
+            if variable == 'FakePtHighJet' or variable == 'FakePt': #post-selection
+                error   = math.sqrt((0.63*binError['ttbar'][bin])**2 + (0.36*binError['WJets'][bin])**2 + (0.05*binError['QCD'][bin])**2) 
+                content = 0.63*binContent['ttbar'][bin] + 0.36*binContent['WJets'][bin] + 0.05*binContent['QCD'][bin] 
             #elif variable == 'FakePtLowJet': #pre-selection
             #    h1_avg.SetBinContent(bin, 0.021*binContent['ttbar'][bin] + 0.16*binContent['WJets'][bin] + 0.8*binContent['QCD'][bin]) 
             #    h1_avg.SetBinError(bin, math.sqrt((0.021*binError['ttbar'][bin])**2 + (0.16*binError['WJets'][bin])**2 + (0.8*binError['QCD'][bin])**2)) 
             else:
                 #print binError['QCD'][bin], binError['ZJets'][bin]
                 if binError['QCD'][bin] != 0 and binError['ZJets'][bin] != 0:
-                    error = 1./math.sqrt(1./binError['ZJets'][bin]**2 + 1./binError['QCD'][bin]**2)
+                    error   = 1./math.sqrt(1./binError['ZJets'][bin]**2 + 1./binError['QCD'][bin]**2)
                     content = (binContent['ZJets'][bin]/binError['ZJets'][bin]**2 + binContent['QCD'][bin]/binError['QCD'][bin]**2)*error**2
                 else:
-                    error = 0.
+                    error   = 0.
                     content = 0.
 
             h1_avg.SetBinContent(bin, content)
@@ -256,12 +253,13 @@ if __name__ == '__main__':
 
 
 
+        h1_avg.Draw('E2 SAME')
         h1_avg.SetLineColor(r.kGreen+3)
         h1_avg.SetMarkerColor(r.kGreen+3)
         h1_avg.SetMarkerStyle(20)
         h1_avg.SetFillColor(r.kGreen+3)
         h1_avg.SetFillStyle(3004)
-        h1_avg.Draw('E2 SAME')
+        h1_avg.SetTitle('#mu fake rates (average);p_{{T}};fake rate')
         mc_avg[variable] = h1_avg.Clone()
 
         legend.AddEntry(h1_avg, 'Combined #pm 25%')
@@ -318,7 +316,7 @@ if __name__ == '__main__':
 
     pp.set_hist_style(h1_qcd_Data, 'QCD', styles)
     pp.set_hist_style(h1_zJets_Data, 'ZJets', styles)
-    pp.set_hist_style(mc_avg['FakePtHighJet'], 'AVG', styles)
+    pp.set_hist_style(mc_avg['FakePt'], 'AVG', styles)
 
     h1_qcd_Data.GetYaxis().SetRangeUser(0., 0.4)
     h1_qcd_Data.SetTitle(' #mu fake rates;p_{T};fake rate')
@@ -327,36 +325,39 @@ if __name__ == '__main__':
     h1_data_avg.GetXaxis().SetRangeUser(10., 39.)
     #h1_qcd_Data.Draw('E')
     #h1_zJets_Data.Draw('E SAME')
-    h1_data_avg.Draw('E')
+    #h1_data_avg.Draw('E')
+    #mc_avg['FakePtHighJet'].Draw('E2')
+    mc_avg['FakePt'].Draw('E2')
     mc_avg['FakePtLowJet'].Draw('E2 SAME')
-    mc_avg['FakePtHighJet'].Draw('E2 SAME')
 
     legend.Clear()
-    legend.AddEntry(h1_data_avg, 'Combined (Data)')
-    legend.AddEntry(mc_avg['FakePtLowJet'], 'Combined < 2 jets (MC)')
-    legend.AddEntry(mc_avg['FakePtHighJet'], 'Combined #geq 2 jets (MC)')
+    #legend.AddEntry(h1_data_avg, 'Combined (Data)')
+    #legend.AddEntry(mc_avg['FakePt'], 'Combined #geq 2 jets (MC)')
+    #legend.AddEntry(mc_avg['FakePtLowJet'], 'Combined < 2 jets (MC)')
+    legend.AddEntry(mc_avg['FakePt'], 'signal CR')
+    legend.AddEntry(mc_avg['FakePtLowJet'], 'measurement CR')
     legend.Draw()
 
     canvas.Print('{0}/{1}_overlays.png'.format(outDir, 'DataVsMC_JetSplit'))
 
     ### Ratio between low and high jet mc fake rates
-    h1_Ratio = mc_avg['FakePtHighJet'].Clone()
+    h1_Ratio = mc_avg['FakePt'].Clone()
     h1_Ratio.Divide(mc_avg['FakePtLowJet'])
     #h1_data_avg.Add(h1_zJets_Data)
 
     pp.set_hist_style(h1_Ratio, 'AVG', styles)
 
-    h1_Ratio.SetTitle(';p_{T};FR_{MC,#geq 2 jets}/FR_{MC,< 2 jets}')
+    h1_Ratio.SetTitle(';p_{T};FR_{MC,signal}/FR_{MC,measured}')
     h1_Ratio.GetYaxis().SetRangeUser(0., 2.)
     h1_Ratio.GetYaxis().CenterTitle()
     h1_Ratio.GetYaxis().SetTitleSize(0.045)
     h1_Ratio.SetLineWidth(2)
-    #h1_Ratio.Fit('pol0')
+    h1_Ratio.Fit('pol0', '', '', 10, 100)
 
     canvas.SetGridx()
     canvas.SetGridy()
     canvas.SetLeftMargin(0.1)
-    #r.gStyle.SetOptFit(1)
+    r.gStyle.SetOptFit(1)
     #h1_data_avg.GetYaxis().SetRangeUser(0., 0.45)
     #h1_qcd_Data.Draw('E')
     #h1_zJets_Data.Draw('E SAME')
