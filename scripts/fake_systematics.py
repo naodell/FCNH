@@ -17,7 +17,8 @@ def FakeInfo():
 
 if __name__ == '__main__':
 
-    outDir      = 'plots/Fakes/TEST'
+    lepType = 'Electron' # 'Muon' or 'Electron'
+    outDir  = 'plots/Fakes/{0}'.format(lepType)
 
     r.gROOT.SetBatch()
     r.gStyle.SetOptStat(0)
@@ -119,7 +120,7 @@ if __name__ == '__main__':
                             nInit   = hYields.GetBinContent(1)
                             hYields.Scale(lumi*scales['2012'][sample]/nInit)
                         
-                        nFinal = hYields.GetBinContent(6)
+                        nFinal = hYields.GetBinContent(9)
                         subtotal += nFinal
             else:
                 hYields = inFile.Get('{0}/{1}/h1_YieldByCut'.format(category, dataset))
@@ -158,23 +159,23 @@ if __name__ == '__main__':
     print '\hline'
             
     ### Check dependency of fake rate on jet multiplicity
-    lepType     = 'Muon' # 'Muon' or 'Electron'
     dataFile    = r.TFile('data/fakeRates_DATA.root', 'OPEN')
     mcFile      = r.TFile('data/fakeRates_MC.root', 'OPEN')
     datasets    = ['ZJets', 'ttbar', 'QCD', 'WJets']
 
     for dataset in datasets:
-        #print dataset,
+        print dataset,
         h1_fakePt        = mcFile.Get('MC_truth_{0}/h1_{1}FakePt'.format(dataset, lepType))
         h1_fakePtLowJet  = mcFile.Get('MC_truth_{0}/h1_{1}FakePtLowJet'.format(dataset, lepType))
         h1_fakePtHighJet = mcFile.Get('MC_truth_{0}/h1_{1}FakePtHighJet'.format(dataset, lepType))
+
+        if not h1_fakePtLowJet or not h1_fakePtHighJet: continue
 
         h1_fakePt.SetTitle('#mu fake rates;p_{T};fake rate')
 
         h1_fakePt.SetLineColor(r.kBlack)
         h1_fakePt.SetLineWidth(2)
         h1_fakePtLowJet.SetLineColor(r.kBlue)
-
         h1_fakePtLowJet.SetLineWidth(2)
         h1_fakePtHighJet.SetLineColor(r.kRed)
         h1_fakePtHighJet.SetLineWidth(2)
@@ -205,6 +206,7 @@ if __name__ == '__main__':
         h1_avg      = r.TH1F()
         for i,dataset in enumerate(datasets):
             hist = mcFile.Get('MC_truth_{0}/h1_{1}{2}'.format(dataset, lepType, variable))
+            if not hist: continue
             hist.SetTitle('#mu fake rates;{0};fake rate'.format(hist.GetXaxis().GetTitle()))
             pp.set_hist_style(hist, dataset, styles)
 
@@ -232,8 +234,12 @@ if __name__ == '__main__':
 
             content, error = 0., 0.
             if variable == 'FakePtHighJet' or variable == 'FakePt': #post-selection
-                error   = math.sqrt((0.63*binError['ttbar'][bin])**2 + (0.36*binError['WJets'][bin])**2 + (0.05*binError['QCD'][bin])**2) 
-                content = 0.63*binContent['ttbar'][bin] + 0.36*binContent['WJets'][bin] + 0.05*binContent['QCD'][bin] 
+                if lepType == 'Muon':
+                    error   = math.sqrt((0.63*binError['ttbar'][bin])**2 + (0.36*binError['WJets'][bin])**2 + (0.05*binError['QCD'][bin])**2) 
+                    content = 0.63*binContent['ttbar'][bin] + 0.36*binContent['WJets'][bin] + 0.05*binContent['QCD'][bin] 
+                if lepType == 'Electron':
+                    error   = math.sqrt((0.26*binError['ttbar'][bin])**2 + (0.73*binError['WJets'][bin])**2 + (0.00*binError['QCD'][bin])**2) 
+                    content = 0.26*binContent['ttbar'][bin] + 0.73*binContent['WJets'][bin] + 0.00*binContent['QCD'][bin] 
             #elif variable == 'FakePtLowJet': #pre-selection
             #    h1_avg.SetBinContent(bin, 0.021*binContent['ttbar'][bin] + 0.16*binContent['WJets'][bin] + 0.8*binContent['QCD'][bin]) 
             #    h1_avg.SetBinError(bin, math.sqrt((0.021*binError['ttbar'][bin])**2 + (0.16*binError['WJets'][bin])**2 + (0.8*binError['QCD'][bin])**2)) 
@@ -352,7 +358,14 @@ if __name__ == '__main__':
     h1_Ratio.GetYaxis().CenterTitle()
     h1_Ratio.GetYaxis().SetTitleSize(0.045)
     h1_Ratio.SetLineWidth(2)
-    h1_Ratio.Fit('pol0', '', '', 10, 100)
+    fitResult = h1_Ratio.Fit('pol0', 'S', '', 10, 100)
+
+    h1_AvgBand = r.TH1F('h1_AvgBand', '', 1, 10., 100.)
+    h1_AvgBand.SetLineWidth(0)
+    h1_AvgBand.SetFillColor(r.kRed)
+    h1_AvgBand.SetFillStyle(3004)
+    h1_AvgBand.SetBinContent(1, fitResult.Parameters()[0])
+    h1_AvgBand.SetBinError(1, 0.2*fitResult.Parameters()[0])
 
     canvas.SetGridx()
     canvas.SetGridy()
@@ -362,6 +375,7 @@ if __name__ == '__main__':
     #h1_qcd_Data.Draw('E')
     #h1_zJets_Data.Draw('E SAME')
     h1_Ratio.Draw('E')
+    h1_AvgBand.Draw('E2 SAME')
 
     canvas.Print('{0}/{1}.png'.format(outDir, 'Ratio'))
 
