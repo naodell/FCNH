@@ -21,7 +21,7 @@ else:
 ### This is the config file for manipulating 
 ### histograms using the PlotProducer class.  
 
-plotType    = '.png'
+plotType    = '.pdf'
 selection   = 'fcnh'
 
 cutList     = ['1_preselection']
@@ -31,8 +31,8 @@ cutList.extend(['2_Z_veto', '3_2jet', '4_MET'])#, '.', 'CR_WZ', 'CR_SUSY', '5_BD
 period      = '2012'
 LUMIDATA    = 19.712 
 
-doPlots     = False
-doYields    = True
+doPlots     = True
+doYields    = False
 
 doLog       = False
 doEff       = False
@@ -43,8 +43,8 @@ do1D        = True
 do2D        = True
 
 doOS        = False
-doSS        = False
-do3l        = False
+doSS        = True
+do3l        = True
 
 ### Categories to be plotted ###
 catSS       = ['ss_inclusive']
@@ -192,7 +192,6 @@ if doPlots:
     plotter = PlotProducer(inputFile = 'fcncAnalysis/combined_histos/{0}_cut1_{1}_{2}.root'.format(selection, period, batch), savePath = '', scale = LUMIDATA, isAFS = False)
     plotter.set_period(period)
     plotter.set_output_type(plotType)
-    plotter.set_clean_fakes(False)
 
     ### DATASETS ###
     ### Specify the datasets you wish to stack 

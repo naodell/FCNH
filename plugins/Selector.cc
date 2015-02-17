@@ -238,7 +238,6 @@ bool Selector::MuonLooseID(TCMuon* muon)
     return pass;
 }
 
-
 void Selector::MuonSelector(TClonesArray* muons) 
 {
     for (int i = 0; i < muons->GetSize(); ++ i) {
@@ -600,6 +599,8 @@ void Selector::JetSelector(TClonesArray* jets)
 
         // Apply JER corrections; maybe better to do in the analysis code...
         TCJet *corJet = this->JERCorrections(thisJet);
+
+        // Vary energy scale to assess systematic
 
         if (fabs(corJet->Eta()) < 2.5) {
             if (

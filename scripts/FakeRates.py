@@ -48,6 +48,8 @@ fakeDict1D = {
     'MuonFakePtLowJet':('MuNumerPtLowJet', 'MuDenomPtLowJet'),
     'MuonFakePtHighJet':('MuNumerPtHighJet', 'MuDenomPtHighJet'),
     'MuonFakeEta':('MuNumerEta', 'MuDenomEta'),
+    'MuonFakeEtaLowJet':('MuNumerEtaLowJet', 'MuDenomEtaLowJet'),
+    'MuonFakeEtaHighJet':('MuNumerEtaHighJet', 'MuDenomEtaHighJet'),
     'MuonFakeMet':('MuNumerMet', 'MuDenomMet'),
     'MuonFakeHT':('MuNumerHT', 'MuDenomHT'),
     #'MuonFakeJetMult':('MuNumerJetMult', 'MuDenomJetMult'),

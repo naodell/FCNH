@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
     canvas = r.TCanvas('canvas', 'canvas', 600, 450)
 
-    legend = r.TLegend(0.6, 0.6, 0.89, 0.89)
+    legend = r.TLegend(0.5, 0.6, 0.89, 0.89)
     legend.SetFillColor(0)
     #legend.SetFillStyle(0)
     legend.SetTextSize(0.03)
@@ -44,6 +44,7 @@ if __name__ == '__main__':
 
     print ''.join(['& {0} '.format(cat) for cat in categories]),
     print '\\\\ \\hline'
+    hFakeablePt = {}
     for fakeType in fakeTypes:
         print ' {0} '.format(fakeType),
         count = 0
@@ -87,6 +88,7 @@ if __name__ == '__main__':
         canvas.Print('{0}/FakeablePt_{1}.png'.format(outDir, fakeType))
         legend.Clear()
 
+        hFakeablePt[fakeType] = hCombined
         hCombined.DrawNormalized()
         canvas.Print('{0}/CombinedFakeablePt_{1}.png'.format(outDir, fakeType))
 
@@ -159,7 +161,11 @@ if __name__ == '__main__':
     print '\hline'
             
     ### Check dependency of fake rate on jet multiplicity
-    dataFile    = r.TFile('data/fakeRates_DATA.root', 'OPEN')
+    if lepType == 'Muon':
+        dataFile    = r.TFile('data/fakeRates_DATA.root', 'OPEN')
+    elif lepType == 'Electron':
+        dataFile    = r.TFile('data/fakeRates.root', 'OPEN')
+
     mcFile      = r.TFile('data/fakeRates_MC.root', 'OPEN')
     datasets    = ['ZJets', 'ttbar', 'QCD', 'WJets']
 
@@ -171,7 +177,10 @@ if __name__ == '__main__':
 
         if not h1_fakePtLowJet or not h1_fakePtHighJet: continue
 
-        h1_fakePt.SetTitle('#mu fake rates;p_{T};fake rate')
+        if lepType == 'Muon': 
+            h1_fakePt.SetTitle('#mu fake rates;p_{T};fake rate')
+        elif lepType == 'Electron':
+            h1_fakePt.SetTitle('e fake rates;p_{T};fake rate')
 
         h1_fakePt.SetLineColor(r.kBlack)
         h1_fakePt.SetLineWidth(2)
@@ -274,8 +283,12 @@ if __name__ == '__main__':
         legend.Clear()
 
     ### Overlay QCD from data and MC
-    h1_qcd_MC    = mcFile.Get('MC_truth_QCD/h1_MuonFakePt')
-    h1_qcd_Data  = dataFile.Get('QCD2l_DATA/h1_MuonFakePt')
+    h1_qcd_MC    = mcFile.Get('MC_truth_QCD/h1_{0}FakePt'.format(lepType))
+    if lepType == 'Muon':
+        h1_qcd_Data  = dataFile.Get('QCD2l_DATA/h1_{0}FakePt'.format(lepType))
+    elif lepType == 'Electron':
+        h1_qcd_Data  = dataFile.Get('QCD2l/h1_{0}FakePt'.format(lepType))
+
     h1_qcd_MC.SetBit(r.TH1.kIsAverage)
     h1_qcd_Data.SetBit(r.TH1.kIsAverage)
 
@@ -295,8 +308,12 @@ if __name__ == '__main__':
     zJetsFile = r.TFile('data/fakeRates_ZJets.root', 'OPEN')
 
     #h1_zJets_MC      = zJetsFile.Get('ZPlusJet/h1_MuonFakePt')
-    h1_zJets_MC      = mcFile.Get('ZPlusJet_ZJets/h1_MuonFakePt')
-    h1_zJets_Data    = dataFile.Get('ZPlusJet_DATA/h1_MuonFakePt')
+    h1_zJets_MC      = mcFile.Get('ZPlusJet_ZJets/h1_{0}FakePt'.format(lepType))
+    if lepType == 'Muon':
+        h1_zJets_Data = dataFile.Get('ZPlusJet_DATA/h1_{0}FakePt'.format(lepType))
+    elif lepType == 'Electron':
+        h1_zJets_Data    = dataFile.Get('ZPlusJet/h1_{0}FakePt'.format(lepType))
+
     h1_zJets_MC.SetBit(r.TH1.kIsAverage)
     h1_zJets_Data.SetBit(r.TH1.kIsAverage)
 
@@ -322,22 +339,61 @@ if __name__ == '__main__':
 
     pp.set_hist_style(h1_qcd_Data, 'QCD', styles)
     pp.set_hist_style(h1_zJets_Data, 'ZJets', styles)
-    pp.set_hist_style(mc_avg['FakePt'], 'AVG', styles)
+    pp.set_hist_style(h1_data_avg, 'AVG', styles)
 
-    h1_qcd_Data.GetYaxis().SetRangeUser(0., 0.4)
-    h1_qcd_Data.SetTitle(' #mu fake rates;p_{T};fake rate')
+    h1_data_avg_stat = h1_data_avg.Clone()
+    for i in range(h1_data_avg.GetNbinsX()):
+        statErr = h1_data_avg.GetBinError(i)
+        if lepType == 'Muon':
+            systErr = h1_data_avg.GetBinContent(i)*0.2
+        elif lepType == 'Electron':
+            systErr = h1_data_avg.GetBinContent(i)*0.3
+        err = math.sqrt(statErr**2 + systErr**2)
 
-    h1_data_avg.GetYaxis().SetRangeUser(0., 0.4)
+        h1_data_avg.SetBinError(i,err)
+
+
+    h1_data_avg.SetLineColor(r.kBlue-5)
+    h1_data_avg.SetFillColor(r.kBlue-5)
+    h1_data_avg.SetFillStyle(3001)
+
+    h1_data_avg_stat.SetLineColor(r.kCyan-4)
+    h1_data_avg_stat.SetFillColor(r.kCyan-4)
+    h1_data_avg_stat.SetMarkerColor(r.kCyan-3)
+    h1_data_avg_stat.SetFillStyle(3001)
+    h1_data_avg_stat.SetMarkerStyle(20)
+
+    h1_data_avg.GetYaxis().SetRangeUser(0., 0.2)
     h1_data_avg.GetXaxis().SetRangeUser(10., 39.)
-    #h1_qcd_Data.Draw('E')
-    #h1_zJets_Data.Draw('E SAME')
-    #h1_data_avg.Draw('E')
+    if lepType == 'Muon': 
+        h1_data_avg.SetTitle('#mu fake rates;p_{T};fake rate')
+    elif lepType == 'Electron':
+        h1_data_avg.SetTitle('e fake rates;p_{T};fake rate')
+
+    h1_data_avg.Draw('E2')
+    h1_data_avg_stat.Draw('E2 SAME')
+    h1_qcd_Data.Draw('E SAME')
+    h1_zJets_Data.Draw('E SAME')
+
+    legend.Clear()
+    legend.AddEntry(h1_qcd_Data, 'QCD')
+    legend.AddEntry(h1_zJets_Data, 'ZPlusJet')
+    legend.AddEntry(h1_data_avg_stat, 'Combined (stat)')
+    if lepType == 'Muon':
+        legend.AddEntry(h1_data_avg, 'Combined (stat#pm 20% syst)')
+    elif lepType == 'Electron':
+        legend.AddEntry(h1_data_avg, 'Combined (stat#pm 30% syst)')
+    legend.Draw()
     #mc_avg['FakePtHighJet'].Draw('E2')
+
+    canvas.Print('{0}/{1}_overlays.png'.format(outDir, 'Data_combined'))
+
+    ### signal/measurement region comparison
+    pp.set_hist_style(mc_avg['FakePt'], 'AVG', styles)
     mc_avg['FakePt'].Draw('E2')
     mc_avg['FakePtLowJet'].Draw('E2 SAME')
 
     legend.Clear()
-    #legend.AddEntry(h1_data_avg, 'Combined (Data)')
     #legend.AddEntry(mc_avg['FakePt'], 'Combined #geq 2 jets (MC)')
     #legend.AddEntry(mc_avg['FakePtLowJet'], 'Combined < 2 jets (MC)')
     legend.AddEntry(mc_avg['FakePt'], 'signal CR')
@@ -365,7 +421,10 @@ if __name__ == '__main__':
     h1_AvgBand.SetFillColor(r.kRed)
     h1_AvgBand.SetFillStyle(3004)
     h1_AvgBand.SetBinContent(1, fitResult.Parameters()[0])
-    h1_AvgBand.SetBinError(1, 0.2*fitResult.Parameters()[0])
+    if lepType == 'Muon':
+        h1_AvgBand.SetBinError(1, 0.2*fitResult.Parameters()[0])
+    elif lepType == 'Electron':
+        h1_AvgBand.SetBinError(1, 0.3*fitResult.Parameters()[0])
 
     canvas.SetGridx()
     canvas.SetGridy()
@@ -374,11 +433,30 @@ if __name__ == '__main__':
     #h1_data_avg.GetYaxis().SetRangeUser(0., 0.45)
     #h1_qcd_Data.Draw('E')
     #h1_zJets_Data.Draw('E SAME')
+    h1_Ratio.GetXaxis().SetRangeUser(10., 69.)
     h1_Ratio.Draw('E')
     h1_AvgBand.Draw('E2 SAME')
 
     canvas.Print('{0}/{1}.png'.format(outDir, 'Ratio'))
 
+    ### Total fake rate uncertainty
+    for bin in range(h1_data_avg.GetNbinsX()):
+        if h1_data_avg.GetBinContent(bin+1) == 0:
+            print '--'
+        else:
+            #print '& {0:.2f} '.format(h1_data_avg.GetBinContent(bin+1)),
+            print '& {0:.1%} '.format(h1_data_avg.GetBinError(bin+1)/h1_data_avg.GetBinContent(bin+1)),
+
+    print '\n'
+
+    
+    if lepType == 'Muon':
+        hFakePt = hFakeablePt['muFakes']
+    elif lepType == 'Electron':
+        hFakePt = hFakeablePt['eFakes']
+    hFakePt.Scale(1./hFakePt.Integral())
+    for bin in range(hFakePt.GetNbinsX()):
+        print '& {0:.1%} '.format(hFakePt.GetBinContent(bin+1)),
 
     ### Compare QCD jet multiplicity rates
     #h1_qcdJet_MC    = mcFile.Get('MC_truth_QCD/h1_MuonFakeJetMult')

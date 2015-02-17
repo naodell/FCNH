@@ -6,8 +6,8 @@ cfg = b.JobConfig
 
 ''' Specify parameters '''
 dataDir     = '/tthome/naodell/storage/ntuples/Data'
-signalDir   = '/tthome/naodell/storage/ntuples/MC_FCNH/'
-mcDir       = '/tthome/naodell/storage/data/nuTuples_v9.6_8TeV/MC/'
+signalDir   = '/tthome/naodell/storage/ntuples/MC_FCNH'
+mcDir       = '/tthome/share/noobs/nuTuples_v9.6_8TeV/MC'
 executable  = 'execBatch.sh'
 
 selection   = 'fcnc'
@@ -113,13 +113,13 @@ if period == '2012':
         cfg('WWDPS',   '{0}/WWDPS'.format(mcDir),     10,  'WWDPS  {0}  2012'.format(mcTrigger)),
         cfg('TBZ',     '{0}/TBZ'.format(mcDir),       10,  'TBZ {0} 2012'.format(mcTrigger)),
 
-        #cfg('QCD_20-30_EM',    '{0}/QCD_Pt_20_30_EMEnriched'.format(mcDir),    40,  'QCD_20-30_EM    {0}  2012'.format(mcTrigger)),
-        #cfg('QCD_30-80_EM',    '{0}/QCD_Pt_30_80_EMEnriched'.format(mcDir),    40,  'QCD_30-80_EM    {0}  2012'.format(mcTrigger)),
-        #cfg('QCD_80-170_EM',   '{0}/QCD_Pt_80_170_EMEnriched'.format(mcDir),   40,  'QCD_80-170_EM   {0}  2012'.format(mcTrigger)),
-        #cfg('QCD_170-250_EM',  '{0}/QCD_Pt_170_250_EMEnriched'.format(mcDir),  40,  'QCD_170-250_EM  {0}  2012'.format(mcTrigger)),
-        #cfg('QCD_250-350_EM',  '{0}/QCD_Pt_250_350_EMEnriched'.format(mcDir),  40,  'QCD_250-350_EM  {0}  2012'.format(mcTrigger)),
-        #cfg('QCD_350_EM',      '{0}/QCD_Pt_350_EMEnriched'.format(mcDir),      40,  'QCD_350_EM      {0}  2012'.format(mcTrigger)),
-        #cfg('QCD_20_MU',       '{0}/QCD_Pt_20_MuEnrichedPt_15'.format(mcDir),  40,  'QCD_20_MU       {0}  2012'.format(mcTrigger)),
+        cfg('QCD_20-30_EM',    '{0}/QCD_Pt_20_30_EMEnriched'.format(mcDir),    40,  'QCD_20-30_EM    {0}  2012'.format(mcTrigger)),
+        cfg('QCD_30-80_EM',    '{0}/QCD_Pt_30_80_EMEnriched'.format(mcDir),    40,  'QCD_30-80_EM    {0}  2012'.format(mcTrigger)),
+        cfg('QCD_80-170_EM',   '{0}/QCD_Pt_80_170_EMEnriched'.format(mcDir),   40,  'QCD_80-170_EM   {0}  2012'.format(mcTrigger)),
+        cfg('QCD_170-250_EM',  '{0}/QCD_Pt_170_250_EMEnriched'.format(mcDir),  40,  'QCD_170-250_EM  {0}  2012'.format(mcTrigger)),
+        cfg('QCD_250-350_EM',  '{0}/QCD_Pt_250_350_EMEnriched'.format(mcDir),  40,  'QCD_250-350_EM  {0}  2012'.format(mcTrigger)),
+        cfg('QCD_350_EM',      '{0}/QCD_Pt_350_EMEnriched'.format(mcDir),      40,  'QCD_350_EM      {0}  2012'.format(mcTrigger)),
+        cfg('QCD_20_MU',       '{0}/QCD_Pt_20_MuEnrichedPt_15'.format(mcDir),  40,  'QCD_20_MU       {0}  2012'.format(mcTrigger)),
 
         #cfg('ggHToZZ4L_M-125', mcDir+'/GluGluToHToZZTo4L_M-125', 5, 'ggHToZZ4L_M-125 muon 2012'),
         #cfg('ggHToWW2L2Nu_M-125', mcDir+'/GluGluToHToWWTo2LAndTau2Nu_M-125', 5, 'ggHToWW2L2Nu_M-125 muon 2012'),
@@ -135,6 +135,10 @@ if period == '2012':
         cfg('FCNC_M125_ZZ_Minus', '{0}/FCNHToZZ_Minus'.format(signalDir), 1, 'FCNC_ZZ_tbar mc 2012'),
         cfg('FCNC_M125_TauTau_Plus', '{0}/FCNHToTauTau_Plus'.format(signalDir), 1, 'FCNC_TauTau_t mc 2012'),
         cfg('FCNC_M125_TauTau_Minus', '{0}/FCNHToTauTau_Minus'.format(signalDir), 1, 'FCNC_TauTau_tbar mc 2012'),
+
+        cfg('FCNHUp_M125_tHj', '{0}/FCNHToWW_semileptonic_Minus'.format(signalDir), 1, 'FCNHUp_M125_tbar mc 2012'),
+        cfg('FCNHUp_M125_TauTau_Minus', '{0}/FCNHToTauTau_Minus'.format(signalDir), 1, 'FCNHUp_TauTau_tbar mc 2012'),
+        cfg('FCNHUp_M125_ZZ_Minus', '{0}/FCNHToZZ_Minus'.format(signalDir), 1, 'FCNHUp_ZZ_tbar mc 2012'),
         ])
 
 

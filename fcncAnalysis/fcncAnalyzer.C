@@ -1340,7 +1340,7 @@ void fcncAnalyzer::DoFakes(vObj& leptons, vObj& fakeables, vector<TCJet>& jets, 
 
             // Correction for high jet muon fakes
             if (leptonsPlusFakes[0].Type() == "muon" && leptonsPlusFakes[1].Type() == "muon" && jets.size() >= 2)
-                evtWeight *= 0.75;
+                evtWeight *= 0.7;
             // Correction for same-sign electron fakes
             if (leptonsPlusFakes[0].Type() == "electron" && leptonsPlusFakes[1].Type() == "electron")
                 evtWeight *= 2.;

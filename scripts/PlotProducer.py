@@ -621,7 +621,7 @@ class PlotProducer(AnalysisTools):
                     stacks[var].SetMaximum(max(stacks[var].GetMaximum(), hists[var][0][0].GetMaximum())*7.)
                     stacks[var].SetMinimum(0.5)
                 else:
-                    stacks[var].SetMaximum(max(stacks[var].GetMaximum(), hists[var][0][0].GetMaximum())*1.8)
+                    stacks[var].SetMaximum(max(stacks[var].GetMaximum(), hists[var][0][0].GetMaximum())*1.5)
                     stacks[var].SetMinimum(0.00001)
 
                 #if doRatio or doEff: 
