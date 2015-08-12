@@ -2,15 +2,15 @@
 import ROOT as r
 import pickle
 
-signalScale = .05
+signalScale = .01
 ### Set styles
 styleDict = {}
 
 # Data
-styleDict['DATA']               = (2, r.kBlack, 0, 20, 'Observed')
-styleDict['DATA_MUON']          = (2, r.kBlack, 0, 21, 'Observed (#mu#mu)')
-styleDict['DATA_ELECTRON']      = (2, r.kBlack, 0, 21, 'Observed (ee)')
-styleDict['DATA_MUEG']          = (2, r.kBlack, 0, 21, 'Observed (e#mu)')
+styleDict['DATA']               = (2, r.kBlack, 0, 20, 'Data')
+styleDict['DATA_MUON']          = (2, r.kBlack, 0, 21, 'Data (#mu#mu)')
+styleDict['DATA_ELECTRON']      = (2, r.kBlack, 0, 21, 'Data (ee)')
+styleDict['DATA_MUEG']          = (2, r.kBlack, 0, 21, 'Data (e#mu)')
 styleDict['DATA_FAKES']         = (2, r.kBlue+4, 3001, 22, 'Fail')
 
 # For fake studies
@@ -116,15 +116,22 @@ styleDict['GJets_15to30']       = (2, r.kYellow+2, 0, 1, 'gamma+jets')
 
 #Higgs
 styleDict['higgs']              = (2, r.kBlue+3, 0, 1, 'higgs')
+styleDict['TTH_M-125']          = (2, r.kBlue+3, 0, 1, 'ttH')
 styleDict['ggHToZZ4L_M-125']    = (2, r.kBlue+3, 0, 1, 'H#rightarrow 4l')
 
 #Misc
 styleDict['BGERROR']            = (0, r.kBlack, 3003, 0, 'BG uncertainty')
 #styleDict['FCNH']               = (3, r.kRed+3, 0, 20, 'FCNH (#times 2)')
-styleDict['FCNH']               = (3, r.kRed+3, 0, 0, 'FCNH (BR = {0:1.0%})'.format(signalScale))
-styleDict['FCNHWW']             = (3, r.kRed+3, 0, 0, 'FCNH #rightarrow WW')
-styleDict['FCNHZZ']             = (3, r.kRed+3, 0, 0, 'FCNH #rightarrow ZZ')
-styleDict['FCNHTauTau']         = (3, r.kRed+3, 0, 0, 'FCNH #rightarrow #tau#tau')
+styleDict['FCNH']               = (3, r.kRed+3, 0, 0, 't#rightarrow Hc') # (BR = {0:1.0%})'.format(signalScale))
+styleDict['FCNHWW']             = (3, r.kRed+3, 0, 0, 't#rightarrow Hc #rightarrow WW')
+styleDict['FCNHZZ']             = (3, r.kRed+3, 0, 0, 't#rightarrow Hc #rightarrow ZZ')
+styleDict['FCNHTauTau']         = (3, r.kRed+3, 0, 0, 't#rightarrow Hc #rightarrow #tau#tau')
+#styleDict['FCNHUp']             = (3, r.kBlue+3, 0, 0, 't#rightarrow Hu (BR = {0:1.0\%})'.format(signalScale))
+styleDict['FCNHUp']             = (3, r.kBlue+3, 0, 0, 't#rightarrow Hu')# (BR = {0:1.0%})'.format(signalScale))
+styleDict['FCNHUpWW']           = (3, r.kBlue+3, 0, 0, 't#rightarrow Hu #rightarrow WW')
+styleDict['FCNHUpZZ']           = (3, r.kBlue+3, 0, 0, 't#rightarrow Hu #rightarrow ZZ')
+styleDict['FCNHUpTauTau']       = (3, r.kBlue+3, 0, 0, 't#rightarrow Hu #rightarrow #tau#tau')
+
 styleDict['SUM_EFF']            = (2, r.kBlue, 1001, 21, 'BG')
 styleDict['SIG_EFF']            = (2, r.kRed, 1001, 21, 'Signal')
 styleDict['SIGNIFICANCE']       = (2, r.kGreen, 1001, 21, 'Signficance')
@@ -245,12 +252,12 @@ scaleDict['2012']['QCD_150_B+MU']       = 0.0086*50000 # Can't find value for th
 scaleDict['2012']['DYToMuMu']           = 1666.
 scaleDict['2012']['DYToEE']             = 1666.
 scaleDict['2012']['DYToTauTau']         = 1666.
-scaleDict['2012']['ZZ4mu']              = 2*0.07691 
-scaleDict['2012']['ZZ4e']               = 2*0.07691
-scaleDict['2012']['ZZ4tau']             = 2*0.07691
-scaleDict['2012']['ZZ2e2mu']            = 2*0.1767 
-scaleDict['2012']['ZZ2e2tau']           = 2*0.1767
-scaleDict['2012']['ZZ2mu2tau']          = 2*0.1767
+scaleDict['2012']['ZZ4mu']              = 0.07691 
+scaleDict['2012']['ZZ4e']               = 0.07691
+scaleDict['2012']['ZZ4tau']             = 0.07691
+scaleDict['2012']['ZZ2e2mu']            = 0.1767 
+scaleDict['2012']['ZZ2e2tau']           = 0.1767
+scaleDict['2012']['ZZ2mu2tau']          = 0.1767
 scaleDict['2012']['ZZ']                 = 7.7
 scaleDict['2012']['WZ']                 = 32.3
 scaleDict['2012']['WW']                 = 54.8
@@ -284,6 +291,10 @@ scaleDict['2012']['FCNC_ZZ_tbar']           = signalScale*252*1.*0.0264*(2*0.1*0
 scaleDict['2012']['FCNC_TauTau_t']          = signalScale*252*1.*0.063*0.324
 scaleDict['2012']['FCNC_TauTau_tbar']       = signalScale*252*1.*0.063*0.324
 
+scaleDict['2012']['FCNHUp_M125_tbar']       = 2.*signalScale*252*1.*0.215*3*0.324*0.324
+scaleDict['2012']['FCNHUp_ZZ_tbar']         = 2.*signalScale*252*1.*0.0264*(2*0.1*0.2 + 2*0.1*0.70 + 0.1*0.1)*0.324
+scaleDict['2012']['FCNHUp_TauTau_tbar']     = 2.*signalScale*252*1.*0.063*0.324
+
 scaleDict['2012']['DATA_MUON']          = 1.
 scaleDict['2012']['DATA_ELECTRON']      = 1.
 scaleDict['2012']['DATA_MUEG']          = 1.
@@ -300,9 +311,13 @@ scaleDict['2012']['QFlips']             = 1.
 
 combineDict = {}
 combineDict['FCNH']             = ['FCNC_M125_t', 'FCNC_M125_tbar', 'FCNC_ZZ_t', 'FCNC_ZZ_tbar', 'FCNC_TauTau_t', 'FCNC_TauTau_tbar']
+combineDict['FCNHUpWW']         = ['FCNHUp_M125_tbar']
+combineDict['FCNHUpZZ']         = ['FCNHUp_ZZ_tbar']
+combineDict['FCNHUpTauTau']     = ['FCNHUp_TauTau_tbar']
 combineDict['FCNHWW']           = ['FCNC_M125_t', 'FCNC_M125_tbar']
 combineDict['FCNHZZ']           = ['FCNC_ZZ_t', 'FCNC_ZZ_tbar']
 combineDict['FCNHTauTau']       = ['FCNC_TauTau_t', 'FCNC_TauTau_tbar']
+combineDict['FCNHUp']           = ['FCNHUp_M125_tbar', 'FCNHUp_ZZ_tbar', 'FCNHUp_TauTau_tbar']
 #combineDict['FCNH']             = ['FCNC_M125_t', 'FCNC_M125_t_semilep', 'FCNC_M125_t_ZZ', 'FCNC_M125_t_TauTau']
 combineDict['DATA']             = ['DATA_MUON', 'DATA_ELECTRON', 'DATA_MUEG']
 
@@ -333,7 +348,7 @@ combineDict['Remove_ss']        = ['ZJets_M-50', 'ZJets_M-10To50', 'ttbarLep']#,
 combineDict['Remove_3l']        = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau']#, 'ttZ', 'ttW', 'WWW', 'WWZ', 'WZZ', 'ZZZ']
 #combineDict['Irreducible']      = ['ggHToZZ4L_M-125', 'WHToWWW3L_M-125', 'ggHToWW2L2Nu_M-125', 'TTH_M-125', 'WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ']#, 'WWG']
 combineDict['Irreducible']      = ['WZJets3LNu', 'ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ']#, 'WWG']
-combineDict['Rare']             = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ', 'WmWmqq', 'WpWpqq', 'WWDPS', 'TBZ']#, 'WWG']
+combineDict['Rare']             = ['ZZ4mu', 'ZZ4e', 'ZZ4tau', 'ZZ2e2mu', 'ZZ2mu2tau', 'ZZ2e2tau', 'ttZ', 'ttW', 'ttG', 'WWW', 'WWZ', 'WZZ', 'ZZZ', 'WmWmqq', 'WpWpqq', 'WWDPS', 'TBZ', 'TTH_M-125']
 combineDict['PROMPT']           = [
                                    'ZJets_M-50', 'ZJets_M-10To50',
                                    'W1JetsToLNu', 'W2JetsToLNu', 'W3JetsToLNu', 'W4JetsToLNu', 

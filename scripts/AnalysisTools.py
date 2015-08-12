@@ -199,7 +199,7 @@ class AnalysisTools():
         if self._category in systematics:
             if dataName in ['QFlips', 'ttW', 'ttZ', 'WZJets3LNu', 'muFakes', 'eFakes', 'llFakes']:
                 hist = self.add_systematic(hist, dataName)
-            elif dataName in self._combineDict['FCNH']:
+            elif dataName in self._combineDict['FCNH'] or dataName in self._combineDict['FCNHUp']:
                 hist = self.add_systematic(hist, 'fcnh')
             elif dataName in self._combineDict['Irreducible']:
                 hist = self.add_systematic(hist, 'Irreducible')
@@ -219,8 +219,8 @@ class AnalysisTools():
                 hist.Scale(self._scale*self._scaleDict[self._period][dataName]) 
 
         # Rebin hack
-        if self._category[:2] == '3l' and var in ['Met']:
-            hist.Rebin()
+        if self._category[:2] == '3l' and var in ['DileptonOSMass', 'TrileptonMass', 'Met']:
+            hist.Rebin(2)
 
         return hist
 

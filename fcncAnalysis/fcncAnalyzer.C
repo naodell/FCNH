@@ -16,11 +16,11 @@ const bool      doMVACut    = true;
 const bool      doMVATree   = false;
 
 // Data-driven BG estimation switches
-bool doCR       = true;
-bool doQFlips   = true;
-bool doFakes    = true;
+bool doCR       = false;
+bool doQFlips   = false;
+bool doFakes    = false;
 bool doFakeMC   = false;
-bool doAIC      = true;
+bool doAIC      = false;
 
 ////////////////////////////////
 // Bins for uneven histograms //
@@ -43,8 +43,8 @@ const float   elePtCut[]        = {10., 7.};
 const float   phoPtCut[]        = {10., 10.};
 const float   leptonPtCut[]     = {20., 10.};
 const float   metCut[]          = {40., 30.};
-const float   htCut[]           = {60., 0.};
-const float   massCut[]         = {30., 30.};
+const float   htCut[]           = {100., 0.};
+const float   massCut[]         = {10., 10.};
 const float   bJetVeto          = 1e9;
 
 bool P4SortCondition(TLorentzVector p1, TLorentzVector p2) {return (p1.Pt() > p2.Pt());} 
@@ -538,6 +538,25 @@ bool fcncAnalyzer::Process(Long64_t entry)
     histManager->SetDirectory("inclusive/" + subdir);
     histManager->SetWeight(1);
 
+    // GenJet multiplicities (remove leptons)
+    unsigned nJets = 0;
+    for(unsigned i = 0; i < gJets.size(); ++i) {
+        bool lepOverlap = false;
+        for (unsigned j = 0; j < gLeptons.size(); ++j) {
+            if (gLeptons[j].DeltaR(gJets[i]) < 0.5) {
+                lepOverlap = true;
+                break;
+            }
+        }
+        if (gJets[i].Pt() > 30 && !lepOverlap) {
+            ++nJets;
+        }
+    }
+
+    if (gLeptons.size() >= 1) {
+        histManager->Fill1DHist(nJets, "h1_GenJetMult", "genJet multiplicity;N_{jets};Entries", 10, -0.5, 9.5);
+    }
+
     //!!!!!!!!!!!!!!!!!!!!!!!!//
     //                        //
     //  Overlap Jets/Leptons  //
@@ -723,7 +742,7 @@ bool fcncAnalyzer::Process(Long64_t entry)
             GenPlots(gLeptons, leptons);
         }
 
-        AnalysisSelection(leptons, jets, bJetsM, bJetsL, suffix);
+        if (fwdJets.size() > 0 && bJetsM.size() > 0) AnalysisSelection(leptons, jets, bJetsM, bJetsL, suffix);
 
         if (doQFlips) {
 
@@ -1059,17 +1078,16 @@ bool fcncAnalyzer::AnalysisSelection(vObj& leptons, vector<TCJet>& jets, vector<
     //!!!!!!!!!!!!!!!!!!!!!!//
 
 
-    if ( // Problematic region for same-sign
-            leptons.size() == 2 
-            && leptons[0].Charge() == leptons[1].Charge()
-            && leptons[0].Type() == "electron" && leptons[1].Type() == "electron"
-       ) {
-            if (fabs(leptons[0].Eta()) > 2.1 || fabs(leptons[1].Eta()) > 2.1) 
-                return true;
-            //if (fabs((leptons[0] + leptons[1]).M() - 91.2) > 15)
-            //    return true;
-    }
-
+    //if ( // Problematic region for same-sign
+    //        leptons.size() == 2 
+    //        && leptons[0].Charge() == leptons[1].Charge()
+    //        && leptons[0].Type() == "electron" && leptons[1].Type() == "electron"
+    //   ) {
+    //        //if (fabs(leptons[0].Eta()) > 2.1 || fabs(leptons[1].Eta()) > 2.1) 
+    //        //    return true;
+    //        if (fabs((leptons[0] + leptons[1]).M() - 91.2) > 15)
+    //            return true;
+    //}
 
     // Preselection Plots
     MakePlots(leptons, jets, bJetsM, *recoMET, 0);
@@ -1600,6 +1618,8 @@ void fcncAnalyzer::LeptonPlots(vObj& leptons, vector<TCJet>& jets, vector<TCJet>
         for (unsigned j = 0; j < i; ++j) {
             string jndex = str(j+1);
 
+            histManager->Fill1DHist((leptons[i] + leptons[j]).M(),
+                    "h1_DileptonLowMass" + index + jndex, "dilepton M_{" + index + jndex + "};M_{" + index + jndex + "} (GeV/c^{2});Events / 4 GeV", 50, 10., 60.);
             histManager->Fill1DHist((leptons[i] + leptons[j]).M(),
                     "h1_DileptonMass" + index + jndex, "dilepton M_{" + index + jndex + "};M_{" + index + jndex + "} (GeV/c^{2});Events / 4 GeV", 50, 0., 200.);
             histManager->Fill1DHist((leptons[i] + leptons[j]).M(),

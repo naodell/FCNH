@@ -122,7 +122,7 @@ if __name__ == '__main__':
                             nInit   = hYields.GetBinContent(1)
                             hYields.Scale(lumi*scales['2012'][sample]/nInit)
                         
-                        nFinal = hYields.GetBinContent(9)
+                        nFinal = hYields.GetBinContent(6)
                         subtotal += nFinal
             else:
                 hYields = inFile.Get('{0}/{1}/h1_YieldByCut'.format(category, dataset))

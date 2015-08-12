@@ -601,10 +601,9 @@ void Selector::JetSelector(TClonesArray* jets)
         TCJet *corJet = this->JERCorrections(thisJet);
 
         // Vary energy scale to assess systematic
-
         if (fabs(corJet->Eta()) < 2.5) {
             if (
-                    corJet->Pt() > _jetPtCuts[0]
+                    corJet->Pt()*1.02 > _jetPtCuts[0]
                     && corJet->NumConstit()  > 1
                     && corJet->NeuHadFrac()  < 0.99
                     && corJet->NeuEmFrac()   < 0.99
@@ -678,8 +677,10 @@ void Selector::JetSelector(TClonesArray* jets)
 TCJet* Selector::JERCorrections(TCJet *inJet)
 {
 
-    float sfEta[]     = {1.052, 1.057, 1.096, 1.134, 1.288};
-    float etaBins[]   = {0., 0.5, 1.1, 1.7, 2.3, 5.0};
+    //float sfEta[]   = {1.079, 1.099, 1.121, 1.208, 1.254, 1.395, 1.056}; // nominal 
+    //float sfEta[]   = {1.053, 1.071, 1.092, 1.162, 1.192, 1.332, 0.865}; // scale down 
+    float sfEta[]   = {1.105, 1.127, 1.150, 1.254, 1.316, 1.458, 1.247}; // scale up
+    float etaBins[] = {0., 0.5, 1.1, 1.7, 2.3, 2.8, 3.2, 5.0};
 
     // Match jet to generator level jet
     TCJet*   jet = inJet;
@@ -694,13 +695,12 @@ TCJet* Selector::JERCorrections(TCJet *inJet)
         }
     }
 
-
     if (count > 0) {
-        for (unsigned i = 0; i < 5; ++i) {
+        for (unsigned i = 0; i < 7; ++i) {
             if (fabs(inJet->Eta()) > etaBins[i] && fabs(inJet->Eta()) < etaBins[i+1]) {
 
                 if ((matchedJetPt - inJet->Pt())/inJet->Pt() < 0.3*inJet->Pt()) {
-                    double corJetPt = matchedJetPt + sfEta[i]*(inJet->Pt() - matchedJetPt);
+                    double corJetPt = (matchedJetPt + sfEta[i]*(inJet->Pt() - matchedJetPt));
                     jet->SetPtEtaPhiE(corJetPt, inJet->Eta(), inJet->Phi(), inJet->E());
 
                     //cout << "\t" << count << ", " << matchedJetPt << ", " << inJet->Pt() << ", " << corJetPt << endl;
@@ -709,7 +709,6 @@ TCJet* Selector::JERCorrections(TCJet *inJet)
             }
         }
     }  
-
     return jet;
 }
 
@@ -818,7 +817,9 @@ void Selector::GenJetSelector(TClonesArray* genJets)
 
         // Specify some cuts based on the type here (maybe...?)
 
-        _selGenJets.push_back(*iGenJet);
+        if (iGenJet->Pt() > 30) {
+            _selGenJets.push_back(*iGenJet);
+        }        
     }
 }
 
@@ -840,3 +841,4 @@ float Selector::ElectronPhoIsoHack(TCElectron& electron)
     }
     return pfPhoIso;
 }
+

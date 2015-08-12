@@ -1,7 +1,5 @@
 from AnalysisTools import *
 
-r.gROOT.ProcessLine('.L ./scripts/CMS_lumi.C')
-
 def make_index_afs(self, filePath):
 
     if not os.path.isfile(filePath+'/../writeIndexHTML.py'):
@@ -55,12 +53,16 @@ def set_hist_style(hist, dataType, styleDict, histType = '1D'):
 
     hist.SetMarkerStyle(styleDict[dataType][3])
     hist.SetMarkerColor(styleDict[dataType][1])
-    #hist.SetMarkerSize(styleDict[dataType][4])
-    hist.SetMarkerSize(0.8)
+    if dataType[:4] == 'DATA':
+        hist.SetMarkerSize(0.85)
     hist.SetFillStyle(styleDict[dataType][2])
     hist.SetFillColor(styleDict[dataType][1])
-    hist.SetLineWidth(styleDict[dataType][0])
-    hist.SetLineColor(styleDict[dataType][1])
+    if dataType == 'BGERROR':
+        hist.SetLineWidth(0)
+        hist.SetLineColor(r.kWhite)
+    else:
+        hist.SetLineWidth(styleDict[dataType][0])
+        hist.SetLineColor(styleDict[dataType][1])
 
 
 def build_legend(hists, dataList, styleDict):
@@ -70,7 +72,7 @@ def build_legend(hists, dataList, styleDict):
         hists[data].Fill(1)
         set_hist_style(hists[data], data, styleDict)
 
-    legend = r.TLegend(0.63,0.65,0.88,0.92)
+    legend = r.TLegend(0.55,0.5,0.88,0.92)
     legend.SetShadowColor(0)
     legend.SetBorderSize(0)
     legend.SetFillColor(0)
@@ -78,7 +80,7 @@ def build_legend(hists, dataList, styleDict):
     legend.SetLineStyle(0)
     legend.SetLineWidth(0)
     legend.SetLineColor(0)
-    legend.SetTextSize(0.03)
+    legend.SetTextSize(0.04)
     legend.SetTextFont(42)
 
     for data in dataList[::-1]:
@@ -87,7 +89,12 @@ def build_legend(hists, dataList, styleDict):
         else:
             dataName = data
 
-        legend.AddEntry(hists[data], styleDict[dataName][4])
+        if dataName in ['FCNH']:
+            legend.AddEntry(hists[data], styleDict[dataName][4], 'l')
+        elif dataName in ['DATA']:
+            legend.AddEntry(hists[data], styleDict[dataName][4], 'p')
+        else:
+            legend.AddEntry(hists[data], styleDict[dataName][4], 'f')
 
     return legend
 
@@ -159,10 +166,11 @@ class PlotProducer(AnalysisTools):
                 if var == 'HT':
                     hist.GetXaxis().SetTitle('H_{T} [GeV]')
                 if var == 'Met':
-                    hist.GetXaxis().SetTitle('MET [GeV]')
-                    hist.GetYaxis().SetTitle('Events / 10 GeV')
+                    hist.GetXaxis().SetTitle('E_{T}^{miss} [GeV]')
+                    if self._category[:2] == 'ss':
+                        hist.GetYaxis().SetTitle('Events / 5 GeV')
                 if var in ['DileptonMass21', 'DileptonZMass21', 'DileptonHiggsMass21']:
-                    #hist.GetYaxis().SetTitle('Entries / 5 GeV/c^{2}')
+                    hist.GetYaxis().SetTitle('Entries / 2 [GeV/c^{2}]')
                     hist.GetXaxis().SetTitle('M_{ll} [GeV/c^{2}]')
                 if var == 'TrileptonMVsDileptonMOS':
                     hist.GetXaxis().SetTitle('M_{OS} [GeV/c^{2}]')
@@ -328,7 +336,7 @@ class PlotProducer(AnalysisTools):
             stacks, sums = self.get_stack_dict(directory)
 
             if directory is self._directoryList1D[0]: 
-                legend.AddEntry(sums.values()[0], 'BG uncertainty')
+                legend.AddEntry(sums.values()[0], 'BG uncertainty', 'f')
 
             self.make_save_path(self._savePath + '/' + self._category + '/' + directory)
 
@@ -571,7 +579,7 @@ class PlotProducer(AnalysisTools):
 
         ### Setting up the canvas and splitting
         ### if doing complimentary plotting
-        canvas = r.TCanvas('canvas', 'canvas', 650, 700)
+        canvas = r.TCanvas('canvas', 'canvas', 600, 600)
 
         if (doRatio or doEff or doDiff):
             pad1 = r.TPad('pad1', '', 0.00, 0.35, 0.99, 0.99, 0)
@@ -608,7 +616,7 @@ class PlotProducer(AnalysisTools):
             stacks, sums = self.get_stack_dict(directory)
 
             if directory is self._directoryList1D[0]: 
-                legend.AddEntry(sums.values()[0], 'BG uncertainty')
+                legend.AddEntry(sums.values()[0], 'BG uncertainty', 'f')
 
             self.make_save_path('{0}/{1}/{2}'.format(self._savePath, self._category, directory))
 
@@ -649,15 +657,15 @@ class PlotProducer(AnalysisTools):
                         stacks[var].GetXaxis().SetTitle('H_{T} [GeV]')
 
                     stacks[var].GetYaxis().SetTitleOffset(1.6)
-                    stacks[var].GetYaxis().SetTitleSize(0.04)
-                    stacks[var].GetXaxis().SetTitleOffset(1.25)
-                    stacks[var].GetXaxis().SetTitleSize(0.04)
+                    stacks[var].GetYaxis().SetTitleSize(0.05)
+                    stacks[var].GetXaxis().SetTitleOffset(1.15)
+                    stacks[var].GetXaxis().SetTitleSize(0.05)
                     stacks[var].Draw('HIST')
 
                 sums[var].Draw('E2 SAME')
 
                 for (hist, data) in hists[var]:
-                    if data == 'FCNH':
+                    if data in ['FCNH', 'FCNHUp']:
                         hist.Draw('HIST SAME')
                     elif data[:4] == 'DATA':
                         gData = r.TGraphErrors(hist)
@@ -674,38 +682,7 @@ class PlotProducer(AnalysisTools):
                 legend.Draw()
 
                 ## Draw info box ##
-                r.gStyle.SetOptTitle(0)
-                cmsBox = r.TPaveText(0.23, 0.72, 0.53, 0.89, 'NDC')
-                cmsBox.SetFillColor(0)
-                cmsBox.SetFillStyle(0)
-                cmsBox.SetLineWidth(0)
-                cmsBox.SetLineColor(0)
-                cmsBox.SetTextSize(0.028)
-                cmsBox.SetTextFont(42)
-
-                cmsBox.AddText('#scale[2.5]{CMS}')
-                cmsBox.AddText('#scale[1.4]{#it{Preliminary}}')
-                cmsBox.AddText('#bf{#color[2]{' + categories[self._category] + '}}')
-
-                cmsBox.Draw('same')
-
-                energy = ''
-                if self._period is '2011':
-                    energy = '7'
-                elif self._period is '2012':
-                    energy = '8'
-
-                lumiBox = r.TPaveText(0.51, 0.96, 0.89, 0.99, 'NDC')
-                lumiBox.SetFillColor(0)
-                lumiBox.SetFillStyle(0)
-                lumiBox.SetLineWidth(0)
-                lumiBox.SetLineColor(0)
-                lumiBox.SetTextSize(0.035)
-                lumiBox.SetTextFont(42)
-
-                lumiBox.AddText('{0:.1f}'.format(self._scale) + ' fb^{-1} (' + energy + ' TeV)')       
-
-                lumiBox.Draw('same')
+                r.CMS_lumi(pad1, 2) 
 
                 if doDiff:
                     doRatio = False
@@ -804,7 +781,10 @@ class PlotProducer(AnalysisTools):
         nice...
         '''
 
-        canvas = r.TCanvas('canvas', 'canvas', 650, 700)
+        canvas = r.TCanvas('canvas', 'canvas', 1400, 600)
+        canvas.SetTopMargin(0.07)
+        canvas.SetLeftMargin(0.09)
+        canvas.SetRightMargin(0.1)
 
         if doProjection:
             pad1 = r.TPad('pad1', '', 0.0, 0.34, 0.90, 0.98, 0)
@@ -817,28 +797,40 @@ class PlotProducer(AnalysisTools):
             #pad2.SetGridx()
             #pad2.SetGridy()
         else:
-            pad1 = r.TPad('pad1', '', 0.0, 0.66, 0.99, 0.96, 0)
-            pad2 = r.TPad('pad2', '', 0.0, 0.35, 0.99, 0.64, 0)
-            pad3 = r.TPad('pad3', '', 0.0, 0.02, 0.99, 0.33, 0)
+            #pad1 = r.TPad('pad1', '', 0.0, 0.66, 0.99, 0.99, 0)
+            #pad2 = r.TPad('pad2', '', 0.0, 0.35, 0.99, 0.64, 0)
+            #pad3 = r.TPad('pad3', '', 0.0, 0.02, 0.99, 0.33, 0)
 
-            pad1.SetRightMargin(0.15)
-            pad2.SetRightMargin(0.15)
-            pad3.SetRightMargin(0.15)
+            pad1 = r.TPad('pad1', '', 0.0, 0.0, 0.36, 0.94, 0)
+            pad2 = r.TPad('pad2', '', 0.36, 0.0, 0.63, 0.94, 0)
+            pad3 = r.TPad('pad3', '', 0.63, 0.0, 0.99, 0.94, 0)
 
+            pad1.SetLeftMargin(0.25)
+            pad2.SetLeftMargin(0.01)
+            pad3.SetLeftMargin(0.01)
+
+            pad1.SetRightMargin(0.05)
+            pad2.SetRightMargin(0.06)
+            pad3.SetRightMargin(0.25)
+
+            pad1.SetTopMargin(0.02)
             pad2.SetTopMargin(0.02)
             pad3.SetTopMargin(0.02)
-            pad3.SetBottomMargin(0.25)
+
+            pad1.SetBottomMargin(0.15)
+            pad2.SetBottomMargin(0.15)
+            pad3.SetBottomMargin(0.15)
 
             pad1.Draw()
             pad2.Draw()
             pad3.Draw()
 
-            pad1.SetGridx()
-            pad1.SetGridy()
-            pad2.SetGridx()
-            pad2.SetGridy()
-            pad3.SetGridx()
-            pad3.SetGridy()
+            #pad1.SetGridx()
+            #pad1.SetGridy()
+            #pad2.SetGridx()
+            #pad2.SetGridy()
+            #pad3.SetGridx()
+            #pad3.SetGridy()
 
         if logScale:
             pad1.SetLogz()
@@ -846,18 +838,6 @@ class PlotProducer(AnalysisTools):
             pad3.SetLogz()
 
 
-        textBox = r.TPaveText(0.09, 0.96, 0.89, 0.99, 'NDC')
-        textBox.SetFillColor(0)
-        textBox.SetFillStyle(0)
-        textBox.SetLineWidth(0)
-        textBox.SetLineColor(0)
-        textBox.SetTextSize(0.023)
-        textBox.SetTextFont(42)
-
-        if self._period is '2011':
-            textBox.AddText('#scale[1.2]{CMS preliminary, #sqrt{s} = 7 TeV, #it{L}_{int}' + ' = {0:.1f}'.format(self._scale) + ' fb^{-1}       #bf{#color[2]{' + categories[self._category] + '}}}')
-        elif self._period is '2012':
-            textBox.AddText('#scale[1.2]{CMS preliminary, ' + '{0:.1f}'.format(self._scale) + ' fb^{-1} (8 TeV)        #bf{#color[2]{' + categories[self._category] + '}}}')
 
         for directory in self._directoryList2D:
             hists           = self.get_hist_dict(directory, '2D')
@@ -875,94 +855,114 @@ class PlotProducer(AnalysisTools):
 
                 r.gStyle.SetOptTitle(0)
 
-                textBox.Draw('same')
-                  
-                idBox = r.TPaveText(0.7, 0.24, 0.89, 0.4, 'NDC')
+                idBox = r.TPaveText(0.6, 0.22, 0.8, 0.2, 'NDC')
                 idBox.SetFillColor(0)
                 #idBox.SetFillStyle(1)
                 idBox.SetLineWidth(1)
                 idBox.SetLineColor(1)
                 idBox.SetTextSize(0.1)
-                idBox.SetTextColor(r.kBlue)
+                idBox.SetTextFont(42)
+                idBox.SetTextColor(r.kBlue+2)
 
                 for (hist, data) in hists[var]:
                     if data in ['Signal', 'FCNH']:
                         pad1.cd()
-                        hist.GetYaxis().SetTitle('')
+                        hist.GetYaxis().CenterTitle()
+                        hist.GetYaxis().SetTitleSize(0.065)
+                        hist.GetYaxis().SetTitleOffset(1.5)
                         hist.GetYaxis().SetLabelOffset(0.01)
                         hist.GetYaxis().SetLabelSize(0.06)
 
                         hist.GetXaxis().SetTitle('')
-                        hist.GetXaxis().SetLabelSize(0.)
+                        hist.GetXaxis().SetLabelSize(0.06)
 
-                        hist.GetZaxis().SetLabelSize(0.09)
-                        hist.GetZaxis().SetTitleSize(0.09)
-                        hist.GetZaxis().SetTitleOffset(0.5)
-                        hist.GetZaxis().SetTitle('Events / bin')
-
-                        # Hacks
-                        if var == 'MetVsHT':
-                            hist.GetXaxis().SetRangeUser(0., 500.)
-                            hist.GetYaxis().SetRangeUser(0., 200.)
-
-                        hist.Draw('COLZ')
-
-                        sigBox = idBox.Clone()
-                        sigBox.AddText('signal')
-                        #sigBox.Draw('SAME')
-
-                    if data in ['DATA', 'DATA_MUON','DATA_ELECTRON', 'DATA_MUEG']:
-                        pad2.cd()
-                        hist.GetYaxis().CenterTitle()
-                        hist.GetYaxis().SetTitleSize(0.13)
-                        hist.GetYaxis().SetTitleOffset(0.35)
-                        hist.GetYaxis().SetLabelOffset(0.01)
-                        hist.GetYaxis().SetLabelSize(0.06)
+                        hist.GetZaxis().SetLabelSize(0.06)
 
                         # Hacks
                         if var == 'TrileptonMVsDileptonMOS':
                             hist.GetYaxis().SetTitle('M_{lll} [GeV/c^{2}]')
+                            hist.GetXaxis().SetRangeUser(30., 300.)
+                            hist.GetYaxis().SetRangeUser(50., 300.)
 
                         if var == 'MetVsHT':
                             hist.GetYaxis().SetTitle('MET [GeV]')
-                            hist.GetXaxis().SetRangeUser(0., 500.)
                             hist.GetYaxis().SetRangeUser(0., 200.)
+                            hist.GetXaxis().SetRangeUser(60., 500.)
+                            hist.GetXaxis().SetNdivisions(5,5,0)
 
+                        hist.Draw('COL')
+
+                        sigBox = idBox.Clone()
+                        sigBox.AddText('t#rightarrow Hc')
+                        sigBox.SetTextSize(0.08)
+                        #sigBox.Draw('SAME')
+
+                    if data in ['DATA', 'DATA_MUON','DATA_ELECTRON', 'DATA_MUEG']:
+                        pad2.cd()
+                        hist.GetYaxis().SetTitle('')
+                        #hist.GetYaxis().SetLabelOffset(0.01)
+                        hist.GetYaxis().SetLabelSize(0.0)
 
                         hist.GetXaxis().SetTitle('')
-                        hist.GetXaxis().SetLabelSize(0.)
+                        hist.GetXaxis().SetLabelOffset(-0.01)
+                        hist.GetXaxis().SetLabelSize(0.08)
 
-                        hist.GetZaxis().SetLabelSize(0.09)
+                        hist.GetZaxis().SetLabelSize(0.06)
 
-                        hist.Draw('COLZ')
+                        if var == 'TrileptonMVsDileptonMOS':
+                            hist.GetYaxis().SetTitle('M_{lll} [GeV/c^{2}]')
+                            hist.GetXaxis().SetRangeUser(30., 300.)
+                            hist.GetYaxis().SetRangeUser(50., 300.)
+                        if var == 'MetVsHT':
+                            hist.GetYaxis().SetTitle('MET [GeV]')
+                            hist.GetYaxis().SetRangeUser(0., 200.)
+                            hist.GetXaxis().SetRangeUser(60., 500.)
+                            hist.GetXaxis().SetNdivisions(5,5,0)
+
+                        hist.Draw('COL')
 
                         dataBox = idBox.Clone()
-                        dataBox.AddText('data')
+                        dataBox.AddText('Data')
+                        dataBox.SetTextSize(0.1)
+                        dataBox.SetX1(0.5)
+                        dataBox.SetX2(0.7)
                         #dataBox.Draw('SAME')
 
                 pad3.cd()
                 sums[var].GetYaxis().SetTitle('')
-                sums[var].GetYaxis().SetLabelOffset(0.01)
-                sums[var].GetYaxis().SetLabelSize(0.06)
+                #sums[var].GetYaxis().SetLabelOffset(0.01)
+                sums[var].GetYaxis().SetLabelSize(0.0)
 
-                sums[var].GetXaxis().SetLabelOffset(0.03)
-                sums[var].GetXaxis().SetLabelSize(0.065)
-                sums[var].GetXaxis().SetTitleSize(0.10)
-                sums[var].GetXaxis().SetTitleOffset(1.)
+                #sums[var].GetXaxis().SetTitle('')
+                #sums[var].GetXaxis().SetLabelOffset(-0.01)
+                sums[var].GetXaxis().SetLabelSize(0.06)
+                sums[var].GetXaxis().SetTitleSize(0.08)
+                sums[var].GetXaxis().SetTitleOffset(0.8)
 
+                #sums[var].GetZaxis().SetTitle('Events / bin')
+                sums[var].GetZaxis().SetLabelSize(0.08)
+
+                # Hacks
+                if var == 'TrileptonMVsDileptonMOS':
+                    sums[var].GetXaxis().SetTitle('M_{ll} [GeV/c^{2}]')
+                    sums[var].GetXaxis().SetRangeUser(30., 300.)
+                    sums[var].GetYaxis().SetRangeUser(50., 300.)
                 if var == 'MetVsHT':
-                    sums[var].GetXaxis().SetRangeUser(0., 500.)
-                    sums[var].GetYaxis().SetRangeUser(0., 200.)
                     sums[var].GetXaxis().SetTitle('H_{T} [GeV]')
+                    sums[var].GetYaxis().SetRangeUser(0., 200.)
+                    sums[var].GetXaxis().SetRangeUser(60., 500.)
+                    sums[var].GetXaxis().SetNdivisions(5,5,0)
 
-                sums[var].GetZaxis().SetLabelSize(0.09)
-
-                sums[var].Draw('COLZ')
+                sums[var].DrawNormalized('COL')
 
                 bgBox = idBox.Clone()
-                bgBox.AddText('background')
+                bgBox.AddText('Background')
+                bgBox.SetTextSize(0.08)
+                bgBox.SetX1(0.4)
+                bgBox.SetX2(0.6)
                 #bgBox.Draw('SAME')
 
+                r.CMS_lumi(canvas, 2) 
 
                 #canvas.SaveAs(self._savePath + '/' + self._category + '/' + directory + '/' + var + self._plotType)
                 canvas.SaveAs('{0}/{1}/{2}/{3}{4}'.format(self._savePath, self._category, directory, var, self._plotType))

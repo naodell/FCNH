@@ -31,13 +31,13 @@ cutList.extend(['2_Z_veto', '3_2jet', '4_MET'])#, '.', 'CR_WZ', 'CR_SUSY', '5_BD
 period      = '2012'
 LUMIDATA    = 19.712 
 
-doPlots     = True
-doYields    = False
+doPlots     = False
+doYields    = True
 
 doLog       = False
 doEff       = False
 doDiff      = False
-doRatio     = False
+doRatio     = True
 doNorm      = True
 do1D        = True
 do2D        = True
@@ -68,6 +68,7 @@ samples     = {'all':[], 'inclusive':[], 'os':[], 'WZ':[], 'ttbar':[], 'ttZ':[],
 #samples['all'].append('ZZ4l')
 samples['all'].append('Rare')
 samples['all'].append('WZJets3LNu')
+#samples['all'].append('TTH_M-125')
 #samples['all'].append('higgs')
 
 samples['all'].append('ZJets')
@@ -83,6 +84,7 @@ samples['all'].append('ZJets')
 samples['inclusive'].append('Triboson')
 samples['inclusive'].append('ttV')
 samples['inclusive'].append('Diboson')
+samples['inclusive'].append('ZZ4l')
 samples['inclusive'].append('top')
 samples['inclusive'].append('ZJets')
 
@@ -92,6 +94,7 @@ samples['inclusive'].append('ZJets')
 #samples['3l_inclusive'].append('WWSS')
 #samples['3l_inclusive'].append('ttV')
 #samples['3l_inclusive'].append('ZZ4l')
+#samples['3l_inclusive'].append('TTH_M-125')
 samples['3l_inclusive'].append('Rare')
 samples['3l_inclusive'].append('WZJets3LNu')
 #samples['3l_inclusive'].append('top')
@@ -132,6 +135,7 @@ samples['3l_mumumu'].extend(samples['3l_inclusive'])
 #samples['ss_inclusive'].append('ttV')
 #samples['ss_inclusive'].append('ZZ4l')
 
+#samples['ss_inclusive'].append('TTH_M-125')
 samples['ss_inclusive'].append('Rare')
 samples['ss_inclusive'].append('WZJets3LNu')
 samples['ss_inclusive'].append('Fakes')
@@ -199,10 +203,10 @@ if doPlots:
 
     plotter.add_datasets(samples['all'])
     plotter._overlayList.extend(['DATA'])
-    #plotter._overlayList.extend(['FCNH'])
+    plotter._overlayList.extend(['FCNH', 'FCNHUp'])
 
     #plotter.get_scale_factors()
-    plotter.get_scale_factors(['FCNH'])
+    plotter.get_scale_factors(['FCNH', 'FCNHUp'])
 
     ### VARIABLES ###
     ### First specify the directories in which your
@@ -303,6 +307,7 @@ if doPlots:
      ###################   
 
     r.gROOT.ProcessLine('.L ./scripts/tdrStyle.C')
+    r.gROOT.ProcessLine('.L ./scripts/CMS_lumi.C')
     r.setTDRStyle()
 
     #r.gROOT.SetStyle('Plain')
@@ -314,7 +319,7 @@ if doPlots:
         for category in cat3l:
             plotter_3l = copy.deepcopy(plotter)
             plotter_3l.add_datasets(samples[category], Clear=True)
-            plotter_3l._overlayList = ['DATA', 'FCNH']
+            plotter_3l._overlayList = ['DATA', 'FCNH']#, 'FCNHUp']
 
             for i, cut in enumerate(cutList):
                 if cut == '.':
@@ -338,7 +343,7 @@ if doPlots:
         for category in catSS:
             ss_plotter = copy.deepcopy(plotter)
             ss_plotter.add_datasets(samples[category], Clear=True)
-            ss_plotter._overlayList = ['DATA', 'FCNH']
+            ss_plotter._overlayList = ['DATA', 'FCNH']#, 'FCNHUp']
             #ss_plotter.set_clean_fakes(False)
 
             for i, cut in enumerate(cutList):
@@ -416,23 +421,26 @@ if doYields:
     yieldTable.add_datasets(samples['all'], Clear = True)
     if not doPlots:
         #yieldTable.get_scale_factors()
-        yieldTable.get_scale_factors(['FCNH'])
+        yieldTable.get_scale_factors(['FCNH', 'FCNHUp'])
 
     if do3l:
-        yieldTable._columnList  = ['Rare', 'WZJets3LNu', 'Fakes', 'BG', 'DATA', 'FCNHWW', 'FCNHTauTau', 'FCNHZZ']#, 'Significance'] 
-        #yieldTable._columnList  = ['Rare', 'WZJets3LNu', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
+        yieldTable._columnList  = ['Rare', 'WZJets3LNu', 'Fakes', 'BG', 'DATA', 'FCNH']
+        #yieldTable._columnList  = ['Rare', 'WZJets3LNu', 'Fakes', 'BG', 'DATA', 'FCNHWW', 'FCNHTauTau', 'FCNHZZ']
+        #yieldTable._columnList  = ['Rare', 'WZJets3LNu', 'Fakes', 'BG', 'DATA', 'FCNHUpWW', 'FCNHUpZZ', 'FCNHUpTauTau']
+        #yieldTable._columnList  = ['Rare', 'WZJets3LNu', 'Fakes', 'BG', 'DATA', 'TTH_M-125']
         #yieldTable._columnList  = samples['3l_inclusive'] + ['BG', 'DATA', 'FCNH']
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNHWW', 'FCNHZZ', 'FCNHTauTau']
         #yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
         yieldTable.add_datasets(samples['3l_inclusive'], Clear = True)
-        yieldTable.add_datasets('FCNHWW')
-        yieldTable.add_datasets('FCNHZZ')
-        yieldTable.add_datasets('FCNHTauTau')
-        #yieldTable.add_datasets('FCNH')
+        #yieldTable.add_datasets('TTH_M-125')
+        yieldTable.add_datasets('FCNH')
+        #yieldTable.add_datasets('FCNHWW')
+        #yieldTable.add_datasets('FCNHZZ')
+        #yieldTable.add_datasets('FCNHTauTau')
         yieldTable.add_datasets('DATA')
 
-        yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET/jet', '.', 'WZ', 'SUSY']# + 6*['.'] + ['0-jet', '1-jet']
+        yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET/jet']
 
         for category in cat3l:
             yieldTable._category = category
@@ -440,32 +448,30 @@ if doYields:
             yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
 
     if doSS:
-        #yieldTable._columnList  = ['Irreducible', 'Fakes', 'QFlips', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
-        #yieldTable._columnList  = ['BG', 'DATA', 'FCNH']#, 'Significance'] 
 
         #yieldTable.add_datasets(['Irreducible', 'Fakes', 'QFlips'], Clear = True)
-        #yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET']# + 5*['.'] + ['0-jet', '1-jet']# + 7*['.'] + ['BDT']
-        yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET']#
+        yieldTable._rowList = 5*['.'] + ['ss dilepton', 'Z removal', '2+ jets', 'MET']
+        yieldTable._columnList  = ['Rare', 'WZJets3LNu', 'QFlips', 'Fakes', 'BG', 'DATA', 'FCNH']
+        #yieldTable._columnList  = ['Rare', 'WZJets3LNu', 'QFlips', 'Fakes', 'BG', 'DATA', 'FCNHWW', 'FCNHTauTau', 'FCNHZZ']#, 'Significance'] 
+        #yieldTable._columnList  = ['Rare', 'WZJets3LNu', 'QFlips', 'Fakes', 'BG', 'DATA', 'TTH_M-125']
+        #yieldTable._columnList  = ['Rare', 'WZJets3LNu', 'QFlips', 'Fakes', 'BG', 'DATA', 'FCNHUp', 'FCNH']
 
         for category in catSS:
 
-            yieldTable._columnList  = ['Rare', 'WZJets3LNu', 'QFlips', 'Fakes', 'BG', 'DATA', 'FCNHWW', 'FCNHTauTau', 'FCNHZZ']#, 'Significance'] 
-            #yieldTable._columnList  = ['Rare', 'WZJets3LNu', 'QFlips', 'Fakes', 'BG', 'DATA', 'FCNH']#, 'Significance'] 
-            #yieldTable._columnList  = samples[category] + ['BG', 'DATA', 'FCNH']#, 'Significance'] 
-            #yieldTable._columnList  = ['BG', 'DATA', 'FCNHWW', 'FCNHZZ', 'FCNHTauTau']#, 'Significance'] 
 
             yieldTable.add_datasets(samples[category], Clear = True)
-            yieldTable.add_datasets('FCNHWW')
-            yieldTable.add_datasets('FCNHZZ')
-            yieldTable.add_datasets('FCNHTauTau')
-            #yieldTable.add_datasets('FCNH')
+            #yieldTable.add_datasets('TTH_M-125')
+            yieldTable.add_datasets('FCNH')
+            #yieldTable.add_datasets('FCNHWW')
+            #yieldTable.add_datasets('FCNHZZ')
+            #yieldTable.add_datasets('FCNHTauTau')
             yieldTable.add_datasets('DATA')
             yieldTable._category = category
 
             histDict = yieldTable.get_hist_dict('YieldByCut')
             yieldTable.print_table(histDict, doErrors = True, doEff = False, startBin = 1)
 
-    if True: ## Adding WZ high N_jet check
+    if False: ## Adding WZ high N_jet check
 
         yieldTable.set_input_file('fcncAnalysis/combined_histos/{0}_cut{1}_{2}_{3}.root'.format(selection, 6, period, batch))
         yieldTable._rowList     = ['{0} jet'.format(i+1) for i in range(5)]

@@ -1038,6 +1038,7 @@ void fakeAnalyzer::FillJetHists(TCPhysObject& probe, vector<TCJet>& jets, string
 
     if (!isRealData && jetMatched) {
         unsigned jetFlavor = probeJet.JetFlavor();
+        cout << jetFlavor << endl;
         histManager->Fill1DHist(probeJet.BDiscriminatorMap("CSV"),
                 "h1_Matched" + lepType + "JetBDiscr_" + probeStatus, "matched #mu-jet b discriminator;CSV;Entries / bin", 50, -1., 1.5);
         histManager->Fill1DHist(jetFlavor,
